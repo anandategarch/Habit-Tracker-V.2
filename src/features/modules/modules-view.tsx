@@ -58,7 +58,7 @@ export function ModulesView({ tab, modules, updateModule }: {
     return <WellnessView key={wellnessToday?.date ?? "empty"} modules={modules} updateModule={updateModule} />;
   }
   if (tab === "training") return <TrainingView modules={modules} updateModule={updateModule} />;
-  if (tab === "settings") return <BackupView />;
+  if (tab === "settings") return <BackupView settings={modules.settings} onUpdateSettings={(update) => updateModule("settings", update)} />;
   return <TreeView modules={modules} />;
 }
 
