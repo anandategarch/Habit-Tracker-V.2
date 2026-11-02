@@ -98,10 +98,10 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
         </form>
       </Panel>
       <Panel title="Daftar tujuan" caption={`${modules.goals.length} tujuan tersimpan`}>
-        {modules.goals.length ? <div className="module-list">{modules.goals.map((goal) => {
+        {modules.goals.length ? <div className="module-list goal-list">{modules.goals.map((goal) => {
           const done = goal.milestones.filter((step) => step.completed).length;
           const progress = goal.milestones.length ? Math.round(done / goal.milestones.length * 100) : (goal.completed ? 100 : 0);
-          return <article className="module-item" key={goal.id}>
+          return <article className="module-item goal-card" key={goal.id}>
             <div className="module-item-top"><div><span className="module-tag">{goal.category}</span><h3>{goal.title}</h3><p>{goal.description || "Tidak ada deskripsi."}</p></div><button className="module-icon-action danger" onClick={() => updateModule("goals", (items) => remove(items, goal.id))} aria-label={`Hapus tujuan ${goal.title}`}><Trash2 size={15} /></button></div>
             {goal.dueDate && <small className="module-muted">Tenggat {formatDate(goal.dueDate)}</small>}
             <div className="module-progress-track"><span style={{ width: `${progress}%` }} /></div>
@@ -294,60 +294,86 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
   const dayIndex = weekStartDate ? Math.max(0, Math.min(6, Math.floor((Date.parse(`${growth?.today}T00:00:00Z`) - weekStartDate.getTime()) / 86_400_000))) : 0;
   const daysRemaining = Math.max(1, 7 - dayIndex);
 
-  return <>
-    <Intro eyebrow="GROWTH JOURNEY" title="Hal besar tumbuh dari langkah kecil." subtitle="Level seumur hidup tidak direset; tahap pohon mingguan dimulai kembali setiap Senin." />
-    {growth ? <>
-      <section className="tree-progress-card tree-season-card">
-        <div className="tree-artwork"><Image src={stageArt} alt={`Pohon tahap ${growth.stage.label}`} width={220} height={220} priority /></div>
-        <div className="tree-season-copy">
-          <span className="small-label">MUSIM MINGGU INI · {growth.stage.label.toUpperCase()}</span>
-          <h2>{growth.stage.label}</h2>
-          <p>{growth.stage.tagline}</p>
-          <div className="tree-progress-caption"><strong>{growth.weeklyXp.toLocaleString("id-ID")} XP</strong><span>{growth.stage.xpToNext === null ? "Tahap tertinggi minggu ini" : `${growth.stage.xpToNext.toLocaleString("id-ID")} XP menuju ${(["Benih", "Tunas", "Pohon Muda", "Pohon Dewasa"][growth.stage.index + 1] ?? "tahap berikutnya")}`}</span></div>
-          <div className="module-progress-track"><span style={{ width: `${growth.stage.progress}%` }} /></div>
-          <small>Reset dalam {daysRemaining} hari · {growth.weekStart}</small>
+  return (
+    <div className="tree-page">
+      <Intro eyebrow="GROWTH JOURNEY" title="Pohon Rutina-mu terus tumbuh." subtitle="Rawat proses kecilmu setiap hari. Lihat kebiasaan baik berubah menjadi pertumbuhan yang nyata." />
+      {growth ? <>
+        <section className="tree-journey-hero">
+          <div className="tree-journey-copy">
+            <span className="tree-journey-kicker">YOUR LITTLE GROWTH STORY</span>
+            <h2>Rawat pohonmu,<br />rayakan setiap<br />langkah kecil.</h2>
+            <p>{growth.stage.tagline}</p>
+            <div className="tree-level-lockup">
+              <span className="tree-level-badge">LEVEL {growth.level}</span>
+              <span className="tree-level-name">Pohon Produktivitas</span>
+            </div>
+            <div className="tree-level-progress-copy">
+              <strong>{growth.totalXp.toLocaleString("id-ID")} XP</strong>
+              <span>Menuju level {growth.level + 1}</span>
+            </div>
+            <div className="tree-level-progress" role="progressbar" aria-label="Progres level seumur hidup" aria-valuenow={Math.round(growth.levelProgress)} aria-valuemin={0} aria-valuemax={100}>
+              <span style={{ width: String(growth.levelProgress) + "%" }} />
+            </div>
+            <small className="tree-level-footnote">Progres seumur hidup · tidak pernah direset</small>
+          </div>
+          <div className="tree-journey-art" aria-label={"Ilustrasi pohon tahap " + growth.stage.label}>
+            <span className="tree-art-orbit tree-art-orbit-one" />
+            <span className="tree-art-orbit tree-art-orbit-two" />
+            <span className="tree-art-badge"><Sprout size={13} /> {growth.stage.label}</span>
+            <Image className="tree-main-art" src={stageArt} alt={"Pohon Rutina tahap " + growth.stage.label} width={480} height={480} priority />
+            <span className="tree-art-ground" />
+            <span className="tree-art-level-stamp">LV. {growth.level}</span>
+          </div>
+          <div className="tree-weekly-ribbon">
+            <span className="tree-weekly-ribbon-icon"><Sprout size={16} /></span>
+            <span><small>MUSIM MINGGU INI</small><strong>{growth.stage.label} · {growth.weeklyXp.toLocaleString("id-ID")} XP</strong></span>
+            <span className="tree-weekly-ribbon-meta">{growth.stage.xpToNext === null ? "Tahap tertinggi" : growth.stage.xpToNext.toLocaleString("id-ID") + " XP lagi"}</span>
+          </div>
+        </section>
+
+        <div className="tree-season-stats">
+          <div><span className="small-label">LEVEL SEUMUR HIDUP</span><strong>{growth.level}</strong><small>{growth.totalXp.toLocaleString("id-ID")} total XP</small></div>
+          <div><span className="small-label">STREAK TERPANJANG</span><strong>{growth.currentStreak} hari</strong><small>{growth.currentStreak >= 7 ? "Pohon sedang berbunga" : "Konsistensi sedang dibangun"}</small></div>
+          <div><span className="small-label">BUAH EMAS</span><strong>{goalsCount}</strong><small>Tujuan yang telah selesai</small></div>
         </div>
-      </section>
-      <div className="tree-season-stats">
-        <div><span className="small-label">LEVEL SEUMUR HIDUP</span><strong>{growth.level}</strong><small>{growth.totalXp.toLocaleString("id-ID")} total XP</small></div>
-        <div><span className="small-label">STREAK TERPANJANG SAAT INI</span><strong>{growth.currentStreak} hari</strong><small>{growth.currentStreak >= 7 ? "Pohon sedang berbunga" : "Konsistensi sedang dibangun"}</small></div>
-        <div><span className="small-label">BUAH EMAS</span><strong>{goalsCount}</strong><small>Tujuan yang telah selesai</small></div>
-      </div>
-      <div className="module-two-col tree-detail-grid">
-        <Panel title="Penyiraman hari ini" caption="Setiap habit yang selesai membantu pertumbuhan hari ini">
-          <div className="tree-watering-count"><strong>{growth.completedToday}/{growth.scheduledToday}</strong><span>habit terjadwal selesai</span></div>
-          <div className="module-progress-track"><span style={{ width: `${growth.scheduledToday ? growth.completedToday / growth.scheduledToday * 100 : 0}%` }} /></div>
-          <p className="module-muted">{growth.vacationMode ? "Mode libur aktif: pencatatan habit dijeda." : growth.scheduledToday === 0 ? "Tidak ada habit yang terjadwal hari ini." : growth.completedToday >= growth.scheduledToday ? "Semua habit hari ini telah selesai. Pohonmu mendapat siraman penuh." : `${growth.scheduledToday - growth.completedToday} habit lagi untuk menyelesaikan penyiraman hari ini.`}</p>
-        </Panel>
-        <Panel title="Kebijaksanaan pohon" caption="Pengingat harian dari perjalanan yang terus bertumbuh">
-          <div className="tree-wisdom-quote"><span aria-hidden="true">“</span><p>{growth.wisdom}</p></div>
-          {growth.worstHabit && <div className="tree-care-note"><strong>Perlu dirawat: {growth.worstHabit.name}</strong><p>Catatan penyelesaian 30 hari terakhir: {Math.round(growth.worstHabit.rate)}%.</p></div>}
-        </Panel>
-      </div>
-      <Panel title="Jalan pertumbuhan seumur hidup" caption="Level dan XP ini tidak pernah direset oleh musim mingguan">
-        <div className="tree-lifetime-path">
-          {[
-            { name: "Benih", level: "Level 1", min: 1, art: "/tree/benih.svg" },
-            { name: "Tunas", level: "Level 2–3", min: 2, art: "/tree/tunas.svg" },
-            { name: "Pohon Muda", level: "Level 4–6", min: 4, art: "/tree/pohon-muda.svg" },
-            { name: "Pohon Dewasa", level: "Level 7+", min: 7, art: "/tree/pohon-dewasa.svg" },
-          ].map((item) => {
-            const achieved = growth.level >= item.min;
-            const current = lifetimeStage === item.name;
-            return <div className={`tree-lifetime-stage ${current ? "current" : achieved ? "achieved" : "locked"}`} key={item.name}>
-              <Image src={item.art} alt="" width={80} height={80} />
-              <strong>{item.name}</strong><small>{item.level}</small>
-              <span>{current ? "Tahap saat ini" : achieved ? "Tercapai" : "Belum tercapai"}</span>
-            </div>;
-          })}
+
+        <div className="module-two-col tree-detail-grid">
+          <Panel title="Penyiraman hari ini" caption="Setiap habit yang selesai membantu pertumbuhan hari ini">
+            <div className="tree-watering-count"><strong>{growth.completedToday}/{growth.scheduledToday}</strong><span>habit terjadwal selesai</span></div>
+            <div className="module-progress-track"><span style={{ width: String(growth.scheduledToday ? growth.completedToday / growth.scheduledToday * 100 : 0) + "%" }} /></div>
+            <p className="module-muted">{growth.vacationMode ? "Mode libur aktif: pencatatan habit dijeda." : growth.scheduledToday === 0 ? "Tidak ada habit yang terjadwal hari ini." : growth.completedToday >= growth.scheduledToday ? "Semua habit hari ini telah selesai. Pohonmu mendapat siraman penuh." : (growth.scheduledToday - growth.completedToday) + " habit lagi untuk menyelesaikan penyiraman hari ini."}</p>
+          </Panel>
+          <Panel title="Kebijaksanaan pohon" caption="Pengingat harian dari perjalanan yang terus bertumbuh">
+            <div className="tree-wisdom-quote"><span aria-hidden="true">“</span><p>{growth.wisdom}</p></div>
+            {growth.worstHabit && <div className="tree-care-note"><strong>Perlu dirawat: {growth.worstHabit.name}</strong><p>Catatan penyelesaian 30 hari terakhir: {Math.round(growth.worstHabit.rate)}%.</p></div>}
+          </Panel>
         </div>
-      </Panel>
-    </> : <section className="card card-pad tree-loading-state">
-      <div className="tree-loading-mark"><Sprout size={30} /></div>
-      <strong>{error ? "Data pertumbuhan belum tersedia" : "Menghitung pertumbuhan pohon…"}</strong>
-      <p>{error ? "Hubungkan Turso dan muat ulang untuk melihat XP, level, serta riwayat pohon." : "Menghitung catatan habit yang tersimpan."}</p>
-    </section>}
-  </>;
+
+        <Panel title="Jalan pertumbuhan seumur hidup" caption="Setiap tahap menyimpan jejak konsistensi yang sudah kamu bangun">
+          <div className="tree-lifetime-path">
+            {[
+              { name: "Benih", level: "Level 1", min: 1, art: "/tree/benih.svg" },
+              { name: "Tunas", level: "Level 2–3", min: 2, art: "/tree/tunas.svg" },
+              { name: "Pohon Muda", level: "Level 4–6", min: 4, art: "/tree/pohon-muda.svg" },
+              { name: "Pohon Dewasa", level: "Level 7+", min: 7, art: "/tree/pohon-dewasa.svg" },
+            ].map((item) => {
+              const achieved = growth.level >= item.min;
+              const current = lifetimeStage === item.name;
+              return <div className={"tree-lifetime-stage " + (current ? "current" : achieved ? "achieved" : "locked")} key={item.name}>
+                <Image src={item.art} alt="" width={100} height={100} />
+                <strong>{item.name}</strong><small>{item.level}</small>
+                <span>{current ? "Tahap saat ini" : achieved ? "Tercapai" : "Belum tercapai"}</span>
+              </div>;
+            })}
+          </div>
+        </Panel>
+      </> : <section className="card card-pad tree-loading-state">
+        <div className="tree-loading-mark"><Sprout size={30} /></div>
+        <strong>{error ? "Data pertumbuhan belum tersedia" : "Menghitung pertumbuhan pohon…"}</strong>
+        <p>{error ? "Hubungkan Turso dan muat ulang untuk melihat XP, level, serta riwayat pohon." : "Menghitung catatan habit yang tersimpan."}</p>
+      </section>}
+    </div>
+  );
 }
 
 export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddTransactions }: {
