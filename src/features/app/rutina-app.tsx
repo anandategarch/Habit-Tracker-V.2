@@ -276,7 +276,7 @@ export function RutinaApp() {
         </nav>
 
         <div className="sidebar-growth">
-          <span className="sidebar-growth-icon"><Sprout size={17} /></span>
+          <span className="sidebar-growth-icon"><AppIcon name="growth" size={17} /></span>
           <p>Hal besar tumbuh dari langkah kecil.</p>
           <span>ONE DAY AT A TIME</span>
         </div>
@@ -361,7 +361,7 @@ export function RutinaApp() {
         ))}
         <button type="button" className={moreOpen ? "active" : ""} aria-expanded={moreOpen} onClick={() => setMoreOpen((value) => !value)}><Grid2X2 size={19} /><span>Lainnya</span></button>
       </nav>
-      {moreOpen && <div className="mobile-more-menu" role="menu" aria-label="Modul lainnya">{mobileMore.map(({ id, label, icon: Icon }) => <button key={id} type="button" role="menuitem" onClick={() => { setActiveTab(id); setMoreOpen(false); }}><Icon size={17} /><span>{label}</span><ChevronRight size={14} /></button>)}</div>}
+      {moreOpen && <div className="mobile-more-menu" role="menu" aria-label="Modul lainnya">{mobileMore.map(({ id, label, icon }) => <button key={id} type="button" role="menuitem" onClick={() => { setActiveTab(id); setMoreOpen(false); }}><AppIcon name={icon} size={17} /><span>{label}</span><ChevronRight size={14} /></button>)}</div>}
 
       {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
       <SearchDialog
