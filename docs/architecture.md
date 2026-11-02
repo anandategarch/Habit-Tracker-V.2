@@ -11,6 +11,7 @@ features/
   finance/   Domain transaksi dan anggaran (ekstraksi lanjutan)
   calendar/  Kalender dan riwayat (ekstraksi lanjutan)
   insights/  Agregasi dan analitik (ekstraksi lanjutan)
+  focus/     Timer fokus dan sesi konsentrasi
 components/
   ui/        Primitive lintas fitur (button, card, field, dialog)
 lib/
