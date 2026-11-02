@@ -32,7 +32,8 @@ function isHabit(value: unknown): value is Habit {
     (value.priority === undefined || ["low", "medium", "high"].includes(String(value.priority))) &&
     (value.difficulty === undefined || ["easy", "medium", "hard"].includes(String(value.difficulty))) &&
     (value.groupName === undefined || (typeof value.groupName === "string" && value.groupName.length <= 60)) &&
-    (value.timeSpentMinutes === undefined || (typeof value.timeSpentMinutes === "number" && Number.isInteger(value.timeSpentMinutes) && value.timeSpentMinutes >= 0 && value.timeSpentMinutes <= 100000))
+    (value.timeSpentMinutes === undefined || (typeof value.timeSpentMinutes === "number" && Number.isInteger(value.timeSpentMinutes) && value.timeSpentMinutes >= 0 && value.timeSpentMinutes <= 100000)) &&
+    (value.schedule === undefined || (isRecord(value.schedule) && (value.schedule.kind === "daily" || (value.schedule.kind === "weekly" && Array.isArray(value.schedule.days) && value.schedule.days.length > 0 && value.schedule.days.length <= 7 && value.schedule.days.every((day) => Number.isInteger(day) && Number(day) >= 0 && Number(day) <= 6)) || (value.schedule.kind === "monthly" && Array.isArray(value.schedule.dates) && value.schedule.dates.length > 0 && value.schedule.dates.length <= 31 && value.schedule.dates.every((day) => Number.isInteger(day) && Number(day) >= 1 && Number(day) <= 31)))))
   );
 }
 

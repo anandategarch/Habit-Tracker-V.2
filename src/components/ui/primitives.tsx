@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
+import { scheduleLabel } from "@/lib/habit-schedule";
 
 function PageIntro({ eyebrow, title, subtitle, action }: {
   eyebrow: string; title: string; subtitle: string; action?: ReactNode;
@@ -66,6 +67,7 @@ function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, timerActive = fals
           {habit.priority && <span className={`habit-detail-tag priority-${habit.priority}`}>Prioritas {habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah"}</span>}
           {habit.difficulty && <span className="habit-detail-tag">Kesulitan {habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah"}</span>}
           {habit.groupName && <span className="habit-detail-tag">{habit.groupName}</span>}
+          {habit.schedule && habit.schedule.kind !== "daily" && <span className="habit-detail-tag">Jadwal {scheduleLabel(habit.schedule)}</span>}
         </div>
         {amountHabit && <div className="habit-amount-progress"><div className="habit-amount-caption"><strong>{current} / {target} {habit.unit || "unit"}</strong><span>{percentage}%</span></div><div className="module-progress-track"><span style={{ width: `${percentage}%` }} /></div></div>}
         {avoid && <small className="habit-kind-note">Streak dihitung pada hari berhasil menghindari kebiasaan ini.</small>}
