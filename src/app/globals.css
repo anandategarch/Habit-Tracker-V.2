@@ -2416,3 +2416,20 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
     transition:none !important;
   }
 }
+
+
+/* Splash, loading and install surfaces use the same Rutina brand palette */
+.workspace-loading-brand { color:var(--ink); }
+.workspace-loading-brand .brand-mark { color:#fff; background:linear-gradient(145deg,#927ff7,#5948c8); box-shadow:0 8px 20px rgba(105,87,218,.22); }
+.workspace-loading-brand > strong > span { color:#8a79ef; }
+.workspace-loading-spinner { border-color:var(--line); border-top-color:#7563e8; }
+.workspace-loading p { color:var(--ink-soft); }
+.workspace-loading small { color:var(--muted); }
+.tree-splash { background:radial-gradient(ellipse at 50% 42%,rgba(220,215,255,.8),transparent 45%),#f5f5fa; }
+.tree-splash-kicker { color:#817bb0; }
+.tree-splash-copy h1 { color:#5141c0; }
+.tree-splash-copy h1 span { color:#9a8df2; }
+.tree-splash-copy p { color:#79778f; }
+.tree-splash-skip { border-color:#e3e0f5; color:#5948c8; background:rgba(255,255,255,.84); }
+.pwa-install-trigger { color:var(--module-accent); }
+.pwa-help-card { border-color:var(--line); box-shadow:var(--shadow-float); }
