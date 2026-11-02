@@ -257,14 +257,15 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
   const day = Number(today().slice(8, 10));
   const days = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0).getDate();
   const projection = day ? Math.round(monthExpenses / day * days) : 0;
-  const walletBalance = (wallet: Wallet) => {
-    const selected = transactions.filter((item) => item.walletId === wallet.id);
+  const walletBalanceAt = (wallet: Wallet, cutoff: string) => {
+    const selected = transactions.filter((item) => item.walletId === wallet.id && item.date <= cutoff);
     const income = selected.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
     const expense = selected.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
-    const sent = finance.transfers.filter((item) => item.fromWalletId === wallet.id).reduce((sum, item) => sum + item.amount, 0);
-    const received = finance.transfers.filter((item) => item.toWalletId === wallet.id).reduce((sum, item) => sum + item.amount, 0);
+    const sent = finance.transfers.filter((item) => item.fromWalletId === wallet.id && item.date <= cutoff).reduce((sum, item) => sum + item.amount, 0);
+    const received = finance.transfers.filter((item) => item.toWalletId === wallet.id && item.date <= cutoff).reduce((sum, item) => sum + item.amount, 0);
     return wallet.openingBalance + income - expense - sent + received;
   };
+  const walletBalance = (wallet: Wallet) => walletBalanceAt(wallet, today());
   function addWallet(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const name = String(data.get("name") || "").trim(); if (!name) return; const item: Wallet = { id: id(), name, type: String(data.get("type") || "cash") as Wallet["type"], openingBalance: Math.max(0, Number(data.get("balance")) || 0) }; update((current) => ({ ...current, wallets: [...current.wallets, item] })); event.currentTarget.reset(); }
   function addTransfer(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const fromWalletId = String(data.get("from") || ""); const toWalletId = String(data.get("to") || ""); const amount = Math.round(Number(data.get("amount"))); if (!fromWalletId || !toWalletId || fromWalletId === toWalletId || amount <= 0) return; const item: MoneyTransfer = { id: id(), fromWalletId, toWalletId, amount, date: String(data.get("date") || today()), note: String(data.get("note") || "") }; update((current) => ({ ...current, transfers: [item, ...current.transfers] })); event.currentTarget.reset(); }
   function addRecurring(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); const amount = Math.round(Number(data.get("amount"))); if (!title || amount <= 0) return; const item: RecurringTransaction = { id: id(), title, amount, type: String(data.get("type") || "expense") as RecurringTransaction["type"], category: String(data.get("category") || "Tagihan"), frequency: String(data.get("frequency") || "monthly") as RecurringTransaction["frequency"], nextDate: String(data.get("nextDate") || today()), active: true }; update((current) => ({ ...current, recurring: [item, ...current.recurring] })); event.currentTarget.reset(); }
@@ -277,6 +278,18 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
     for (const item of transactions.filter((transaction) => transaction.type === "expense" && transaction.date.slice(0, 7) === month)) result.set(item.category, (result.get(item.category) ?? 0) + item.amount);
     return [...result.entries()].sort((a, b) => b[1] - a[1]);
   }, [transactions, month]);
+  const netWorthHistory = useMemo(() => {
+    const [year, monthNumber] = today().split("-").map(Number);
+    return Array.from({ length: 6 }, (_, index) => {
+      const offset = 5 - index;
+      const monthStartDate = new Date(Date.UTC(year, monthNumber - 1 - offset, 1));
+      const monthEndDate = new Date(Date.UTC(year, monthNumber - offset, 0));
+      const monthStart = `${monthStartDate.getUTCFullYear()}-${String(monthStartDate.getUTCMonth()+1).padStart(2,"0")}-01`;
+      const monthEnd = offset === 0 ? today() : monthEndDate.toISOString().slice(0, 10);
+      const amount = finance.wallets.reduce((sum, wallet) => sum + walletBalanceAt(wallet, monthEnd), 0);
+      return { month: monthStart, monthEnd, amount };
+    });
+  }, [finance.wallets, finance.transfers, transactions, walletBalanceAt]);
   const heatmapDays = useMemo(() => {
     const values: Array<{ date: string; amount: number }> = [];
     const formatter = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" });
@@ -320,6 +333,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
     {tab === "weekly" && <div className="module-two-col"><form className="form-grid" onSubmit={addWeekly}><Field label="Kategori"><select className={field} name="category"><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lifestyle</option><option>Kesehatan</option><option>Lainnya</option></select></Field><Field label="Batas 7 hari (Rp)"><input className={field} name="limit" type="number" min="0" required /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan budget mingguan</PrimaryButton></form><div className="module-list">{finance.weeklyBudgets.map((budget) => { const since = new Date(); since.setDate(since.getDate() - 6); const start = `${since.getFullYear()}-${String(since.getMonth()+1).padStart(2,"0")}-${String(since.getDate()).padStart(2,"0")}`; const spent = transactions.filter((item) => item.type === "expense" && item.category === budget.category && item.date >= start && item.date <= today()).reduce((sum, item) => sum + item.amount, 0); const percent = budget.limit ? Math.round(spent / budget.limit * 100) : (spent ? 100 : 0); return <article className="module-item" key={budget.category}><div className="module-item-top"><strong>{budget.category}</strong><button className="module-icon-action danger" onClick={() => update((current) => ({ ...current, weeklyBudgets: current.weeklyBudgets.filter((item) => item.category !== budget.category) }))} aria-label="Hapus budget mingguan"><Trash2 size={14} /></button></div><p>{formatCompactRupiah(spent)} / {formatCompactRupiah(budget.limit)} · {percent}%</p><div className="module-progress-track"><span style={{ width: `${Math.min(100, percent)}%` }} /></div></article>; })}</div></div>}
     <div className="finance-recap"><SectionHeading title="Rekap harian" caption="Pergerakan transaksi dan pengeluaran dalam 7 hari terakhir" /><div className="finance-recap-grid"><div><small>PEMASUKAN HARI INI</small><strong className="income">{formatCompactRupiah(todayIncome)}</strong></div><div><small>PENGELUARAN HARI INI</small><strong className="expense">{formatCompactRupiah(todayExpense)}</strong></div><div><small>PENGELUARAN 7 HARI</small><strong>{formatCompactRupiah(weeklyExpense)}</strong></div></div></div>
     <div className="finance-heatmap"><SectionHeading title="Spending heatmap" caption="Intensitas pengeluaran harian selama 30 hari terakhir" /><div className="finance-heatmap-grid">{heatmapDays.map((item) => <div key={item.date} className="finance-heatmap-cell" title={`${formatDate(item.date)} · ${formatCompactRupiah(item.amount)}`} aria-label={`${formatDate(item.date)} pengeluaran ${formatCompactRupiah(item.amount)}`} style={{ opacity: item.amount === 0 ? .16 : .25 + item.amount / maxDailySpend * .75 }} />)}</div><div className="finance-heatmap-legend"><span>Lebih rendah</span><i /><i /><i /><i /><span>Lebih tinggi</span></div></div>
+    <div className="wallet-history"><SectionHeading title="Riwayat saldo bersih" caption="Dihitung dari saldo awal, transaksi dan transfer yang ditautkan ke dompet; bukan snapshot manual." />{finance.wallets.length ? <div className="wallet-history-chart">{netWorthHistory.map((item) => { const max = Math.max(1, ...netWorthHistory.map((entry) => Math.abs(entry.amount))); const label = new Intl.DateTimeFormat("id-ID", { month: "short" }).format(new Date(`${item.month}T00:00:00`)); return <div className="wallet-history-column" key={item.month} title={`${formatDate(item.monthEnd)} · ${formatCompactRupiah(item.amount)}`}><strong>{formatCompactRupiah(item.amount)}</strong><div><span style={{ height: `${Math.max(4, Math.abs(item.amount) / max * 100)}%` }} /></div><small>{label}</small></div>; })}</div> : <p className="module-muted">Tambahkan dompet dan tautkan transaksi untuk membangun riwayat saldo.</p>}</div>
     <div className="module-category-explorer"><SectionHeading title="Eksplorasi kategori" caption="Akumulasi pengeluaran pada bulan berjalan" />{categorySpend.length ? categorySpend.map(([category, amount]) => <div className="module-inline-meta" key={category}><span>{category}</span><strong>{formatCompactRupiah(amount)}</strong></div>) : <p className="module-muted">Belum ada pengeluaran bulan ini.</p>}</div>
   </section>;
 }
