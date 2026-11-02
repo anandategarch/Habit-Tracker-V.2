@@ -1419,3 +1419,37 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .tree-illustration { width: 58px; height: 58px; font-size: 31px; }
   .module-inline-meta { align-items: flex-start; flex-wrap: wrap; }
 }
+
+.habit-row-actions { display:flex; align-items:center; gap:7px; flex:none; }
+.habit-detail-tag { display:inline-flex; align-items:center; width:max-content; padding:2px 6px; border-radius:999px; color:var(--muted); background:var(--surface-soft); font-size:9px; }
+.habit-detail-tag.priority-high { color:var(--danger); background:#f8e9e4; }
+.habit-detail-tag.priority-medium { color:#94672b; background:#f8efdf; }
+.habit-amount-progress { display:grid; gap:5px; max-width:240px; margin-top:7px; }
+.habit-amount-caption { display:flex; justify-content:space-between; color:var(--muted); font-size:10px; }
+.habit-amount-stepper { display:flex; align-items:center; gap:4px; }
+.habit-amount-stepper button { width:29px; height:29px; border:1px solid var(--line); border-radius:9px; color:var(--primary); background:var(--surface); font-size:18px; line-height:1; }
+.habit-amount-stepper button:disabled { opacity:.4; cursor:not-allowed; }
+.habit-time-track { border:1px solid var(--line); border-radius:8px; padding:5px 7px; color:var(--muted); background:var(--surface); font-size:9px; font-weight:750; }
+.habit-kind-note { display:block; margin-top:5px; color:var(--muted); font-size:10px; }
+.habit-draggable { cursor:grab; }
+.habit-draggable:active { cursor:grabbing; }
+.finance-recap { margin-top:18px; padding-top:15px; border-top:1px solid var(--line); }
+.finance-recap-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.finance-recap-grid > div { display:grid; gap:5px; padding:12px; border-radius:12px; background:var(--surface-soft); }
+.finance-recap-grid small { color:var(--muted); font-size:9px; font-weight:750; }
+.finance-recap-grid strong { color:var(--ink); font-size:13px; }
+.finance-recap-grid strong.income { color:#32805a; }
+.finance-recap-grid strong.expense { color:var(--danger); }
+.finance-heatmap { display:grid; gap:9px; margin-top:18px; padding-top:15px; border-top:1px solid var(--line); }
+.finance-heatmap-grid { display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:5px; }
+.finance-heatmap-cell { aspect-ratio:1; border-radius:5px; background:var(--primary); }
+.finance-heatmap-legend { display:flex; align-items:center; gap:5px; color:var(--muted); font-size:9px; }
+.finance-heatmap-legend i { width:10px; height:10px; border-radius:3px; background:var(--primary); opacity:.2; }
+.finance-heatmap-legend i:nth-of-type(2) { opacity:.4; }
+.finance-heatmap-legend i:nth-of-type(3) { opacity:.65; }
+.finance-heatmap-legend i:nth-of-type(4) { opacity:1; }
+@media (max-width:680px) {
+ .finance-recap-grid { grid-template-columns:1fr; }
+ .finance-heatmap-grid { gap:4px; }
+ .habit-row-actions { flex-direction:column; }
+}

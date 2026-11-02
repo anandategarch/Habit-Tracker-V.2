@@ -2,6 +2,10 @@ export type TabId = "home" | "habits" | "finance" | "calendar" | "insights" | "g
 
 export type HabitCategory = "Mindfulness" | "Health" | "Learning" | "Personal";
 
+export type HabitKind = "normal" | "avoid" | "amount";
+export type HabitPriority = "low" | "medium" | "high";
+export type HabitDifficulty = "easy" | "medium" | "hard";
+
 export interface Habit {
   id: string;
   title: string;
@@ -11,6 +15,14 @@ export interface Habit {
   completed: boolean;
   icon: "book" | "water" | "movement" | "mind" | "write";
   streak: number;
+  kind?: HabitKind;
+  targetAmount?: number;
+  currentAmount?: number;
+  unit?: string;
+  priority?: HabitPriority;
+  difficulty?: HabitDifficulty;
+  groupName?: string;
+  timeSpentMinutes?: number;
 }
 
 export type TransactionType = "income" | "expense";

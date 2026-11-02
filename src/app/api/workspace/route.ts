@@ -24,7 +24,15 @@ function isHabit(value: unknown): value is Habit {
     typeof value.duration === "number" && Number.isInteger(value.duration) && value.duration > 0 &&
     typeof value.completed === "boolean" &&
     (value.icon === "book" || value.icon === "water" || value.icon === "movement" || value.icon === "mind" || value.icon === "write") &&
-    typeof value.streak === "number" && Number.isInteger(value.streak) && value.streak >= 0
+    typeof value.streak === "number" && Number.isInteger(value.streak) && value.streak >= 0 &&
+    (value.kind === undefined || ["normal", "avoid", "amount"].includes(String(value.kind))) &&
+    (value.targetAmount === undefined || (typeof value.targetAmount === "number" && Number.isFinite(value.targetAmount) && value.targetAmount > 0)) &&
+    (value.currentAmount === undefined || (typeof value.currentAmount === "number" && Number.isFinite(value.currentAmount) && value.currentAmount >= 0)) &&
+    (value.unit === undefined || (typeof value.unit === "string" && value.unit.length <= 30)) &&
+    (value.priority === undefined || ["low", "medium", "high"].includes(String(value.priority))) &&
+    (value.difficulty === undefined || ["easy", "medium", "hard"].includes(String(value.difficulty))) &&
+    (value.groupName === undefined || (typeof value.groupName === "string" && value.groupName.length <= 60)) &&
+    (value.timeSpentMinutes === undefined || (typeof value.timeSpentMinutes === "number" && Number.isInteger(value.timeSpentMinutes) && value.timeSpentMinutes >= 0 && value.timeSpentMinutes <= 100000))
   );
 }
 

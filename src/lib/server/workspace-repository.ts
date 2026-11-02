@@ -26,7 +26,7 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
   await ensureSchema();
   const client = getTursoClient();
 
-  const [habitResult, transactionResult, budgetResult, metadataResult] = await Promise.all([
+  const [habitResult, transactionResult, budgetResult, metadataResult, habitMetadataResult] = await Promise.all([
     client.execute({
       sql: `SELECT
         h.id, h.title, h.category, h.time, h.duration, h.icon, h.streak,
@@ -42,19 +42,30 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
       ORDER BY transaction_date DESC, created_at DESC`),
     client.execute("SELECT category, monthly_limit FROM budgets ORDER BY category ASC"),
     client.execute("SELECT transaction_id, wallet_id, tags_json, split_group_id FROM transaction_metadata"),
+    client.execute("SELECT habit_id, payload FROM habit_metadata"),
   ]);
   const metadata = new Map(metadataResult.rows.map((row) => [String(row.transaction_id), row]));
+  const habitMetadata = new Map(habitMetadataResult.rows.map((row) => [String(row.habit_id), row]));
 
-  const habits: Habit[] = habitResult.rows.map((row) => ({
-    id: String(row.id),
-    title: String(row.title),
-    category: String(row.category) as Habit["category"],
-    time: String(row.time),
-    duration: asNumber(row.duration),
-    icon: String(row.icon) as Habit["icon"],
-    streak: asNumber(row.streak),
-    completed: asNumber(row.completed) === 1,
-  }));
+  const habits: Habit[] = habitResult.rows.map((row) => {
+    const detail = habitMetadata.get(String(row.id));
+    let extra: Record<string, unknown> = {};
+    try { const parsed = JSON.parse(String(detail?.payload ?? "{}")); if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) extra = parsed as Record<string, unknown>; } catch { extra = {}; }
+    return {
+      id: String(row.id), title: String(row.title),
+      category: String(row.category) as Habit["category"], time: String(row.time),
+      duration: asNumber(row.duration), icon: String(row.icon) as Habit["icon"],
+      streak: asNumber(row.streak), completed: asNumber(row.completed) === 1,
+      ...(extra.kind ? { kind: extra.kind as Habit["kind"] } : {}),
+      ...(typeof extra.targetAmount === "number" ? { targetAmount: extra.targetAmount } : {}),
+      ...(typeof extra.currentAmount === "number" ? { currentAmount: extra.currentAmount } : {}),
+      ...(typeof extra.unit === "string" ? { unit: extra.unit } : {}),
+      ...(extra.priority ? { priority: extra.priority as Habit["priority"] } : {}),
+      ...(extra.difficulty ? { difficulty: extra.difficulty as Habit["difficulty"] } : {}),
+      ...(typeof extra.groupName === "string" ? { groupName: extra.groupName } : {}),
+      ...(typeof extra.timeSpentMinutes === "number" ? { timeSpentMinutes: extra.timeSpentMinutes } : {}),
+    };
+  });
 
   const transactions: Transaction[] = transactionResult.rows.map((row) => {
     const detail = metadata.get(String(row.id));
@@ -111,6 +122,17 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
           habit.id, habit.title, habit.category, habit.time, habit.duration,
           habit.icon, habit.streak, index,
         ],
+      });
+      const habitExtra = {
+        kind: habit.kind ?? "normal", targetAmount: habit.targetAmount ?? null,
+        currentAmount: habit.currentAmount ?? 0, unit: habit.unit ?? "",
+        priority: habit.priority ?? "medium", difficulty: habit.difficulty ?? "easy",
+        groupName: habit.groupName ?? "", timeSpentMinutes: habit.timeSpentMinutes ?? 0,
+      };
+      await transaction.execute({
+        sql: `INSERT INTO habit_metadata (habit_id, payload, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(habit_id) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`,
+        args: [habit.id, JSON.stringify(habitExtra)],
       });
     }
 
