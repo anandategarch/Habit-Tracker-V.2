@@ -73,6 +73,7 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
       ...(extra.difficulty ? { difficulty: extra.difficulty as Habit["difficulty"] } : {}),
       ...(typeof extra.groupName === "string" ? { groupName: extra.groupName } : {}),
       timeSpentMinutes: daily ? asNumber(daily.time_spent_minutes) : 0,
+      ...(extra.schedule && typeof extra.schedule === "object" ? { schedule: extra.schedule as Habit["schedule"] } : {}),
     };
   });
 
@@ -137,6 +138,7 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
         currentAmount: habit.currentAmount ?? 0, unit: habit.unit ?? "",
         priority: habit.priority ?? "medium", difficulty: habit.difficulty ?? "easy",
         groupName: habit.groupName ?? "", timeSpentMinutes: habit.timeSpentMinutes ?? 0,
+        schedule: habit.schedule ?? { kind: "daily" },
       };
       await transaction.execute({
         sql: `INSERT INTO habit_metadata (habit_id, payload, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)

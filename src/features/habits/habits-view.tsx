@@ -4,6 +4,8 @@ import { useMemo, useState, type CSSProperties } from "react";
 import { ListChecks, ListFilter, Plus, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { summarizeHabits } from "@/lib/habits";
+import { isScheduledOn } from "@/lib/habit-schedule";
+import { todayISO } from "@/lib/format";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 
 type CompletionFilter = "all" | "pending" | "completed";
@@ -14,15 +16,18 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
   const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
   const [query, setQuery] = useState("");
   const [draggedId, setDraggedId] = useState<string | null>(null);
-  const { completed, total, progress, longestStreak } = summarizeHabits(habits);
+  const [showAllSchedules, setShowAllSchedules] = useState(false);
+  const today = todayISO();
+  const scheduledHabits = showAllSchedules ? habits : habits.filter((habit) => isScheduledOn(habit.schedule, today));
+  const { completed, total, progress, longestStreak } = summarizeHabits(scheduledHabits);
 
   const filteredHabits = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
-    return [...habits]
+    return [...scheduledHabits]
       .filter((habit) => completionFilter === "all" || (completionFilter === "pending" ? !habit.completed : habit.completed))
       .filter((habit) => categoryFilter === "Semua" || habit.category === categoryFilter)
       .filter((habit) => !normalizedQuery || `${habit.title} ${habit.category} ${habit.groupName ?? ""}`.toLocaleLowerCase("id-ID").includes(normalizedQuery));
-  }, [habits, completionFilter, categoryFilter, query]);
+  }, [scheduledHabits, completionFilter, categoryFilter, query]);
 
   return (
     <>
@@ -55,8 +60,9 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
       </div>
 
       <section className="card card-pad habits-panel">
-        <SectionHeading title="Semua kebiasaan" caption={`${total} kebiasaan tersimpan · ${completed} selesai hari ini`} />
+        <SectionHeading title="Semua kebiasaan" caption={`${scheduledHabits.length} kebiasaan ${showAllSchedules ? "ditampilkan" : "terjadwal hari ini"} · ${completed} selesai`} />
         <div className="habit-toolbar">
+          <div className="schedule-view-toggle" role="group" aria-label="Tampilan jadwal"><button type="button" className={!showAllSchedules ? "active" : ""} aria-pressed={!showAllSchedules} onClick={() => setShowAllSchedules(false)}>Terjadwal hari ini</button><button type="button" className={showAllSchedules ? "active" : ""} aria-pressed={showAllSchedules} onClick={() => setShowAllSchedules(true)}>Semua jadwal</button></div>
           <label className="habit-search">
             <Search size={16} />
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari kebiasaan…" aria-label="Cari kebiasaan" />

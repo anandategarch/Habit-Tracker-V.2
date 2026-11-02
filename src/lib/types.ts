@@ -5,6 +5,10 @@ export type HabitCategory = "Mindfulness" | "Health" | "Learning" | "Personal";
 export type HabitKind = "normal" | "avoid" | "amount";
 export type HabitPriority = "low" | "medium" | "high";
 export type HabitDifficulty = "easy" | "medium" | "hard";
+export type HabitSchedule =
+  | { kind: "daily" }
+  | { kind: "weekly"; days: number[] }
+  | { kind: "monthly"; dates: number[] };
 
 export interface Habit {
   id: string;
@@ -23,6 +27,7 @@ export interface Habit {
   difficulty?: HabitDifficulty;
   groupName?: string;
   timeSpentMinutes?: number;
+  schedule?: HabitSchedule;
 }
 
 export type TransactionType = "income" | "expense";
