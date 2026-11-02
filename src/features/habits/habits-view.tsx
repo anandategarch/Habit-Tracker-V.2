@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCheck, ListFilter, Plus, Search, Sparkles } from "lucide-react";
+import { ListChecks, ListFilter, Plus, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { summarizeHabits } from "@/lib/habits";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
@@ -85,7 +85,7 @@ export function HabitsView({ habits, onToggle, onAdd }: { habits: Habit[]; onTog
         </div>
         {filteredHabits.length === 0 && (
           <EmptyState
-            icon={query ? Search : CheckCheck}
+            icon={query ? Search : ListChecks}
             title={total === 0 ? "Belum ada kebiasaan" : "Tidak ada kebiasaan yang cocok"}
             description={total === 0 ? "Mulai dari hal sederhana yang bisa kamu ulangi setiap hari." : "Ubah kata kunci atau filter untuk melihat kebiasaan lainnya."}
             action={total === 0 ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Tambah kebiasaan</PrimaryButton> : undefined}
