@@ -40,7 +40,8 @@ function weekStart(ymd: string): string {
 function stageForWeeklyXp(xp: number) {
   let index = 0;
   for (let i = 0; i < STAGES.length; i += 1) if (xp >= STAGES[i].threshold) index = i;
-  return { ...STAGES[index], index, xpToNext: STAGES[index].next === null ? null : Math.max(0, STAGES[index].next - xp), progress: STAGES[index].next === null ? 100 : Math.min(100, Math.max(0, ((xp - STAGES[index].threshold) / (STAGES[index].next - STAGES[index].threshold)) * 100)) };
+  const nextThreshold = STAGES[index].next;
+  return { ...STAGES[index], index, xpToNext: nextThreshold === null ? null : Math.max(0, nextThreshold - xp), progress: nextThreshold === null ? 100 : Math.min(100, Math.max(0, ((xp - STAGES[index].threshold) / (nextThreshold - STAGES[index].threshold)) * 100)) };
 }
 
 export async function GET() {
