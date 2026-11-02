@@ -571,3 +571,26 @@ button { transform-origin: center; }
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Fine-grained feedback for controls and data visualizations */
+body {
+  background-image:
+    radial-gradient(ellipse at 100% 0%, rgba(223, 235, 219, .34), transparent 34%),
+    radial-gradient(ellipse at 0% 76%, rgba(237, 243, 236, .24), transparent 38%);
+}
+.calendar-day {
+  transition: color 180ms var(--ease-rutina), background-color 180ms var(--ease-rutina),
+    border-color 180ms var(--ease-rutina), transform 180ms var(--ease-spring), box-shadow 180ms var(--ease-rutina);
+}
+.calendar-day.selected { animation: rutina-pop 280ms var(--ease-spring) both; box-shadow: 0 5px 13px rgba(39,86,66,.16); }
+.budget-fill { transition: width 680ms var(--ease-rutina), filter 240ms ease; }
+.search-field input:focus-visible { outline: 0; }
+.search-result:focus-visible, .search-hints button:focus-visible {
+  outline: 3px solid rgba(89,139,104,.34);
+  outline-offset: 2px;
+}
+.hero-card { isolation:isolate; }
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark svg, .hero-card::after { animation: none !important; }
+}
