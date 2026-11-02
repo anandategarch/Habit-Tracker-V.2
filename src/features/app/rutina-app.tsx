@@ -56,7 +56,7 @@ export function RutinaApp() {
     refreshWorkspace,
     isReady: workspaceReady,
   } = useWorkspace();
-  const { modules, updateModule } = useModules();
+  const { modules, updateModule, ready: modulesReady } = useModules();
 
   useEffect(() => {
     if (!toast) return;
@@ -150,7 +150,7 @@ export function RutinaApp() {
     setToast("Transaksi berhasil dicatat.");
   }
 
-  if (!workspaceReady) {
+  if (!workspaceReady || !modulesReady) {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
         <div className="workspace-loading-brand"><span className="brand-mark"><Sprout size={22} /></span><strong>rutina<span>.</span></strong></div>

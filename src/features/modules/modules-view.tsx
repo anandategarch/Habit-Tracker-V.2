@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Trash2, X } from "lucide-react";
-import { EmptyState, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
 import type { Transaction } from "@/lib/types";
 import type {
