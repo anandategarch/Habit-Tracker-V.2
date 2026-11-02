@@ -14,8 +14,11 @@ export const metadata: Metadata = {
     title: "Rutina",
   },
   icons: {
-    icon: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/icons/icon-192", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-180", sizes: "180x180", type: "image/png" }],
   },
 };
 
