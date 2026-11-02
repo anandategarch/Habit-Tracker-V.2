@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus, Sun, Moon, Monitor,
+  Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus, Sun, Moon, Monitor,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import { RutinaMark } from "@/components/ui/rutina-mark";
@@ -159,6 +159,7 @@ export function RutinaApp() {
     local: { label: "Mode lokal", detail: "Data sementara tersimpan di browser", className: "is-local" },
   };
   const sync = syncPresentation[syncStatus as SyncStatus];
+  const pendingHabitCount = todayHabits.filter((habit) => !habit.completed).length;
 
   function toggleHabit(id: string) {
     if (modules.settings.vacationMode) return;
@@ -457,12 +458,22 @@ export function RutinaApp() {
               <span>{themeLabel}</span>
             </button>
             <PwaInstallButton />
+            <button
+              type="button"
+              className="topbar-bell"
+              onClick={() => { setActiveTab("habits"); setMoreOpen(false); setQuickActionOpen(false); }}
+              aria-label={pendingHabitCount > 0 ? `${pendingHabitCount} kebiasaan belum selesai hari ini. Buka halaman kebiasaan.` : "Semua kebiasaan hari ini sudah selesai. Buka halaman kebiasaan."}
+              title={pendingHabitCount > 0 ? `${pendingHabitCount} kebiasaan menunggu` : "Tidak ada kebiasaan tertunda"}
+            >
+              <Bell size={17} />
+              {pendingHabitCount > 0 && <span className="topbar-bell-badge" aria-hidden="true">{pendingHabitCount > 9 ? "9+" : pendingHabitCount}</span>}
+            </button>
             <div className="avatar topbar-avatar" aria-label="Workspace pribadi">R</div>
           </div>
         </header>
 
         <div className="content-wrap page-transition" key={activeTab}>
-          {activeTab === "home" && <DashboardView habits={todayHabits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
+          {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} onAddTransaction={() => setModal("transaction")} onOpenFeatures={() => { setQuickActionOpen(false); setMoreOpen(true); }} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
           {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}

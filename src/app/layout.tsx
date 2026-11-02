@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { PwaRegister } from "@/components/pwa/pwa-register";
 import { TreeSplash } from "@/components/pwa/tree-splash";
+import "@fontsource-variable/nunito";
 import "./globals.css";
 import "./rutina-botanical.css";
 
