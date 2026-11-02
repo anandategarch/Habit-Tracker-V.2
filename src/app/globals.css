@@ -657,7 +657,7 @@ body {
   animation: tree-splash-out 520ms ease-in 3.35s both;
 }
 .tree-splash-content {
-  display: grid; justify-items: center; width: min(100% - 36px, 390px);
+  display: grid; justify-items: center; width: min(calc(100% - 36px), 390px);
   padding: 18px 0 34px; text-align: center;
 }
 .tree-splash-art { display: block; width: min(76vw, 310px); height: auto; overflow: visible; }
