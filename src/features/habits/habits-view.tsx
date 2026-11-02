@@ -27,6 +27,20 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
   const [timeAnalysisError, setTimeAnalysisError] = useState("");
   const [timeAnalysisDays, setTimeAnalysisDays] = useState(30);
   const today = todayISO();
+  const todayParts = today.split("-").map(Number);
+  const todayUtc = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2]));
+  const weekStartUtc = new Date(todayUtc);
+  weekStartUtc.setUTCDate(todayUtc.getUTCDate() - ((todayUtc.getUTCDay() + 6) % 7));
+  const weekDays = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(weekStartUtc);
+    date.setUTCDate(weekStartUtc.getUTCDate() + index);
+    const iso = date.toISOString().slice(0, 10);
+    return {
+      iso,
+      day: new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(iso + "T12:00:00+07:00")),
+      number: date.getUTCDate(),
+    };
+  });
   async function loadTimeAnalysis(habitId: string, days = timeAnalysisDays) {
     setTimeAnalysisLoading(true);
     setTimeAnalysisError("");
@@ -55,7 +69,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
   }, [scheduledHabits, completionFilter, categoryFilter, groupFilter, query]);
 
   return (
-    <>
+    <div className="habit-page">
       <PageIntro
         eyebrow="KEBIASAAN HARIAN"
         title="Bangun ritmemu."
@@ -64,6 +78,15 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
       />
 
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Pencatatan habit, progres amount, dan waktu sedang dijeda. Data sebelumnya tetap tersimpan.</div>}
+      <div className="habit-week-strip" aria-label="Kalender minggu ini">
+        <div className="habit-week-strip-heading"><span>MINGGU INI</span><strong>{new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date(today + "T12:00:00+07:00"))}</strong></div>
+        <div className="habit-week-days">
+          {weekDays.map((day) => <div className={"habit-week-day" + (day.iso === today ? " is-today" : "")} key={day.iso}>
+            <small>{day.day}</small><strong>{day.number}</strong><span />
+          </div>)}
+        </div>
+      </div>
+
       <div className="habit-overview-grid">
         <section className="card habit-progress-card">
           <div className="habit-progress-copy">
@@ -133,6 +156,6 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
           />
         )}
       </section>
-    </>
+    </div>
   );
 }
