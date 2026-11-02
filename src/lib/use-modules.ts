@@ -35,7 +35,6 @@ export function useModules() {
   useEffect(() => {
     let cancelled = false;
     const local = readLocal();
-    setModules(local);
 
     void (async () => {
       try {
@@ -74,6 +73,7 @@ export function useModules() {
           }).catch(() => undefined);
         }
       } catch {
+        if (!cancelled) setModules(local);
         setRemoteReady(false);
       } finally {
         if (!cancelled) setReady(true);

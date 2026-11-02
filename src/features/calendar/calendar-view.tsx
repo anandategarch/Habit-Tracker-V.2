@@ -64,12 +64,14 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   const selectedLabel = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
     .format(new Date(`${selectedDate}T00:00:00`));
 
+  const currentHistory = loadedMonthKey === monthKey ? history : [];
+  const currentCheckins = loadedMonthKey === monthKey ? checkins : [];
   const historyByDate = useMemo(() => {
     const result = new Map<string, HistoryRecord[]>();
-    for (const item of history) result.set(item.date, [...(result.get(item.date) ?? []), item]);
+    for (const item of currentHistory) result.set(item.date, [...(result.get(item.date) ?? []), item]);
     return result;
-  }, [history]);
-  const checkinByDate = useMemo(() => new Map(checkins.map((item) => [item.date, item])), [checkins]);
+  }, [currentHistory]);
+  const checkinByDate = useMemo(() => new Map(currentCheckins.map((item) => [item.date, item])), [currentCheckins]);
   const selectedRecords = selectedIsToday ? habits.filter((habit) => habit.completed).map((habit) => ({ habitId: habit.id, title: habit.title, date: selectedDate })) : historyByDate.get(selectedDate) ?? [];
   const selectedCheckin = checkinByDate.get(selectedDate);
   const completedToday = habits.filter((habit) => habit.completed).length;

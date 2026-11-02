@@ -41,7 +41,10 @@ export function ModulesView({ tab, modules, updateModule }: {
   if (tab === "goals") return <GoalsView modules={modules} updateModule={updateModule} />;
   if (tab === "checkin") return <CheckinView modules={modules} updateModule={updateModule} />;
   if (tab === "work") return <WorkView modules={modules} updateModule={updateModule} />;
-  if (tab === "wellness") return <WellnessView modules={modules} updateModule={updateModule} />;
+  if (tab === "wellness") {
+    const wellnessToday = modules.wellness.find((item) => item.date === today()) ?? null;
+    return <WellnessView key={JSON.stringify(wellnessToday)} modules={modules} updateModule={updateModule} />;
+  }
   if (tab === "training") return <TrainingView modules={modules} updateModule={updateModule} />;
   return <TreeView modules={modules} />;
 }
@@ -164,7 +167,6 @@ function WellnessView({ modules, updateModule }: { modules: WorkspaceModules; up
   const [weight, setWeight] = useState(current.weightKg?.toString() ?? "");
   const [protein, setProtein] = useState(String(current.proteinGrams));
   const [note, setNote] = useState(current.note);
-  useEffect(() => { setWeight(current.weightKg?.toString() ?? ""); setProtein(String(current.proteinGrams)); setNote(current.note); }, [current.weightKg, current.proteinGrams, current.note]);
   function save() {
     const next: WellnessEntry = { ...current, weightKg: weight ? Number(weight) : current.weightKg, proteinGrams: Math.max(0, Number(protein) || 0), note };
     updateModule("wellness", (items) => [next, ...items.filter((item) => item.date !== today())].sort((a, b) => b.date.localeCompare(a.date)));

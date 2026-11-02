@@ -75,14 +75,16 @@ export function RutinaApp() {
   }, [selectedTheme]);
 
   useEffect(() => {
+    let frame = 0;
     try {
       const saved = window.localStorage.getItem("rutina.v2.active-habit-timer");
       if (!saved) return;
       const timer = JSON.parse(saved) as { habitId?: unknown; startedAt?: unknown };
       if (typeof timer.habitId === "string" && typeof timer.startedAt === "number" && Date.now() - timer.startedAt >= 0 && Date.now() - timer.startedAt < 4 * 60 * 60 * 1000) {
-        setActiveHabitTimer({ habitId: timer.habitId, startedAt: timer.startedAt });
+        frame = window.requestAnimationFrame(() => setActiveHabitTimer({ habitId: timer.habitId as string, startedAt: timer.startedAt as number }));
       } else window.localStorage.removeItem("rutina.v2.active-habit-timer");
     } catch { window.localStorage.removeItem("rutina.v2.active-habit-timer"); }
+    return () => { if (frame) window.cancelAnimationFrame(frame); };
   }, []);
 
   useEffect(() => {
@@ -93,8 +95,9 @@ export function RutinaApp() {
 
   useEffect(() => {
     if (!workspaceReady || !activeHabitTimer || habits.some((habit) => habit.id === activeHabitTimer.habitId)) return;
-    setActiveHabitTimer(null);
+    const frame = window.requestAnimationFrame(() => setActiveHabitTimer(null));
     window.localStorage.removeItem("rutina.v2.active-habit-timer");
+    return () => window.cancelAnimationFrame(frame);
   }, [workspaceReady, habits, activeHabitTimer]);
 
   useEffect(() => {
