@@ -1,4 +1,5 @@
-import { ArrowRight, Check, Flame, Target, WalletCards } from "lucide-react";
+import { ArrowRight, Check, Flame, Plus, Target, WalletCards } from "lucide-react";
+import type { CSSProperties } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
