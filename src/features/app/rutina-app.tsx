@@ -45,6 +45,12 @@ const navigationGroups: { label: string; ids: TabId[] }[] = [
   { label: "System", ids: ["settings"] },
 ];
 
+const desktopNavigationGroups: { label: string; ids: TabId[] }[] = [
+  { label: "MENU UTAMA", ids: ["home", "habits", "finance", "calendar", "insights"] },
+  { label: "RUANG PERSONAL", ids: ["goals", "checkin", "work", "wellness", "training", "tree"] },
+  { label: "PREFERENSI", ids: ["settings"] },
+];
+
 type SyncStatus = "local" | "syncing" | "synced" | "error";
 
 export function RutinaApp() {
@@ -265,8 +271,32 @@ export function RutinaApp() {
       <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
         <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); setMoreOpen(false); }} aria-label="Rutina, kembali ke beranda">
           <span className="brand-mark"><AppIcon name="growth" size={23} /></span>
-          <span className="brand-copy"><span className="brand-name">rutina<span>.</span></span><span className="brand-sub">grow at your pace</span></span>
+          <span className="brand-copy"><span className="brand-name">Rutina</span><span className="brand-sub">grow at your pace</span></span>
         </a>
+
+        <nav className="desktop-expanded-nav" aria-label="Navigasi utama">
+          {desktopNavigationGroups.map(({ label, ids }) => (
+            <section className="desktop-nav-group" key={label}>
+              <div className="desktop-nav-label">{label}</div>
+              {ids.map((id) => {
+                const item = navigation.find((entry) => entry.id === id);
+                if (!item) return null;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`desktop-nav-link ${activeTab === item.id ? "active" : ""}`}
+                    aria-current={activeTab === item.id ? "page" : undefined}
+                    onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}
+                  >
+                    <AppIcon name={item.icon} size={18} />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </section>
+          ))}
+        </nav>
 
         <nav className="rail-primary-nav" aria-label="Akses cepat">
           {mobilePrimary.map(({ id, label, icon }) => (
@@ -370,6 +400,29 @@ export function RutinaApp() {
             </div>
           </div>
         </div>
+        <div className="desktop-sidebar-footer">
+          <div className="desktop-sidebar-note">
+            <span className="desktop-sidebar-note-icon"><AppIcon name="growth" size={17} /></span>
+            <p>Langkah kecil hari ini, membawa perubahan besar esok.</p>
+          </div>
+          <button
+            type="button"
+            className={`sync-card ${sync.className}`}
+            onClick={() => void refreshWorkspace()}
+            aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+            title={sync.detail}
+          >
+            <span className="sync-card-icon">
+              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
+            </span>
+            <span className="sync-card-copy"><strong>{sync.label}</strong><small>{sync.detail}</small></span>
+            <RefreshCw size={14} className="sync-refresh" />
+          </button>
+          <div className="profile-row">
+            <div className="avatar">R</div>
+            <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+          </div>
+        </div>
       </aside>
       {moreOpen && <button type="button" className="workspace-menu-scrim" aria-label="Tutup menu navigasi" onClick={() => setMoreOpen(false)} />}
 
@@ -377,7 +430,7 @@ export function RutinaApp() {
         <header className="topbar">
           <div className="mobile-brand">
             <span className="brand-mark"><AppIcon name="growth" size={19} /></span>
-            <span>rutina<span>.</span></span>
+            <span>Rutina</span>
           </div>
           <div className="topbar-context">
             <span className="topbar-context-dot" />
