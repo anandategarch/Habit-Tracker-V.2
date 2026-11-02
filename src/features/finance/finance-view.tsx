@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Activity, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Coffee, Heart, Plus, ReceiptText } from "lucide-react";
+import { Activity, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Coffee, Heart, Plus, Receipt } from "lucide-react";
 import type { Budget, Transaction } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
@@ -74,7 +74,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
           </div>
           {filteredTransactions.length === 0 && (
             <EmptyState
-              icon={ReceiptText}
+              icon={Receipt}
               title={transactions.length === 0 ? "Belum ada transaksi" : "Tidak ada transaksi pada filter ini"}
               description={transactions.length === 0 ? "Catat pemasukan atau pengeluaran pertama untuk mulai memahami arus uangmu." : "Coba pilih jenis transaksi yang lain."}
               action={transactions.length === 0 ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Catat transaksi</PrimaryButton> : undefined}
