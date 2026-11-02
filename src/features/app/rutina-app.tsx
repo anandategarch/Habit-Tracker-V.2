@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  CalendarDays, ChartLine, Cloud, CloudOff, Home,
-  ListChecks, LoaderCircle, RefreshCw, Search, Sprout, WalletCards,
+  CalendarDays, ChartLine, Cloud, CloudOff, Home, ListChecks, LoaderCircle,
+  RefreshCw, Search, Sprout, WalletCards, Target, BriefcaseBusiness,
+  HeartPulse, Dumbbell, ClipboardCheck, TreeDeciduous, Grid2X2, ChevronRight, Sun, Moon, Monitor, Settings,
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
+import { isScheduledOn, parseNumberList } from "@/lib/habit-schedule";
 import { summarizeTransactions } from "@/lib/finance";
 import { useWorkspace } from "@/lib/use-workspace";
 import { DashboardView } from "@/features/dashboard/dashboard-view";
@@ -17,6 +19,8 @@ import { InsightsView } from "@/features/insights/insights-view";
 import { EntryModal } from "@/components/ui/entry-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
 import { PwaInstallButton } from "@/components/pwa/install-button";
+import { useModules } from "@/lib/use-modules";
+import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 
 const navigation: { id: TabId; label: string; icon: typeof Home; description: string }[] = [
   { id: "home", label: "Beranda", icon: Home, description: "Ringkasan hari ini" },
@@ -24,7 +28,16 @@ const navigation: { id: TabId; label: string; icon: typeof Home; description: st
   { id: "finance", label: "Keuangan", icon: WalletCards, description: "Kelola arus uang" },
   { id: "calendar", label: "Kalender", icon: CalendarDays, description: "Lihat jadwal" },
   { id: "insights", label: "Insight", icon: ChartLine, description: "Pahami progres" },
+  { id: "goals", label: "Tujuan", icon: Target, description: "Goals dan milestones" },
+  { id: "checkin", label: "Check-in", icon: ClipboardCheck, description: "Mood, energi, dan jurnal" },
+  { id: "work", label: "Meja Kerja", icon: BriefcaseBusiness, description: "Task board, catatan, rutinitas" },
+  { id: "wellness", label: "Wellness", icon: HeartPulse, description: "Air, protein, dan berat badan" },
+  { id: "training", label: "Latihan", icon: Dumbbell, description: "Workout, program, dan kardio" },
+  { id: "tree", label: "Pohon", icon: TreeDeciduous, description: "Level dan perjalanan progres" },
+  { id: "settings", label: "Pengaturan", icon: Settings, description: "Backup dan preferensi data" },
 ];
+const mobilePrimary = navigation.filter((item) => ["home", "habits", "finance", "calendar"].includes(item.id));
+const mobileMore = navigation.filter((item) => !mobilePrimary.some((primary) => primary.id === item.id));
 
 type SyncStatus = "local" | "syncing" | "synced" | "error";
 
@@ -34,6 +47,9 @@ export function RutinaApp() {
   const [toast, setToast] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [activeHabitTimer, setActiveHabitTimer] = useState<{ habitId: string; startedAt: number } | null>(null);
+  const [timerNow, setTimerNow] = useState(() => Date.now());
   const {
     habits,
     transactions,
@@ -44,6 +60,47 @@ export function RutinaApp() {
     refreshWorkspace,
     isReady: workspaceReady,
   } = useWorkspace();
+  const { modules, updateModule, ready: modulesReady } = useModules();
+  const selectedTheme = modules.settings.theme;
+  const themeLabel = selectedTheme === "system" ? "Sistem" : selectedTheme === "dark" ? "Gelap" : "Terang";
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyTheme = () => {
+      const resolved = selectedTheme === "system" ? (media.matches ? "dark" : "light") : selectedTheme;
+      document.documentElement.dataset.theme = resolved;
+    };
+    applyTheme();
+    if (selectedTheme !== "system") return;
+    media.addEventListener("change", applyTheme);
+    return () => media.removeEventListener("change", applyTheme);
+  }, [selectedTheme]);
+
+  useEffect(() => {
+    let frame = 0;
+    try {
+      const saved = window.localStorage.getItem("rutina.v2.active-habit-timer");
+      if (!saved) return;
+      const timer = JSON.parse(saved) as { habitId?: unknown; startedAt?: unknown };
+      if (typeof timer.habitId === "string" && typeof timer.startedAt === "number" && Date.now() - timer.startedAt >= 0 && Date.now() - timer.startedAt < 4 * 60 * 60 * 1000) {
+        frame = window.requestAnimationFrame(() => setActiveHabitTimer({ habitId: timer.habitId as string, startedAt: timer.startedAt as number }));
+      } else window.localStorage.removeItem("rutina.v2.active-habit-timer");
+    } catch { window.localStorage.removeItem("rutina.v2.active-habit-timer"); }
+    return () => { if (frame) window.cancelAnimationFrame(frame); };
+  }, []);
+
+  useEffect(() => {
+    if (!activeHabitTimer) return;
+    const interval = window.setInterval(() => setTimerNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [activeHabitTimer]);
+
+  useEffect(() => {
+    if (!workspaceReady || !activeHabitTimer || habits.some((habit) => habit.id === activeHabitTimer.habitId)) return;
+    const frame = window.requestAnimationFrame(() => setActiveHabitTimer(null));
+    window.localStorage.removeItem("rutina.v2.active-habit-timer");
+    return () => window.cancelAnimationFrame(frame);
+  }, [workspaceReady, habits, activeHabitTimer]);
 
   useEffect(() => {
     if (!toast) return;
@@ -67,7 +124,9 @@ export function RutinaApp() {
     return () => window.removeEventListener("keydown", handleKeyboard);
   }, []);
 
-  const currentMonth = todayISO().slice(0, 7);
+  const todayKey = todayISO();
+  const todayHabits = useMemo(() => habits.filter((habit) => isScheduledOn(habit.schedule, todayKey)), [habits, todayKey]);
+  const currentMonth = todayKey.slice(0, 7);
   const monthTransactions = useMemo(
     () => transactions.filter((transaction) => transaction.date.slice(0, 7) === currentMonth),
     [transactions, currentMonth],
@@ -86,9 +145,32 @@ export function RutinaApp() {
   const sync = syncPresentation[syncStatus as SyncStatus];
 
   function toggleHabit(id: string) {
-    updateHabits((current) => current.map((habit) => habit.id === id
-      ? { ...habit, completed: !habit.completed }
-      : habit));
+    if (modules.settings.vacationMode) return;
+    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
+  }
+
+  function adjustHabit(id: string, delta: number) {
+    if (modules.settings.vacationMode) return;
+    updateHabits((current) => current.map((habit) => {
+      if (habit.id !== id || habit.kind !== "amount") return habit;
+      const currentAmount = Math.max(0, (habit.currentAmount ?? 0) + delta);
+      return { ...habit, currentAmount, completed: currentAmount >= (habit.targetAmount ?? 1) };
+    }));
+  }
+
+  function toggleHabitTimer(id: string) {
+    if (modules.settings.vacationMode) return;
+    if (activeHabitTimer) {
+      const elapsed = Math.max(0, Math.floor((Date.now() - activeHabitTimer.startedAt) / 1000));
+      const minutes = Math.floor(elapsed / 60);
+      if (minutes > 0) updateHabits((current) => current.map((habit) => habit.id === activeHabitTimer.habitId ? { ...habit, timeSpentMinutes: (habit.timeSpentMinutes ?? 0) + minutes } : habit));
+      setActiveHabitTimer(null);
+      window.localStorage.removeItem("rutina.v2.active-habit-timer");
+      if (activeHabitTimer.habitId === id) return;
+    }
+    const next = { habitId: id, startedAt: Date.now() };
+    setActiveHabitTimer(next);
+    window.localStorage.setItem("rutina.v2.active-habit-timer", JSON.stringify(next));
   }
 
   function submitHabit(event: FormEvent<HTMLFormElement>) {
@@ -96,6 +178,18 @@ export function RutinaApp() {
     const data = new FormData(event.currentTarget);
     const title = String(data.get("title") ?? "").trim();
     if (!title) return;
+
+    const scheduleKind = String(data.get("scheduleKind") || "daily");
+    let schedule: Habit["schedule"] = { kind: "daily" };
+    if (scheduleKind === "weekly") {
+      const days = parseNumberList(String(data.get("scheduleDays") || ""), 0, 6);
+      if (!days.length) { setToast("Pilih minimal satu hari untuk jadwal mingguan."); return; }
+      schedule = { kind: "weekly", days };
+    } else if (scheduleKind === "monthly") {
+      const dates = parseNumberList(String(data.get("scheduleDates") || ""), 1, 31);
+      if (!dates.length) { setToast("Pilih minimal satu tanggal untuk jadwal bulanan."); return; }
+      schedule = { kind: "monthly", dates };
+    }
 
     const category = String(data.get("category") ?? "Personal") as Habit["category"];
     const habit: Habit = {
@@ -107,6 +201,15 @@ export function RutinaApp() {
       completed: false,
       icon: category === "Health" ? "movement" : category === "Learning" ? "book" : category === "Mindfulness" ? "mind" : "write",
       streak: 0,
+      kind: String(data.get("kind") || "normal") as Habit["kind"],
+      targetAmount: Math.max(1, Number(data.get("targetAmount")) || 8),
+      currentAmount: 0,
+      unit: String(data.get("unit") || "unit").trim().slice(0, 30),
+      priority: String(data.get("priority") || "medium") as Habit["priority"],
+      difficulty: String(data.get("difficulty") || "easy") as Habit["difficulty"],
+      groupName: String(data.get("groupName") || "").trim().slice(0, 60),
+      timeSpentMinutes: 0,
+      schedule,
     };
 
     updateHabits((current) => [...current, habit]);
@@ -125,9 +228,11 @@ export function RutinaApp() {
       id: crypto.randomUUID(),
       title,
       type: String(data.get("type")) as TransactionType,
-      category: String(data.get("category")) as TransactionCategory,
+      category: (modules.finance.categoryRules.find((rule) => title.toLocaleLowerCase("id-ID").includes(rule.keyword.toLocaleLowerCase("id-ID")))?.category ?? String(data.get("category"))) as TransactionCategory,
       amount,
       date: String(data.get("date") || todayISO()),
+      ...(String(data.get("walletId") || "") ? { walletId: String(data.get("walletId")) } : {}),
+      ...(String(data.get("tags") || "").trim() ? { tags: String(data.get("tags")).split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 20) } : {}),
     };
 
     updateTransactions((current) => [transaction, ...current]);
@@ -135,7 +240,7 @@ export function RutinaApp() {
     setToast("Transaksi berhasil dicatat.");
   }
 
-  if (!workspaceReady) {
+  if (!workspaceReady || !modulesReady) {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
         <div className="workspace-loading-brand"><span className="brand-mark"><Sprout size={22} /></span><strong>rutina<span>.</span></strong></div>
@@ -223,22 +328,27 @@ export function RutinaApp() {
             >
               {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
             </button>
+            <button type="button" className="theme-toggle" onClick={() => updateModule("settings", (current) => ({ ...current, theme: current.theme === "light" ? "dark" : current.theme === "dark" ? "system" : "light" }))} aria-label={`Tema: ${themeLabel}. Ganti tema.`} title={`Tema: ${themeLabel}`}>
+              {selectedTheme === "system" ? <Monitor size={16} /> : selectedTheme === "dark" ? <Moon size={16} /> : <Sun size={16} />}
+              <span>{themeLabel}</span>
+            </button>
             <PwaInstallButton />
             <div className="avatar topbar-avatar" aria-label="Workspace pribadi">R</div>
           </div>
         </header>
 
         <div className="content-wrap page-transition" key={activeTab}>
-          {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAddHabit={() => setModal("habit")} />}
-          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdd={() => setModal("habit")} />}
-          {activeTab === "finance" && <FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} />}
+          {activeTab === "home" && <DashboardView habits={todayHabits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
+          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
+          {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
-          {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} />}
+          {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} checkins={modules.checkins} />}
+          {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree" || activeTab === "settings") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
         </div>
       </main>
 
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
-        {navigation.map(({ id, label, icon: Icon }) => (
+        {mobilePrimary.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             type="button"
@@ -250,9 +360,11 @@ export function RutinaApp() {
             <span>{label}</span>
           </button>
         ))}
+        <button type="button" className={moreOpen ? "active" : ""} aria-expanded={moreOpen} onClick={() => setMoreOpen((value) => !value)}><Grid2X2 size={19} /><span>Lainnya</span></button>
       </nav>
+      {moreOpen && <div className="mobile-more-menu" role="menu" aria-label="Modul lainnya">{mobileMore.map(({ id, label, icon: Icon }) => <button key={id} type="button" role="menuitem" onClick={() => { setActiveTab(id); setMoreOpen(false); }}><Icon size={17} /><span>{label}</span><ChevronRight size={14} /></button>)}</div>}
 
-      {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} />}
+      {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
       <SearchDialog
         open={searchOpen}
         query={searchQuery}

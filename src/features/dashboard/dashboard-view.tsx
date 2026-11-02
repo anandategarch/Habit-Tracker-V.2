@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Flame, Plus, Target, WalletCards } from "lucide-react";
+import { ArrowRight, Check, Flame, Plus, Target, WalletCards, HeartPulse, Moon } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah } from "@/lib/format";
@@ -8,18 +8,22 @@ import { FocusTimer } from "@/features/focus/focus-timer";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 
-export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit }: {
+export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin }: {
   habits: Habit[]; income: number; expense: number; onNavigate: (tab: TabId) => void;
-  onToggle: (id: string) => void; onAddHabit: () => void;
+  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; activeTimerId?: string | null; timerElapsedSeconds?: number; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
 }) {
   const now = new Date();
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
+    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta",
   }).format(now);
-  const greeting = now.getHours() < 11 ? "Selamat pagi." : now.getHours() < 15 ? "Selamat siang." : now.getHours() < 18 ? "Selamat sore." : "Selamat malam.";
+  const jakartaHour = Number(new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit", hourCycle: "h23", timeZone: "Asia/Jakarta",
+  }).format(now));
+  const greeting = jakartaHour < 11 ? "Selamat pagi." : jakartaHour < 15 ? "Selamat siang." : jakartaHour < 18 ? "Selamat sore." : "Selamat malam.";
   const { completed, progress, longestStreak } = summarizeHabits(habits);
   const pendingHabits = [...habits].filter((habit) => !habit.completed).sort((a, b) => a.time.localeCompare(b.time));
-  const upcomingHabit = pendingHabits.find((habit) => habit.time >= now.toTimeString().slice(0, 5)) ?? pendingHabits[0];
+  const jakartaClock = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Asia/Jakarta" }).format(now);
+  const upcomingHabit = pendingHabits.find((habit) => habit.time >= jakartaClock) ?? pendingHabits[0];
   const net = income - expense;
   const categoryCounts = categories.map((category) => ({
     category,
@@ -35,6 +39,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
         subtitle="Satu hari, satu langkah kecil yang berarti."
         action={<PrimaryButton onClick={onAddHabit}><Plus size={15} /> Tambah kebiasaan</PrimaryButton>}
       />
+      {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
       <div className="dashboard-grid">
         <div className="left-stack">
           <section className="hero-card">
@@ -58,6 +63,8 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
             <StatCard label="Selesai" value={String(completed)} foot="Habit hari ini" icon={Check} tone="green" />
             <StatCard label="Tersisa" value={String(pendingHabits.length)} foot="Langkah berikutnya" icon={Target} tone="amber" />
             <StatCard label="Streak terbaik" value={`${longestStreak} hari`} foot="Pada satu kebiasaan" icon={Flame} />
+            <StatCard label="Mood hari ini" value={dailyCheckin ? `${dailyCheckin.mood}/5` : "—"} foot={dailyCheckin ? "Dari daily check-in" : "Belum check-in"} icon={HeartPulse} />
+            <StatCard label="Tidur" value={dailyCheckin ? `${dailyCheckin.sleepHours} jam` : "—"} foot="Catatan tidur hari ini" icon={Moon} />
           </div>
 
           <section className="card card-pad">
@@ -69,7 +76,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
             {habits.length > 0 ? (
               <>
                 <div className="habit-list">
-                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} />)}
+                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTimerToggle={onTimerToggle} timerActive={activeTimerId === habit.id} timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0} paused={vacationMode} />)}
                 </div>
                 {habits.length > 4 && <button className="text-button list-more" type="button" onClick={() => onNavigate("habits")}>Lihat {habits.length - 4} kebiasaan lainnya <ArrowRight size={13} /></button>}
               </>
@@ -113,7 +120,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
               <>
                 <h2>{upcomingHabit.title}</h2>
                 <p>{upcomingHabit.time} · {upcomingHabit.duration} menit · {upcomingHabit.category}</p>
-                <button className="next-step-action" type="button" onClick={() => onToggle(upcomingHabit.id)}>
+                <button className="next-step-action" type="button" disabled={vacationMode} onClick={() => onToggle(upcomingHabit.id)}>
                   <Check size={15} /> Tandai selesai
                 </button>
               </>

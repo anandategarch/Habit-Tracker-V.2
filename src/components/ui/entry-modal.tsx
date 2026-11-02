@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import { Check, X } from "lucide-react";
 import type { TransactionCategory } from "@/lib/types";
+import type { Wallet, HabitGroup } from "@/lib/module-types";
 import { todayISO } from "@/lib/format";
 import { IconAction, PrimaryButton } from "@/components/ui/primitives";
 
@@ -11,10 +12,12 @@ const categories: TransactionCategory[] = [
   "Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya",
 ];
 
-export function EntryModal({ mode, onClose, onSubmit }: {
+export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] }: {
   mode: "habit" | "transaction";
   onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  wallets?: Wallet[];
+  groups?: HabitGroup[];
 }) {
   const isHabit = mode === "habit";
   const dialogRef = useRef<HTMLElement>(null);
@@ -87,6 +90,13 @@ export function EntryModal({ mode, onClose, onSubmit }: {
                   <option value="Personal">Personal</option>
                 </select>
               </label>
+              <label className="form-field"><span className="form-label">Jenis habit</span><select className="form-control" name="kind" defaultValue="normal"><option value="normal">Normal · checklist</option><option value="avoid">Avoid · hindari kebiasaan</option><option value="amount">Amount · target kuantitatif</option></select></label>
+              <div className="form-two-columns"><label className="form-field"><span className="form-label">Target jumlah</span><input className="form-control" type="number" name="targetAmount" min="1" defaultValue="8" /></label><label className="form-field"><span className="form-label">Satuan target</span><input className="form-control" name="unit" maxLength={30} placeholder="gelas, halaman, repetisi" defaultValue="unit" /></label></div>
+              <div className="form-two-columns"><label className="form-field"><span className="form-label">Prioritas</span><select className="form-control" name="priority" defaultValue="medium"><option value="low">Rendah</option><option value="medium">Sedang</option><option value="high">Tinggi</option></select></label><label className="form-field"><span className="form-label">Kesulitan</span><select className="form-control" name="difficulty" defaultValue="easy"><option value="easy">Mudah</option><option value="medium">Sedang</option><option value="hard">Sulit</option></select></label></div>
+              <label className="form-field"><span className="form-label">Grup kebiasaan (opsional)</span>{groups.length > 0 ? <select className="form-control" name="groupName" defaultValue=""><option value="">Tanpa grup</option>{groups.map((group) => <option value={group.name} key={group.id}>{group.name}</option>)}</select> : <input className="form-control" name="groupName" maxLength={60} placeholder="Buat grup dari halaman Kebiasaan" />}</label>
+              <label className="form-field"><span className="form-label">Jadwal tampil</span><select className="form-control" name="scheduleKind" defaultValue="daily"><option value="daily">Setiap hari</option><option value="weekly">Hari tertentu setiap minggu</option><option value="monthly">Tanggal tertentu setiap bulan</option></select></label>
+              <label className="form-field"><span className="form-label">Hari aktif (untuk jadwal mingguan)</span><input className="form-control" name="scheduleDays" placeholder="1, 3, 5 · Senin, Rabu, Jumat" /><span className="form-hint">Nomor hari: 0 Minggu, 1 Senin, 2 Selasa, 3 Rabu, 4 Kamis, 5 Jumat, 6 Sabtu.</span></label>
+              <label className="form-field"><span className="form-label">Tanggal aktif (untuk jadwal bulanan)</span><input className="form-control" name="scheduleDates" placeholder="1, 15, 28" /><span className="form-hint">Tanggal 1 sampai 31. Tanggal yang tidak tersedia di suatu bulan dilewati.</span></label>
               <div className="form-two-columns">
                 <label className="form-field">
                   <span className="form-label">Waktu</span>
@@ -127,6 +137,8 @@ export function EntryModal({ mode, onClose, onSubmit }: {
                   <input className="form-control" type="date" name="date" defaultValue={todayISO()} required />
                 </label>
               </div>
+              {wallets.length > 0 && <label className="form-field"><span className="form-label">Sumber dana</span><select className="form-control" name="walletId" defaultValue=""><option value="">Tidak ditentukan</option>{wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</select></label>}
+              <label className="form-field"><span className="form-label">Tag (opsional, pisahkan dengan koma)</span><input className="form-control" name="tags" maxLength={160} placeholder="kebutuhan, rutin, keluarga" /></label>
             </>
           )}
           <div className="form-actions">

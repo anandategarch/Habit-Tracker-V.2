@@ -24,7 +24,16 @@ function isHabit(value: unknown): value is Habit {
     typeof value.duration === "number" && Number.isInteger(value.duration) && value.duration > 0 &&
     typeof value.completed === "boolean" &&
     (value.icon === "book" || value.icon === "water" || value.icon === "movement" || value.icon === "mind" || value.icon === "write") &&
-    typeof value.streak === "number" && Number.isInteger(value.streak) && value.streak >= 0
+    typeof value.streak === "number" && Number.isInteger(value.streak) && value.streak >= 0 &&
+    (value.kind === undefined || ["normal", "avoid", "amount"].includes(String(value.kind))) &&
+    (value.targetAmount === undefined || (typeof value.targetAmount === "number" && Number.isFinite(value.targetAmount) && value.targetAmount > 0)) &&
+    (value.currentAmount === undefined || (typeof value.currentAmount === "number" && Number.isFinite(value.currentAmount) && value.currentAmount >= 0)) &&
+    (value.unit === undefined || (typeof value.unit === "string" && value.unit.length <= 30)) &&
+    (value.priority === undefined || ["low", "medium", "high"].includes(String(value.priority))) &&
+    (value.difficulty === undefined || ["easy", "medium", "hard"].includes(String(value.difficulty))) &&
+    (value.groupName === undefined || (typeof value.groupName === "string" && value.groupName.length <= 60)) &&
+    (value.timeSpentMinutes === undefined || (typeof value.timeSpentMinutes === "number" && Number.isInteger(value.timeSpentMinutes) && value.timeSpentMinutes >= 0 && value.timeSpentMinutes <= 100000)) &&
+    (value.schedule === undefined || (isRecord(value.schedule) && (value.schedule.kind === "daily" || (value.schedule.kind === "weekly" && Array.isArray(value.schedule.days) && value.schedule.days.length > 0 && value.schedule.days.length <= 7 && value.schedule.days.every((day) => Number.isInteger(day) && Number(day) >= 0 && Number(day) <= 6)) || (value.schedule.kind === "monthly" && Array.isArray(value.schedule.dates) && value.schedule.dates.length > 0 && value.schedule.dates.length <= 31 && value.schedule.dates.every((day) => Number.isInteger(day) && Number(day) >= 1 && Number(day) <= 31)))))
   );
 }
 
@@ -36,7 +45,10 @@ function isTransaction(value: unknown): value is Transaction {
     ["Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya"].includes(String(value.category)) &&
     (value.type === "income" || value.type === "expense") &&
     typeof value.amount === "number" && Number.isSafeInteger(value.amount) && value.amount > 0 &&
-    typeof value.date === "string" && isValidDate(value.date)
+    typeof value.date === "string" && isValidDate(value.date) &&
+    (value.walletId === undefined || (typeof value.walletId === "string" && value.walletId.length <= 100)) &&
+    (value.tags === undefined || (Array.isArray(value.tags) && value.tags.length <= 20 && value.tags.every((tag) => typeof tag === "string" && tag.length <= 40))) &&
+    (value.splitGroupId === undefined || (typeof value.splitGroupId === "string" && value.splitGroupId.length <= 100))
   );
 }
 

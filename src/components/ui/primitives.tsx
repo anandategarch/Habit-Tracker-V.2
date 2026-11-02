@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
+import { scheduleLabel } from "@/lib/habit-schedule";
 
 function PageIntro({ eyebrow, title, subtitle, action }: {
   eyebrow: string; title: string; subtitle: string; action?: ReactNode;
@@ -47,27 +48,35 @@ function HabitGlyph({ icon }: { icon: Habit["icon"] }) {
   return <Icon size={18} strokeWidth={1.8} />;
 }
 
-function HabitRow({ habit, onToggle }: { habit: Habit; onToggle: (id: string) => void }) {
+function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, onViewTimeAnalysis, timerActive = false, timerElapsedSeconds = 0, paused = false }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; onViewTimeAnalysis?: (id: string) => void; timerActive?: boolean; timerElapsedSeconds?: number; paused?: boolean }) {
+  const amountHabit = habit.kind === "amount";
+  const current = habit.currentAmount ?? 0;
+  const target = habit.targetAmount ?? 1;
+  const percentage = Math.min(100, Math.round(current / target * 100));
+  const avoid = habit.kind === "avoid";
   return (
-    <article className={`habit-row ${habit.completed ? "is-complete" : ""}`}>
+    <article className={`habit-row ${habit.completed ? "is-complete" : ""} ${amountHabit ? "is-amount-habit" : ""}`}>
       <div className="habit-icon"><HabitGlyph icon={habit.icon} /></div>
       <div className="habit-main">
         <div className="habit-name">{habit.title}</div>
         <div className="habit-meta">
           <span><Clock3 size={11} /> {habit.time}</span>
-          <span>{habit.duration} menit</span>
+          <span>{habit.duration} menit target</span>
           <span><Flame size={11} /> {habit.streak} hari</span>
+          {typeof habit.timeSpentMinutes === "number" && habit.timeSpentMinutes > 0 && <span>{habit.timeSpentMinutes} menit dicatat</span>}
+          {habit.priority && <span className={`habit-detail-tag priority-${habit.priority}`}>Prioritas {habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah"}</span>}
+          {habit.difficulty && <span className="habit-detail-tag">Kesulitan {habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah"}</span>}
+          {habit.groupName && <span className="habit-detail-tag">{habit.groupName}</span>}
+          {habit.schedule && habit.schedule.kind !== "daily" && <span className="habit-detail-tag">Jadwal {scheduleLabel(habit.schedule)}</span>}
         </div>
+        {amountHabit && <div className="habit-amount-progress"><div className="habit-amount-caption"><strong>{current} / {target} {habit.unit || "unit"}</strong><span>{percentage}%</span></div><div className="module-progress-track"><span style={{ width: `${percentage}%` }} /></div></div>}
+        {avoid && <small className="habit-kind-note">Streak dihitung pada hari berhasil menghindari kebiasaan ini.</small>}
       </div>
-      <button
-        type="button"
-        className={`check-button ${habit.completed ? "done" : ""}`}
-        aria-label={habit.completed ? `Batalkan ${habit.title}` : `Tandai ${habit.title} selesai`}
-        aria-pressed={habit.completed}
-        onClick={() => onToggle(habit.id)}
-      >
-        {habit.completed && <Check size={15} strokeWidth={2.8} />}
-      </button>
+      <div className="habit-row-actions">
+        {amountHabit ? <div className="habit-amount-stepper"><button type="button" aria-label={`Kurangi ${habit.title}`} disabled={current <= 0 || paused} onClick={() => onAdjust?.(habit.id, -1)}>−</button><button type="button" aria-label={`Tambah ${habit.title}`} disabled={!onAdjust || paused} onClick={() => onAdjust?.(habit.id, 1)}>+</button></div> : <button type="button" className={`check-button ${habit.completed ? "done" : ""}`} aria-label={habit.completed ? (avoid ? `Catat pelanggaran ${habit.title}` : `Batalkan ${habit.title}`) : (avoid ? `Tandai hari bersih ${habit.title}` : `Tandai ${habit.title} selesai`)} aria-pressed={habit.completed} disabled={paused} onClick={() => onToggle(habit.id)}>{habit.completed && <Check size={15} strokeWidth={2.8} />}</button>}
+        {onTimerToggle && <button className={`habit-time-track ${timerActive ? "active" : ""}`} type="button" onClick={() => onTimerToggle(habit.id)} disabled={paused} aria-pressed={timerActive} aria-label={timerActive ? `Hentikan timer ${habit.title}` : `Mulai timer ${habit.title}`}>{timerActive ? `Stop ${String(Math.floor(timerElapsedSeconds / 60)).padStart(2, "0")}:${String(timerElapsedSeconds % 60).padStart(2, "0")}` : "Mulai timer"}</button>}
+        {onViewTimeAnalysis && <button className="habit-history-action" type="button" onClick={() => onViewTimeAnalysis(habit.id)}>Riwayat waktu</button>}
+      </div>
     </article>
   );
 }
