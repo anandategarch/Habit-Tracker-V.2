@@ -260,7 +260,7 @@ export function RutinaApp() {
 
         <div className="nav-label">WORKSPACE</div>
         <nav className="side-nav" aria-label="Navigasi utama">
-          {navigation.map(({ id, label, icon: Icon, description }) => (
+          {navigation.map(({ id, label, icon, description }) => (
             <button
               key={id}
               type="button"
@@ -347,7 +347,7 @@ export function RutinaApp() {
       </main>
 
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
-        {mobilePrimary.map(({ id, label, icon: Icon }) => (
+        {mobilePrimary.map(({ id, label, icon }) => (
           <button
             key={id}
             type="button"
