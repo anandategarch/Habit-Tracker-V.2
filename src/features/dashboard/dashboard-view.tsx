@@ -10,13 +10,15 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
   habits: Habit[]; income: number; expense: number; onNavigate: (tab: TabId) => void;
   onToggle: (id: string) => void; onAddHabit: () => void;
 }) {
-  const dateLabel = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date()).toUpperCase();
+  const now = new Date();
+  const dateLabel = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(now).toUpperCase();
+  const greeting = now.getHours() < 11 ? "Selamat pagi." : now.getHours() < 15 ? "Selamat siang." : now.getHours() < 18 ? "Selamat sore." : "Selamat malam.";
   const { completed, progress, totalStreak } = summarizeHabits(habits);
   const net = income - expense;
 
   return (
     <>
-      <PageIntro eyebrow={dateLabel} title="Selamat pagi." subtitle="Pelan-pelan, tapi terus bertumbuh." />
+      <PageIntro eyebrow={dateLabel} title={greeting} subtitle="Pelan-pelan, tapi terus bertumbuh." />
       <div className="dashboard-grid">
         <div className="left-stack">
           <section className="hero-card">

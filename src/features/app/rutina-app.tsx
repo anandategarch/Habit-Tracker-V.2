@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  Bell, CalendarDays, ChartLine, Home, ListChecks, MoreHorizontal, Search,
+  CalendarDays, ChartLine, Home, ListChecks, MoreHorizontal, Search,
   Sprout, WalletCards,
 } from "lucide-react";
-import type { Budget, Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
+import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
-import { initialBudgets, initialHabits, initialTransactions } from "@/lib/seed-data";
+import { initialBudgets } from "@/lib/seed-data";
 import { summarizeTransactions } from "@/lib/finance";
-import { loadWorkspace, saveWorkspace } from "@/lib/workspace-storage";
+import { useWorkspace } from "@/lib/use-workspace";
 import { DashboardView } from "@/features/dashboard/dashboard-view";
 import { HabitsView } from "@/features/habits/habits-view";
 import { FinanceView } from "@/features/finance/finance-view";
@@ -17,8 +17,8 @@ import { CalendarView } from "@/features/calendar/calendar-view";
 import { InsightsView } from "@/features/insights/insights-view";
 import { IconAction } from "@/components/ui/primitives";
 import { EntryModal } from "@/components/ui/entry-modal";
+import { SearchDialog } from "@/components/ui/search-dialog";
 
-const STORAGE_KEY = "rutina.v2.workspace";
 const navigation: { id: TabId; label: string; icon: typeof Home }[] = [
   { id: "home", label: "Home", icon: Home },
   { id: "habits", label: "Habit", icon: ListChecks },
@@ -29,30 +29,31 @@ const navigation: { id: TabId; label: string; icon: typeof Home }[] = [
 
 export function RutinaApp() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
-  const [habits, setHabits] = useState<Habit[]>(initialHabits);
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
-  const budgets = initialBudgets;
   const [modal, setModal] = useState<"habit" | "transaction" | null>(null);
   const [toast, setToast] = useState("");
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const stored = loadWorkspace();
-    if (stored?.habits) setHabits(stored.habits);
-    if (stored?.transactions) setTransactions(stored.transactions);
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    saveWorkspace({ habits, transactions });
-  }, [habits, transactions, hydrated]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { habits, transactions, updateHabits, updateTransactions } = useWorkspace();
+  const budgets = initialBudgets;
 
   useEffect(() => {
     if (!toast) return;
     const timeout = window.setTimeout(() => setToast(""), 2600);
     return () => window.clearTimeout(timeout);
   }, [toast]);
+
+  useEffect(() => {
+    function handleKeyboard(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+      if (event.key === "Escape") { setSearchOpen(false); setSearchQuery(""); }
+    }
+
+    window.addEventListener("keydown", handleKeyboard);
+    return () => window.removeEventListener("keydown", handleKeyboard);
+  }, []);
 
   const currentMonth = todayISO().slice(0, 7);
   const monthTransactions = useMemo(
@@ -65,7 +66,7 @@ export function RutinaApp() {
   );
 
   function toggleHabit(id: string) {
-    setHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
+    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
   }
 
   function submitHabit(event: FormEvent<HTMLFormElement>) {
@@ -81,7 +82,7 @@ export function RutinaApp() {
       completed: false, icon: category === "Health" ? "movement" : category === "Learning" ? "book" : category === "Mindfulness" ? "mind" : "write",
       streak: 0,
     };
-    setHabits((current) => [...current, habit]);
+    updateHabits((current) => [...current, habit]);
     setModal(null);
     setToast("Habit baru berhasil ditambahkan.");
   }
@@ -98,7 +99,7 @@ export function RutinaApp() {
       category: String(data.get("category")) as TransactionCategory,
       amount, date: String(data.get("date") || todayISO()),
     };
-    setTransactions((current) => [transaction, ...current]);
+    updateTransactions((current) => [transaction, ...current]);
     setModal(null);
     setToast("Transaksi berhasil dicatat.");
   }
@@ -118,10 +119,10 @@ export function RutinaApp() {
         <header className="topbar">
           <div className="mobile-brand"><span className="brand-mark" style={{ width: 31, height: 31, borderRadius: 11 }}><Sprout size={17} /></span><span>rutina.</span></div>
           <div className="topbar-note">Make room for what matters.</div>
-          <div className="topbar-actions"><IconAction label="Cari"><Search size={17} /></IconAction><IconAction label="Notifikasi"><Bell size={17} /></IconAction><div className="avatar" style={{ width: 34, height: 34, fontSize: 12 }}>R</div></div>
+          <div className="topbar-actions"><IconAction label="Cari (Ctrl K)" onClick={() => setSearchOpen(true)}><Search size={17} /></IconAction><div className="avatar" style={{ width: 34, height: 34, fontSize: 12 }}>R</div></div>
         </header>
 
-        <div className="content-wrap">
+        <div className="content-wrap page-transition" key={activeTab}>
           {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAddHabit={() => setModal("habit")} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdd={() => setModal("habit")} />}
           {activeTab === "finance" && <FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} />}
@@ -135,6 +136,15 @@ export function RutinaApp() {
       </nav>
 
       {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} />}
+      <SearchDialog
+        open={searchOpen}
+        query={searchQuery}
+        onQueryChange={setSearchQuery}
+        habits={habits}
+        transactions={transactions}
+        onClose={() => { setSearchOpen(false); setSearchQuery(""); }}
+        onNavigate={(tab) => setActiveTab(tab)}
+      />
       {toast && <div role="status" className="toast">{toast}</div>}
     </div>
   );
