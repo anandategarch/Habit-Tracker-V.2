@@ -16,7 +16,8 @@ Rutina adalah ruang pribadi untuk membangun kebiasaan, mengatur fokus, dan memah
 - React + TypeScript (strict)
 - Tailwind CSS v4 + CSS design tokens
 - Lucide icons
-- Turso (libSQL) untuk penyimpanan cloud melalui server-side API\n- LocalStorage sebagai mode demo/fallback dan sumber migrasi awal
+- Turso (libSQL) untuk penyimpanan cloud melalui server-side API
+- LocalStorage sebagai mode demo/fallback dan sumber migrasi awal
 
 Node.js minimum: **20.9**.
 
