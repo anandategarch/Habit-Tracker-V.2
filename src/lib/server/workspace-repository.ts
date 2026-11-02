@@ -17,6 +17,12 @@ export interface WorkspaceInput {
   budgets: Budget[];
 }
 
+function shiftDate(date: string, days: number): string {
+  const value = new Date(`${date}T00:00:00Z`);
+  value.setUTCDate(value.getUTCDate() + days);
+  return value.toISOString().slice(0, 10);
+}
+
 function asNumber(value: unknown): number {
   const number = Number(value);
   return Number.isFinite(number) ? number : 0;
@@ -26,7 +32,7 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
   await ensureSchema();
   const client = getTursoClient();
 
-  const [habitResult, transactionResult, budgetResult, metadataResult, habitMetadataResult] = await Promise.all([
+  const [habitResult, transactionResult, budgetResult, metadataResult, habitMetadataResult, dailyProgressResult] = await Promise.all([
     client.execute({
       sql: `SELECT
         h.id, h.title, h.category, h.time, h.duration, h.icon, h.streak,
@@ -43,12 +49,15 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
     client.execute("SELECT category, monthly_limit FROM budgets ORDER BY category ASC"),
     client.execute("SELECT transaction_id, wallet_id, tags_json, split_group_id FROM transaction_metadata"),
     client.execute("SELECT habit_id, payload FROM habit_metadata"),
+    client.execute({ sql: "SELECT habit_id, current_amount, time_spent_minutes FROM habit_daily_progress WHERE activity_date = ?", args: [today] }),
   ]);
   const metadata = new Map(metadataResult.rows.map((row) => [String(row.transaction_id), row]));
   const habitMetadata = new Map(habitMetadataResult.rows.map((row) => [String(row.habit_id), row]));
+  const dailyProgress = new Map(dailyProgressResult.rows.map((row) => [String(row.habit_id), row]));
 
   const habits: Habit[] = habitResult.rows.map((row) => {
     const detail = habitMetadata.get(String(row.id));
+    const daily = dailyProgress.get(String(row.id));
     let extra: Record<string, unknown> = {};
     try { const parsed = JSON.parse(String(detail?.payload ?? "{}")); if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) extra = parsed as Record<string, unknown>; } catch { extra = {}; }
     return {
@@ -58,12 +67,12 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
       streak: asNumber(row.streak), completed: asNumber(row.completed) === 1,
       ...(extra.kind ? { kind: extra.kind as Habit["kind"] } : {}),
       ...(typeof extra.targetAmount === "number" ? { targetAmount: extra.targetAmount } : {}),
-      ...(typeof extra.currentAmount === "number" ? { currentAmount: extra.currentAmount } : {}),
+      currentAmount: daily ? asNumber(daily.current_amount) : 0,
       ...(typeof extra.unit === "string" ? { unit: extra.unit } : {}),
       ...(extra.priority ? { priority: extra.priority as Habit["priority"] } : {}),
       ...(extra.difficulty ? { difficulty: extra.difficulty as Habit["difficulty"] } : {}),
       ...(typeof extra.groupName === "string" ? { groupName: extra.groupName } : {}),
-      ...(typeof extra.timeSpentMinutes === "number" ? { timeSpentMinutes: extra.timeSpentMinutes } : {}),
+      timeSpentMinutes: daily ? asNumber(daily.time_spent_minutes) : 0,
     };
   });
 
@@ -134,6 +143,15 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
           ON CONFLICT(habit_id) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`,
         args: [habit.id, JSON.stringify(habitExtra)],
       });
+      await transaction.execute({
+        sql: `INSERT INTO habit_daily_progress (habit_id, activity_date, current_amount, time_spent_minutes, updated_at)
+          VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(habit_id, activity_date) DO UPDATE SET
+            current_amount = excluded.current_amount,
+            time_spent_minutes = excluded.time_spent_minutes,
+            updated_at = CURRENT_TIMESTAMP`,
+        args: [habit.id, today, habit.currentAmount ?? 0, habit.timeSpentMinutes ?? 0],
+      });
     }
 
     for (const item of input.transactions) {
@@ -182,6 +200,26 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
       await transaction.execute({
         sql: "INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (?, ?)",
         args: [habit.id, today],
+      });
+    }
+
+    // Recompute consecutive completed days from stored check-ins.
+    for (const habit of input.habits) {
+      const result = await transaction.execute({
+        sql: "SELECT completed_on FROM habit_checkins WHERE habit_id = ? AND completed_on >= ? AND completed_on <= ? ORDER BY completed_on DESC",
+        args: [habit.id, shiftDate(today, -364), today],
+      });
+      if (result.rows.length === 0) continue;
+      const dates = new Set(result.rows.map((row) => String(row.completed_on)));
+      let cursor = dates.has(today) ? today : shiftDate(today, -1);
+      let streak = 0;
+      while (streak < 365 && dates.has(cursor)) {
+        streak += 1;
+        cursor = shiftDate(cursor, -1);
+      }
+      await transaction.execute({
+        sql: "UPDATE habits SET streak = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        args: [streak, habit.id],
       });
     }
 

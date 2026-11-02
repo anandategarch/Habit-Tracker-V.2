@@ -46,6 +46,8 @@ export function RutinaApp() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
+  const [activeHabitTimer, setActiveHabitTimer] = useState<{ habitId: string; startedAt: number } | null>(null);
+  const [timerNow, setTimerNow] = useState(() => Date.now());
   const {
     habits,
     transactions,
@@ -71,6 +73,29 @@ export function RutinaApp() {
     media.addEventListener("change", applyTheme);
     return () => media.removeEventListener("change", applyTheme);
   }, [selectedTheme]);
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("rutina.v2.active-habit-timer");
+      if (!saved) return;
+      const timer = JSON.parse(saved) as { habitId?: unknown; startedAt?: unknown };
+      if (typeof timer.habitId === "string" && typeof timer.startedAt === "number" && Date.now() - timer.startedAt >= 0 && Date.now() - timer.startedAt < 4 * 60 * 60 * 1000) {
+        setActiveHabitTimer({ habitId: timer.habitId, startedAt: timer.startedAt });
+      } else window.localStorage.removeItem("rutina.v2.active-habit-timer");
+    } catch { window.localStorage.removeItem("rutina.v2.active-habit-timer"); }
+  }, []);
+
+  useEffect(() => {
+    if (!activeHabitTimer) return;
+    const interval = window.setInterval(() => setTimerNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [activeHabitTimer]);
+
+  useEffect(() => {
+    if (!workspaceReady || !activeHabitTimer || habits.some((habit) => habit.id === activeHabitTimer.habitId)) return;
+    setActiveHabitTimer(null);
+    window.localStorage.removeItem("rutina.v2.active-habit-timer");
+  }, [workspaceReady, habits, activeHabitTimer]);
 
   useEffect(() => {
     if (!toast) return;
@@ -126,9 +151,19 @@ export function RutinaApp() {
     }));
   }
 
-  function trackHabitTime(id: string) {
+  function toggleHabitTimer(id: string) {
     if (modules.settings.vacationMode) return;
-    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, timeSpentMinutes: (habit.timeSpentMinutes ?? 0) + 5 } : habit));
+    if (activeHabitTimer) {
+      const elapsed = Math.max(0, Math.floor((Date.now() - activeHabitTimer.startedAt) / 1000));
+      const minutes = Math.floor(elapsed / 60);
+      if (minutes > 0) updateHabits((current) => current.map((habit) => habit.id === activeHabitTimer.habitId ? { ...habit, timeSpentMinutes: (habit.timeSpentMinutes ?? 0) + minutes } : habit));
+      setActiveHabitTimer(null);
+      window.localStorage.removeItem("rutina.v2.active-habit-timer");
+      if (activeHabitTimer.habitId === id) return;
+    }
+    const next = { habitId: id, startedAt: Date.now() };
+    setActiveHabitTimer(next);
+    window.localStorage.setItem("rutina.v2.active-habit-timer", JSON.stringify(next));
   }
 
   function submitHabit(event: FormEvent<HTMLFormElement>) {
@@ -283,8 +318,8 @@ export function RutinaApp() {
         </header>
 
         <div className="content-wrap page-transition" key={activeTab}>
-          {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
-          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} />}
+          {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
+          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} />}
           {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} checkins={modules.checkins} />}

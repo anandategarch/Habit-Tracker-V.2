@@ -8,9 +8,9 @@ import { FocusTimer } from "@/features/focus/focus-timer";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 
-export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTrackTime, vacationMode = false, dailyCheckin }: {
+export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin }: {
   habits: Habit[]; income: number; expense: number; onNavigate: (tab: TabId) => void;
-  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTrackTime?: (id: string) => void; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
+  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; activeTimerId?: string | null; timerElapsedSeconds?: number; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
 }) {
   const now = new Date();
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
@@ -76,7 +76,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
             {habits.length > 0 ? (
               <>
                 <div className="habit-list">
-                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTrackTime={onTrackTime} paused={vacationMode} />)}
+                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTimerToggle={onTimerToggle} timerActive={activeTimerId === habit.id} timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0} paused={vacationMode} />)}
                 </div>
                 {habits.length > 4 && <button className="text-button list-more" type="button" onClick={() => onNavigate("habits")}>Lihat {habits.length - 4} kebiasaan lainnya <ArrowRight size={13} /></button>}
               </>

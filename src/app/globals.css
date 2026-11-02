@@ -1566,3 +1566,6 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
  .wallet-history-column { grid-template-rows:auto 78px auto; }
  .wallet-history-column > div { height:78px; }
 }
+
+.habit-time-track.active { color:var(--danger); border-color:color-mix(in srgb,var(--danger) 35%,var(--line)); background:color-mix(in srgb,var(--danger) 10%,var(--surface)); font-variant-numeric:tabular-nums; }
+.habit-time-track:disabled { opacity:.42; cursor:not-allowed; }
