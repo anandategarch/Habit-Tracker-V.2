@@ -1654,3 +1654,52 @@ html[data-theme="dark"] .weekly-trend-badge { color: var(--primary); background:
   .weekly-trend-card .insight-trend-bars { height: 68px; }
   .weekly-trend-badge { padding: 4px 9px; }
 }
+
+/* ===== Lanjutan penyelarasan PEDOMAN UI: header mobile (bel + avatar) & ring lebih dominan ===== */
+
+/* Avatar ilustrasi bulat (pedoman: foto profil di samping bel notifikasi). */
+.avatar img,
+.topbar-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+/* Header mobile mengikuti pedoman: bel notifikasi + avatar di kanan.
+   Pencarian & tema disembunyikan pada layar kecil (tema tetap bisa diganti di Settings,
+   pencarian & tema tetap tampil di topbar desktop); status sinkronisasi dan tombol
+   pasang PWA dipertahankan karena fungsional di perangkat mobile. */
+@media (max-width: 960px) {
+  .topbar .search-trigger,
+  .topbar .theme-toggle { display: none; }
+  .topbar .topbar-avatar {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    overflow: hidden;
+    border: 1px solid #e9e0d2;
+    box-shadow: 0 3px 9px rgba(98, 77, 53, .12);
+  }
+}
+@media (max-width: 600px) {
+  .topbar .topbar-avatar { display: grid; }
+}
+
+/* Ring progres hero lebih dominan di layar kecil (mendekati proporsi pedoman). */
+@media (max-width: 960px) {
+  .botanical-hero { padding-bottom: 114px; }
+  .hero-ring { width: 78px; height: 78px; }
+  .hero-ring-label strong { font-size: 15px; }
+  .hero-ring-label small { font-size: 9px; }
+}
+@media (max-width: 680px) {
+  .hero-ring { width: 72px; height: 72px; }
+  .hero-ring-label strong { font-size: 14px; }
+}
+@media (max-width: 600px) {
+  .botanical-hero { padding-bottom: 108px; }
+}
