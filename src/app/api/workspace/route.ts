@@ -36,7 +36,10 @@ function isTransaction(value: unknown): value is Transaction {
     ["Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya"].includes(String(value.category)) &&
     (value.type === "income" || value.type === "expense") &&
     typeof value.amount === "number" && Number.isSafeInteger(value.amount) && value.amount > 0 &&
-    typeof value.date === "string" && isValidDate(value.date)
+    typeof value.date === "string" && isValidDate(value.date) &&
+    (value.walletId === undefined || (typeof value.walletId === "string" && value.walletId.length <= 100)) &&
+    (value.tags === undefined || (Array.isArray(value.tags) && value.tags.length <= 20 && value.tags.every((tag) => typeof tag === "string" && tag.length <= 40))) &&
+    (value.splitGroupId === undefined || (typeof value.splitGroupId === "string" && value.splitGroupId.length <= 100))
   );
 }
 

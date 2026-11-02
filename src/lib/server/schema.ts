@@ -38,6 +38,8 @@ const schemaStatements = [
     monthly_limit INTEGER NOT NULL CHECK (monthly_limit >= 0),
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`,
+  `CREATE TABLE IF NOT EXISTS transaction_metadata (transaction_id TEXT PRIMARY KEY, wallet_id TEXT, tags_json TEXT NOT NULL DEFAULT '[]', split_group_id TEXT, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
+  `CREATE TABLE IF NOT EXISTS workspace_modules (module_key TEXT PRIMARY KEY, payload TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
   "CREATE INDEX IF NOT EXISTS idx_habits_sort_order ON habits(sort_order, created_at)",
   "CREATE INDEX IF NOT EXISTS idx_habit_checkins_date ON habit_checkins(completed_on)",
   "CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transaction_date DESC)",
