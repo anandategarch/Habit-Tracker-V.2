@@ -14,7 +14,8 @@
     "next": "^16.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "@libsql/client": "^0.18.0"
+    "@libsql/client": "^0.18.0",
+    "z-ai-web-dev-sdk": "^0.0.18"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",

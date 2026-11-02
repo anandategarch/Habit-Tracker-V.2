@@ -1516,3 +1516,38 @@ html[data-theme="dark"] .module-progress-track { background:#34463a; }
  .theme-toggle span { display:none; }
  .habits-intro-actions { justify-content:flex-start; }
 }
+
+.insight-checkin-summary { display:grid; gap:10px; padding-top:16px; margin-top:16px; border-top:1px solid var(--line); }
+.insight-checkin-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.insight-checkin-grid > div { display:grid; justify-items:start; gap:5px; padding:12px; border-radius:12px; color:var(--primary); background:var(--surface-soft); }
+.insight-checkin-grid small { color:var(--muted); font-size:9px; }
+.insight-checkin-grid strong { color:var(--ink); font-size:15px; }
+.insight-ai-panel { margin-top:18px; }
+.insight-ai-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.insight-source-note { margin:6px 0 0; color:var(--muted); font-size:10px; line-height:1.5; }
+.insight-source-badge { flex:none; padding:5px 9px; border:1px solid var(--line); border-radius:99px; color:var(--muted); background:var(--surface-soft); font-size:9px; font-weight:800; }
+.insight-source-badge.ai { color:var(--primary); background:var(--primary-soft); }
+.insight-ai-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:14px; }
+.insight-ai-item { display:flex; align-items:flex-start; gap:10px; padding:13px; border:1px solid var(--line); border-radius:13px; background:var(--surface-soft); }
+.insight-ai-item > span { display:grid; place-items:center; width:31px; height:31px; flex:none; border-radius:10px; color:var(--primary); background:var(--surface); }
+.insight-ai-item strong { display:block; margin:1px 0 4px; color:var(--ink); font-size:11px; }
+.insight-ai-item p { margin:0; color:var(--ink-soft); font-size:10px; line-height:1.55; }
+html[data-theme="dark"] .insight-ai-item,
+html[data-theme="dark"] .insight-checkin-grid > div { background:var(--surface-soft); border-color:var(--line); }
+@media (max-width:680px) {
+ .insight-ai-list { grid-template-columns:1fr; }
+ .insight-ai-heading { align-items:flex-start; }
+ .insight-checkin-grid { gap:6px; }
+ .insight-checkin-grid > div { padding:9px; }
+}
+
+.calendar-history-dot { display:inline-block; width:5px; height:5px; flex:none; border-radius:50%; background:#86a98b; }
+.calendar-day .calendar-history-dot { position:absolute; bottom:5px; left:calc(50% - 2.5px); }
+.calendar-day.selected .calendar-history-dot { background:#fff; }
+.calendar-loading { display:flex; align-items:center; justify-content:center; gap:7px; padding-top:12px; color:var(--muted); font-size:10px; }
+.calendar-checkin-card { display:grid; gap:8px; margin-top:15px; padding:13px; border:1px solid var(--line); border-radius:14px; background:var(--surface); }
+.calendar-checkin-title { display:flex; align-items:center; gap:7px; color:var(--primary); font-size:11px; font-weight:750; }
+.calendar-checkin-mood { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:6px; }
+.calendar-checkin-mood strong { color:var(--ink); font-size:12px; }
+.calendar-checkin-mood span,.calendar-checkin-card p { color:var(--muted); font-size:10px; line-height:1.5; }
+.calendar-checkin-card p { margin:0; white-space:pre-wrap; }
