@@ -16,7 +16,7 @@ Rutina adalah ruang pribadi untuk membangun kebiasaan, mengatur fokus, dan memah
 - React + TypeScript (strict)
 - Tailwind CSS v4 + CSS design tokens
 - Lucide icons
-- Local browser storage untuk prototype data
+- Turso (libSQL) untuk penyimpanan cloud melalui server-side API\n- LocalStorage sebagai mode demo/fallback dan sumber migrasi awal
 
 Node.js minimum: **20.9**.
 
@@ -50,9 +50,29 @@ docs/
   architecture.md      # Boundaries and conventions
 ```
 
-## Status data
+## Database Turso
 
-Data saat ini adalah **data demo** yang disimpan di browser menggunakan LocalStorage. Belum ada akun, sinkronisasi cloud, API, atau database. Lapisan penyimpanan sengaja dibuat ringan agar nanti bisa diganti dengan repository/API tanpa mengubah komponen presentasi.
+Rutina menggunakan `@libsql/client` pada server Next.js. Kredensial tidak pernah dikirim ke browser.
+
+Tabel yang dibuat otomatis pada request workspace pertama:
+- `habits` — definisi kebiasaan.
+- `habit_checkins` — check-in per tanggal.
+- `transactions` — pemasukan dan pengeluaran (integer Rupiah).
+- `budgets` — batas anggaran per kategori.
+
+SQL awal tersedia di `db/migrations/0001_initial.sql`. API memastikan tabel tersedia secara idempoten sebelum membaca/menulis data. Pada koneksi pertama ke database kosong, data LocalStorage yang sudah ada akan dipindahkan ke Turso.
+
+### Environment variables
+
+Salin `.env.example` ke `.env.local` untuk lokal, lalu isi:
+- `TURSO_DATABASE_URL`
+- `TURSO_AUTH_TOKEN`
+- `RUTINA_APP_PASSWORD` (minimal 12 karakter)
+- `RUTINA_SESSION_SECRET` (minimal 32 karakter; buat dengan `openssl rand -base64 32`)
+
+Di Vercel tambahkan ke **Project → Settings → Environment Variables** untuk Production/Preview sesuai kebutuhan, kemudian redeploy. Jangan memakai prefix `NEXT_PUBLIC_` dan jangan commit `.env.local`.
+
+Saat Turso aktif, Rutina mengunci API data dengan password satu pemilik dan cookie sesi HttpOnly selama 14 hari. Ini bukan autentikasi multi-pengguna; jangan bagikan password aplikasi. Saat variabel Turso belum tersedia, aplikasi tetap berjalan dalam mode demo LocalStorage.
 
 ## Aturan kontribusi
 
