@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { Check, X } from "lucide-react";
-import type { Habit, TransactionCategory, TransactionType } from "@/lib/types";
+import type { TransactionCategory } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { IconAction, PrimaryButton } from "@/components/ui/primitives";
 
