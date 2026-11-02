@@ -9,10 +9,11 @@ import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "
 type CompletionFilter = "all" | "pending" | "completed";
 const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
 
-export function HabitsView({ habits, onToggle, onAdd }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void }) {
+export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTrackTime, onReorder }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void; onAdjust?: (id: string, delta: number) => void; onTrackTime?: (id: string) => void; onReorder?: (items: Habit[]) => void }) {
   const [completionFilter, setCompletionFilter] = useState<CompletionFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
   const [query, setQuery] = useState("");
+  const [draggedId, setDraggedId] = useState<string | null>(null);
   const { completed, total, progress, longestStreak } = summarizeHabits(habits);
 
   const filteredHabits = useMemo(() => {
@@ -20,8 +21,7 @@ export function HabitsView({ habits, onToggle, onAdd }: { habits: Habit[]; onTog
     return [...habits]
       .filter((habit) => completionFilter === "all" || (completionFilter === "pending" ? !habit.completed : habit.completed))
       .filter((habit) => categoryFilter === "Semua" || habit.category === categoryFilter)
-      .filter((habit) => !normalizedQuery || `${habit.title} ${habit.category}`.toLocaleLowerCase("id-ID").includes(normalizedQuery))
-      .sort((a, b) => a.time.localeCompare(b.time));
+      .filter((habit) => !normalizedQuery || `${habit.title} ${habit.category} ${habit.groupName ?? ""}`.toLocaleLowerCase("id-ID").includes(normalizedQuery));
   }, [habits, completionFilter, categoryFilter, query]);
 
   return (
@@ -81,7 +81,7 @@ export function HabitsView({ habits, onToggle, onAdd }: { habits: Habit[]; onTog
           ))}
         </div>
         <div className="habit-list">
-          {filteredHabits.map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} />)}
+          {filteredHabits.map((habit) => <div key={habit.id} className="habit-draggable" draggable onDragStart={() => setDraggedId(habit.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (!draggedId || draggedId === habit.id || !onReorder) return; const next = [...habits]; const from = next.findIndex((item) => item.id === draggedId); const to = next.findIndex((item) => item.id === habit.id); if (from < 0 || to < 0) return; const [moved] = next.splice(from, 1); next.splice(to, 0, moved); onReorder(next); setDraggedId(null); }}><HabitRow habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTrackTime={onTrackTime} /></div>)}
         </div>
         {filteredHabits.length === 0 && (
           <EmptyState

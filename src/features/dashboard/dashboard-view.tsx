@@ -8,9 +8,9 @@ import { FocusTimer } from "@/features/focus/focus-timer";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 
-export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit }: {
+export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTrackTime }: {
   habits: Habit[]; income: number; expense: number; onNavigate: (tab: TabId) => void;
-  onToggle: (id: string) => void; onAddHabit: () => void;
+  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTrackTime?: (id: string) => void;
 }) {
   const now = new Date();
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
@@ -69,7 +69,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
             {habits.length > 0 ? (
               <>
                 <div className="habit-list">
-                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} />)}
+                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTrackTime={onTrackTime} />)}
                 </div>
                 {habits.length > 4 && <button className="text-button list-more" type="button" onClick={() => onNavigate("habits")}>Lihat {habits.length - 4} kebiasaan lainnya <ArrowRight size={13} /></button>}
               </>

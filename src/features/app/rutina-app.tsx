@@ -99,9 +99,19 @@ export function RutinaApp() {
   const sync = syncPresentation[syncStatus as SyncStatus];
 
   function toggleHabit(id: string) {
-    updateHabits((current) => current.map((habit) => habit.id === id
-      ? { ...habit, completed: !habit.completed }
-      : habit));
+    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
+  }
+
+  function adjustHabit(id: string, delta: number) {
+    updateHabits((current) => current.map((habit) => {
+      if (habit.id !== id || habit.kind !== "amount") return habit;
+      const currentAmount = Math.max(0, (habit.currentAmount ?? 0) + delta);
+      return { ...habit, currentAmount, completed: currentAmount >= (habit.targetAmount ?? 1) };
+    }));
+  }
+
+  function trackHabitTime(id: string) {
+    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, timeSpentMinutes: (habit.timeSpentMinutes ?? 0) + 5 } : habit));
   }
 
   function submitHabit(event: FormEvent<HTMLFormElement>) {
@@ -120,6 +130,14 @@ export function RutinaApp() {
       completed: false,
       icon: category === "Health" ? "movement" : category === "Learning" ? "book" : category === "Mindfulness" ? "mind" : "write",
       streak: 0,
+      kind: String(data.get("kind") || "normal") as Habit["kind"],
+      targetAmount: Math.max(1, Number(data.get("targetAmount")) || 8),
+      currentAmount: 0,
+      unit: String(data.get("unit") || "unit").trim().slice(0, 30),
+      priority: String(data.get("priority") || "medium") as Habit["priority"],
+      difficulty: String(data.get("difficulty") || "easy") as Habit["difficulty"],
+      groupName: String(data.get("groupName") || "").trim().slice(0, 60),
+      timeSpentMinutes: 0,
     };
 
     updateHabits((current) => [...current, habit]);
@@ -244,8 +262,8 @@ export function RutinaApp() {
         </header>
 
         <div className="content-wrap page-transition" key={activeTab}>
-          {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAddHabit={() => setModal("habit")} />}
-          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdd={() => setModal("habit")} />}
+          {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onAddHabit={() => setModal("habit")} />}
+          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onReorder={updateHabits} onAdd={() => setModal("habit")} />}
           {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} />}

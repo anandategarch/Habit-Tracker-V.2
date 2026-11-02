@@ -89,6 +89,10 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [] }: {
                   <option value="Personal">Personal</option>
                 </select>
               </label>
+              <label className="form-field"><span className="form-label">Jenis habit</span><select className="form-control" name="kind" defaultValue="normal"><option value="normal">Normal · checklist</option><option value="avoid">Avoid · hindari kebiasaan</option><option value="amount">Amount · target kuantitatif</option></select></label>
+              <div className="form-two-columns"><label className="form-field"><span className="form-label">Target jumlah</span><input className="form-control" type="number" name="targetAmount" min="1" defaultValue="8" /></label><label className="form-field"><span className="form-label">Satuan target</span><input className="form-control" name="unit" maxLength={30} placeholder="gelas, halaman, repetisi" defaultValue="unit" /></label></div>
+              <div className="form-two-columns"><label className="form-field"><span className="form-label">Prioritas</span><select className="form-control" name="priority" defaultValue="medium"><option value="low">Rendah</option><option value="medium">Sedang</option><option value="high">Tinggi</option></select></label><label className="form-field"><span className="form-label">Kesulitan</span><select className="form-control" name="difficulty" defaultValue="easy"><option value="easy">Mudah</option><option value="medium">Sedang</option><option value="hard">Sulit</option></select></label></div>
+              <label className="form-field"><span className="form-label">Grup kebiasaan (opsional)</span><input className="form-control" name="groupName" maxLength={60} placeholder="Rutinitas pagi, kesehatan, belajar" /></label>
               <div className="form-two-columns">
                 <label className="form-field">
                   <span className="form-label">Waktu</span>
