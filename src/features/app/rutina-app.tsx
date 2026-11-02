@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  CalendarDays, ChartLine, Home, ListChecks, MoreHorizontal, Search,
-  Sprout, WalletCards,
+  CalendarDays, ChartLine, Cloud, CloudOff, Home,
+  ListChecks, LoaderCircle, RefreshCw, Search, Sprout, WalletCards,
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
@@ -14,18 +14,19 @@ import { HabitsView } from "@/features/habits/habits-view";
 import { FinanceView } from "@/features/finance/finance-view";
 import { CalendarView } from "@/features/calendar/calendar-view";
 import { InsightsView } from "@/features/insights/insights-view";
-import { IconAction } from "@/components/ui/primitives";
 import { EntryModal } from "@/components/ui/entry-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
 import { PwaInstallButton } from "@/components/pwa/install-button";
 
-const navigation: { id: TabId; label: string; icon: typeof Home }[] = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "habits", label: "Habit", icon: ListChecks },
-  { id: "finance", label: "Uang", icon: WalletCards },
-  { id: "calendar", label: "Kalender", icon: CalendarDays },
-  { id: "insights", label: "Insight", icon: ChartLine },
+const navigation: { id: TabId; label: string; icon: typeof Home; description: string }[] = [
+  { id: "home", label: "Beranda", icon: Home, description: "Ringkasan hari ini" },
+  { id: "habits", label: "Kebiasaan", icon: ListChecks, description: "Atur ritme harian" },
+  { id: "finance", label: "Keuangan", icon: WalletCards, description: "Kelola arus uang" },
+  { id: "calendar", label: "Kalender", icon: CalendarDays, description: "Lihat jadwal" },
+  { id: "insights", label: "Insight", icon: ChartLine, description: "Pahami progres" },
 ];
+
+type SyncStatus = "local" | "syncing" | "synced" | "error";
 
 export function RutinaApp() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
@@ -40,12 +41,13 @@ export function RutinaApp() {
     syncStatus,
     updateHabits,
     updateTransactions,
+    refreshWorkspace,
     isReady: workspaceReady,
   } = useWorkspace();
 
   useEffect(() => {
     if (!toast) return;
-    const timeout = window.setTimeout(() => setToast(""), 2600);
+    const timeout = window.setTimeout(() => setToast(""), 3200);
     return () => window.clearTimeout(timeout);
   }, [toast]);
 
@@ -55,7 +57,10 @@ export function RutinaApp() {
         event.preventDefault();
         setSearchOpen(true);
       }
-      if (event.key === "Escape") { setSearchOpen(false); setSearchQuery(""); }
+      if (event.key === "Escape") {
+        setSearchOpen(false);
+        setSearchQuery("");
+      }
     }
 
     window.addEventListener("keydown", handleKeyboard);
@@ -72,14 +77,18 @@ export function RutinaApp() {
     [monthTransactions],
   );
 
-  const syncLabel =
-    syncStatus === "synced" ? "Tersinkron ke Turso" :
-    syncStatus === "syncing" ? "Menyinkronkan data..." :
-    syncStatus === "error" ? "Sinkronisasi bermasalah" :
-    "Mode lokal · browser";
+  const syncPresentation: Record<SyncStatus, { label: string; detail: string; className: string }> = {
+    synced: { label: "Tersinkron", detail: "Perubahan tersimpan di Turso", className: "is-synced" },
+    syncing: { label: "Menyinkronkan", detail: "Sedang menyimpan perubahan", className: "is-syncing" },
+    error: { label: "Belum tersinkron", detail: "Tekan untuk mencoba sinkronisasi ulang", className: "is-error" },
+    local: { label: "Mode lokal", detail: "Data sementara tersimpan di browser", className: "is-local" },
+  };
+  const sync = syncPresentation[syncStatus as SyncStatus];
 
   function toggleHabit(id: string) {
-    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
+    updateHabits((current) => current.map((habit) => habit.id === id
+      ? { ...habit, completed: !habit.completed }
+      : habit));
   }
 
   function submitHabit(event: FormEvent<HTMLFormElement>) {
@@ -87,17 +96,22 @@ export function RutinaApp() {
     const data = new FormData(event.currentTarget);
     const title = String(data.get("title") ?? "").trim();
     if (!title) return;
+
     const category = String(data.get("category") ?? "Personal") as Habit["category"];
     const habit: Habit = {
-      id: crypto.randomUUID(), title, category,
+      id: crypto.randomUUID(),
+      title,
+      category,
       time: String(data.get("time") ?? "07:00"),
       duration: Math.max(1, Number(data.get("duration")) || 15),
-      completed: false, icon: category === "Health" ? "movement" : category === "Learning" ? "book" : category === "Mindfulness" ? "mind" : "write",
+      completed: false,
+      icon: category === "Health" ? "movement" : category === "Learning" ? "book" : category === "Mindfulness" ? "mind" : "write",
       streak: 0,
     };
+
     updateHabits((current) => [...current, habit]);
     setModal(null);
-    setToast("Habit baru berhasil ditambahkan.");
+    setToast("Kebiasaan baru berhasil ditambahkan.");
   }
 
   function submitTransaction(event: FormEvent<HTMLFormElement>) {
@@ -106,12 +120,16 @@ export function RutinaApp() {
     const amount = Math.round(Number(data.get("amount")));
     const title = String(data.get("title") ?? "").trim();
     if (!title || !Number.isFinite(amount) || amount <= 0) return;
+
     const transaction: Transaction = {
-      id: crypto.randomUUID(), title,
+      id: crypto.randomUUID(),
+      title,
       type: String(data.get("type")) as TransactionType,
       category: String(data.get("category")) as TransactionCategory,
-      amount, date: String(data.get("date") || todayISO()),
+      amount,
+      date: String(data.get("date") || todayISO()),
     };
+
     updateTransactions((current) => [transaction, ...current]);
     setModal(null);
     setToast("Transaksi berhasil dicatat.");
@@ -120,10 +138,10 @@ export function RutinaApp() {
   if (!workspaceReady) {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
-        <div className="workspace-loading-content">
-          <span className="workspace-loading-spinner" aria-hidden="true" />
-          <span>Menyiapkan Rutina dan menyinkronkan data...</span>
-        </div>
+        <div className="workspace-loading-brand"><span className="brand-mark"><Sprout size={22} /></span><strong>rutina<span>.</span></strong></div>
+        <span className="workspace-loading-spinner" aria-hidden="true" />
+        <p>Menyiapkan ruang pribadimu…</p>
+        <small>Menghubungkan data dan memuat aktivitas</small>
       </main>
     );
   }
@@ -131,22 +149,82 @@ export function RutinaApp() {
   return (
     <div className="app-shell">
       <aside className="desktop-sidebar">
-        <div className="brand"><span className="brand-mark"><Sprout size={21} /></span><div><div className="brand-name">rutina.</div><div className="brand-sub">grow at your pace</div></div></div>
+        <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); }} aria-label="Rutina, kembali ke beranda">
+          <span className="brand-mark"><Sprout size={22} strokeWidth={1.9} /></span>
+          <span className="brand-copy"><span className="brand-name">rutina<span>.</span></span><span className="brand-sub">grow at your pace</span></span>
+        </a>
+
         <div className="nav-label">WORKSPACE</div>
         <nav className="side-nav" aria-label="Navigasi utama">
-          {navigation.map(({ id, label, icon: Icon }) => <button key={id} className={`nav-link ${activeTab === id ? "active" : ""}`} onClick={() => setActiveTab(id)}><Icon size={17} strokeWidth={1.8} />{label}</button>)}
+          {navigation.map(({ id, label, icon: Icon, description }) => (
+            <button
+              key={id}
+              type="button"
+              className={`nav-link ${activeTab === id ? "active" : ""}`}
+              aria-current={activeTab === id ? "page" : undefined}
+              onClick={() => setActiveTab(id)}
+            >
+              <span className="nav-link-icon"><Icon size={18} strokeWidth={1.8} /></span>
+              <span className="nav-link-copy"><strong>{label}</strong><small>{description}</small></span>
+              {activeTab === id && <span className="nav-active-indicator" />}
+            </button>
+          ))}
         </nav>
-        <div className="sidebar-bottom"><div className="profile-row"><div className="avatar">R</div><div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">{syncLabel}</div></div><MoreHorizontal size={17} color="var(--muted)" /></div></div>
+
+        <div className="sidebar-growth">
+          <span className="sidebar-growth-icon"><Sprout size={17} /></span>
+          <p>Hal besar tumbuh dari langkah kecil.</p>
+          <span>ONE DAY AT A TIME</span>
+        </div>
+
+        <div className="sidebar-bottom">
+          <button
+            type="button"
+            className={`sync-card ${sync.className}`}
+            onClick={() => void refreshWorkspace()}
+            aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+            title={sync.detail}
+          >
+            <span className="sync-card-icon">
+              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
+            </span>
+            <span className="sync-card-copy"><strong>{sync.label}</strong><small>{sync.detail}</small></span>
+            <RefreshCw size={14} className="sync-refresh" />
+          </button>
+          <div className="profile-row">
+            <div className="avatar">R</div>
+            <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+          </div>
+        </div>
       </aside>
 
       <main className="main-shell">
         <header className="topbar">
-          <div className="mobile-brand"><span className="brand-mark" style={{ width: 31, height: 31, borderRadius: 11 }}><Sprout size={17} /></span><span>rutina.</span></div>
-          <div className="topbar-note">Make room for what matters.</div>
+          <div className="mobile-brand">
+            <span className="brand-mark"><Sprout size={18} /></span>
+            <span>rutina<span>.</span></span>
+          </div>
+          <div className="topbar-context">
+            <span className="topbar-context-dot" />
+            <span>Ruang pribadi</span>
+            <span className="topbar-context-divider">/</span>
+            <strong>{navigation.find((item) => item.id === activeTab)?.label}</strong>
+          </div>
           <div className="topbar-actions">
-            <IconAction label="Cari (Ctrl K)" onClick={() => setSearchOpen(true)}><Search size={17} /></IconAction>
+            <button className="search-trigger" type="button" onClick={() => setSearchOpen(true)} aria-label="Cari di Rutina">
+              <Search size={16} /><span>Cari sesuatu…</span><kbd>Ctrl / ⌘ K</kbd>
+            </button>
+            <button
+              type="button"
+              className={`mobile-sync-button ${sync.className}`}
+              onClick={() => void refreshWorkspace()}
+              title={sync.detail}
+              aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+            >
+              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
+            </button>
             <PwaInstallButton />
-            <div className="avatar" style={{ width: 34, height: 34, fontSize: 12 }}>R</div>
+            <div className="avatar topbar-avatar" aria-label="Workspace pribadi">R</div>
           </div>
         </header>
 
@@ -160,7 +238,18 @@ export function RutinaApp() {
       </main>
 
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
-        {navigation.map(({ id, label, icon: Icon }) => <button key={id} className={activeTab === id ? "active" : ""} aria-current={activeTab === id ? "page" : undefined} onClick={() => setActiveTab(id)}><Icon size={19} strokeWidth={1.9} /><span>{label}</span></button>)}
+        {navigation.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            className={activeTab === id ? "active" : ""}
+            aria-current={activeTab === id ? "page" : undefined}
+            onClick={() => setActiveTab(id)}
+          >
+            <Icon size={19} strokeWidth={1.9} />
+            <span>{label}</span>
+          </button>
+        ))}
       </nav>
 
       {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} />}
@@ -173,7 +262,7 @@ export function RutinaApp() {
         onClose={() => { setSearchOpen(false); setSearchQuery(""); }}
         onNavigate={(tab) => setActiveTab(tab)}
       />
-      {toast && <div role="status" className="toast">{toast}</div>}
+      {toast && <div role="status" aria-live="polite" className="toast"><span className="toast-dot" />{toast}</div>}
     </div>
   );
 }
