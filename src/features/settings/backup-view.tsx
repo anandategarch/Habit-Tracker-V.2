@@ -3,6 +3,7 @@
 import { useState, type ChangeEvent } from "react";
 import { Archive, Download, FileUp, LoaderCircle, ShieldCheck } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import type { WorkspaceSettings } from "@/lib/module-types";
 
 function dateStamp(): string {
   const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
@@ -11,7 +12,10 @@ function dateStamp(): string {
   return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
-export function BackupView() {
+export function BackupView({ settings, onUpdateSettings }: {
+  settings: WorkspaceSettings;
+  onUpdateSettings: (update: (current: WorkspaceSettings) => WorkspaceSettings) => void;
+}) {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [message, setMessage] = useState("");
@@ -88,7 +92,32 @@ export function BackupView() {
   }
 
   return <>
-    <PageIntro eyebrow="PREFERENSI & DATA" title="Lindungi data yang sudah kamu bangun." subtitle="Buat file backup atau gabungkan backup V2 dari perangkat lain ke workspace ini." />
+    <PageIntro eyebrow="PREFERENSI & DATA" title="Ruang nyaman untuk bertumbuh." subtitle="Atur suasana Rutina dan jaga catatan kebiasaanmu tetap aman." />
+    <section className="settings-profile-card">
+      <span className="settings-profile-mark"><span>R</span></span>
+      <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadimu</strong><span>Rutina · Grow at your pace</span></div>
+      <span className="settings-profile-status"><ShieldCheck size={14} /> Data terlindungi</span>
+    </section>
+    <div className="settings-preferences-grid">
+      <section className="card card-pad settings-preference-card">
+        <SectionHeading title="Preferensi tampilan" caption="Pilih suasana yang paling nyaman untukmu." />
+        <div className="settings-theme-options" role="group" aria-label="Tema aplikasi">
+          <button type="button" className={settings.theme === "system" ? "active" : ""} aria-pressed={settings.theme === "system"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "system" }))}><span>◐</span><strong>Sistem</strong><small>Ikuti perangkat</small></button>
+          <button type="button" className={settings.theme === "light" ? "active" : ""} aria-pressed={settings.theme === "light"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "light" }))}><span>☀</span><strong>Terang</strong><small>Nuansa hangat</small></button>
+          <button type="button" className={settings.theme === "dark" ? "active" : ""} aria-pressed={settings.theme === "dark"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "dark" }))}><span>☾</span><strong>Gelap</strong><small>Lebih redup</small></button>
+        </div>
+      </section>
+      <section className="card card-pad settings-preference-card">
+        <SectionHeading title="Ritme pribadi" caption="Beri ruang untuk beristirahat saat diperlukan." />
+        <label className="settings-vacation-toggle">
+          <span className="settings-vacation-icon"><Sprout size={18} /></span>
+          <span><strong>Mode libur</strong><small>Jeda pencatatan habit tanpa menghapus data.</small></span>
+          <input type="checkbox" checked={settings.vacationMode} onChange={(event) => onUpdateSettings((current) => ({ ...current, vacationMode: event.target.checked }))} />
+        </label>
+        <div className="settings-about-note"><span>“</span><p>Hal besar tumbuh dari langkah kecil. Kembali kapan pun kamu siap.</p></div>
+      </section>
+    </div>
+    <div className="settings-section-heading"><span>DATA & PEMULIHAN</span><strong>Backup workspace</strong></div>
     <div className="module-two-col">
       <section className="card card-pad backup-card">
         <div className="backup-icon"><Archive size={22} /></div>
