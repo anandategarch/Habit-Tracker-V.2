@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Activity, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Coffee, Heart, Plus, Receipt, Sprout } from "lucide-react";
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
-import { formatCompactRupiah, formatRupiah } from "@/lib/format";
+import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
 
@@ -21,6 +21,28 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
 }) {
   const [filter, setFilter] = useState<TransactionFilter>("all");
   const net = income - expense;
+  const todayKey = todayISO();
+  const todayParts = todayKey.split("-").map(Number);
+  const todayUtc = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2]));
+  const cashflowWeek = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(todayUtc);
+    date.setUTCDate(todayUtc.getUTCDate() - (6 - index));
+    const iso = date.toISOString().slice(0, 10);
+    const dayIncome = transactions.filter((item) => item.date === iso && item.type === "income").reduce((sum, item) => sum + item.amount, 0);
+    const dayExpense = transactions.filter((item) => item.date === iso && item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
+    return {
+      iso,
+      net: dayIncome - dayExpense,
+      label: new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(iso + "T12:00:00+07:00")),
+    };
+  });
+  const cashflowScale = Math.max(1, ...cashflowWeek.map((item) => Math.abs(item.net)));
+  const cashflowPoints = cashflowWeek.map((item, index) => {
+    const x = 10 + index * 80;
+    const y = 44 - (item.net / cashflowScale) * 30;
+    return { x, y, key: item.iso, label: item.label, net: item.net };
+  });
+  const cashflowPolyline = cashflowPoints.map((point) => point.x + "," + point.y).join(" ");
   const spendByCategory = summarizeBudgets(transactions, budgets);
   const expenseCategories = useMemo(() => {
     const totals = new Map<TransactionCategory, number>();
@@ -69,6 +91,15 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
           <span className="small-label">ARUS KAS BERSIH</span>
           <div className="metric-value">{formatRupiah(net)}</div>
           <span className="finance-balance-note">Pemasukan dikurangi pengeluaran bulan ini</span>
+          <div className="finance-balance-trend">
+            <div className="finance-balance-trend-heading"><span>TREND ARUS KAS</span><small>7 hari terakhir</small></div>
+            <svg viewBox="0 0 500 88" role="img" aria-label="Grafik arus kas bersih tujuh hari terakhir">
+              <line x1="8" y1="44" x2="492" y2="44" stroke="rgba(255,255,255,.22)" strokeDasharray="4 7" />
+              <polyline points={cashflowPolyline} fill="none" stroke="#d8edc8" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              {cashflowPoints.map((point) => <circle key={point.key} cx={point.x} cy={point.y} r="4" fill="#fff8e8" stroke="#d8edc8" strokeWidth="2" />)}
+            </svg>
+            <div className="finance-balance-trend-days">{cashflowPoints.map((point) => <small key={point.key}>{point.label}</small>)}</div>
+          </div>
         </section>
         <section className="card finance-metric">
           <span className="finance-metric-label"><span className="finance-metric-icon income"><ArrowDownLeft size={14} /></span> PEMASUKAN</span>
