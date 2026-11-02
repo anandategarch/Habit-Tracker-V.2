@@ -4,13 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ArrowDownLeft, ArrowUpRight, BrainCircuit, Flame, HeartPulse, Moon, PiggyBank, Sprout, Target, WalletCards } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { DailyCheckin } from "@/lib/module-types";
-import { formatCompactRupiah } from "@/lib/format";
+import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { PageIntro, SectionHeading, StatCard } from "@/components/ui/primitives";
 
 const habitCategories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 type InsightType = "mood" | "sleep" | "performance" | "streak" | "finance";
 type Insight = { id: string; type: InsightType; title: string; text: string; habitId?: string };
+type HabitHistoryRecord = { habitId: string; title: string; date: string };
 
 function localInsights(checkins: DailyCheckin[], habits: Habit[], income: number, expense: number): Insight[] {
   const average = (field: "mood" | "energy" | "sleepHours") => checkins.length
@@ -50,6 +51,9 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   const [source, setSource] = useState<"ai" | "rule-based" | "local">("local");
   const [loading, setLoading] = useState(true);
   const [sourceNote, setSourceNote] = useState("");
+  const [weeklyHistory, setWeeklyHistory] = useState<HabitHistoryRecord[]>([]);
+  const [weeklyHistoryLoading, setWeeklyHistoryLoading] = useState(true);
+  const [weeklyHistoryError, setWeeklyHistoryError] = useState(false);
   // Keep the freshest local data available for the offline fallback without
   // re-running the (expensive, LLM-backed) request on every workspace change.
   const fallbackDataRef = useRef({ checkins, habits, income, expense });
@@ -57,11 +61,55 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
     fallbackDataRef.current = { checkins, habits, income, expense };
   }, [checkins, habits, income, expense]);
 
+  const todayKey = todayISO();
+  const weekDateKeys = useMemo(() => {
+    const todayAtJakartaMidday = new Date(`${todayKey}T12:00:00+07:00`);
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(todayAtJakartaMidday);
+      date.setUTCDate(date.getUTCDate() - (6 - index));
+      return date.toISOString().slice(0, 10);
+    });
+  }, [todayKey]);
   const recentCheckins = useMemo(() => checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [checkins]);
   const trendCheckins = recentCheckins.slice(0, 7).reverse();
+  const weeklyActivity = useMemo(() => {
+    const completedByDate = new Map<string, number>();
+    weeklyHistory.forEach((record) => completedByDate.set(record.date, (completedByDate.get(record.date) ?? 0) + 1));
+    return weekDateKeys.map((date) => ({
+      date,
+      completed: date === todayKey ? habits.filter((habit) => habit.completed).length : (completedByDate.get(date) ?? 0),
+    }));
+  }, [habits, todayKey, weekDateKeys, weeklyHistory]);
+  const weeklyActivityMax = Math.max(1, ...weeklyActivity.map((item) => item.completed));
+  const weeklyActivityTotal = weeklyActivity.reduce((sum, item) => sum + item.completed, 0);
   const moodAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.mood, 0) / recentCheckins.length : null;
   const energyAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.energy, 0) / recentCheckins.length : null;
   const sleepAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.sleepHours, 0) / recentCheckins.length : null;
+
+  useEffect(() => {
+    let cancelled = false;
+    const months = [...new Set(weekDateKeys.map((date) => date.slice(0, 7)))];
+    void Promise.all(months.map(async (month) => {
+      const response = await fetch(`/api/history?month=${encodeURIComponent(month)}`, { cache: "no-store" });
+      if (!response.ok) throw new Error("Habit history unavailable");
+      const payload = await response.json() as { records?: HabitHistoryRecord[] };
+      return Array.isArray(payload.records) ? payload.records : [];
+    }))
+      .then((recordsByMonth) => {
+        if (cancelled) return;
+        setWeeklyHistory(recordsByMonth.flat());
+        setWeeklyHistoryError(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setWeeklyHistory([]);
+        setWeeklyHistoryError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setWeeklyHistoryLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [weekDateKeys]);
 
   useEffect(() => {
     let cancelled = false;
@@ -96,9 +144,30 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
         <StatCard label="Arus kas bersih" value={formatCompactRupiah(totalNet)} foot="Bulan berjalan" icon={PiggyBank} />
       </div>
 
-      <section className="card card-pad insight-trend-panel" aria-label="Tren mood dan energi dari check-in terbaru">
-        <SectionHeading title="Ritme mingguan" caption="Mood dan energi dari maksimal tujuh check-in terbaru" />
-        {trendCheckins.length > 0 ? (
+      <section className="card card-pad insight-trend-panel" aria-label="Ringkasan progres habit dan check-in selama tujuh hari terakhir">
+        <SectionHeading title="Progress mingguan" caption="Jumlah habit yang tercatat selesai setiap hari" />
+        {weeklyHistoryLoading ? (
+          <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Menyiapkan ringkasan mingguan</strong><p>Riwayat penyelesaian habit sedang dimuat.</p></div>
+        ) : !weeklyHistoryError ? (
+          weeklyActivityTotal > 0 ? (
+            <>
+              <div className="insight-trend-chart">
+                {weeklyActivity.map((item) => (
+                  <div className="insight-trend-day" key={item.date} aria-label={`${item.date}: ${item.completed} habit selesai`}>
+                    <strong className="insight-trend-value">{item.completed}</strong>
+                    <div className="insight-trend-bars">
+                      <span className="insight-trend-bar activity" style={{ height: item.completed ? `${Math.max(8, item.completed / weeklyActivityMax * 100)}%` : "0%" }} title={`${item.completed} habit selesai`} />
+                    </div>
+                    <small>{new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${item.date}T12:00:00+07:00`))}</small>
+                  </div>
+                ))}
+              </div>
+              <div className="insight-trend-legend"><span><i className="activity" /> Habit selesai</span><small>{weeklyActivityTotal} penyelesaian · 7 hari</small></div>
+            </>
+          ) : (
+            <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p></div>
+          )
+        ) : trendCheckins.length > 0 ? (
           <>
             <div className="insight-trend-chart">
               {trendCheckins.map((item) => (
@@ -107,14 +176,14 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
                     <span className="insight-trend-bar mood" style={{ height: `${item.mood / 5 * 100}%` }} title={`Mood ${item.mood}/5`} />
                     <span className="insight-trend-bar energy" style={{ height: `${item.energy / 5 * 100}%` }} title={`Energi ${item.energy}/5`} />
                   </div>
-                  <small>{new Intl.DateTimeFormat("id-ID", { weekday: "short" }).format(new Date(`${item.date}T00:00:00`))}</small>
+                  <small>{new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${item.date}T12:00:00+07:00`))}</small>
                 </div>
               ))}
             </div>
-            <div className="insight-trend-legend"><span><i className="mood" /> Mood</span><span><i className="energy" /> Energi</span><small>Skala 1–5</small></div>
+            <div className="insight-trend-legend"><span><i className="mood" /> Mood</span><span><i className="energy" /> Energi</span><small>Fallback dari check-in</small></div>
           </>
         ) : (
-          <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Trenmu akan tumbuh di sini</strong><p>Simpan check-in harian untuk melihat perubahan mood dan energi dari waktu ke waktu.</p></div>
+          <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Riwayat mingguan belum tersedia</strong><p>Hubungkan database dan simpan aktivitas harian untuk melihat progres di sini.</p></div>
         )}
       </section>
 
