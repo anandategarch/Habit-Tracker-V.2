@@ -288,7 +288,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
       <section className="tree-progress-card tree-season-card">
         <div className="tree-artwork"><Image src={stageArt} alt={`Pohon tahap ${growth.stage.label}`} width={220} height={220} priority /></div>
         <div className="tree-season-copy">
-          <span className="small-label">MUSIM MINGGU INI · ${growth.stage.label.toUpperCase()}</span>
+          <span className="small-label">MUSIM MINGGU INI · {growth.stage.label.toUpperCase()}</span>
           <h2>{growth.stage.label}</h2>
           <p>{growth.stage.tagline}</p>
           <div className="tree-progress-caption"><strong>{growth.weeklyXp.toLocaleString("id-ID")} XP</strong><span>{growth.stage.xpToNext === null ? "Tahap tertinggi minggu ini" : `${growth.stage.xpToNext.toLocaleString("id-ID")} XP menuju ${(["Benih", "Tunas", "Pohon Muda", "Pohon Dewasa"][growth.stage.index + 1] ?? "tahap berikutnya")}`}</span></div>

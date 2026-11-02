@@ -178,6 +178,18 @@ export function RutinaApp() {
     const title = String(data.get("title") ?? "").trim();
     if (!title) return;
 
+    const scheduleKind = String(data.get("scheduleKind") || "daily");
+    let schedule: Habit["schedule"] = { kind: "daily" };
+    if (scheduleKind === "weekly") {
+      const days = parseNumberList(String(data.get("scheduleDays") || ""), 0, 6);
+      if (!days.length) { setToast("Pilih minimal satu hari untuk jadwal mingguan."); return; }
+      schedule = { kind: "weekly", days };
+    } else if (scheduleKind === "monthly") {
+      const dates = parseNumberList(String(data.get("scheduleDates") || ""), 1, 31);
+      if (!dates.length) { setToast("Pilih minimal satu tanggal untuk jadwal bulanan."); return; }
+      schedule = { kind: "monthly", dates };
+    }
+
     const category = String(data.get("category") ?? "Personal") as Habit["category"];
     const habit: Habit = {
       id: crypto.randomUUID(),
@@ -196,6 +208,7 @@ export function RutinaApp() {
       difficulty: String(data.get("difficulty") || "easy") as Habit["difficulty"],
       groupName: String(data.get("groupName") || "").trim().slice(0, 60),
       timeSpentMinutes: 0,
+      schedule,
     };
 
     updateHabits((current) => [...current, habit]);
