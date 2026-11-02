@@ -18,7 +18,9 @@ function readLocal(): WorkspaceModules {
 function hasData(value: WorkspaceModules): boolean {
   return Object.entries(value).some(([key, item]) => key === "finance"
     ? Object.values(item as Record<string, unknown>).some((part) => Array.isArray(part) && part.length > 0)
-    : Array.isArray(item) && item.length > 0);
+    : key === "settings"
+      ? Boolean((item as WorkspaceModules["settings"]).vacationMode || (item as WorkspaceModules["settings"]).theme !== "system")
+      : Array.isArray(item) && item.length > 0);
 }
 
 function persistLocal(value: WorkspaceModules): void {
@@ -48,10 +50,14 @@ export function useModules() {
             const remoteValue = (remote as unknown as Record<string, unknown>)[key];
             const localHas = key === "finance"
               ? Object.values((localValue ?? {}) as Record<string, unknown>).some((part) => Array.isArray(part) && part.length > 0)
-              : Array.isArray(localValue) && localValue.length > 0;
+              : key === "settings"
+                ? Boolean((localValue as WorkspaceModules["settings"] | undefined)?.vacationMode || (localValue as WorkspaceModules["settings"] | undefined)?.theme !== "system")
+                : Array.isArray(localValue) && localValue.length > 0;
             const remoteHas = key === "finance"
               ? Object.values((remoteValue ?? {}) as Record<string, unknown>).some((part) => Array.isArray(part) && part.length > 0)
-              : Array.isArray(remoteValue) && remoteValue.length > 0;
+              : key === "settings"
+                ? Boolean((remoteValue as WorkspaceModules["settings"] | undefined)?.vacationMode || (remoteValue as WorkspaceModules["settings"] | undefined)?.theme !== "system")
+                : Array.isArray(remoteValue) && remoteValue.length > 0;
             return [key, !remoteHas && localHas ? localValue : remoteValue];
           }),
         ));

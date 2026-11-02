@@ -1453,3 +1453,66 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
  .finance-heatmap-grid { gap:4px; }
  .habit-row-actions { flex-direction:column; }
 }
+
+.habits-intro-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.vacation-toggle.active { color:var(--primary); border-color:var(--sage); background:var(--primary-soft); }
+.vacation-banner { margin:0 0 16px; padding:13px 16px; border:1px solid #c4d8c5; border-radius:14px; color:var(--primary-strong); background:var(--surface-green); font-size:12px; line-height:1.55; }
+.vacation-banner strong { margin-right:4px; }
+.habit-row-actions button:disabled { opacity:.4; cursor:not-allowed; }
+.theme-toggle { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:0 10px; border:1px solid var(--line); border-radius:11px; color:var(--ink-soft); background:var(--surface); font-size:10px; font-weight:700; white-space:nowrap; }
+html[data-theme="dark"] {
+  color-scheme:dark;
+  --canvas:#101814;
+  --surface:#18231d;
+  --surface-soft:#1f2d25;
+  --surface-green:#23372a;
+  --ink:#edf4ef;
+  --ink-soft:#c2d0c6;
+  --muted:#91a498;
+  --line:#2d4034;
+  --primary:#91b99a;
+  --primary-strong:#c4ddc9;
+  --primary-soft:#2b4232;
+  --sage:#769b7f;
+  --mint:#2c4634;
+  --amber:#d8ad69;
+  --coral:#d68b78;
+  --danger:#e18c7d;
+  --shadow-card:0 8px 28px rgba(0,0,0,.18);
+  --shadow-float:0 18px 48px rgba(0,0,0,.42);
+}
+html[data-theme="dark"] body { background:var(--canvas); color:var(--ink); }
+html[data-theme="dark"] .desktop-sidebar { background:#141e18; border-color:var(--line); }
+html[data-theme="dark"] .topbar { background:rgba(16,24,20,.9); border-color:var(--line); }
+html[data-theme="dark"] .nav-link { color:#aebfb3; }
+html[data-theme="dark"] .nav-link:hover,
+html[data-theme="dark"] .nav-link.active { color:var(--primary-strong); background:#263b2d; }
+html[data-theme="dark"] .nav-label,
+html[data-theme="dark"] .profile-caption { color:var(--muted); }
+html[data-theme="dark"] .avatar { color:var(--primary-strong); background:#2c4433; }
+html[data-theme="dark"] .bottom-nav { background:rgba(20,30,24,.96); border-color:var(--line); }
+html[data-theme="dark"] .mobile-more-menu { background:var(--surface); border-color:var(--line); }
+html[data-theme="dark"] .mobile-more-menu button { color:var(--ink-soft); }
+html[data-theme="dark"] .search-trigger,
+html[data-theme="dark"] .theme-toggle,
+html[data-theme="dark"] .secondary-button,
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .module-status-select { background:var(--surface); color:var(--ink); border-color:var(--line); }
+html[data-theme="dark"] .hero-card { background:linear-gradient(135deg,#20382a,#17271e); }
+html[data-theme="dark"] .tree-progress-card { background:linear-gradient(120deg,#20352a,#18241d); border-color:var(--line); }
+html[data-theme="dark"] .tree-illustration { background:#263a2c; }
+html[data-theme="dark"] .module-item,
+html[data-theme="dark"] .finance-recap-grid > div { background:var(--surface-soft); border-color:var(--line); }
+html[data-theme="dark"] .wellness-water-ring { border-color:#2a4232; border-top-color:#638a6d; border-right-color:var(--primary); }
+html[data-theme="dark"] .vacation-banner { background:#24392b; border-color:#3b5c43; color:var(--primary-strong); }
+html[data-theme="dark"] .modal-backdrop { background:rgba(0,0,0,.72); }
+html[data-theme="dark"] .modal-card,
+html[data-theme="dark"] .search-dialog { background:var(--surface); border-color:var(--line); }
+html[data-theme="dark"] .habit-icon { background:#2b4032; color:var(--primary-strong); }
+html[data-theme="dark"] .category-breakdown .budget-track,
+html[data-theme="dark"] .module-progress-track { background:#34463a; }
+@media (max-width:760px) {
+ .theme-toggle { width:36px; min-width:36px; padding:0; }
+ .theme-toggle span { display:none; }
+ .habits-intro-actions { justify-content:flex-start; }
+}

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   CalendarDays, ChartLine, Cloud, CloudOff, Home, ListChecks, LoaderCircle,
   RefreshCw, Search, Sprout, WalletCards, Target, BriefcaseBusiness,
-  HeartPulse, Dumbbell, ClipboardCheck, TreeDeciduous, Grid2X2, ChevronRight,
+  HeartPulse, Dumbbell, ClipboardCheck, TreeDeciduous, Grid2X2, ChevronRight, Sun, Moon, Monitor,
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
@@ -57,6 +57,20 @@ export function RutinaApp() {
     isReady: workspaceReady,
   } = useWorkspace();
   const { modules, updateModule, ready: modulesReady } = useModules();
+  const selectedTheme = modules.settings.theme;
+  const themeLabel = selectedTheme === "system" ? "Sistem" : selectedTheme === "dark" ? "Gelap" : "Terang";
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyTheme = () => {
+      const resolved = selectedTheme === "system" ? (media.matches ? "dark" : "light") : selectedTheme;
+      document.documentElement.dataset.theme = resolved;
+    };
+    applyTheme();
+    if (selectedTheme !== "system") return;
+    media.addEventListener("change", applyTheme);
+    return () => media.removeEventListener("change", applyTheme);
+  }, [selectedTheme]);
 
   useEffect(() => {
     if (!toast) return;
@@ -99,10 +113,12 @@ export function RutinaApp() {
   const sync = syncPresentation[syncStatus as SyncStatus];
 
   function toggleHabit(id: string) {
+    if (modules.settings.vacationMode) return;
     updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
   }
 
   function adjustHabit(id: string, delta: number) {
+    if (modules.settings.vacationMode) return;
     updateHabits((current) => current.map((habit) => {
       if (habit.id !== id || habit.kind !== "amount") return habit;
       const currentAmount = Math.max(0, (habit.currentAmount ?? 0) + delta);
@@ -111,6 +127,7 @@ export function RutinaApp() {
   }
 
   function trackHabitTime(id: string) {
+    if (modules.settings.vacationMode) return;
     updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, timeSpentMinutes: (habit.timeSpentMinutes ?? 0) + 5 } : habit));
   }
 
@@ -256,14 +273,18 @@ export function RutinaApp() {
             >
               {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
             </button>
+            <button type="button" className="theme-toggle" onClick={() => updateModule("settings", (current) => ({ ...current, theme: current.theme === "light" ? "dark" : current.theme === "dark" ? "system" : "light" }))} aria-label={`Tema: ${themeLabel}. Ganti tema.`} title={`Tema: ${themeLabel}`}>
+              {selectedTheme === "system" ? <Monitor size={16} /> : selectedTheme === "dark" ? <Moon size={16} /> : <Sun size={16} />}
+              <span>{themeLabel}</span>
+            </button>
             <PwaInstallButton />
             <div className="avatar topbar-avatar" aria-label="Workspace pribadi">R</div>
           </div>
         </header>
 
         <div className="content-wrap page-transition" key={activeTab}>
-          {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onAddHabit={() => setModal("habit")} />}
-          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onReorder={updateHabits} onAdd={() => setModal("habit")} />}
+          {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onAddHabit={() => setModal("habit")} onAdjust={adjustHabit} onTrackTime={trackHabitTime} vacationMode={modules.settings.vacationMode} />}
+          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTrackTime={trackHabitTime} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} />}
           {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} />}

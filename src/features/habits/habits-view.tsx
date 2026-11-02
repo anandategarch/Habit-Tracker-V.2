@@ -9,7 +9,7 @@ import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "
 type CompletionFilter = "all" | "pending" | "completed";
 const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
 
-export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTrackTime, onReorder }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void; onAdjust?: (id: string, delta: number) => void; onTrackTime?: (id: string) => void; onReorder?: (items: Habit[]) => void }) {
+export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTrackTime, onReorder, vacationMode = false, onToggleVacation }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void; onAdjust?: (id: string, delta: number) => void; onTrackTime?: (id: string) => void; onReorder?: (items: Habit[]) => void; vacationMode?: boolean; onToggleVacation?: () => void }) {
   const [completionFilter, setCompletionFilter] = useState<CompletionFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
   const [query, setQuery] = useState("");
@@ -30,9 +30,10 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTrackTime, onR
         eyebrow="KEBIASAAN HARIAN"
         title="Bangun ritmemu."
         subtitle="Konsistensi kecil lebih berarti daripada target yang terlalu besar."
-        action={<PrimaryButton onClick={onAdd}><Plus size={15} /> Habit baru</PrimaryButton>}
+        action={<div className="habits-intro-actions"><button type="button" className={`secondary-button vacation-toggle ${vacationMode ? "active" : ""}`} onClick={onToggleVacation}>{vacationMode ? "Akhiri mode libur" : "Mode libur"}</button><PrimaryButton onClick={onAdd}><Plus size={15} /> Habit baru</PrimaryButton></div>}
       />
 
+      {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Pencatatan habit, progres amount, dan waktu sedang dijeda. Data sebelumnya tetap tersimpan.</div>}
       <div className="habit-overview-grid">
         <section className="card habit-progress-card">
           <div className="habit-progress-copy">
@@ -81,7 +82,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTrackTime, onR
           ))}
         </div>
         <div className="habit-list">
-          {filteredHabits.map((habit) => <div key={habit.id} className="habit-draggable" draggable onDragStart={() => setDraggedId(habit.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (!draggedId || draggedId === habit.id || !onReorder) return; const next = [...habits]; const from = next.findIndex((item) => item.id === draggedId); const to = next.findIndex((item) => item.id === habit.id); if (from < 0 || to < 0) return; const [moved] = next.splice(from, 1); next.splice(to, 0, moved); onReorder(next); setDraggedId(null); }}><HabitRow habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTrackTime={onTrackTime} /></div>)}
+          {filteredHabits.map((habit) => <div key={habit.id} className="habit-draggable" draggable onDragStart={() => setDraggedId(habit.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (!draggedId || draggedId === habit.id || !onReorder) return; const next = [...habits]; const from = next.findIndex((item) => item.id === draggedId); const to = next.findIndex((item) => item.id === habit.id); if (from < 0 || to < 0) return; const [moved] = next.splice(from, 1); next.splice(to, 0, moved); onReorder(next); setDraggedId(null); }}><HabitRow habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTrackTime={onTrackTime} paused={vacationMode} /></div>)}
         </div>
         {filteredHabits.length === 0 && (
           <EmptyState

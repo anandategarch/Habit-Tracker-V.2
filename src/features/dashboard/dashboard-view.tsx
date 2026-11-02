@@ -8,9 +8,9 @@ import { FocusTimer } from "@/features/focus/focus-timer";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 
-export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTrackTime }: {
+export function DashboardView({ habits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTrackTime, vacationMode = false }: {
   habits: Habit[]; income: number; expense: number; onNavigate: (tab: TabId) => void;
-  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTrackTime?: (id: string) => void;
+  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTrackTime?: (id: string) => void; vacationMode?: boolean;
 }) {
   const now = new Date();
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
@@ -35,6 +35,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
         subtitle="Satu hari, satu langkah kecil yang berarti."
         action={<PrimaryButton onClick={onAddHabit}><Plus size={15} /> Tambah kebiasaan</PrimaryButton>}
       />
+      {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
       <div className="dashboard-grid">
         <div className="left-stack">
           <section className="hero-card">
@@ -69,7 +70,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
             {habits.length > 0 ? (
               <>
                 <div className="habit-list">
-                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTrackTime={onTrackTime} />)}
+                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTrackTime={onTrackTime} paused={vacationMode} />)}
                 </div>
                 {habits.length > 4 && <button className="text-button list-more" type="button" onClick={() => onNavigate("habits")}>Lihat {habits.length - 4} kebiasaan lainnya <ArrowRight size={13} /></button>}
               </>
@@ -113,7 +114,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
               <>
                 <h2>{upcomingHabit.title}</h2>
                 <p>{upcomingHabit.time} · {upcomingHabit.duration} menit · {upcomingHabit.category}</p>
-                <button className="next-step-action" type="button" onClick={() => onToggle(upcomingHabit.id)}>
+                <button className="next-step-action" type="button" disabled={vacationMode} onClick={() => onToggle(upcomingHabit.id)}>
                   <Check size={15} /> Tandai selesai
                 </button>
               </>
