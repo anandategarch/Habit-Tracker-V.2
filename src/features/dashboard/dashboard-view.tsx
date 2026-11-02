@@ -33,7 +33,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
   const sortedHabits = [...habits].sort((a, b) => a.time.localeCompare(b.time));
 
   return (
-    <>
+    <div className="botanical-dashboard-page">
       <PageIntro
         eyebrow={dateLabel}
         title={`${greeting}, Ananda! 🌱`}
@@ -49,7 +49,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
           <p className="hero-description">— Rutina</p>
         </div>
         <div className="hero-progress-card">
-          <span className="hero-progress-icon"><Sprout size={22} /></span>
+          <span className="hero-progress-icon" style={{ "--progress": `${progress}%` } as CSSProperties} aria-hidden="true"><Sprout size={22} /><span className="hero-progress-number">{progress}%</span></span>
           <div className="hero-progress-copy">
             <div className="hero-progress-heading"><strong>Habit hari ini</strong><span>{progress}%</span></div>
             <div className="hero-progress-count"><b>{completed} / {habits.length}</b> selesai</div>
@@ -164,6 +164,6 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
           </section>
         </div>
       </div>
-    </>
+    </div>
   );
 }
