@@ -624,3 +624,107 @@ body {
   .workspace-loading-spinner { animation: none; }
 }
 
+
+
+/* Progressive Web App installation guidance */
+.pwa-install-trigger { color: var(--primary); }
+.pwa-help-backdrop {
+  position: fixed; inset: 0; z-index: 120;
+  display: grid; place-items: center; padding: 20px;
+  background: rgba(20, 37, 27, .38); backdrop-filter: blur(8px);
+}
+.pwa-help-card {
+  width: min(100%, 440px); padding: 24px;
+  border: 1px solid var(--line); border-radius: 24px;
+  background: var(--surface); box-shadow: var(--shadow-float);
+  animation: rutina-modal-in 260ms var(--ease-rutina) both;
+}
+.pwa-help-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+.pwa-help-heading h2 { margin: 7px 0 0; color: var(--ink); font-size: 20px; letter-spacing: -.6px; }
+.pwa-help-step { padding: 15px 0; border-top: 1px solid var(--line); }
+.pwa-help-step strong { color: var(--primary); font-size: 13px; }
+.pwa-help-step p { margin: 7px 0 0; color: var(--ink-soft); font-size: 12px; line-height: 1.7; }
+.pwa-help-step svg { display: inline; vertical-align: -2px; }
+.pwa-help-note { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+
+/* Full-screen seed-to-tree launch animation for installed Rutina */
+.tree-splash {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(217,233,221,.72), transparent 43%),
+    var(--canvas);
+  animation: tree-splash-out 520ms ease-in 3.35s both;
+}
+.tree-splash-content {
+  display: grid; justify-items: center; width: min(calc(100% - 36px), 390px);
+  padding: 18px 0 34px; text-align: center;
+}
+.tree-splash-art { display: block; width: min(76vw, 310px); height: auto; overflow: visible; }
+.tree-splash-ground {
+  fill: none; stroke: #a8bd9f; stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 260; stroke-dashoffset: 260;
+  animation: tree-ground-draw 700ms ease-out 280ms forwards;
+}
+.tree-splash-seed { transform-box: fill-box; transform-origin: center; animation: tree-seed-vanish 550ms ease-in 900ms both; }
+.tree-splash-trunk {
+  fill: #6f8d67; transform-box: fill-box; transform-origin: center bottom;
+  transform: scaleY(.02); animation: tree-trunk-grow 1.15s cubic-bezier(.2,.75,.25,1) 760ms forwards;
+}
+.tree-splash-branches {
+  fill: none; stroke: #6f8d67; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 180; stroke-dashoffset: 180;
+  animation: tree-branches-grow 850ms cubic-bezier(.2,.75,.25,1) 1.45s forwards;
+}
+.tree-splash-canopy {
+  transform-box: view-box; transform-origin: 180px 240px; transform: scale(.06);
+  animation: tree-canopy-grow 1.25s cubic-bezier(.16,.82,.24,1) 1.72s forwards;
+}
+.tree-splash-leaf-detail {
+  fill: none; stroke: #a8c6ad; stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 100; stroke-dashoffset: 100;
+  animation: tree-leaf-detail 620ms ease-out 2.55s forwards;
+}
+.tree-splash-copy { opacity: 0; transform: translateY(10px); animation: tree-copy-in 650ms ease-out 2.3s forwards; }
+.tree-splash-kicker { color: #7c9180; font-size: 9px; font-weight: 750; letter-spacing: 2px; }
+.tree-splash-copy h1 { margin: 9px 0 5px; color: var(--primary-strong); font-size: 32px; line-height: 1; font-weight: 800; letter-spacing: -1.4px; }
+.tree-splash-copy h1 span { color: #91ad8d; }
+.tree-splash-copy p { margin: 0; color: #718176; font-size: 11px; letter-spacing: .15px; }
+.tree-splash-skip {
+  position: absolute; right: max(20px, env(safe-area-inset-right));
+  bottom: max(22px, env(safe-area-inset-bottom));
+  padding: 10px 15px; border: 1px solid rgba(39,86,66,.16);
+  border-radius: 999px; color: var(--primary); background: rgba(255,255,255,.62);
+  font-size: 11px; font-weight: 700;
+}
+.tree-splash-skip:focus-visible { outline: 3px solid rgba(89,139,104,.34); outline-offset: 3px; }
+
+@keyframes tree-ground-draw { to { stroke-dashoffset: 0; } }
+@keyframes tree-seed-vanish {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  65% { opacity: 1; transform: translateY(3px) scale(.82); }
+  100% { opacity: 0; transform: translateY(7px) scale(.2); }
+}
+@keyframes tree-trunk-grow {
+  0% { transform: scaleY(.02); }
+  72% { transform: scaleY(1.04); }
+  100% { transform: scaleY(1); }
+}
+@keyframes tree-branches-grow { to { stroke-dashoffset: 0; } }
+@keyframes tree-canopy-grow {
+  0% { opacity: .2; transform: scale(.06); }
+  72% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes tree-leaf-detail { to { stroke-dashoffset: 0; } }
+@keyframes tree-copy-in { to { opacity: 1; transform: translateY(0); } }
+@keyframes tree-splash-out { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+
+@media (max-width: 680px) {
+  .pwa-help-backdrop { align-items: flex-end; padding: 0; }
+  .pwa-help-card { width: 100%; border-radius: 24px 24px 0 0; padding: 22px 19px calc(22px + env(safe-area-inset-bottom)); }
+  .tree-splash-art { width: min(78vw, 290px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tree-splash, .tree-splash * { animation: none !important; transition: none !important; }
+}
