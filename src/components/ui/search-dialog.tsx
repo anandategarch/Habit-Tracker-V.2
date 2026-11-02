@@ -21,16 +21,19 @@ export function SearchDialog({
 }: SearchDialogProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
 
   useEffect(() => {
     if (!open) return;
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const timer = window.setTimeout(() => inputRef.current?.focus(), 0);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.clearTimeout(timer);
+      previousFocusRef.current?.focus();
     };
   }, [open]);
 
