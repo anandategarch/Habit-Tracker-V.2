@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
       { url: "/icons/icon-192", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512", sizes: "512x512", type: "image/png" },
     ],
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fff5eb",
+  themeColor: "#fff7ef",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
