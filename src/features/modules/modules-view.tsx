@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
+import { BackupView } from "@/features/settings/backup-view";
 import { ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Trash2, X } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
@@ -36,7 +37,7 @@ function NoData({ children }: { children: string }) {
 }
 
 export function ModulesView({ tab, modules, updateModule }: {
-  tab: "goals" | "checkin" | "work" | "wellness" | "training" | "tree";
+  tab: "goals" | "checkin" | "work" | "wellness" | "training" | "tree" | "settings";
   modules: WorkspaceModules; updateModule: UpdateWorkspaceModule;
 }) {
   if (tab === "goals") return <GoalsView modules={modules} updateModule={updateModule} />;
@@ -47,6 +48,7 @@ export function ModulesView({ tab, modules, updateModule }: {
     return <WellnessView key={JSON.stringify(wellnessToday)} modules={modules} updateModule={updateModule} />;
   }
   if (tab === "training") return <TrainingView modules={modules} updateModule={updateModule} />;
+  if (tab === "settings") return <BackupView />;
   return <TreeView modules={modules} />;
 }
 

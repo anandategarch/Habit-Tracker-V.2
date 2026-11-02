@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   CalendarDays, ChartLine, Cloud, CloudOff, Home, ListChecks, LoaderCircle,
   RefreshCw, Search, Sprout, WalletCards, Target, BriefcaseBusiness,
-  HeartPulse, Dumbbell, ClipboardCheck, TreeDeciduous, Grid2X2, ChevronRight, Sun, Moon, Monitor,
+  HeartPulse, Dumbbell, ClipboardCheck, TreeDeciduous, Grid2X2, ChevronRight, Sun, Moon, Monitor, Settings,
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
@@ -34,6 +34,7 @@ const navigation: { id: TabId; label: string; icon: typeof Home; description: st
   { id: "wellness", label: "Wellness", icon: HeartPulse, description: "Air, protein, dan berat badan" },
   { id: "training", label: "Latihan", icon: Dumbbell, description: "Workout, program, dan kardio" },
   { id: "tree", label: "Pohon", icon: TreeDeciduous, description: "Level dan perjalanan progres" },
+  { id: "settings", label: "Pengaturan", icon: Settings, description: "Backup dan preferensi data" },
 ];
 const mobilePrimary = navigation.filter((item) => ["home", "habits", "finance", "calendar"].includes(item.id));
 const mobileMore = navigation.filter((item) => !mobilePrimary.some((primary) => primary.id === item.id));
@@ -342,7 +343,7 @@ export function RutinaApp() {
           {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} checkins={modules.checkins} />}
-          {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
+          {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree" || activeTab === "settings") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
         </div>
       </main>
 

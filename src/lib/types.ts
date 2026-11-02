@@ -1,4 +1,4 @@
-export type TabId = "home" | "habits" | "finance" | "calendar" | "insights" | "goals" | "checkin" | "work" | "wellness" | "training" | "tree";
+export type TabId = "home" | "habits" | "finance" | "calendar" | "insights" | "goals" | "checkin" | "work" | "wellness" | "training" | "tree" | "settings";
 
 export type HabitCategory = "Mindfulness" | "Health" | "Learning" | "Personal";
 
