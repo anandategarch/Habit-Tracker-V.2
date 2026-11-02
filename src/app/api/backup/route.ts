@@ -53,6 +53,7 @@ function mergeModules(current: WorkspaceModules, incoming: WorkspaceModules): Wo
     workouts: mergeByKey(current.workouts, incoming.workouts, (item) => item.id),
     programs: mergeByKey(current.programs, incoming.programs, (item) => item.id),
     progressPhotos: mergeByKey(current.progressPhotos, incoming.progressPhotos, (item) => item.id).slice(0, 5),
+    habitGroups: mergeByKey(current.habitGroups, incoming.habitGroups, (item) => item.id),
     settings: incoming.settings ?? current.settings,
     finance: {
       wallets: mergeByKey(current.finance.wallets, incoming.finance.wallets, (item) => item.id),
