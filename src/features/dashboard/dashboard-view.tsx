@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Flame, Plus, Target, WalletCards, HeartPulse, Moon } from "lucide-react";
+import { ArrowRight, Check, Flame, Plus, Sprout, WalletCards, HeartPulse } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah } from "@/lib/format";
@@ -19,7 +19,7 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
   const jakartaHour = Number(new Intl.DateTimeFormat("en-US", {
     hour: "2-digit", hourCycle: "h23", timeZone: "Asia/Jakarta",
   }).format(now));
-  const greeting = jakartaHour < 11 ? "Selamat pagi." : jakartaHour < 15 ? "Selamat siang." : jakartaHour < 18 ? "Selamat sore." : "Selamat malam.";
+  const greeting = jakartaHour < 11 ? "Selamat pagi" : jakartaHour < 15 ? "Selamat siang" : jakartaHour < 18 ? "Selamat sore" : "Selamat malam";
   const { completed, progress, longestStreak } = summarizeHabits(habits);
   const pendingHabits = [...habits].filter((habit) => !habit.completed).sort((a, b) => a.time.localeCompare(b.time));
   const jakartaClock = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Asia/Jakarta" }).format(now);
@@ -30,55 +30,68 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
     count: habits.filter((habit) => habit.category === category).length,
   }));
   const maxCategoryCount = Math.max(1, ...categoryCounts.map((item) => item.count));
+  const sortedHabits = [...habits].sort((a, b) => a.time.localeCompare(b.time));
 
   return (
     <>
       <PageIntro
         eyebrow={dateLabel}
-        title={greeting}
-        subtitle="Satu hari, satu langkah kecil yang berarti."
+        title={`${greeting}, Ananda! 🌱`}
+        subtitle="Langkah kecil hari ini, membawa perubahan besar esok."
         action={<PrimaryButton onClick={onAddHabit}><Plus size={15} /> Tambah kebiasaan</PrimaryButton>}
       />
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
-      <div className="dashboard-grid">
-        <div className="left-stack">
-          <section className="hero-card">
-            <div className="hero-copy">
-              <div className="hero-kicker">RUANG KECIL UNTUK BERTUMBUH</div>
-              <h2 className="hero-title">Bertumbuh,<br />dengan ritmemu.</h2>
-              <p className="hero-description">
-                {habits.length === 0
-                  ? "Mulai dengan satu kebiasaan sederhana. Tidak perlu menunggu hari yang sempurna."
-                  : completed === habits.length
-                    ? "Semua kebiasaan hari ini sudah selesai. Beri dirimu apresiasi."
-                    : `${habits.length - completed} langkah kecil masih menunggumu hari ini.`}
-              </p>
-            </div>
-            <div className="hero-ring" style={{ "--progress": `${progress}%` } as CSSProperties} aria-label={`Progress hari ini ${progress} persen`}>
-              <div className="hero-ring-inner"><span className="hero-percent">{progress}%</span><span className="hero-percent-caption">HARI INI</span></div>
-            </div>
-          </section>
 
-          <div className="stats-grid">
-            <StatCard label="Selesai" value={String(completed)} foot="Habit hari ini" icon={Check} tone="green" />
-            <StatCard label="Tersisa" value={String(pendingHabits.length)} foot="Langkah berikutnya" icon={Target} tone="amber" />
-            <StatCard label="Streak terbaik" value={`${longestStreak} hari`} foot="Pada satu kebiasaan" icon={Flame} />
-            <StatCard label="Mood hari ini" value={dailyCheckin ? `${dailyCheckin.mood}/5` : "—"} foot={dailyCheckin ? "Dari daily check-in" : "Belum check-in"} icon={HeartPulse} />
-            <StatCard label="Tidur" value={dailyCheckin ? `${dailyCheckin.sleepHours} jam` : "—"} foot="Catatan tidur hari ini" icon={Moon} />
+      <section className="hero-card botanical-hero" aria-label="Ringkasan perkembangan hari ini">
+        <div className="hero-copy">
+          <div className="hero-kicker">RUANG KECIL UNTUK BERTUMBUH</div>
+          <h2 className="hero-title">Disiplin kecil<br />membentuk hidup<br />yang luar biasa.</h2>
+          <p className="hero-description">— Rutina</p>
+        </div>
+        <div className="hero-progress-card">
+          <span className="hero-progress-icon"><Sprout size={22} /></span>
+          <div className="hero-progress-copy">
+            <div className="hero-progress-heading"><strong>Habit hari ini</strong><span>{progress}%</span></div>
+            <div className="hero-progress-count"><b>{completed} / {habits.length}</b> selesai</div>
+            <div className="hero-progress-track" role="progressbar" aria-label="Progress habit hari ini" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+              <span style={{ width: `${progress}%` } as CSSProperties} />
+            </div>
           </div>
+        </div>
+      </section>
 
-          <section className="card card-pad">
+      <div className="stats-grid botanical-stats">
+        <StatCard label="Streak terbaik" value={`${longestStreak} hari`} foot="Konsistensi tertinggi" icon={Flame} tone="amber" />
+        <StatCard label="Habit hari ini" value={String(habits.length)} foot="Kebiasaan terjadwal" icon={Sprout} tone="green" />
+        <StatCard label="Arus kas bersih" value={formatCompactRupiah(net)} foot="Bulan berjalan" icon={WalletCards} />
+        <StatCard label="Mood hari ini" value={dailyCheckin ? `${dailyCheckin.mood}/5` : "—"} foot={dailyCheckin ? `Tidur ${dailyCheckin.sleepHours} jam` : "Belum check-in"} icon={HeartPulse} />
+      </div>
+
+      <div className="dashboard-grid botanical-dashboard-grid">
+        <div className="left-stack">
+          <section className="card card-pad home-habits-card">
             <SectionHeading
-              title="Agenda hari ini"
-              caption={`${completed} dari ${habits.length} kebiasaan selesai`}
+              title="Habit Utama"
+              caption={`${completed} dari ${habits.length} kebiasaan selesai hari ini`}
               action={<button className="text-button" type="button" onClick={() => onNavigate("habits")}>Lihat semua <ArrowRight size={13} /></button>}
             />
             {habits.length > 0 ? (
               <>
                 <div className="habit-list">
-                  {[...habits].sort((a, b) => a.time.localeCompare(b.time)).slice(0, 4).map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTimerToggle={onTimerToggle} timerActive={activeTimerId === habit.id} timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0} paused={vacationMode} />)}
+                  {sortedHabits.slice(0, 5).map((habit) => (
+                    <HabitRow
+                      key={habit.id}
+                      habit={habit}
+                      onToggle={onToggle}
+                      onAdjust={onAdjust}
+                      onTimerToggle={onTimerToggle}
+                      timerActive={activeTimerId === habit.id}
+                      timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0}
+                      paused={vacationMode}
+                    />
+                  ))}
                 </div>
-                {habits.length > 4 && <button className="text-button list-more" type="button" onClick={() => onNavigate("habits")}>Lihat {habits.length - 4} kebiasaan lainnya <ArrowRight size={13} /></button>}
+                {habits.length > 5 && <button className="text-button list-more" type="button" onClick={() => onNavigate("habits")}>Lihat {habits.length - 5} kebiasaan lainnya <ArrowRight size={13} /></button>}
               </>
             ) : (
               <EmptyState
@@ -90,8 +103,8 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
           </section>
 
           <section className="card card-pad category-card">
-            <SectionHeading title="Komposisi kebiasaan" caption="Pembagian kebiasaan yang kamu simpan" />
-            <div className="category-breakdown">
+            <SectionHeading title="Komposisi kebiasaan" caption="Kebiasaan yang terjadwal hari ini" />
+            <div className="category-breakdown botanical-category-breakdown">
               {categoryCounts.map(({ category, count }) => (
                 <div className="category-breakdown-row" key={category}>
                   <div className="category-breakdown-top"><span>{category}</span><strong>{count}</strong></div>
@@ -103,18 +116,18 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
         </div>
 
         <div className="right-stack">
-          <section className="card finance-mini">
-            <div className="finance-mini-head"><span className="small-label">KEUANGAN BULAN INI</span><WalletCards size={17} color="var(--primary)" /></div>
+          <section className="card finance-mini botanical-finance-card">
+            <div className="finance-mini-head"><span className="small-label">KEUANGAN BULAN INI</span><WalletCards size={18} /></div>
             <div className="finance-mini-value">{formatCompactRupiah(net)}</div>
             <div className="small-label">Arus kas bersih · bulan berjalan</div>
             <div className="finance-pair">
-              <div className="finance-pair-item income"><span className="small-label">Masuk</span><strong>{formatCompactRupiah(income)}</strong></div>
-              <div className="finance-pair-item expense"><span className="small-label">Keluar</span><strong>{formatCompactRupiah(expense)}</strong></div>
+              <div className="finance-pair-item income"><span className="small-label">Pemasukan</span><strong>{formatCompactRupiah(income)}</strong></div>
+              <div className="finance-pair-item expense"><span className="small-label">Pengeluaran</span><strong>{formatCompactRupiah(expense)}</strong></div>
             </div>
             <button className="text-button finance-mini-link" type="button" onClick={() => onNavigate("finance")}>Buka keuangan <ArrowRight size={13} /></button>
           </section>
 
-          <section className="card next-step-card">
+          <section className="card next-step-card botanical-next-step">
             <div className="next-step-label"><span className="next-step-dot" /> LANGKAH BERIKUTNYA</div>
             {upcomingHabit ? (
               <>
@@ -136,8 +149,15 @@ export function DashboardView({ habits, income, expense, onNavigate, onToggle, o
             )}
           </section>
 
+          {dailyCheckin && (
+            <section className="daily-checkin-mini">
+              <span className="daily-checkin-icon"><HeartPulse size={17} /></span>
+              <div><strong>Catatan dirimu hari ini</strong><span>Mood {dailyCheckin.mood}/5 · Tidur {dailyCheckin.sleepHours} jam</span></div>
+            </section>
+          )}
+
           <FocusTimer />
-          <section className="quote-card">
+          <section className="quote-card botanical-quote-card">
             <div className="quote-mark">“</div>
             <p className="quote-text">Tidak harus sempurna. Yang penting, kamu kembali melangkah.</p>
             <div className="quote-caption">PENGINGAT KECIL · RUTINA</div>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { PwaRegister } from "@/components/pwa/pwa-register";
 import { TreeSplash } from "@/components/pwa/tree-splash";
 import "./globals.css";
+import "./rutina-botanical.css";
 
 export const metadata: Metadata = {
   title: "Rutina — hidup lebih terarah",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#6656d9",
+  themeColor: "#fff5eb",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
