@@ -422,7 +422,7 @@ export function RutinaApp() {
             type="button"
             className={activeTab === id ? "active" : ""}
             aria-current={activeTab === id ? "page" : undefined}
-            onClick={() => setActiveTab(id)}
+            onClick={() => { setActiveTab(id); setMoreOpen(false); }}
           >
             <AppIcon name={icon} size={19} />
             <span>{label}</span>
