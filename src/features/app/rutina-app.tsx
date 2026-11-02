@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
+import { isScheduledOn, parseNumberList } from "@/lib/habit-schedule";
 import { summarizeTransactions } from "@/lib/finance";
 import { useWorkspace } from "@/lib/use-workspace";
 import { DashboardView } from "@/features/dashboard/dashboard-view";
