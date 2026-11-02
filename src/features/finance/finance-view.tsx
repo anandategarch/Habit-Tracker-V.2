@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Activity, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Coffee, Heart, Plus, Receipt, Sprout } from "lucide-react";
-import type { Budget, Transaction } from "@/lib/types";
+import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
@@ -22,9 +22,16 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const [filter, setFilter] = useState<TransactionFilter>("all");
   const net = income - expense;
   const spendByCategory = summarizeBudgets(transactions, budgets);
-  const expenseCategories = spendByCategory
-    .filter((item) => item.spent > 0)
-    .sort((a, b) => b.spent - a.spent);
+  const expenseCategories = useMemo(() => {
+    const totals = new Map<TransactionCategory, number>();
+    transactions.forEach((transaction) => {
+      if (transaction.type !== "expense") return;
+      totals.set(transaction.category, (totals.get(transaction.category) ?? 0) + transaction.amount);
+    });
+    return [...totals.entries()]
+      .map(([category, spent]) => ({ category, spent }))
+      .sort((a, b) => b.spent - a.spent);
+  }, [transactions]);
   const categorySpendTotal = expenseCategories.reduce((sum, item) => sum + item.spent, 0);
   const categoryPalette = [
     "var(--spend-color-0)", "var(--spend-color-1)", "var(--spend-color-2)", "var(--spend-color-3)",
