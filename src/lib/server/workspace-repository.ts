@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { Budget, Habit, Transaction } from "@/lib/types";
+import { isScheduledOn } from "@/lib/habit-schedule";
 import { ensureSchema } from "@/lib/server/schema";
 import { getTursoClient } from "@/lib/server/turso";
 
@@ -215,7 +216,12 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
       const dates = new Set(result.rows.map((row) => String(row.completed_on)));
       let cursor = dates.has(today) ? today : shiftDate(today, -1);
       let streak = 0;
-      while (streak < 365 && dates.has(cursor)) {
+      while (streak < 365) {
+        if (!isScheduledOn(habit.schedule, cursor)) {
+          cursor = shiftDate(cursor, -1);
+          continue;
+        }
+        if (!dates.has(cursor)) break;
         streak += 1;
         cursor = shiftDate(cursor, -1);
       }
