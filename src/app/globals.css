@@ -1551,3 +1551,18 @@ html[data-theme="dark"] .insight-checkin-grid > div { background:var(--surface-s
 .calendar-checkin-mood strong { color:var(--ink); font-size:12px; }
 .calendar-checkin-mood span,.calendar-checkin-card p { color:var(--muted); font-size:10px; line-height:1.5; }
 .calendar-checkin-card p { margin:0; white-space:pre-wrap; }
+
+.wallet-history { display:grid; gap:10px; padding-top:16px; margin-top:16px; border-top:1px solid var(--line); }
+.wallet-history-chart { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:7px; align-items:end; min-height:150px; padding-top:10px; }
+.wallet-history-column { display:grid; grid-template-rows:auto 100px auto; align-items:end; justify-items:center; gap:6px; min-width:0; }
+.wallet-history-column > strong { max-width:100%; color:var(--ink-soft); font-size:9px; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.wallet-history-column > div { display:flex; align-items:end; width:100%; height:100px; overflow:hidden; border-radius:8px 8px 4px 4px; background:var(--surface-soft); }
+.wallet-history-column > div > span { display:block; width:100%; min-height:4px; border-radius:7px 7px 3px 3px; background:var(--primary); }
+.wallet-history-column > small { color:var(--muted); font-size:9px; text-transform:capitalize; }
+html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-soft); }
+@media (max-width:560px) {
+ .wallet-history-chart { gap:4px; }
+ .wallet-history-column > strong { font-size:8px; }
+ .wallet-history-column { grid-template-rows:auto 78px auto; }
+ .wallet-history-column > div { height:78px; }
+}
