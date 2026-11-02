@@ -1,4 +1,4 @@
-export type TabId = "home" | "habits" | "finance" | "calendar" | "insights";
+export type TabId = "home" | "habits" | "finance" | "calendar" | "insights" | "goals" | "checkin" | "work" | "wellness" | "training" | "tree";
 
 export type HabitCategory = "Mindfulness" | "Health" | "Learning" | "Personal";
 
@@ -32,6 +32,9 @@ export interface Transaction {
   type: TransactionType;
   amount: number;
   date: string;
+  walletId?: string;
+  tags?: string[];
+  splitGroupId?: string;
 }
 
 export interface Budget {

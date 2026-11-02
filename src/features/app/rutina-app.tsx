@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  CalendarDays, ChartLine, Cloud, CloudOff, Home,
-  ListChecks, LoaderCircle, RefreshCw, Search, Sprout, WalletCards,
+  CalendarDays, ChartLine, Cloud, CloudOff, Home, ListChecks, LoaderCircle,
+  RefreshCw, Search, Sprout, WalletCards, Target, BriefcaseBusiness,
+  HeartPulse, Dumbbell, ClipboardCheck, TreeDeciduous, Grid2X2, ChevronRight,
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
@@ -17,6 +18,8 @@ import { InsightsView } from "@/features/insights/insights-view";
 import { EntryModal } from "@/components/ui/entry-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
 import { PwaInstallButton } from "@/components/pwa/install-button";
+import { useModules } from "@/lib/use-modules";
+import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 
 const navigation: { id: TabId; label: string; icon: typeof Home; description: string }[] = [
   { id: "home", label: "Beranda", icon: Home, description: "Ringkasan hari ini" },
@@ -24,7 +27,15 @@ const navigation: { id: TabId; label: string; icon: typeof Home; description: st
   { id: "finance", label: "Keuangan", icon: WalletCards, description: "Kelola arus uang" },
   { id: "calendar", label: "Kalender", icon: CalendarDays, description: "Lihat jadwal" },
   { id: "insights", label: "Insight", icon: ChartLine, description: "Pahami progres" },
+  { id: "goals", label: "Tujuan", icon: Target, description: "Goals dan milestones" },
+  { id: "checkin", label: "Check-in", icon: ClipboardCheck, description: "Mood, energi, dan jurnal" },
+  { id: "work", label: "Meja Kerja", icon: BriefcaseBusiness, description: "Task board, catatan, rutinitas" },
+  { id: "wellness", label: "Wellness", icon: HeartPulse, description: "Air, protein, dan berat badan" },
+  { id: "training", label: "Latihan", icon: Dumbbell, description: "Workout, program, dan kardio" },
+  { id: "tree", label: "Pohon", icon: TreeDeciduous, description: "Level dan perjalanan progres" },
 ];
+const mobilePrimary = navigation.filter((item) => ["home", "habits", "finance", "calendar"].includes(item.id));
+const mobileMore = navigation.filter((item) => !mobilePrimary.some((primary) => primary.id === item.id));
 
 type SyncStatus = "local" | "syncing" | "synced" | "error";
 
@@ -34,6 +45,7 @@ export function RutinaApp() {
   const [toast, setToast] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [moreOpen, setMoreOpen] = useState(false);
   const {
     habits,
     transactions,
@@ -44,6 +56,7 @@ export function RutinaApp() {
     refreshWorkspace,
     isReady: workspaceReady,
   } = useWorkspace();
+  const { modules, updateModule } = useModules();
 
   useEffect(() => {
     if (!toast) return;
@@ -125,9 +138,11 @@ export function RutinaApp() {
       id: crypto.randomUUID(),
       title,
       type: String(data.get("type")) as TransactionType,
-      category: String(data.get("category")) as TransactionCategory,
+      category: (modules.finance.categoryRules.find((rule) => title.toLocaleLowerCase("id-ID").includes(rule.keyword.toLocaleLowerCase("id-ID")))?.category ?? String(data.get("category"))) as TransactionCategory,
       amount,
       date: String(data.get("date") || todayISO()),
+      ...(String(data.get("walletId") || "") ? { walletId: String(data.get("walletId")) } : {}),
+      ...(String(data.get("tags") || "").trim() ? { tags: String(data.get("tags")).split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 20) } : {}),
     };
 
     updateTransactions((current) => [transaction, ...current]);
@@ -231,14 +246,15 @@ export function RutinaApp() {
         <div className="content-wrap page-transition" key={activeTab}>
           {activeTab === "home" && <DashboardView habits={habits} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAddHabit={() => setModal("habit")} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdd={() => setModal("habit")} />}
-          {activeTab === "finance" && <FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} />}
+          {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} />}
+          {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
         </div>
       </main>
 
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
-        {navigation.map(({ id, label, icon: Icon }) => (
+        {mobilePrimary.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             type="button"
@@ -250,9 +266,11 @@ export function RutinaApp() {
             <span>{label}</span>
           </button>
         ))}
+        <button type="button" className={moreOpen ? "active" : ""} aria-expanded={moreOpen} onClick={() => setMoreOpen((value) => !value)}><Grid2X2 size={19} /><span>Lainnya</span></button>
       </nav>
+      {moreOpen && <div className="mobile-more-menu" role="menu" aria-label="Modul lainnya">{mobileMore.map(({ id, label, icon: Icon }) => <button key={id} type="button" role="menuitem" onClick={() => { setActiveTab(id); setMoreOpen(false); }}><Icon size={17} /><span>{label}</span><ChevronRight size={14} /></button>)}</div>}
 
-      {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} />}
+      {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} />}
       <SearchDialog
         open={searchOpen}
         query={searchQuery}

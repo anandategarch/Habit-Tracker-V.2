@@ -26,7 +26,7 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
   await ensureSchema();
   const client = getTursoClient();
 
-  const [habitResult, transactionResult, budgetResult] = await Promise.all([
+  const [habitResult, transactionResult, budgetResult, metadataResult] = await Promise.all([
     client.execute({
       sql: `SELECT
         h.id, h.title, h.category, h.time, h.duration, h.icon, h.streak,
@@ -41,7 +41,9 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
       FROM transactions
       ORDER BY transaction_date DESC, created_at DESC`),
     client.execute("SELECT category, monthly_limit FROM budgets ORDER BY category ASC"),
+    client.execute("SELECT transaction_id, wallet_id, tags_json, split_group_id FROM transaction_metadata"),
   ]);
+  const metadata = new Map(metadataResult.rows.map((row) => [String(row.transaction_id), row]));
 
   const habits: Habit[] = habitResult.rows.map((row) => ({
     id: String(row.id),
@@ -54,14 +56,23 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
     completed: asNumber(row.completed) === 1,
   }));
 
-  const transactions: Transaction[] = transactionResult.rows.map((row) => ({
-    id: String(row.id),
-    title: String(row.title),
-    category: String(row.category) as Transaction["category"],
-    type: String(row.type) as Transaction["type"],
-    amount: asNumber(row.amount),
-    date: String(row.transaction_date),
-  }));
+  const transactions: Transaction[] = transactionResult.rows.map((row) => {
+    const detail = metadata.get(String(row.id));
+    let tags: string[] = [];
+    try {
+      const parsed = JSON.parse(String(detail?.tags_json ?? "[]"));
+      if (Array.isArray(parsed)) tags = parsed.filter((tag): tag is string => typeof tag === "string");
+    } catch { tags = []; }
+    return {
+      id: String(row.id), title: String(row.title),
+      category: String(row.category) as Transaction["category"],
+      type: String(row.type) as Transaction["type"],
+      amount: asNumber(row.amount), date: String(row.transaction_date),
+      ...(detail?.wallet_id ? { walletId: String(detail.wallet_id) } : {}),
+      ...(tags.length ? { tags } : {}),
+      ...(detail?.split_group_id ? { splitGroupId: String(detail.split_group_id) } : {}),
+    };
+  });
 
   const budgets: Budget[] = budgetResult.rows.map((row) => ({
     category: String(row.category) as Budget["category"],
@@ -119,6 +130,15 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
           item.id, item.title, item.category, item.type, item.amount, item.date,
         ],
       });
+      if (item.walletId || item.tags?.length || item.splitGroupId) {
+        await transaction.execute({
+          sql: `INSERT INTO transaction_metadata (transaction_id, wallet_id, tags_json, split_group_id, updated_at)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(transaction_id) DO UPDATE SET wallet_id = excluded.wallet_id,
+              tags_json = excluded.tags_json, split_group_id = excluded.split_group_id, updated_at = CURRENT_TIMESTAMP`,
+          args: [item.id, item.walletId ?? null, JSON.stringify(item.tags ?? []), item.splitGroupId ?? null],
+        });
+      }
     }
 
     for (const budget of input.budgets) {

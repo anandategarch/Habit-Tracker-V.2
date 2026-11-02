@@ -127,6 +127,10 @@ export function EntryModal({ mode, onClose, onSubmit }: {
                   <input className="form-control" type="date" name="date" defaultValue={todayISO()} required />
                 </label>
               </div>
+              {wallets.length > 0 && <label className="form-field"><span className="form-label">Sumber dana</span><select className="form-control" name="walletId" defaultValue=""><option value="">Tidak ditentukan</option>{wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</select></label>}
+              <label className="form-field"><span className="form-label">Tag (opsional, pisahkan dengan koma)</span><input className="form-control" name="tags" maxLength={160} placeholder="kebutuhan, rutin, keluarga" /></label>
+              <div>
+              </div>
             </>
           )}
           <div className="form-actions">
