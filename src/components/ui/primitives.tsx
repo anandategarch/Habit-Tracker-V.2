@@ -48,7 +48,7 @@ function HabitGlyph({ icon }: { icon: Habit["icon"] }) {
   return <Icon size={18} strokeWidth={1.8} />;
 }
 
-function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, timerActive = false, timerElapsedSeconds = 0, paused = false }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; timerActive?: boolean; timerElapsedSeconds?: number; paused?: boolean }) {
+function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, onViewTimeAnalysis, timerActive = false, timerElapsedSeconds = 0, paused = false }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; onViewTimeAnalysis?: (id: string) => void; timerActive?: boolean; timerElapsedSeconds?: number; paused?: boolean }) {
   const amountHabit = habit.kind === "amount";
   const current = habit.currentAmount ?? 0;
   const target = habit.targetAmount ?? 1;
@@ -75,6 +75,7 @@ function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, timerActive = fals
       <div className="habit-row-actions">
         {amountHabit ? <div className="habit-amount-stepper"><button type="button" aria-label={`Kurangi ${habit.title}`} disabled={current <= 0 || paused} onClick={() => onAdjust?.(habit.id, -1)}>−</button><button type="button" aria-label={`Tambah ${habit.title}`} disabled={!onAdjust || paused} onClick={() => onAdjust?.(habit.id, 1)}>+</button></div> : <button type="button" className={`check-button ${habit.completed ? "done" : ""}`} aria-label={habit.completed ? (avoid ? `Catat pelanggaran ${habit.title}` : `Batalkan ${habit.title}`) : (avoid ? `Tandai hari bersih ${habit.title}` : `Tandai ${habit.title} selesai`)} aria-pressed={habit.completed} disabled={paused} onClick={() => onToggle(habit.id)}>{habit.completed && <Check size={15} strokeWidth={2.8} />}</button>}
         {onTimerToggle && <button className={`habit-time-track ${timerActive ? "active" : ""}`} type="button" onClick={() => onTimerToggle(habit.id)} disabled={paused} aria-pressed={timerActive} aria-label={timerActive ? `Hentikan timer ${habit.title}` : `Mulai timer ${habit.title}`}>{timerActive ? `Stop ${String(Math.floor(timerElapsedSeconds / 60)).padStart(2, "0")}:${String(timerElapsedSeconds % 60).padStart(2, "0")}` : "Mulai timer"}</button>}
+        {onViewTimeAnalysis && <button className="habit-history-action" type="button" onClick={() => onViewTimeAnalysis(habit.id)}>Riwayat waktu</button>}
       </div>
     </article>
   );
