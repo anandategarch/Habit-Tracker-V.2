@@ -58,6 +58,7 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   }, [checkins, habits, income, expense]);
 
   const recentCheckins = useMemo(() => checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [checkins]);
+  const trendCheckins = recentCheckins.slice(0, 7).reverse();
   const moodAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.mood, 0) / recentCheckins.length : null;
   const energyAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.energy, 0) / recentCheckins.length : null;
   const sleepAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.sleepHours, 0) / recentCheckins.length : null;
@@ -89,11 +90,33 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   return (
     <>
       <PageIntro eyebrow="REFLEKSI PERKEMBANGAN" title="Lihat yang sudah tumbuh." subtitle="Ringkasan dari aktivitas, check-in, dan transaksi yang benar-benar tercatat." />
-      <div className="insights-stat-grid">
-        <StatCard label="Progress hari ini" value={`${progress}%`} foot={`${completed} dari ${total} habit selesai`} icon={Target} tone="green" />
-        <StatCard label="Streak terpanjang" value={`${longestStreak} hari`} foot="Pada satu kebiasaan" icon={Flame} />
+      <div className="insights-stat-grid botanical-insight-stats">
+        <StatCard label="Produktivitas" value={`${progress}%`} foot={`${completed} dari ${total} habit selesai hari ini`} icon={Target} tone="green" />
+        <StatCard label="Streak terpanjang" value={`${longestStreak} hari`} foot="Pada satu kebiasaan" icon={Flame} tone="amber" />
         <StatCard label="Arus kas bersih" value={formatCompactRupiah(totalNet)} foot="Bulan berjalan" icon={PiggyBank} />
       </div>
+
+      <section className="card card-pad insight-trend-panel" aria-label="Tren mood dan energi dari check-in terbaru">
+        <SectionHeading title="Ritme mingguan" caption="Mood dan energi dari maksimal tujuh check-in terbaru" />
+        {trendCheckins.length > 0 ? (
+          <>
+            <div className="insight-trend-chart">
+              {trendCheckins.map((item) => (
+                <div className="insight-trend-day" key={item.date} aria-label={`${item.date}: mood ${item.mood} dari 5, energi ${item.energy} dari 5`}>
+                  <div className="insight-trend-bars">
+                    <span className="insight-trend-bar mood" style={{ height: `${item.mood / 5 * 100}%` }} title={`Mood ${item.mood}/5`} />
+                    <span className="insight-trend-bar energy" style={{ height: `${item.energy / 5 * 100}%` }} title={`Energi ${item.energy}/5`} />
+                  </div>
+                  <small>{new Intl.DateTimeFormat("id-ID", { weekday: "short" }).format(new Date(`${item.date}T00:00:00`))}</small>
+                </div>
+              ))}
+            </div>
+            <div className="insight-trend-legend"><span><i className="mood" /> Mood</span><span><i className="energy" /> Energi</span><small>Skala 1–5</small></div>
+          </>
+        ) : (
+          <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Trenmu akan tumbuh di sini</strong><p>Simpan check-in harian untuk melihat perubahan mood dan energi dari waktu ke waktu.</p></div>
+        )}
+      </section>
 
       <div className="insight-grid">
         <section className="card card-pad">
