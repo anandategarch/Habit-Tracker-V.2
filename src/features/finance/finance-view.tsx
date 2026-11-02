@@ -37,11 +37,13 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     "var(--spend-color-0)", "var(--spend-color-1)", "var(--spend-color-2)", "var(--spend-color-3)",
     "var(--spend-color-4)", "var(--spend-color-5)", "var(--spend-color-6)", "var(--spend-color-7)",
   ];
-  let categoryCursor = 0;
   const categoryGradient = expenseCategories.map((item, index) => {
-    const start = categoryCursor;
-    categoryCursor += categorySpendTotal > 0 ? item.spent / categorySpendTotal * 100 : 0;
-    return `${categoryPalette[index % categoryPalette.length]} ${start}% ${categoryCursor}%`;
+    const precedingSpend = expenseCategories
+      .slice(0, index)
+      .reduce((sum, category) => sum + category.spent, 0);
+    const start = categorySpendTotal > 0 ? precedingSpend / categorySpendTotal * 100 : 0;
+    const end = categorySpendTotal > 0 ? (precedingSpend + item.spent) / categorySpendTotal * 100 : 0;
+    return `${categoryPalette[index % categoryPalette.length]} ${start}% ${end}%`;
   }).join(", ");
   const filteredTransactions = useMemo(
     () => [...transactions]
