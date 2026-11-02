@@ -18,7 +18,7 @@ Menjaga desain, implementasi, dan perilaku produk tetap konsisten ketika fitur b
 10. Form harus memiliki label, validasi dasar, state fokus, dan umpan balik setelah submit.
 11. Format Rupiah, tanggal, dan angka harus lewat helper di `src/lib/format.ts`.
 12. Jangan mengubah data demo menjadi klaim saldo atau performa nyata. Beri label bahwa data masih lokal/demo.
-13. Hormati `prefers-reduced-motion`; jangan mengandalkan animasi untuk menyampaikan status.
+13. Hormati `prefers-reduced-motion`; semua animasi halaman, modal, chart, dan micro-interaction harus punya fallback tanpa gerakan. Jangan mengandalkan animasi untuk menyampaikan status.
 14. Jangan menambahkan dependency tanpa kebutuhan yang jelas. Gunakan Lucide untuk ikon agar satu gaya.
 15. Jangan menghapus fitur atau field domain tanpa menjelaskan alasannya di PR.
 

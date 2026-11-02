@@ -22,7 +22,7 @@ lib/
 
 ## Alur data saat ini
 
-UI -> feature state -> browser storage adapter (LocalStorage).
+UI -> `useWorkspace` external store -> browser LocalStorage. Penyimpanan disubscribe melalui `useSyncExternalStore` agar hidrasi tidak memicu setState sinkron di effect.
 
 Data demo bersifat lokal pada browser/perangkat yang sama. Tidak ada sinkronisasi antarperangkat dan tidak ada autentikasi.
 

@@ -17,7 +17,7 @@
 | Border | Garis tipis dengan kontras rendah |
 | Radius | 12 / 18 / 24 px; gunakan konsisten sesuai skala komponen |
 | Shadow | Halus; hindari glow dan shadow berat |
-| Motion | 160–240ms untuk feedback, 320–500ms untuk transisi layar |
+| Motion | 160–240ms untuk feedback, 320–620ms untuk transisi layar, dengan stagger ringan |
 
 Nilai token aktual berada di `src/app/globals.css`. Komponen tidak boleh mendefinisikan ulang warna ad hoc.
 
@@ -47,6 +47,17 @@ Nilai token aktual berada di `src/app/globals.css`. Komponen tidak boleh mendefi
 - Bottom navigation memakai safe-area inset.
 - Tombol penting memiliki tinggi minimum 44px.
 - Hindari scroll horizontal kecuali untuk kontrol yang memang berupa carousel.
+
+## Motion dan micro-interaction
+
+- Gunakan satu bahasa easing dari token `--ease-rutina` dan `--ease-spring`.
+- Pergantian tab memakai entrance halus; kartu dan baris dapat stagger pendek (sekitar 45–65ms).
+- Hover lift hanya aktif pada perangkat dengan pointer/hover; jangan mengandalkan hover untuk aksi penting.
+- Tombol memberi feedback tekan singkat; status selesai memakai animasi konfirmasi yang kecil.
+- Dialog desktop muncul dengan scale/fade; dialog mobile menjadi bottom sheet.
+- Timer, progress ring, chart, dan progress anggaran memakai transisi yang halus.
+- Semua animasi harus menghormati `prefers-reduced-motion`; jangan menghapus informasi ketika animasi dimatikan.
+- Hindari animasi looping yang mencolok. Animasi ambient harus lambat dan tidak mengganggu fokus.
 
 ## Jangan dilakukan
 
