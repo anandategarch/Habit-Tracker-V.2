@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import Image from "next/image";
 import { ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Trash2, X } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
@@ -234,16 +235,106 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
   </>;
 }
 
+interface GrowthSummary {
+  today: string;
+  weekStart: string;
+  totalXp: number;
+  weeklyXp: number;
+  level: number;
+  levelProgress: number;
+  currentStreak: number;
+  completedGoals: number;
+  scheduledToday: number;
+  completedToday: number;
+  vacationMode: boolean;
+  stage: { id: string; label: string; threshold: number; next: number | null; artwork: string; tagline: string; index: number; xpToNext: number | null; progress: number };
+  artwork: string;
+  wisdom: string;
+  worstHabit: { id: string; name: string; rate: number } | null;
+  totalLogs: number;
+}
+
 function TreeView({ modules }: { modules: WorkspaceModules }) {
-  const xp = modules.checkins.length * 5 + modules.goals.filter((goal) => goal.completed).length * 50 + modules.workouts.length * 20;
-  const level = Math.floor(xp / 100) + 1;
-  const progress = xp % 100;
-  const stage = ["Benih", "Tunas", "Pohon muda", "Pohon berbunga"][Math.min(3, Math.floor((level - 1) / 3))];
-  const icon = ["🌱", "🌿", "🌳", "🌸"][Math.min(3, Math.floor((level - 1) / 3))];
+  const [growth, setGrowth] = useState<GrowthSummary | null>(null);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/growth", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Growth data unavailable");
+        return response.json() as Promise<GrowthSummary>;
+      })
+      .then((data) => {
+        if (!cancelled) setGrowth(data);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const lifetimeStage = growth
+    ? growth.level >= 7 ? "Pohon Dewasa" : growth.level >= 4 ? "Pohon Muda" : growth.level >= 2 ? "Tunas" : "Benih"
+    : "—";
+  const goalsCount = modules.goals.filter((goal) => goal.completed).length;
+  const stageArt = growth?.artwork ?? "/tree/benih.svg";
+  const weekStartDate = growth?.weekStart ? new Date(`${growth.weekStart}T00:00:00Z`) : null;
+  const dayIndex = weekStartDate ? Math.max(0, Math.min(6, Math.floor((Date.parse(`${growth?.today}T00:00:00Z`) - weekStartDate.getTime()) / 86_400_000))) : 0;
+  const daysRemaining = Math.max(1, 7 - dayIndex);
+
   return <>
-    <Intro eyebrow="GROWTH JOURNEY" title="Hal besar tumbuh dari langkah kecil." subtitle="Ringkasan gamifikasi berdasarkan check-in, tujuan, dan sesi latihan yang tercatat di V2." />
-    <section className="tree-progress-card"><div className="tree-illustration" aria-hidden="true">{icon}</div><div><span className="small-label">LEVEL {level} · {stage.toUpperCase()}</span><h2>{stage}</h2><p>Konsistensi dibangun melalui tindakan yang diulang.</p><div className="module-progress-track"><span style={{ width: `${progress}%` }} /></div><small>{progress}/100 XP menuju level berikutnya</small></div></section>
-    <div className="module-metrics"><Metric label="TOTAL XP" value={String(xp)} foot="Check-in, tujuan selesai, dan latihan" /><Metric label="TUJUAN SELESAI" value={String(modules.goals.filter((goal) => goal.completed).length)} foot="Hasil yang tercapai" /><Metric label="SESI LATIHAN" value={String(modules.workouts.length)} foot="Aktivitas tubuh yang dicatat" /></div>
+    <Intro eyebrow="GROWTH JOURNEY" title="Hal besar tumbuh dari langkah kecil." subtitle="Level seumur hidup tidak direset; tahap pohon mingguan dimulai kembali setiap Senin." />
+    {growth ? <>
+      <section className="tree-progress-card tree-season-card">
+        <div className="tree-artwork"><Image src={stageArt} alt={`Pohon tahap ${growth.stage.label}`} width={220} height={220} priority /></div>
+        <div className="tree-season-copy">
+          <span className="small-label">MUSIM MINGGU INI · ${growth.stage.label.toUpperCase()}</span>
+          <h2>{growth.stage.label}</h2>
+          <p>{growth.stage.tagline}</p>
+          <div className="tree-progress-caption"><strong>{growth.weeklyXp.toLocaleString("id-ID")} XP</strong><span>{growth.stage.xpToNext === null ? "Tahap tertinggi minggu ini" : `${growth.stage.xpToNext.toLocaleString("id-ID")} XP menuju ${(["Benih", "Tunas", "Pohon Muda", "Pohon Dewasa"][growth.stage.index + 1] ?? "tahap berikutnya")}`}</span></div>
+          <div className="module-progress-track"><span style={{ width: `${growth.stage.progress}%` }} /></div>
+          <small>Reset dalam {daysRemaining} hari · {growth.weekStart}</small>
+        </div>
+      </section>
+      <div className="tree-season-stats">
+        <div><span className="small-label">LEVEL SEUMUR HIDUP</span><strong>{growth.level}</strong><small>{growth.totalXp.toLocaleString("id-ID")} total XP</small></div>
+        <div><span className="small-label">STREAK TERPANJANG SAAT INI</span><strong>{growth.currentStreak} hari</strong><small>{growth.currentStreak >= 7 ? "Pohon sedang berbunga" : "Konsistensi sedang dibangun"}</small></div>
+        <div><span className="small-label">BUAH EMAS</span><strong>{goalsCount}</strong><small>Tujuan yang telah selesai</small></div>
+      </div>
+      <div className="module-two-col tree-detail-grid">
+        <Panel title="Penyiraman hari ini" caption="Setiap habit yang selesai membantu pertumbuhan hari ini">
+          <div className="tree-watering-count"><strong>{growth.completedToday}/{growth.scheduledToday}</strong><span>habit terjadwal selesai</span></div>
+          <div className="module-progress-track"><span style={{ width: `${growth.scheduledToday ? growth.completedToday / growth.scheduledToday * 100 : 0}%` }} /></div>
+          <p className="module-muted">{growth.vacationMode ? "Mode libur aktif: pencatatan habit dijeda." : growth.scheduledToday === 0 ? "Tidak ada habit yang terjadwal hari ini." : growth.completedToday >= growth.scheduledToday ? "Semua habit hari ini telah selesai. Pohonmu mendapat siraman penuh." : `${growth.scheduledToday - growth.completedToday} habit lagi untuk menyelesaikan penyiraman hari ini.`}</p>
+        </Panel>
+        <Panel title="Kebijaksanaan pohon" caption="Pengingat harian dari perjalanan yang terus bertumbuh">
+          <div className="tree-wisdom-quote"><span aria-hidden="true">“</span><p>{growth.wisdom}</p></div>
+          {growth.worstHabit && <div className="tree-care-note"><strong>Perlu dirawat: {growth.worstHabit.name}</strong><p>Catatan penyelesaian 30 hari terakhir: {Math.round(growth.worstHabit.rate)}%.</p></div>}
+        </Panel>
+      </div>
+      <Panel title="Jalan pertumbuhan seumur hidup" caption="Level dan XP ini tidak pernah direset oleh musim mingguan">
+        <div className="tree-lifetime-path">
+          {[
+            { name: "Benih", level: "Level 1", min: 1, art: "/tree/benih.svg" },
+            { name: "Tunas", level: "Level 2–3", min: 2, art: "/tree/tunas.svg" },
+            { name: "Pohon Muda", level: "Level 4–6", min: 4, art: "/tree/pohon-muda.svg" },
+            { name: "Pohon Dewasa", level: "Level 7+", min: 7, art: "/tree/pohon-dewasa.svg" },
+          ].map((item) => {
+            const achieved = growth.level >= item.min;
+            const current = lifetimeStage === item.name;
+            return <div className={`tree-lifetime-stage ${current ? "current" : achieved ? "achieved" : "locked"}`} key={item.name}>
+              <Image src={item.art} alt="" width={80} height={80} />
+              <strong>{item.name}</strong><small>{item.level}</small>
+              <span>{current ? "Tahap saat ini" : achieved ? "Tercapai" : "Belum tercapai"}</span>
+            </div>;
+          })}
+        </div>
+      </Panel>
+    </> : <section className="card card-pad tree-loading-state">
+      <div className="tree-loading-mark"><Sprout size={30} /></div>
+      <strong>{error ? "Data pertumbuhan belum tersedia" : "Menghitung pertumbuhan pohon…"}</strong>
+      <p>{error ? "Hubungkan Turso dan muat ulang untuk melihat XP, level, serta riwayat pohon." : "Menghitung catatan habit yang tersimpan."}</p>
+    </section>}
   </>;
 }
 
@@ -259,14 +350,14 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
   const day = Number(today().slice(8, 10));
   const days = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0).getDate();
   const projection = day ? Math.round(monthExpenses / day * days) : 0;
-  const walletBalanceAt = (wallet: Wallet, cutoff: string) => {
+  const walletBalanceAt = useCallback((wallet: Wallet, cutoff: string) => {
     const selected = transactions.filter((item) => item.walletId === wallet.id && item.date <= cutoff);
     const income = selected.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
     const expense = selected.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
     const sent = finance.transfers.filter((item) => item.fromWalletId === wallet.id && item.date <= cutoff).reduce((sum, item) => sum + item.amount, 0);
     const received = finance.transfers.filter((item) => item.toWalletId === wallet.id && item.date <= cutoff).reduce((sum, item) => sum + item.amount, 0);
     return wallet.openingBalance + income - expense - sent + received;
-  };
+  }, [transactions, finance.transfers]);
   const walletBalance = (wallet: Wallet) => walletBalanceAt(wallet, today());
   function addWallet(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const name = String(data.get("name") || "").trim(); if (!name) return; const item: Wallet = { id: id(), name, type: String(data.get("type") || "cash") as Wallet["type"], openingBalance: Math.max(0, Number(data.get("balance")) || 0) }; update((current) => ({ ...current, wallets: [...current.wallets, item] })); event.currentTarget.reset(); }
   function addTransfer(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const fromWalletId = String(data.get("from") || ""); const toWalletId = String(data.get("to") || ""); const amount = Math.round(Number(data.get("amount"))); if (!fromWalletId || !toWalletId || fromWalletId === toWalletId || amount <= 0) return; const item: MoneyTransfer = { id: id(), fromWalletId, toWalletId, amount, date: String(data.get("date") || today()), note: String(data.get("note") || "") }; update((current) => ({ ...current, transfers: [item, ...current.transfers] })); event.currentTarget.reset(); }
@@ -291,7 +382,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
       const amount = finance.wallets.reduce((sum, wallet) => sum + walletBalanceAt(wallet, monthEnd), 0);
       return { month: monthStart, monthEnd, amount };
     });
-  }, [finance.wallets, finance.transfers, transactions, walletBalanceAt]);
+  }, [finance.wallets, walletBalanceAt]);
   const heatmapDays = useMemo(() => {
     const values: Array<{ date: string; amount: number }> = [];
     const formatter = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" });

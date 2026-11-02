@@ -1569,3 +1569,52 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
 
 .habit-time-track.active { color:var(--danger); border-color:color-mix(in srgb,var(--danger) 35%,var(--line)); background:color-mix(in srgb,var(--danger) 10%,var(--surface)); font-variant-numeric:tabular-nums; }
 .habit-time-track:disabled { opacity:.42; cursor:not-allowed; }
+
+.tree-season-card { align-items:center; gap:22px; }
+.tree-artwork { display:grid; place-items:center; width:160px; min-width:160px; overflow:hidden; border-radius:20px; background:#071715; }
+.tree-artwork img { display:block; width:100%; height:auto; }
+.tree-season-copy { flex:1; min-width:0; }
+.tree-season-copy h2 { margin:5px 0 2px; color:var(--ink); font-size:25px; }
+.tree-season-copy p { margin:0 0 14px; color:var(--muted); font-size:12px; line-height:1.55; }
+.tree-progress-caption { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:7px; }
+.tree-progress-caption strong { color:var(--primary); font-size:13px; }
+.tree-progress-caption span,.tree-season-copy small { color:var(--muted); font-size:10px; }
+.tree-season-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+.tree-season-stats > div { display:grid; gap:5px; padding:16px; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
+.tree-season-stats strong { color:var(--ink); font-size:23px; line-height:1.1; }
+.tree-season-stats small { color:var(--muted); font-size:10px; }
+.tree-watering-count { display:flex; align-items:baseline; gap:10px; margin:5px 0 12px; }
+.tree-watering-count strong { color:var(--primary); font-size:28px; }
+.tree-watering-count span { color:var(--muted); font-size:11px; }
+.tree-wisdom-quote { display:flex; gap:10px; align-items:flex-start; }
+.tree-wisdom-quote > span { color:var(--primary); font-family:Georgia,serif; font-size:44px; line-height:.75; }
+.tree-wisdom-quote p { margin:0; color:var(--ink-soft); font-size:13px; line-height:1.7; }
+.tree-care-note { padding:11px 12px; margin-top:12px; border-radius:12px; background:var(--surface-soft); }
+.tree-care-note strong { color:var(--ink); font-size:11px; }
+.tree-care-note p { margin:3px 0 0; color:var(--muted); font-size:10px; }
+.tree-lifetime-path { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.tree-lifetime-stage { display:grid; justify-items:center; gap:5px; padding:11px 6px; border:1px solid var(--line); border-radius:13px; background:var(--surface-soft); text-align:center; }
+.tree-lifetime-stage img { width:65px; height:65px; object-fit:contain; border-radius:10px; }
+.tree-lifetime-stage strong { color:var(--ink); font-size:11px; }
+.tree-lifetime-stage small,.tree-lifetime-stage span { color:var(--muted); font-size:9px; }
+.tree-lifetime-stage.current { border-color:var(--primary); background:var(--primary-soft); }
+.tree-lifetime-stage.locked img { filter:grayscale(1); opacity:.35; }
+.tree-loading-state { display:grid; justify-items:center; gap:10px; padding:32px 16px; text-align:center; }
+.tree-loading-mark { display:grid; place-items:center; width:56px; height:56px; border-radius:18px; color:var(--primary); background:var(--primary-soft); }
+.tree-loading-state strong { color:var(--ink); font-size:13px; }
+.tree-loading-state p { margin:0; color:var(--muted); font-size:11px; }
+@media (max-width:760px) {
+ .tree-season-card { align-items:flex-start; gap:14px; padding:16px; }
+ .tree-artwork { width:108px; min-width:108px; }
+ .tree-season-copy h2 { font-size:19px; }
+ .tree-season-stats { grid-template-columns:1fr 1fr; gap:8px; }
+ .tree-season-stats > div { padding:12px; }
+ .tree-season-stats > div:last-child { grid-column:1/-1; }
+ .tree-season-stats strong { font-size:19px; }
+ .tree-lifetime-path { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:440px) {
+ .tree-season-card { display:grid; grid-template-columns:76px minmax(0,1fr); }
+ .tree-artwork { width:76px; min-width:76px; }
+ .tree-progress-caption { display:grid; gap:3px; }
+}
