@@ -241,7 +241,7 @@ export function RutinaApp() {
       amount,
       date: String(data.get("date") || todayISO()),
       ...(String(data.get("walletId") || "") ? { walletId: String(data.get("walletId")) } : {}),
-      ...(String(data.get("tags") || "").trim() ? { tags: String(data.get("tags")).split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 20) } : {}),
+      ...(String(data.get("tags") || "").trim() ? { tags: String(data.get("tags")).split(",").map((tag) => tag.trim().slice(0, 40)).filter(Boolean).slice(0, 20) } : {}),
     };
 
     updateTransactions((current) => [transaction, ...current]);

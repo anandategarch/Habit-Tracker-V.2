@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Budget, Habit, Transaction } from "@/lib/types";
-import { isScheduledOn } from "@/lib/habit-schedule";
+import { isScheduledOn, normalizeSchedule } from "@/lib/habit-schedule";
 import { ensureSchema } from "@/lib/server/schema";
 import { getTursoClient } from "@/lib/server/turso";
 
@@ -61,6 +61,8 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
     const daily = dailyProgress.get(String(row.id));
     let extra: Record<string, unknown> = {};
     try { const parsed = JSON.parse(String(detail?.payload ?? "{}")); if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) extra = parsed as Record<string, unknown>; } catch { extra = {}; }
+    // Sanitize stored schedule: legacy/malformed payloads must never reach isScheduledOn.
+    const schedule = normalizeSchedule(extra.schedule);
     return {
       id: String(row.id), title: String(row.title),
       category: String(row.category) as Habit["category"], time: String(row.time),
@@ -74,7 +76,7 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
       ...(extra.difficulty ? { difficulty: extra.difficulty as Habit["difficulty"] } : {}),
       ...(typeof extra.groupName === "string" ? { groupName: extra.groupName } : {}),
       timeSpentMinutes: daily ? asNumber(daily.time_spent_minutes) : 0,
-      ...(extra.schedule && typeof extra.schedule === "object" ? { schedule: extra.schedule as Habit["schedule"] } : {}),
+      ...(schedule ? { schedule } : {}),
     };
   });
 
@@ -114,8 +116,16 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
   const client = getTursoClient();
   const transaction = await client.transaction("write");
 
+  // Schedules can arrive malformed (e.g. via backup import where only basic fields
+  // are validated). Normalize once so stored metadata and every isScheduledOn call
+  // below only ever see a valid daily/weekly/monthly shape.
+  const sanitizedHabits = input.habits.map((habit) => ({
+    ...habit,
+    schedule: normalizeSchedule(habit.schedule) ?? { kind: "daily" },
+  }));
+
   try {
-    for (const [index, habit] of input.habits.entries()) {
+    for (const [index, habit] of sanitizedHabits.entries()) {
       await transaction.execute({
         sql: `INSERT INTO habits
           (id, title, category, time, duration, icon, streak, sort_order, updated_at)
@@ -198,7 +208,7 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
       args: [today],
     });
 
-    for (const habit of input.habits) {
+    for (const habit of sanitizedHabits) {
       if (!habit.completed) continue;
       await transaction.execute({
         sql: "INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (?, ?)",
@@ -207,16 +217,19 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
     }
 
     // Recompute consecutive completed days from stored check-ins.
-    for (const habit of input.habits) {
+    // The cursor strictly decreases each iteration and the loop is bounded by a
+    // hard date floor, so a malformed schedule can never hang this transaction.
+    for (const habit of sanitizedHabits) {
       const result = await transaction.execute({
         sql: "SELECT completed_on FROM habit_checkins WHERE habit_id = ? AND completed_on >= ? AND completed_on <= ? ORDER BY completed_on DESC",
         args: [habit.id, shiftDate(today, -364), today],
       });
       if (result.rows.length === 0) continue;
       const dates = new Set(result.rows.map((row) => String(row.completed_on)));
+      const earliest = shiftDate(today, -366);
       let cursor = dates.has(today) ? today : shiftDate(today, -1);
       let streak = 0;
-      while (streak < 365) {
+      while (cursor >= earliest) {
         if (!isScheduledOn(habit.schedule, cursor)) {
           cursor = shiftDate(cursor, -1);
           continue;
@@ -227,7 +240,7 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
       }
       await transaction.execute({
         sql: "UPDATE habits SET streak = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-        args: [streak, habit.id],
+        args: [Math.min(streak, 365), habit.id],
       });
     }
 

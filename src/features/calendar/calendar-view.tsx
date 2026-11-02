@@ -67,14 +67,17 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   const historyError = historyErrorMonth === monthKey
     ? "Riwayat kalender tidak dapat dimuat. Periksa koneksi atau status sinkronisasi database."
     : "";
-  const currentHistory = loadedMonthKey === monthKey ? history : [];
-  const currentCheckins = loadedMonthKey === monthKey ? checkins : [];
   const historyByDate = useMemo(() => {
+    // Abaikan data bulan lama saat bulan aktif berganti agar tidak ada riwayat yang salah tampil.
+    const items = loadedMonthKey === monthKey ? history : [];
     const result = new Map<string, HistoryRecord[]>();
-    for (const item of currentHistory) result.set(item.date, [...(result.get(item.date) ?? []), item]);
+    for (const item of items) result.set(item.date, [...(result.get(item.date) ?? []), item]);
     return result;
-  }, [currentHistory]);
-  const checkinByDate = useMemo(() => new Map(currentCheckins.map((item) => [item.date, item])), [currentCheckins]);
+  }, [loadedMonthKey, monthKey, history]);
+  const checkinByDate = useMemo(() => {
+    const items = loadedMonthKey === monthKey ? checkins : [];
+    return new Map(items.map((item) => [item.date, item]));
+  }, [loadedMonthKey, monthKey, checkins]);
   const selectedRecords = selectedIsToday ? habits.filter((habit) => habit.completed).map((habit) => ({ habitId: habit.id, title: habit.title, date: selectedDate })) : historyByDate.get(selectedDate) ?? [];
   const selectedCheckin = checkinByDate.get(selectedDate);
   const completedToday = habits.filter((habit) => habit.completed).length;
