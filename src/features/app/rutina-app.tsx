@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  CalendarDays, ChartNoAxesCombined, CloudCheck, CloudOff, Home,
+  CalendarDays, ChartLine, Cloud, CloudOff, Home,
   ListChecks, LoaderCircle, RefreshCw, Search, Sprout, WalletCards,
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
@@ -23,7 +23,7 @@ const navigation: { id: TabId; label: string; icon: typeof Home; description: st
   { id: "habits", label: "Kebiasaan", icon: ListChecks, description: "Atur ritme harian" },
   { id: "finance", label: "Keuangan", icon: WalletCards, description: "Kelola arus uang" },
   { id: "calendar", label: "Kalender", icon: CalendarDays, description: "Lihat jadwal" },
-  { id: "insights", label: "Insight", icon: ChartNoAxesCombined, description: "Pahami progres" },
+  { id: "insights", label: "Insight", icon: ChartLine, description: "Pahami progres" },
 ];
 
 type SyncStatus = "local" | "syncing" | "synced" | "error";
@@ -186,7 +186,7 @@ export function RutinaApp() {
             title={sync.detail}
           >
             <span className="sync-card-icon">
-              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <CloudCheck size={17} />}
+              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
             </span>
             <span className="sync-card-copy"><strong>{sync.label}</strong><small>{sync.detail}</small></span>
             <RefreshCw size={14} className="sync-refresh" />
@@ -221,7 +221,7 @@ export function RutinaApp() {
               title={sync.detail}
               aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
             >
-              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <CloudCheck size={17} />}
+              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
             </button>
             <PwaInstallButton />
             <div className="avatar topbar-avatar" aria-label="Workspace pribadi">R</div>
