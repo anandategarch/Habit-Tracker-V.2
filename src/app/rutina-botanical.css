@@ -1469,3 +1469,30 @@ html[data-theme="dark"] .finance-balance { background: linear-gradient(135deg,#3
   .finance-balance { min-height: 205px; }
   .finance-balance-trend svg { height: 47px; }
 }
+
+html[data-theme="dark"] .page-title { color: var(--ink); }
+html[data-theme="dark"] .page-subtitle { color: var(--muted); }
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .module-panel,
+html[data-theme="dark"] .module-card {
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+html[data-theme="dark"] .habit-week-strip { border-color: var(--line); background: var(--surface); }
+html[data-theme="dark"] .habit-week-strip-heading strong,
+html[data-theme="dark"] .habit-week-day strong { color: var(--ink); }
+html[data-theme="dark"] .botanical-hero .hero-progress-icon::before { background: var(--surface); }
+html[data-theme="dark"] .botanical-hero .hero-progress-number { color: #d6ead0; }
+html[data-theme="dark"] .botanical-hero .hero-description { color: var(--ink-soft); background: rgba(42,58,45,.88); border-color: var(--line); }
+html[data-theme="dark"] .tree-level-badge { color: #fff; }
+html[data-theme="dark"] .tree-level-progress-copy strong,
+html[data-theme="dark"] .tree-level-name { color: var(--ink-soft); }
+html[data-theme="dark"] .tree-level-progress { background: #3c503c; }
+html[data-theme="dark"] .tree-art-badge { border-color: var(--line); color: var(--ink-soft); background: rgba(38,52,42,.86); }
+html[data-theme="dark"] .tree-art-level-stamp { color: #fff; }
+html[data-theme="dark"] .tree-weekly-ribbon-icon { color: #c3dfb9; background: #354c38; }
+html[data-theme="dark"] .settings-profile-copy > span,
+html[data-theme="dark"] .settings-theme-options button small,
+html[data-theme="dark"] .settings-vacation-toggle small { color: var(--muted); }
