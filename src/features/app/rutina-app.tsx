@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, Sun, Moon, Monitor,
+  Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Sun, Moon, Monitor,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
@@ -36,7 +36,14 @@ const navigation: { id: TabId; label: string; icon: AppIconName; description: st
   { id: "settings", label: "Pengaturan", icon: "settings", description: "Backup dan preferensi data" },
 ];
 const mobilePrimary = navigation.filter((item) => ["home", "habits", "finance", "calendar"].includes(item.id));
-const mobileMore = navigation.filter((item) => !mobilePrimary.some((primary) => primary.id === item.id));
+const navigationGroups: { label: string; ids: TabId[] }[] = [
+  { label: "Overview", ids: ["home", "habits", "calendar"] },
+  { label: "Money & Insight", ids: ["finance", "insights"] },
+  { label: "Growth", ids: ["goals", "checkin", "tree"] },
+  { label: "Lifestyle", ids: ["wellness", "training"] },
+  { label: "Workspace", ids: ["work"] },
+  { label: "System", ids: ["settings"] },
+];
 
 type SyncStatus = "local" | "syncing" | "synced" | "error";
 
@@ -116,6 +123,7 @@ export function RutinaApp() {
       if (event.key === "Escape") {
         setSearchOpen(false);
         setSearchQuery("");
+        setMoreOpen(false);
       }
     }
 
@@ -251,56 +259,117 @@ export function RutinaApp() {
   }
 
   return (
-    <div className="app-shell">
-      <aside className="desktop-sidebar">
-        <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); }} aria-label="Rutina, kembali ke beranda">
-          <span className="brand-mark"><AppIcon name="growth" size={22} /></span>
+    <div className="app-shell" data-active-tab={activeTab}>
+      <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
+        <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); setMoreOpen(false); }} aria-label="Rutina, kembali ke beranda">
+          <span className="brand-mark"><AppIcon name="growth" size={23} /></span>
           <span className="brand-copy"><span className="brand-name">rutina<span>.</span></span><span className="brand-sub">grow at your pace</span></span>
         </a>
 
-        <div className="nav-label">WORKSPACE</div>
-        <nav className="side-nav" aria-label="Navigasi utama">
-          {navigation.map(({ id, label, icon, description }) => (
+        <nav className="rail-primary-nav" aria-label="Akses cepat">
+          {mobilePrimary.map(({ id, label, icon }) => (
             <button
               key={id}
               type="button"
-              className={`nav-link ${activeTab === id ? "active" : ""}`}
+              className={`rail-link ${activeTab === id ? "active" : ""}`}
+              aria-label={label}
               aria-current={activeTab === id ? "page" : undefined}
-              onClick={() => setActiveTab(id)}
+              title={label}
+              onClick={() => { setActiveTab(id); setMoreOpen(false); }}
             >
-              <span className="nav-link-icon"><AppIcon name={icon} size={19} /></span>
-              <span className="nav-link-copy"><strong>{label}</strong><small>{description}</small></span>
-              {activeTab === id && <span className="nav-active-indicator" />}
+              <AppIcon name={icon} size={21} />
+              <span className="rail-tooltip">{label}</span>
             </button>
           ))}
         </nav>
 
-        <div className="sidebar-growth">
-          <span className="sidebar-growth-icon"><AppIcon name="growth" size={17} /></span>
-          <p>Hal besar tumbuh dari langkah kecil.</p>
-          <span>ONE DAY AT A TIME</span>
-        </div>
+        <div className="rail-spacer" />
+        <button
+          type="button"
+          className={`rail-menu-toggle ${moreOpen ? "active" : ""}`}
+          aria-expanded={moreOpen}
+          aria-controls="workspace-menu"
+          aria-label={moreOpen ? "Tutup menu navigasi" : "Buka semua menu"}
+          onClick={() => setMoreOpen((value) => !value)}
+        >
+          {moreOpen ? <X size={20} /> : <Grid2X2 size={20} />}
+          <span>Menu</span>
+        </button>
+        <button
+          type="button"
+          className={`rail-sync-button ${sync.className}`}
+          onClick={() => void refreshWorkspace()}
+          aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+          title={sync.detail}
+        >
+          {syncStatus === "syncing" ? <LoaderCircle size={18} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={18} /> : <Cloud size={18} />}
+          <span className="rail-sync-indicator" />
+        </button>
 
-        <div className="sidebar-bottom">
-          <button
-            type="button"
-            className={`sync-card ${sync.className}`}
-            onClick={() => void refreshWorkspace()}
-            aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
-            title={sync.detail}
-          >
-            <span className="sync-card-icon">
-              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
-            </span>
-            <span className="sync-card-copy"><strong>{sync.label}</strong><small>{sync.detail}</small></span>
-            <RefreshCw size={14} className="sync-refresh" />
-          </button>
-          <div className="profile-row">
-            <div className="avatar">R</div>
-            <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+        <div id="workspace-menu" className={`workspace-menu-panel ${moreOpen ? "is-open" : ""}`} aria-hidden={!moreOpen}>
+          <div className="menu-panel-header">
+            <div>
+              <span className="menu-panel-kicker">YOUR SPACE</span>
+              <strong>Workspace</strong>
+              <small>Semua area Rutina, satu tempat.</small>
+            </div>
+            <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
+          </div>
+          <div className="menu-panel-content">
+            {navigationGroups.map(({ label: groupLabel, ids }) => (
+              <section className="menu-group" key={groupLabel}>
+                <div className="menu-group-label">{groupLabel}</div>
+                <div className="menu-group-list">
+                  {ids.map((id) => {
+                    const item = navigation.find((entry) => entry.id === id);
+                    if (!item) return null;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`menu-item ${activeTab === item.id ? "active" : ""}`}
+                        data-module={item.id}
+                        aria-current={activeTab === item.id ? "page" : undefined}
+                        onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}
+                      >
+                        <span className="menu-item-icon"><AppIcon name={item.icon} size={18} /></span>
+                        <span className="menu-item-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+                        {activeTab === item.id && <span className="menu-item-current" />}
+                        <ChevronRight size={14} className="menu-item-arrow" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+          <div className="menu-panel-footer">
+            <div className="sidebar-growth">
+              <span className="sidebar-growth-icon"><AppIcon name="growth" size={16} /></span>
+              <p>Hal besar tumbuh dari langkah kecil.</p>
+              <span>ONE DAY AT A TIME</span>
+            </div>
+            <button
+              type="button"
+              className={`sync-card ${sync.className}`}
+              onClick={() => void refreshWorkspace()}
+              aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+              title={sync.detail}
+            >
+              <span className="sync-card-icon">
+                {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
+              </span>
+              <span className="sync-card-copy"><strong>{sync.label}</strong><small>{sync.detail}</small></span>
+              <RefreshCw size={14} className="sync-refresh" />
+            </button>
+            <div className="profile-row">
+              <div className="avatar">R</div>
+              <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+            </div>
           </div>
         </div>
       </aside>
+      {moreOpen && <button type="button" className="workspace-menu-scrim" aria-label="Tutup menu navigasi" onClick={() => setMoreOpen(false)} />}
 
       <main className="main-shell">
         <header className="topbar">
@@ -359,9 +428,33 @@ export function RutinaApp() {
             <span>{label}</span>
           </button>
         ))}
-        <button type="button" className={moreOpen ? "active" : ""} aria-expanded={moreOpen} onClick={() => setMoreOpen((value) => !value)}><Grid2X2 size={19} /><span>Lainnya</span></button>
+        <button type="button" className={moreOpen ? "active" : ""} aria-expanded={moreOpen} aria-controls="mobile-workspace-menu" onClick={() => setMoreOpen((value) => !value)}><Grid2X2 size={19} /><span>Menu</span></button>
       </nav>
-      {moreOpen && <div className="mobile-more-menu" role="menu" aria-label="Modul lainnya">{mobileMore.map(({ id, label, icon }) => <button key={id} type="button" role="menuitem" onClick={() => { setActiveTab(id); setMoreOpen(false); }}><AppIcon name={icon} size={17} /><span>{label}</span><ChevronRight size={14} /></button>)}</div>}
+      {moreOpen && <div id="mobile-workspace-menu" className="mobile-more-menu workspace-menu-sheet" role="dialog" aria-modal="true" aria-label="Semua menu Rutina">
+        <div className="menu-panel-header">
+          <div><span className="menu-panel-kicker">YOUR SPACE</span><strong>Jelajahi Rutina</strong><small>Pilih area yang ingin kamu buka.</small></div>
+          <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
+        </div>
+        <div className="menu-panel-content">
+          {navigationGroups.map(({ label: groupLabel, ids }) => (
+            <section className="menu-group" key={groupLabel}>
+              <div className="menu-group-label">{groupLabel}</div>
+              <div className="menu-group-list">
+                {ids.map((id) => {
+                  const item = navigation.find((entry) => entry.id === id);
+                  if (!item) return null;
+                  return <button key={item.id} type="button" role="menuitem" className={`menu-item ${activeTab === item.id ? "active" : ""}`} data-module={item.id} aria-current={activeTab === item.id ? "page" : undefined} onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}>
+                    <span className="menu-item-icon"><AppIcon name={item.icon} size={18} /></span>
+                    <span className="menu-item-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+                    {activeTab === item.id && <span className="menu-item-current" />}
+                    <ChevronRight size={14} className="menu-item-arrow" />
+                  </button>;
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>}
 
       {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
       <SearchDialog
