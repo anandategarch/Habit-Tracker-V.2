@@ -1631,3 +1631,22 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
 .backup-message { margin:10px 0 0; padding:10px 13px; border:1px solid var(--line); border-radius:12px; font-size:11px; line-height:1.5; }
 .backup-message.is-success { color:var(--primary); background:var(--primary-soft); }
 .backup-message.is-error { color:var(--danger); background:color-mix(in srgb,var(--danger) 9%,var(--surface)); }
+
+.habit-groups-manager { margin:0 0 14px; padding:0; overflow:hidden; }
+.group-manager-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; padding:14px 16px; border:0; color:var(--ink); background:transparent; text-align:left; }
+.group-manager-heading > span:first-child { display:grid; gap:4px; }
+.group-manager-heading strong { font-size:12px; }
+.group-manager-heading small { color:var(--muted); font-size:10px; }
+.group-manager-heading > span:last-child { color:var(--primary); font-size:10px; font-weight:750; }
+.group-manager-body { display:grid; gap:10px; padding:0 16px 14px; }
+.group-create-form { display:flex; align-items:center; gap:7px; }
+.group-create-form .form-control { min-width:0; flex:1; }
+.group-color-input { width:36px; height:34px; padding:2px; border:1px solid var(--line); border-radius:9px; background:var(--surface); }
+.group-manager-list { display:grid; gap:6px; }
+.group-manager-item { display:flex; align-items:center; gap:8px; padding:7px 9px; border:1px solid var(--line); border-radius:10px; background:var(--surface-soft); }
+.group-color-dot { width:10px; height:10px; flex:none; border-radius:50%; }
+.group-manager-item strong { color:var(--ink); font-size:11px; }
+.group-manager-item small { margin-left:auto; color:var(--muted); font-size:9px; }
+.group-manager-item button { border:0; color:var(--danger); background:transparent; font-size:10px; font-weight:700; }
+.group-filter-select { min-width:110px; max-width:170px; padding:7px 9px; border:1px solid var(--line); border-radius:9px; color:var(--ink-soft); background:var(--surface); font-size:10px; }
+@media (max-width:560px) { .group-create-form { flex-wrap:wrap; } .group-create-form .form-control { flex-basis:100%; } .group-filter-select { flex:1; max-width:none; } }
