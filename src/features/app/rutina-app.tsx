@@ -212,7 +212,7 @@ export function RutinaApp() {
           </div>
           <div className="topbar-actions">
             <button className="search-trigger" type="button" onClick={() => setSearchOpen(true)} aria-label="Cari di Rutina">
-              <Search size={16} /><span>Cari sesuatu…</span><kbd>⌘ K</kbd>
+              <Search size={16} /><span>Cari sesuatu…</span><kbd>Ctrl / ⌘ K</kbd>
             </button>
             <button
               type="button"
