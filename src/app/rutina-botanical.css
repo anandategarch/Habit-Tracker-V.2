@@ -1452,3 +1452,20 @@ html[data-theme="dark"] .tree-wisdom-quote p { color: var(--ink-soft); }
 html[data-theme="dark"] .tree-lifetime-stage { border-color: var(--line); background: var(--surface-soft); }
 html[data-theme="dark"] .tree-lifetime-stage.current { background: #334a35; }
 html[data-theme="dark"] .insight-ai-panel { border-color: var(--line); background: var(--surface); }
+
+
+/* Finance chart: real daily net totals rendered inside the balance card. */
+.finance-balance { min-height: 215px; padding-bottom: 13px; }
+.finance-balance .metric-value { margin-top: 12px; }
+.finance-balance-trend { position: relative; z-index: 2; margin-top: 10px; }
+.finance-balance-trend-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.finance-balance-trend-heading span { color: rgba(255,255,255,.74); font-size: 7px; font-weight: 850; letter-spacing: 1px; }
+.finance-balance-trend-heading small { color: rgba(255,255,255,.66); font-size: 7px; }
+.finance-balance-trend svg { display: block; width: 100%; height: 54px; overflow: visible; margin-top: 2px; }
+.finance-balance-trend-days { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 3px; margin-top: -1px; text-align: center; }
+.finance-balance-trend-days small { color: rgba(255,255,255,.68); font-size: 7px; text-transform: capitalize; }
+html[data-theme="dark"] .finance-balance { background: linear-gradient(135deg,#365941,#4c7453); }
+@media (max-width: 430px) {
+  .finance-balance { min-height: 205px; }
+  .finance-balance-trend svg { height: 47px; }
+}
