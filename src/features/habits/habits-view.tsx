@@ -1,31 +1,97 @@
-import { Plus } from "lucide-react";
+"use client";
+
+import { useMemo, useState } from "react";
+import { CheckCheck, ListFilter, Plus, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { summarizeHabits } from "@/lib/habits";
-import { HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+
+type CompletionFilter = "all" | "pending" | "completed";
+const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
 
 export function HabitsView({ habits, onToggle, onAdd }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void }) {
-  const { completed, total, progress } = summarizeHabits(habits);
+  const [completionFilter, setCompletionFilter] = useState<CompletionFilter>("all");
+  const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
+  const [query, setQuery] = useState("");
+  const { completed, total, progress, longestStreak } = summarizeHabits(habits);
+
+  const filteredHabits = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
+    return [...habits]
+      .filter((habit) => completionFilter === "all" || (completionFilter === "pending" ? !habit.completed : habit.completed))
+      .filter((habit) => categoryFilter === "Semua" || habit.category === categoryFilter)
+      .filter((habit) => !normalizedQuery || `${habit.title} ${habit.category}`.toLocaleLowerCase("id-ID").includes(normalizedQuery))
+      .sort((a, b) => a.time.localeCompare(b.time));
+  }, [habits, completionFilter, categoryFilter, query]);
+
   return (
     <>
-      <PageIntro eyebrow="KEBIASAAN HARIAN" title="Bangun ritmemu." subtitle="Konsistensi kecil lebih berarti daripada target yang terlalu besar." action={<PrimaryButton onClick={onAdd}><Plus size={15} /> Habit baru</PrimaryButton>} />
-      <div className="habit-page-grid">
-        <section className="card card-pad">
-          <SectionHeading title="Semua habit" caption={`${total} kebiasaan tersimpan · ${completed} selesai hari ini`} />
-          <div className="habit-list">
-            {habits.map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} />)}
-            {habits.length === 0 && <div className="empty-state">Belum ada habit. Mulai dari satu kebiasaan sederhana.</div>}
+      <PageIntro
+        eyebrow="KEBIASAAN HARIAN"
+        title="Bangun ritmemu."
+        subtitle="Konsistensi kecil lebih berarti daripada target yang terlalu besar."
+        action={<PrimaryButton onClick={onAdd}><Plus size={15} /> Habit baru</PrimaryButton>}
+      />
+
+      <div className="habit-overview-grid">
+        <section className="card habit-progress-card">
+          <div className="habit-progress-copy">
+            <div className="small-label">PROGRESS HARI INI</div>
+            <div className="habit-progress-value">{progress}<span>%</span></div>
+            <p>{completed} dari {total} kebiasaan telah selesai.</p>
+          </div>
+          <div className="habit-progress-ring" style={{ "--progress": `${progress}%` }}>
+            <strong>{completed}<small>/{total}</small></strong>
+            <span>SELESAI</span>
           </div>
         </section>
-        <div className="right-stack">
-          <section className="card habit-side-card">
-            <span className="small-label">PROGRESS HARI INI</span>
-            <div className="streak-number">{progress}%</div>
-            <div className="streak-caption">{completed} dari {habits.length} habit telah selesai.</div>
-            <div className="budget-track" style={{ marginTop: 15, height: 9 }}><div className="budget-fill" style={{ width: `${progress}%` }} /></div>
-          </section>
-          <section className="quote-card"><div className="quote-mark">“</div><p className="quote-text">Mulai dari yang bisa kamu lakukan hari ini.</p><div className="quote-caption">ONE DAY AT A TIME</div></section>
-        </div>
+        <section className="card habit-streak-summary">
+          <span className="streak-summary-icon"><Sparkles size={18} /></span>
+          <div className="small-label">STREAK TERPANJANG</div>
+          <div className="streak-number">{longestStreak}<span> hari</span></div>
+          <p>Pertahankan ritme yang sudah kamu bangun.</p>
+        </section>
       </div>
+
+      <section className="card card-pad habits-panel">
+        <SectionHeading title="Semua kebiasaan" caption={`${total} kebiasaan tersimpan · ${completed} selesai hari ini`} />
+        <div className="habit-toolbar">
+          <label className="habit-search">
+            <Search size={16} />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari kebiasaan…" aria-label="Cari kebiasaan" />
+          </label>
+          <div className="completion-filters" role="group" aria-label="Filter status kebiasaan">
+            <button type="button" className={completionFilter === "all" ? "active" : ""} onClick={() => setCompletionFilter("all")}>Semua</button>
+            <button type="button" className={completionFilter === "pending" ? "active" : ""} onClick={() => setCompletionFilter("pending")}>Belum selesai</button>
+            <button type="button" className={completionFilter === "completed" ? "active" : ""} onClick={() => setCompletionFilter("completed")}>Selesai</button>
+          </div>
+        </div>
+        <div className="category-filters" role="group" aria-label="Filter kategori">
+          <ListFilter size={14} />
+          {categoryOptions.map((category) => (
+            <button
+              key={category}
+              type="button"
+              className={categoryFilter === category ? "active" : ""}
+              aria-pressed={categoryFilter === category}
+              onClick={() => setCategoryFilter(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        <div className="habit-list">
+          {filteredHabits.map((habit) => <HabitRow key={habit.id} habit={habit} onToggle={onToggle} />)}
+        </div>
+        {filteredHabits.length === 0 && (
+          <EmptyState
+            icon={query ? Search : CheckCheck}
+            title={total === 0 ? "Belum ada kebiasaan" : "Tidak ada kebiasaan yang cocok"}
+            description={total === 0 ? "Mulai dari hal sederhana yang bisa kamu ulangi setiap hari." : "Ubah kata kunci atau filter untuk melihat kebiasaan lainnya."}
+            action={total === 0 ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Tambah kebiasaan</PrimaryButton> : undefined}
+          />
+        )}
+      </section>
     </>
   );
 }
