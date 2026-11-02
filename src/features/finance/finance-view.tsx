@@ -28,7 +28,9 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
       .sort((a, b) => b.date.localeCompare(a.date)),
     [transactions, filter],
   );
-  const monthLabel = new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(new Date());
+  // Data difilter berdasarkan bulan Asia/Jakarta (todayISO), jadi label bulan
+  // harus memakai zona waktu yang sama agar tidak selisih di batas bulan.
+  const monthLabel = new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date());
 
   return (
     <>

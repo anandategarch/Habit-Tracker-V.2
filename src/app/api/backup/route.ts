@@ -27,7 +27,7 @@ function validateWorkspace(value: unknown): value is { habits: Habit[]; transact
     typeof item.id === "string" && item.id.length <= 100 &&
     typeof item.title === "string" && item.title.trim().length > 0 &&
     typeof item.category === "string" && typeof item.time === "string" &&
-    typeof item.duration === "number" && Number.isFinite(item.duration) &&
+    typeof item.duration === "number" && Number.isFinite(item.duration) && item.duration > 0 &&
     typeof item.completed === "boolean" && typeof item.icon === "string" &&
     typeof item.streak === "number" && Number.isFinite(item.streak));
   const transactionsOk = value.transactions.every((item) => isRecord(item) &&
