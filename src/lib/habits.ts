@@ -8,5 +8,6 @@ export function summarizeHabits(habits: Habit[]) {
     total,
     progress: total === 0 ? 0 : Math.round((completed / total) * 100),
     totalStreak: habits.reduce((sum, habit) => sum + habit.streak, 0),
+    longestStreak: habits.reduce((longest, habit) => Math.max(longest, habit.streak), 0),
   };
 }
