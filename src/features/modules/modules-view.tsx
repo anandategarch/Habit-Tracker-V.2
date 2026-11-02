@@ -290,9 +290,6 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
     : "—";
   const goalsCount = modules.goals.filter((goal) => goal.completed).length;
   const stageArt = growth?.artwork ?? "/tree/benih.svg";
-  const weekStartDate = growth?.weekStart ? new Date(`${growth.weekStart}T00:00:00Z`) : null;
-  const dayIndex = weekStartDate ? Math.max(0, Math.min(6, Math.floor((Date.parse(`${growth?.today}T00:00:00Z`) - weekStartDate.getTime()) / 86_400_000))) : 0;
-  const daysRemaining = Math.max(1, 7 - dayIndex);
 
   return (
     <div className="tree-page">
@@ -316,7 +313,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
             </div>
             <small className="tree-level-footnote">Progres seumur hidup · tidak pernah direset</small>
           </div>
-          <div className="tree-journey-art" aria-label={"Ilustrasi pohon tahap " + growth.stage.label}>
+          <div className="tree-journey-art" role="img" aria-label={"Ilustrasi pohon tahap " + growth.stage.label}>
             <span className="tree-art-orbit tree-art-orbit-one" />
             <span className="tree-art-orbit tree-art-orbit-two" />
             <span className="tree-art-badge"><Sprout size={13} /> {growth.stage.label}</span>
