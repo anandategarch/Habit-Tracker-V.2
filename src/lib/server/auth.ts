@@ -21,6 +21,16 @@ export function isSessionConfigurationValid(): boolean {
   return Boolean(getPassword() && getSessionSecret());
 }
 
+export function getAuthConfigurationStatus(): {
+  passwordReady: boolean;
+  sessionSecretReady: boolean;
+} {
+  return {
+    passwordReady: Boolean(getPassword()),
+    sessionSecretReady: Boolean(getSessionSecret()),
+  };
+}
+
 function signExpiry(expiry: string, secret: string): string {
   return createHmac("sha256", secret).update(`rutina-session:${expiry}`).digest("base64url");
 }
@@ -61,18 +71,25 @@ export async function getAuthSessionState(): Promise<{
   required: boolean;
   setupRequired: boolean;
   authenticated: boolean;
+  passwordReady: boolean;
+  sessionSecretReady: boolean;
 }> {
   const state = getAuthSetupState();
+  const configuration = getAuthConfigurationStatus();
 
   if (!state.required) {
-    return { required: false, setupRequired: false, authenticated: true };
+    return { ...state, ...configuration, authenticated: true };
   }
 
   if (state.setupRequired) {
-    return { ...state, authenticated: false };
+    return { ...state, ...configuration, authenticated: false };
   }
 
-  return { ...state, authenticated: await hasValidSession() };
+  return {
+    ...state,
+    ...configuration,
+    authenticated: await hasValidSession(),
+  };
 }
 
 export async function authenticateWithPassword(password: string): Promise<boolean> {
