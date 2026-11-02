@@ -20,6 +20,8 @@ export interface FinanceExtras {
   wallets: Wallet[]; transfers: MoneyTransfer[]; recurring: RecurringTransaction[];
   savingsGoals: SavingsGoal[]; categoryRules: CategoryRule[]; weeklyBudgets: WeeklyBudget[];
 }
+export interface WorkspaceSettings { vacationMode: boolean; theme: "system" | "light" | "dark" }
+
 export interface WorkspaceModules {
   goals: Goal[]; checkins: DailyCheckin[]; tasks: WorkTask[]; notes: WorkNote[];
   routines: WorkRoutine[]; wellness: WellnessEntry[]; workouts: WorkoutSession[];
@@ -35,7 +37,7 @@ export const EMPTY_FINANCE_EXTRAS: FinanceExtras = {
 };
 export const EMPTY_MODULES: WorkspaceModules = {
   goals: [], checkins: [], tasks: [], notes: [], routines: [], wellness: [],
-  workouts: [], programs: [], progressPhotos: [], finance: EMPTY_FINANCE_EXTRAS,
+  workouts: [], programs: [], progressPhotos: [], settings: { vacationMode: false, theme: "system" }, finance: EMPTY_FINANCE_EXTRAS,
 };
 export function normalizeModules(value: unknown): WorkspaceModules {
   if (!value || typeof value !== "object" || Array.isArray(value)) return EMPTY_MODULES;
@@ -51,6 +53,7 @@ export function normalizeModules(value: unknown): WorkspaceModules {
     workouts: Array.isArray(record.workouts) ? record.workouts : [],
     programs: Array.isArray(record.programs) ? record.programs : [],
     progressPhotos: Array.isArray(record.progressPhotos) ? record.progressPhotos : [],
+    settings: record.settings && typeof record.settings === "object" ? { vacationMode: Boolean((record.settings as Partial<WorkspaceSettings>).vacationMode), theme: ["system", "light", "dark"].includes(String((record.settings as Partial<WorkspaceSettings>).theme)) ? (record.settings as WorkspaceSettings).theme : "system" } : { vacationMode: false, theme: "system" },
     finance: {
       wallets: Array.isArray(finance.wallets) ? finance.wallets : [],
       transfers: Array.isArray(finance.transfers) ? finance.transfers : [],

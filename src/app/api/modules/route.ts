@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 const allowed = new Set<WorkspaceModuleKey>([
   "goals", "checkins", "tasks", "notes", "routines", "wellness",
-  "workouts", "programs", "progressPhotos", "finance",
+  "workouts", "programs", "progressPhotos", "settings", "finance",
 ]);
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
