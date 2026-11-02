@@ -22,7 +22,7 @@ export function EntryModal({ mode, onClose, onSubmit }: {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>("input, select, button");
+    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>("[autofocus]") ?? dialogRef.current?.querySelector<HTMLElement>("input, select, button");
     const focusTimeout = window.setTimeout(() => firstFocusable?.focus(), 0);
     return () => {
       document.body.style.overflow = previousOverflow;
