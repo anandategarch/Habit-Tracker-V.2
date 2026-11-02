@@ -22,7 +22,26 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
   const [groupNameInput, setGroupNameInput] = useState("");
   const [groupColor, setGroupColor] = useState("#6b9d82");
   const [groupsOpen, setGroupsOpen] = useState(false);
+  const [timeAnalysis, setTimeAnalysis] = useState<{ habit: { id: string; title: string }; periodDays: number; summary: { totalMinutes: number; activeDays: number; averageMinutes: number }; byDay: Array<{ date: string; minutes: number }> } | null>(null);
+  const [timeAnalysisLoading, setTimeAnalysisLoading] = useState(false);
+  const [timeAnalysisError, setTimeAnalysisError] = useState("");
+  const [timeAnalysisDays, setTimeAnalysisDays] = useState(30);
   const today = todayISO();
+  async function loadTimeAnalysis(habitId: string, days = timeAnalysisDays) {
+    setTimeAnalysisLoading(true);
+    setTimeAnalysisError("");
+    try {
+      const response = await fetch(`/api/habits/${encodeURIComponent(habitId)}/time-analysis?days=${days}`, { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Gagal memuat analisis waktu.");
+      setTimeAnalysis(payload);
+    } catch (error) {
+      setTimeAnalysisError(error instanceof Error ? error.message : "Gagal memuat analisis waktu.");
+      setTimeAnalysis(null);
+    } finally {
+      setTimeAnalysisLoading(false);
+    }
+  }
   const scheduledHabits = showAllSchedules ? habits : habits.filter((habit) => isScheduledOn(habit.schedule, today));
   const { completed, total, progress, longestStreak } = summarizeHabits(scheduledHabits);
 
@@ -99,8 +118,11 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
             </button>
           ))}
         </div>
+        {timeAnalysis && <section className="time-analysis-card"><div className="time-analysis-head"><div><strong>Analisis waktu · {timeAnalysis.habit.title}</strong><small>{timeAnalysis.summary.totalMinutes} menit · {timeAnalysis.summary.activeDays} hari aktif · rata-rata {timeAnalysis.summary.averageMinutes} menit/hari aktif</small></div><button type="button" onClick={() => setTimeAnalysis(null)} aria-label="Tutup analisis waktu">×</button></div><select className="group-filter-select" value={timeAnalysisDays} onChange={(event) => { const days = Number(event.target.value); setTimeAnalysisDays(days); void loadTimeAnalysis(timeAnalysis.habit.id, days); }} aria-label="Rentang analisis waktu"><option value={7}>7 hari</option><option value={30}>30 hari</option><option value={90}>90 hari</option></select><div className="time-analysis-chart">{timeAnalysis.byDay.map((day) => { const max = Math.max(1, ...timeAnalysis.byDay.map((item) => item.minutes)); return <div className="time-analysis-column" key={day.date} title={`${day.date}: ${day.minutes} menit`}><strong>{day.minutes ? `${day.minutes}m` : "—"}</strong><div><span style={{ height: `${day.minutes ? Math.max(4, day.minutes / max * 100) : 0}%` }} /></div><small>{day.date.slice(8, 10)}</small></div>; })}</div></section>}
+        {timeAnalysisLoading && <p className="module-muted">Memuat analisis waktu…</p>}
+        {timeAnalysisError && <p className="backup-message is-error" role="alert">{timeAnalysisError}</p>}
         <div className="habit-list">
-          {filteredHabits.map((habit) => <div key={habit.id} className="habit-draggable" draggable onDragStart={() => setDraggedId(habit.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (!draggedId || draggedId === habit.id || !onReorder) return; const next = [...habits]; const from = next.findIndex((item) => item.id === draggedId); const to = next.findIndex((item) => item.id === habit.id); if (from < 0 || to < 0) return; const [moved] = next.splice(from, 1); next.splice(to, 0, moved); onReorder(next); setDraggedId(null); }}><HabitRow habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTimerToggle={onTimerToggle} timerActive={activeTimerId === habit.id} timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0} paused={vacationMode} /></div>)}
+          {filteredHabits.map((habit) => <div key={habit.id} className="habit-draggable" draggable onDragStart={() => setDraggedId(habit.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (!draggedId || draggedId === habit.id || !onReorder) return; const next = [...habits]; const from = next.findIndex((item) => item.id === draggedId); const to = next.findIndex((item) => item.id === habit.id); if (from < 0 || to < 0) return; const [moved] = next.splice(from, 1); next.splice(to, 0, moved); onReorder(next); setDraggedId(null); }}><HabitRow habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTimerToggle={onTimerToggle} onViewTimeAnalysis={loadTimeAnalysis} timerActive={activeTimerId === habit.id} timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0} paused={vacationMode} /></div>)}
         </div>
         {filteredHabits.length === 0 && (
           <EmptyState

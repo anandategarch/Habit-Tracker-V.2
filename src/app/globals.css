@@ -1650,3 +1650,18 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
 .group-manager-item button { border:0; color:var(--danger); background:transparent; font-size:10px; font-weight:700; }
 .group-filter-select { min-width:110px; max-width:170px; padding:7px 9px; border:1px solid var(--line); border-radius:9px; color:var(--ink-soft); background:var(--surface); font-size:10px; }
 @media (max-width:560px) { .group-create-form { flex-wrap:wrap; } .group-create-form .form-control { flex-basis:100%; } .group-filter-select { flex:1; max-width:none; } }
+
+.habit-history-action { padding:5px 7px; border:1px solid var(--line); border-radius:8px; color:var(--primary); background:var(--surface); font-size:9px; font-weight:750; white-space:nowrap; }
+.time-analysis-card { display:grid; gap:10px; margin:0 0 13px; padding:13px; border:1px solid var(--line); border-radius:14px; background:var(--surface-soft); }
+.time-analysis-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.time-analysis-head > div { display:grid; gap:3px; }
+.time-analysis-head strong { color:var(--ink); font-size:11px; }
+.time-analysis-head small { color:var(--muted); font-size:9px; }
+.time-analysis-head button { width:25px; height:25px; flex:none; border:1px solid var(--line); border-radius:8px; color:var(--muted); background:var(--surface); }
+.time-analysis-chart { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(26px,1fr); gap:5px; align-items:end; min-height:112px; overflow-x:auto; padding:8px 0 2px; }
+.time-analysis-column { display:grid; grid-template-rows:auto 70px auto; align-items:end; justify-items:center; gap:4px; min-width:0; }
+.time-analysis-column > strong { color:var(--muted); font-size:8px; font-variant-numeric:tabular-nums; }
+.time-analysis-column > div { display:flex; align-items:end; width:100%; height:70px; border-radius:6px 6px 3px 3px; background:var(--surface); overflow:hidden; }
+.time-analysis-column > div > span { display:block; width:100%; min-height:0; border-radius:5px 5px 3px 3px; background:var(--primary); }
+.time-analysis-column > small { color:var(--muted); font-size:8px; }
+html[data-theme="dark"] .time-analysis-card { border-color:var(--line); background:var(--surface-soft); }
