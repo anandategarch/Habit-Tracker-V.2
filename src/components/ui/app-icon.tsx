@@ -1,10 +1,10 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export type AppIconName =
   | "home" | "habits" | "finance" | "calendar" | "insights" | "goals"
   | "checkin" | "work" | "wellness" | "training" | "growth" | "settings";
 
-const paths: Record<AppIconName, React.ReactNode> = {
+const paths: Record<AppIconName, ReactNode> = {
   home: <><path d="m3.5 10 8.5-7 8.5 7" /><path d="M5.5 9v10h13V9M9 19v-6h6v6" /><path d="M3 10.5 12 3l9 7.5" /></>,
   habits: <><rect x="4" y="3.5" width="16" height="17" rx="3" /><path d="m8 9 1.5 1.5L12 8M14 9h3M8 15l1.5 1.5L12 14M14 15h3" /></>,
   finance: <><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3 9h18M7 15h3M16 13v4M14 15h4" /><path d="M7 5V3h10v2" /></>,
