@@ -152,15 +152,13 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
           item.id, item.title, item.category, item.type, item.amount, item.date,
         ],
       });
-      if (item.walletId || item.tags?.length || item.splitGroupId) {
-        await transaction.execute({
-          sql: `INSERT INTO transaction_metadata (transaction_id, wallet_id, tags_json, split_group_id, updated_at)
-            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-            ON CONFLICT(transaction_id) DO UPDATE SET wallet_id = excluded.wallet_id,
-              tags_json = excluded.tags_json, split_group_id = excluded.split_group_id, updated_at = CURRENT_TIMESTAMP`,
-          args: [item.id, item.walletId ?? null, JSON.stringify(item.tags ?? []), item.splitGroupId ?? null],
-        });
-      }
+      await transaction.execute({
+        sql: `INSERT INTO transaction_metadata (transaction_id, wallet_id, tags_json, split_group_id, updated_at)
+          VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(transaction_id) DO UPDATE SET wallet_id = excluded.wallet_id,
+            tags_json = excluded.tags_json, split_group_id = excluded.split_group_id, updated_at = CURRENT_TIMESTAMP`,
+        args: [item.id, item.walletId ?? null, JSON.stringify(item.tags ?? []), item.splitGroupId ?? null],
+      });
     }
 
     for (const budget of input.budgets) {
