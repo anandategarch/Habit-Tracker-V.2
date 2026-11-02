@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ArrowDownLeft, ArrowUpRight, BrainCircuit, Flame, HeartPulse, Moon, PiggyBank, Sprout, Target, WalletCards } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { DailyCheckin } from "@/lib/module-types";
@@ -50,6 +50,12 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   const [source, setSource] = useState<"ai" | "rule-based" | "local">("local");
   const [loading, setLoading] = useState(true);
   const [sourceNote, setSourceNote] = useState("");
+  // Keep the freshest local data available for the offline fallback without
+  // re-running the (expensive, LLM-backed) request on every workspace change.
+  const fallbackDataRef = useRef({ checkins, habits, income, expense });
+  useEffect(() => {
+    fallbackDataRef.current = { checkins, habits, income, expense };
+  }, [checkins, habits, income, expense]);
 
   const recentCheckins = useMemo(() => checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [checkins]);
   const moodAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.mood, 0) / recentCheckins.length : null;
@@ -71,13 +77,14 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       })
       .catch(() => {
         if (cancelled) return;
-        setInsights(localInsights(checkins, habits, income, expense));
+        const fallback = fallbackDataRef.current;
+        setInsights(localInsights(fallback.checkins, fallback.habits, fallback.income, fallback.expense));
         setSource("local");
         setSourceNote("Insight lokal ditampilkan karena layanan server belum tersedia atau koneksi database sedang tidak aktif.");
       })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [checkins, habits, income, expense]);
+  }, []);
 
   return (
     <>

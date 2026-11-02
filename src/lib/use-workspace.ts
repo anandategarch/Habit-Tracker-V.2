@@ -3,7 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import type { Budget, Habit, Transaction } from "@/lib/types";
 import { todayISO } from "@/lib/format";
-import { initialBudgets, initialHabits, initialTransactions } from "@/lib/seed-data";
+import { initialBudgets, initialHabits, getInitialTransactions } from "@/lib/seed-data";
 
 const STORAGE_KEY = "rutina.v2.workspace";
 const CHANGE_EVENT = "rutina:workspace-change";
@@ -21,13 +21,17 @@ interface RemoteWorkspace extends WorkspaceSnapshot {
 type Update<T> = T | ((current: T) => T);
 type SyncStatus = "local" | "syncing" | "synced" | "error";
 
-const SEED_SNAPSHOT: WorkspaceSnapshot = {
-  habits: initialHabits,
-  transactions: initialTransactions,
-  budgets: initialBudgets,
-};
+// Dibangun ulang saat dipanggil agar tanggal demo (todayISO) tidak membeku
+// pada saat proses pertama kali memuat modul.
+function seedSnapshot(): WorkspaceSnapshot {
+  return {
+    habits: initialHabits,
+    transactions: getInitialTransactions(),
+    budgets: initialBudgets,
+  };
+}
 
-const SERVER_SNAPSHOT = JSON.stringify(SEED_SNAPSHOT);
+const SERVER_SNAPSHOT = JSON.stringify(seedSnapshot());
 let memorySnapshot = SERVER_SNAPSHOT;
 let syncStatus: SyncStatus = "local";
 let remoteReady = false;
@@ -50,11 +54,11 @@ function normalizeSnapshot(raw: string): WorkspaceSnapshot {
     const parsed = JSON.parse(raw) as Partial<WorkspaceSnapshot>;
     return {
       habits: Array.isArray(parsed.habits) ? parsed.habits : initialHabits,
-      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : initialTransactions,
+      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : getInitialTransactions(),
       budgets: Array.isArray(parsed.budgets) ? parsed.budgets : initialBudgets,
     };
   } catch {
-    return SEED_SNAPSHOT;
+    return seedSnapshot();
   }
 }
 

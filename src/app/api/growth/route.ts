@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ensureSchema } from "@/lib/server/schema";
 import { getTursoClient, isTursoConfigured } from "@/lib/server/turso";
-import { isScheduledOn } from "@/lib/habit-schedule";
+import { isScheduledOn, normalizeSchedule } from "@/lib/habit-schedule";
 import { todayISO } from "@/lib/format";
 
 export const runtime = "nodejs";
@@ -90,7 +90,7 @@ export async function GET() {
         title: String(row.title),
         streak: Number(row.streak) || 0,
         xpWeight: XP_BY_DIFFICULTY[difficulty] ?? 10,
-        schedule: metadata.schedule && typeof metadata.schedule === "object" ? metadata.schedule as Parameters<typeof isScheduledOn>[0] : undefined,
+        schedule: normalizeSchedule(metadata.schedule) ?? undefined,
       };
     });
 
@@ -151,7 +151,7 @@ export async function GET() {
       currentStreak, completedGoals, habitCount: habits.length,
       scheduledToday: scheduledToday.length, completedToday: todayScheduledDone,
       vacationMode: Boolean(settings?.vacationMode), stage, artwork, wisdom,
-      worstHabit, totalLogs: logResult.rows.length,
+      worstHabit, totalLogs,
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Rutina growth summary failed:", error);
