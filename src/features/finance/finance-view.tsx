@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Activity, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Coffee, Heart, Plus, Receipt } from "lucide-react";
+import { Activity, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Coffee, Heart, Plus, Receipt, Sprout } from "lucide-react";
 import type { Budget, Transaction } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
@@ -22,6 +22,20 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const [filter, setFilter] = useState<TransactionFilter>("all");
   const net = income - expense;
   const spendByCategory = summarizeBudgets(transactions, budgets);
+  const expenseCategories = spendByCategory
+    .filter((item) => item.spent > 0)
+    .sort((a, b) => b.spent - a.spent);
+  const categorySpendTotal = expenseCategories.reduce((sum, item) => sum + item.spent, 0);
+  const categoryPalette = [
+    "var(--spend-color-0)", "var(--spend-color-1)", "var(--spend-color-2)", "var(--spend-color-3)",
+    "var(--spend-color-4)", "var(--spend-color-5)", "var(--spend-color-6)", "var(--spend-color-7)",
+  ];
+  let categoryCursor = 0;
+  const categoryGradient = expenseCategories.map((item, index) => {
+    const start = categoryCursor;
+    categoryCursor += categorySpendTotal > 0 ? item.spent / categorySpendTotal * 100 : 0;
+    return `${categoryPalette[index % categoryPalette.length]} ${start}% ${categoryCursor}%`;
+  }).join(", ");
   const filteredTransactions = useMemo(
     () => [...transactions]
       .filter((transaction) => filter === "all" || transaction.type === filter)
@@ -84,8 +98,37 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
           )}
         </section>
 
-        <section className="card card-pad">
+        <section className="card card-pad finance-budget-panel">
           <SectionHeading title="Anggaran kategori" caption="Batas bulanan yang digunakan saat ini" />
+          <div className="finance-spend-summary">
+            <div className="finance-spend-heading">
+              <div><strong>Distribusi pengeluaran</strong><small>Proporsi dari transaksi bulan ini</small></div>
+              <span>{expenseCategories.length} kategori</span>
+            </div>
+            {categorySpendTotal > 0 ? (
+              <div className="finance-spend-content">
+                <div
+                  className="finance-spend-donut"
+                  style={{ background: `conic-gradient(${categoryGradient})` }}
+                  role="img"
+                  aria-label={`Distribusi pengeluaran bulan ini sebesar ${formatCompactRupiah(categorySpendTotal)} di ${expenseCategories.length} kategori`}
+                >
+                  <div><strong>{formatCompactRupiah(categorySpendTotal)}</strong><span>Total keluar</span></div>
+                </div>
+                <div className="finance-spend-legend">
+                  {expenseCategories.map((item, index) => (
+                    <div className="finance-spend-legend-row" key={item.category}>
+                      <span className={`finance-spend-swatch tone-${index % categoryPalette.length}`} />
+                      <span className="finance-spend-legend-copy"><strong>{item.category}</strong><small>{formatCompactRupiah(item.spent)}</small></span>
+                      <b>{Math.round(item.spent / categorySpendTotal * 100)}%</b>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="finance-spend-empty"><span><Sprout size={21} /></span><p>Belum ada pengeluaran tercatat bulan ini. Distribusi kategori akan muncul setelah transaksi ditambahkan.</p></div>
+            )}
+          </div>
           <div className="budget-list">
             {spendByCategory.map((budget) => {
               const ratio = budget.limit > 0 ? budget.spent / budget.limit * 100 : (budget.spent > 0 ? 100 : 0);
