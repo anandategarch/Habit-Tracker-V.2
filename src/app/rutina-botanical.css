@@ -1496,3 +1496,161 @@ html[data-theme="dark"] .tree-weekly-ribbon-icon { color: #c3dfb9; background: #
 html[data-theme="dark"] .settings-profile-copy > span,
 html[data-theme="dark"] .settings-theme-options button small,
 html[data-theme="dark"] .settings-vacation-toggle small { color: var(--muted); }
+/* ===== PEDOMAN UI alignment: hero ring, quick actions, bell, stats, weekly trend ===== */
+
+/* Hero progress ring (pedoman: lingkaran progres besar di kartu hero). */
+.hero-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  flex: none;
+}
+.hero-ring svg { width: 100%; height: 100%; display: block; }
+.hero-ring-track { stroke: #ece5d9; }
+.hero-ring-progress { transition: stroke-dashoffset .5s var(--ease-rutina); }
+.hero-ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1px;
+}
+.hero-ring-label strong { color: #2c362c; font-size: 15px; font-weight: 830; letter-spacing: -.5px; }
+.hero-ring-label small { color: #87907d; font-size: 8px; font-weight: 700; }
+html[data-theme="dark"] .hero-ring-track { stroke: #435345; }
+html[data-theme="dark"] .hero-ring-label strong { color: var(--ink); }
+html[data-theme="dark"] .hero-ring-label small { color: var(--muted); }
+
+/* Aksi cepat (pedoman: grid Tambah Habit / Catat Transaksi / Lihat Semua Fitur). */
+.quick-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #eee5da;
+  border-radius: 17px;
+  background: rgba(255, 253, 249, .94);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  transition: transform 220ms var(--ease-spring), box-shadow 220ms var(--ease-rutina), border-color 220ms var(--ease-rutina);
+}
+.quick-action:hover { transform: translateY(-2px); border-color: #e2d9cc; box-shadow: var(--shadow-card-hover); }
+.quick-action:active { transform: translateY(0); }
+.quick-action-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+}
+.quick-action.habit .quick-action-icon { color: #4f8b68; background: #eaf5ed; }
+.quick-action.finance .quick-action-icon { color: #7b68d8; background: #f0edff; }
+.quick-action.browse .quick-action-icon { color: #b47a39; background: #fff3e5; }
+.quick-action-copy { display: grid; min-width: 0; gap: 2px; }
+.quick-action-copy strong { color: #373d34; font-size: 11px; font-weight: 780; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.quick-action-copy small { color: #989b8f; font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-theme="dark"] .quick-action { border-color: var(--line); background: var(--surface); }
+html[data-theme="dark"] .quick-action:hover { border-color: #4c5f4e; }
+html[data-theme="dark"] .quick-action-copy strong { color: var(--ink); }
+html[data-theme="dark"] .quick-action-copy small { color: var(--muted); }
+html[data-theme="dark"] .quick-action.habit .quick-action-icon { color: #92bd91; background: #354b38; }
+html[data-theme="dark"] .quick-action.finance .quick-action-icon { color: #b3a3f0; background: #3d3a55; }
+html[data-theme="dark"] .quick-action.browse .quick-action-icon { color: #d8ad69; background: #453a2a; }
+
+/* Bel notifikasi topbar (pedoman: bell dengan badge + avatar di header). */
+.topbar-bell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border: 1px solid #eee5da;
+  border-radius: 50%;
+  color: #5b6355;
+  background: rgba(255, 253, 249, .9);
+  transition: transform 220ms var(--ease-spring), border-color 200ms ease, color 200ms ease;
+}
+.topbar-bell:hover { transform: translateY(-1px); border-color: #ddd2c4; color: var(--primary-strong); }
+.topbar-bell-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  display: grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 99px;
+  color: #fff;
+  background: linear-gradient(135deg, #c96755, #e08a70);
+  box-shadow: 0 3px 8px rgba(201, 103, 85, .35);
+  font-size: 8px;
+  font-weight: 800;
+}
+html[data-theme="dark"] .topbar-bell { border-color: var(--line); color: var(--ink-soft); background: var(--surface); }
+html[data-theme="dark"] .topbar-bell:hover { border-color: #4c5f4e; color: var(--primary); }
+
+/* Stat card tone oranye (pedoman: Saldo dengan ikon oranye di atas pastel #ffedd5). */
+.stat-card.tone-orange .stat-icon { color: #c97e3f; background: #ffedd5; }
+html[data-theme="dark"] .stat-card.tone-orange .stat-icon { color: #d8ad69; background: #453a2a; }
+
+/* Grafik progress mingguan di dashboard (ringkas, gaya insight-trend). */
+.weekly-trend-card { margin: 0; }
+.weekly-trend-card .insight-trend-chart { min-height: 128px; }
+.weekly-trend-card .insight-trend-bars { height: 82px; }
+.weekly-trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 99px;
+  color: #3d7b50;
+  background: #edf5e7;
+  font-size: 9px;
+  font-weight: 800;
+}
+html[data-theme="dark"] .weekly-trend-badge { color: var(--primary); background: var(--primary-soft); }
+
+/* Sheet "Semua fitur" dari aksi cepat juga aman di layar desktop. */
+@media (min-width: 961px) {
+  .workspace-menu-scrim {
+    position: fixed;
+    z-index: 49;
+    inset: 0;
+    border: 0;
+    background: rgba(25, 24, 47, .3);
+  }
+  .mobile-more-menu { right: 28px; bottom: 96px; z-index: 50; width: min(420px, calc(100vw - 56px)); }
+}
+
+/* Responsif element pedoman. */
+@media (max-width: 960px) {
+  .topbar-bell { width: 32px; height: 32px; min-width: 32px; }
+  .hero-ring { width: 64px; height: 64px; }
+  .hero-ring-label strong { font-size: 13px; }
+}
+@media (max-width: 680px) {
+  .quick-actions { gap: 8px; }
+  .quick-action {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .quick-action-copy { justify-items: center; }
+  .quick-action-copy small { display: none; }
+  .hero-ring { width: 58px; height: 58px; }
+  .hero-ring-label strong { font-size: 12px; }
+  .weekly-trend-card .insight-trend-chart { min-height: 118px; gap: 5px; padding: 8px 2px 0; }
+  .weekly-trend-card .insight-trend-bars { height: 68px; }
+  .weekly-trend-badge { padding: 4px 9px; }
+}

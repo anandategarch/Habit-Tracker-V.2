@@ -98,7 +98,7 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
 }
 
 function StatCard({ label, value, foot, icon: Icon, tone = "default" }: {
-  label: string; value: string; foot: string; icon: typeof Target; tone?: "default" | "green" | "amber";
+  label: string; value: string; foot: string; icon: typeof Target; tone?: "default" | "green" | "amber" | "orange";
 }) {
   return (
     <div className={`stat-card tone-${tone}`}>
