@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { ArrowDownLeft, ArrowUpRight, BookOpen, Search, WalletCards, X } from "lucide-react";
 import type { Habit, TabId, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
@@ -21,7 +22,12 @@ export function SearchDialog({
   onClose,
   onNavigate,
 }: SearchDialogProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const normalizedQuery = query.trim().toLocaleLowerCase("id-ID");
+
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+  }, [open]);
   const matchedHabits = normalizedQuery
     ? habits.filter((habit) => `${habit.title} ${habit.category}`.toLocaleLowerCase("id-ID").includes(normalizedQuery))
     : [];
@@ -51,7 +57,7 @@ export function SearchDialog({
         <label className="search-field">
           <Search size={17} />
           <input
-            autoFocus
+            ref={inputRef}
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="Cari habit atau transaksi..."
@@ -98,7 +104,7 @@ export function SearchDialog({
             )}
           </div>
         )}
-        <div className="search-footer"><span>Data pencarian tersimpan secara lokal</span><span><kbd>Ctrl</kbd> + <kbd>K</kbd></span></div>
+        <div className="search-footer"><span>Pencarian menggunakan data yang tersimpan di perangkat ini</span><span><kbd>Ctrl / ⌘</kbd> + <kbd>K</kbd></span></div>
       </section>
     </div>
   );

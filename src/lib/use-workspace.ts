@@ -39,10 +39,7 @@ function getSnapshot(): string {
 
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored !== null) {
-      memorySnapshot = stored;
-      return stored;
-    }
+    if (stored !== null) return stored;
   } catch {
     // Continue with the in-memory snapshot when browser storage is unavailable.
   }
