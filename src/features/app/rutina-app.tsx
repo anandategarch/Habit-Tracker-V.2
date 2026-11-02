@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Sun, Moon, Monitor,
+  Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus, Sun, Moon, Monitor,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
@@ -54,6 +54,7 @@ export function RutinaApp() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
+  const [quickActionOpen, setQuickActionOpen] = useState(false);
   const [activeHabitTimer, setActiveHabitTimer] = useState<{ habitId: string; startedAt: number } | null>(null);
   const [timerNow, setTimerNow] = useState(() => Date.now());
   const {
@@ -124,6 +125,7 @@ export function RutinaApp() {
         setSearchOpen(false);
         setSearchQuery("");
         setMoreOpen(false);
+        setQuickActionOpen(false);
       }
     }
 
@@ -416,19 +418,75 @@ export function RutinaApp() {
       </main>
 
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
-        {mobilePrimary.map(({ id, label, icon }) => (
+        {mobilePrimary.slice(0, 2).map(({ id, label, icon }) => (
           <button
             key={id}
             type="button"
             className={activeTab === id ? "active" : ""}
             aria-current={activeTab === id ? "page" : undefined}
-            onClick={() => { setActiveTab(id); setMoreOpen(false); }}
+            onClick={() => { setActiveTab(id); setMoreOpen(false); setQuickActionOpen(false); }}
           >
             <AppIcon name={icon} size={19} />
             <span>{label}</span>
           </button>
         ))}
-        <button type="button" className={moreOpen ? "active" : ""} aria-expanded={moreOpen} aria-controls="mobile-workspace-menu" onClick={() => setMoreOpen((value) => !value)}><Grid2X2 size={19} /><span>Menu</span></button>
+
+        <div className={`bottom-nav-action-wrap ${quickActionOpen ? "is-open" : ""}`}>
+          <div id="mobile-quick-actions" className="mobile-quick-actions" role="group" aria-label="Aksi cepat" hidden={!quickActionOpen}>
+            <div className="mobile-quick-actions-heading">MULAI SESUATU</div>
+            <button
+              type="button"
+              className="mobile-quick-action"
+              onClick={() => { setQuickActionOpen(false); setModal("habit"); }}
+            >
+              <span className="mobile-quick-action-icon habit"><AppIcon name="habits" size={18} /></span>
+              <span className="mobile-quick-action-copy"><strong>Tambah kebiasaan</strong><small>Buat rutinitas baru</small></span>
+              <ChevronRight size={16} />
+            </button>
+            <button
+              type="button"
+              className="mobile-quick-action"
+              onClick={() => { setQuickActionOpen(false); setModal("transaction"); }}
+            >
+              <span className="mobile-quick-action-icon finance"><AppIcon name="finance" size={18} /></span>
+              <span className="mobile-quick-action-copy"><strong>Catat transaksi</strong><small>Tambah pemasukan atau pengeluaran</small></span>
+              <ChevronRight size={16} />
+            </button>
+            <button
+              type="button"
+              className="mobile-quick-action"
+              onClick={() => { setQuickActionOpen(false); setMoreOpen(true); }}
+            >
+              <span className="mobile-quick-action-icon browse"><Grid2X2 size={18} /></span>
+              <span className="mobile-quick-action-copy"><strong>Semua fitur</strong><small>Jelajahi seluruh ruang Rutina</small></span>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+          <button
+            type="button"
+            className={`bottom-nav-action ${quickActionOpen ? "active" : ""}`}
+            aria-label={quickActionOpen ? "Tutup aksi cepat" : "Buka aksi cepat"}
+            aria-expanded={quickActionOpen}
+            aria-controls="mobile-quick-actions"
+            onClick={() => { setMoreOpen(false); setQuickActionOpen((value) => !value); }}
+          >
+            <Plus size={24} strokeWidth={2.5} />
+          </button>
+          <span className="bottom-nav-action-label">{quickActionOpen ? "Tutup" : "Tambah"}</span>
+        </div>
+
+        {mobilePrimary.slice(2).map(({ id, label, icon }) => (
+          <button
+            key={id}
+            type="button"
+            className={activeTab === id ? "active" : ""}
+            aria-current={activeTab === id ? "page" : undefined}
+            onClick={() => { setActiveTab(id); setMoreOpen(false); setQuickActionOpen(false); }}
+          >
+            <AppIcon name={icon} size={19} />
+            <span>{label}</span>
+          </button>
+        ))}
       </nav>
       {moreOpen && <div id="mobile-workspace-menu" className="mobile-more-menu workspace-menu-sheet" role="dialog" aria-modal="true" aria-label="Semua menu Rutina">
         <div className="menu-panel-header">
