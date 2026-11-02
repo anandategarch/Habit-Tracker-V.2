@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" fill="none"><defs>
-    <radialGradient id="halo" cx="0" cy="0" r="1" gradientTransform="translate(236 194) rotate(90) scale(210)"><stop stop-color="#f8f5e9"/><stop offset="1" stop-color="#e9f2df"/></radialGradient>
+    <radialGradient id="halo" cx="50%" cy="43%" r="58%"><stop stop-color="#f8f5e9"/><stop offset="1" stop-color="#e9f2df"/></radialGradient>
     <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#9d7654"/><stop offset=".55" stop-color="#79583e"/><stop offset="1" stop-color="#654a39"/></linearGradient>
     <linearGradient id="pot" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5a77e"/><stop offset="1" stop-color="#c87f62"/></linearGradient>
     <filter id="soft"><feGaussianBlur stdDeviation="7"/></filter>
