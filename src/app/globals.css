@@ -1618,3 +1618,16 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
  .tree-artwork { width:76px; min-width:76px; }
  .tree-progress-caption { display:grid; gap:3px; }
 }
+
+.backup-card { display:grid; gap:14px; align-content:start; }
+.backup-icon { display:grid; place-items:center; width:42px; height:42px; border-radius:13px; color:var(--primary); background:var(--primary-soft); }
+.backup-includes { display:grid; gap:8px; padding-left:19px; margin:0; color:var(--ink-soft); font-size:11px; line-height:1.55; }
+.backup-includes li::marker { color:var(--primary); }
+.backup-upload { display:flex; align-items:center; justify-content:center; gap:9px; min-height:54px; padding:10px; border:1px dashed #bdcdbf; border-radius:13px; color:var(--primary); background:var(--surface-soft); font-size:11px; font-weight:750; cursor:pointer; }
+.backup-upload input { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+.backup-safety-note { display:flex; align-items:flex-start; gap:8px; padding:11px; border-radius:12px; color:var(--primary); background:var(--primary-soft); }
+.backup-safety-note svg { flex:none; margin-top:1px; }
+.backup-safety-note p { margin:0; color:var(--ink-soft); font-size:10px; line-height:1.55; }
+.backup-message { margin:10px 0 0; padding:10px 13px; border:1px solid var(--line); border-radius:12px; font-size:11px; line-height:1.5; }
+.backup-message.is-success { color:var(--primary); background:var(--primary-soft); }
+.backup-message.is-error { color:var(--danger); background:color-mix(in srgb,var(--danger) 9%,var(--surface)); }
