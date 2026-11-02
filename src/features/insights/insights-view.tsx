@@ -1,5 +1,5 @@
 import { Activity, ArrowDownLeft, ArrowUpRight, Flame, PiggyBank, Sprout, Target } from "lucide-react";
-import type { Habit, Transaction } from "@/lib/types";
+import type { Habit } from "@/lib/types";
 import { formatCompactRupiah } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { PageIntro, SectionHeading, StatCard } from "@/components/ui/primitives";
@@ -13,7 +13,6 @@ export function InsightsView({ habits, income, expense }: { habits: Habit[]; inc
     total: habits.filter((habit) => habit.category === category).length,
     completed: habits.filter((habit) => habit.category === category && habit.completed).length,
   })).filter((item) => item.total > 0);
-  const expensesByCategory = new Map<string, number>();
   const totalNet = income - expense;
 
   return (
