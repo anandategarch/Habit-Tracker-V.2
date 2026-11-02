@@ -53,7 +53,7 @@ export function TreeSplash() {
 
         <div className="tree-splash-copy">
           <span className="tree-splash-kicker">SETIAP HAL BESAR PUNYA AWAL</span>
-          <h1>rutina<span>.</span></h1>
+          <h1>Rutina<span>.</span></h1>
           <p>Hal besar tumbuh dari kebiasaan kecil.</p>
         </div>
       </div>
