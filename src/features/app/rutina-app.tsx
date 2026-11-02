@@ -397,7 +397,10 @@ export function RutinaApp() {
               <RefreshCw size={14} className="sync-refresh" />
             </button>
             <div className="profile-row">
-              <div className="avatar">R</div>
+              <div className="avatar">
+                {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px */}
+                <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+              </div>
               <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
             </div>
           </div>
@@ -421,7 +424,10 @@ export function RutinaApp() {
             <RefreshCw size={14} className="sync-refresh" />
           </button>
           <div className="profile-row">
-            <div className="avatar">R</div>
+            <div className="avatar">
+              {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px */}
+              <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+            </div>
             <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
           </div>
         </div>
@@ -468,7 +474,10 @@ export function RutinaApp() {
               <Bell size={17} />
               {pendingHabitCount > 0 && <span className="topbar-bell-badge" aria-hidden="true">{pendingHabitCount > 9 ? "9+" : pendingHabitCount}</span>}
             </button>
-            <div className="avatar topbar-avatar" aria-label="Workspace pribadi">R</div>
+            <div className="avatar topbar-avatar" aria-label="Workspace pribadi">
+              {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px; next/image tidak memberi keuntungan untuk aset sekecil ini */}
+              <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+            </div>
           </div>
         </header>
 
