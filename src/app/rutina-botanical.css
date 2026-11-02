@@ -854,3 +854,32 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 @media (prefers-reduced-motion: reduce) {
   .insight-trend-bar, .finance-spend-donut, .habit-progress-ring { transition: none !important; }
 }
+
+
+/* Final brand and illustration alignment: warm botanical identity on every surface. */
+.rutina-mark { display: block; flex: none; color: var(--primary); }
+.desktop-sidebar .brand-mark,
+.mobile-brand .brand-mark,
+.workspace-loading-brand .brand-mark {
+  color: #477d57;
+  background: #eaf2e3;
+  box-shadow: none;
+}
+.desktop-sidebar .brand-mark { border: 1px solid #e0ead8; border-radius: 13px; }
+.mobile-brand .brand-mark { border-radius: 11px; }
+.workspace-loading-brand .brand-mark { border-radius: 14px; }
+.workspace-loading-brand > strong { color: var(--ink); }
+.workspace-loading-brand > strong > span { color: #87a96e; }
+.workspace-loading-spinner { border-color: #e3eadb; border-top-color: #648f60; }
+.tree-artwork { border: 1px solid #e5ebdc; border-radius: 22px; background: linear-gradient(145deg,#fff0e5,#eef5e7); }
+.tree-artwork img, .tree-lifetime-stage img { mix-blend-mode: multiply; }
+.tree-lifetime-stage.locked img { filter: grayscale(.72); opacity: .48; }
+.tree-splash {
+  background: radial-gradient(ellipse at 52% 39%,rgba(219,235,204,.74),transparent 42%),radial-gradient(ellipse at 17% 82%,rgba(255,225,203,.45),transparent 34%),var(--canvas);
+}
+.tree-splash-kicker { color: #8b9a7d; }
+.tree-splash-copy h1 { color: #356b4a; }
+.tree-splash-copy h1 span { color: #96b77d; }
+.tree-splash-copy p { color: #7d8978; }
+.tree-splash-skip { color: #477d57; border-color: #e2e9d9; background: rgba(255,253,248,.88); }
+@media (max-width: 600px) { .tree-artwork { border-radius: 17px; } }

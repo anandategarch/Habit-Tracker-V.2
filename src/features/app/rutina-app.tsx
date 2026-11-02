@@ -5,6 +5,7 @@ import {
   Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus, Sun, Moon, Monitor,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
+import { RutinaMark } from "@/components/ui/rutina-mark";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { isScheduledOn, parseNumberList } from "@/lib/habit-schedule";
@@ -258,7 +259,7 @@ export function RutinaApp() {
   if (!workspaceReady || !modulesReady) {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
-        <div className="workspace-loading-brand"><span className="brand-mark"><AppIcon name="growth" size={22} /></span><strong>rutina<span>.</span></strong></div>
+        <div className="workspace-loading-brand"><span className="brand-mark"><RutinaMark size={25} /></span><strong>rutina<span>.</span></strong></div>
         <span className="workspace-loading-spinner" aria-hidden="true" />
         <p>Menyiapkan ruang pribadimu…</p>
         <small>Menghubungkan data dan memuat aktivitas</small>
@@ -270,7 +271,7 @@ export function RutinaApp() {
     <div className="app-shell" data-active-tab={activeTab}>
       <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
         <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); setMoreOpen(false); }} aria-label="Rutina, kembali ke beranda">
-          <span className="brand-mark"><AppIcon name="growth" size={23} /></span>
+          <span className="brand-mark"><RutinaMark size={27} /></span>
           <span className="brand-copy"><span className="brand-name">Rutina</span><span className="brand-sub">grow at your pace</span></span>
         </a>
 
@@ -429,7 +430,7 @@ export function RutinaApp() {
       <main className="main-shell">
         <header className="topbar">
           <div className="mobile-brand">
-            <span className="brand-mark"><AppIcon name="growth" size={19} /></span>
+            <span className="brand-mark"><RutinaMark size={22} /></span>
             <span>Rutina</span>
           </div>
           <div className="topbar-context">
