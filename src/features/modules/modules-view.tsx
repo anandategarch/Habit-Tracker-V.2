@@ -435,7 +435,7 @@ async function compressPhoto(file: File): Promise<string> {
   const url = URL.createObjectURL(file);
   try {
     const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const element = new Image(); element.onload = () => resolve(element); element.onerror = () => reject(new Error("Gambar tidak dapat dibuka.")); element.src = url;
+      const element = document.createElement("img"); element.onload = () => resolve(element); element.onerror = () => reject(new Error("Gambar tidak dapat dibuka.")); element.src = url;
     });
     const scale = Math.min(1, 480 / Math.max(image.width, image.height));
     const canvas = document.createElement("canvas"); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale));
