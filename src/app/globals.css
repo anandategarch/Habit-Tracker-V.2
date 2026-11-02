@@ -691,3 +691,18 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .access-spinner { animation:none; border-top-color:var(--primary); }
 }
+
+.access-env-row {
+  display:grid;
+  gap:6px;
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#f8faf6;
+}
+.access-env-row code { padding:0; border:0; background:transparent; }
+.access-env-row span { font-size:10px; line-height:1.5; }
+.access-env-row.ready { border-color:#c8dfc9; background:#f3f9f2; }
+.access-env-row.ready span { color:#347448; }
+.access-env-row.missing { border-color:#ecd7cf; background:#fcf5f1; }
+.access-env-row.missing span { color:#a34f40; }
