@@ -1020,3 +1020,435 @@ html[data-theme="dark"] .tree-lifetime-stage {
 html[data-theme="dark"] .botanical-dashboard-page .hero-progress-icon::before {
   background: var(--surface);
 }
+
+
+/* ==========================================================
+   Rutina Botanical Guideline — full-page visual alignment
+   ========================================================== */
+:root {
+  --rutina-ivory: #fff7ef;
+  --rutina-paper: #fffdf9;
+  --rutina-peach: #fff0e3;
+  --rutina-sage: #a9c58e;
+  --rutina-leaf: #568a5d;
+  --rutina-leaf-dark: #356b4b;
+  --rutina-lavender: #8f7ae5;
+  --rutina-line: #eee4da;
+}
+body { background: var(--rutina-ivory); }
+.page-title { color: #27382c; }
+.page-subtitle { color: #818b7b; }
+.card, .stat-card, .module-panel, .module-card {
+  border-color: rgba(237,226,215,.92);
+  background: rgba(255,253,249,.94);
+  box-shadow: 0 8px 24px rgba(89,68,44,.055);
+}
+.primary-button {
+  border-radius: 999px;
+  background: linear-gradient(115deg,#927bea,#765cdb);
+  box-shadow: 0 7px 17px rgba(119,92,219,.2);
+}
+.secondary-button { border-radius: 999px; background: #fffdf9; }
+.filter-chip.active,.schedule-view-toggle button.active,.completion-filters button.active,
+.category-filters button.active,.module-tabs button.active {
+  background: linear-gradient(110deg,#927bea,#aa9be9);
+  color: #fff;
+}
+
+/* Dashboard — circular daily progress and a garden-led hero. */
+@media (min-width: 601px) {
+  .botanical-hero {
+    min-height: 306px;
+    padding: 30px 34px 116px;
+    border-radius: 30px;
+  }
+  .botanical-hero .hero-copy { max-width: 43%; }
+  .botanical-hero .hero-title { max-width: 390px; font-size: clamp(27px,2.7vw,36px); }
+  .botanical-hero .hero-description {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 11px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255,255,255,.68);
+    border-radius: 18px 18px 18px 5px;
+    color: #66745f;
+    background: rgba(255,245,232,.82);
+    font-size: 11px;
+  }
+  .botanical-hero::after { right: 0; width: 56%; height: 124%; }
+  .botanical-hero .hero-progress-card {
+    left: 27px;
+    bottom: 19px;
+    width: min(380px,46%);
+    min-height: 86px;
+    padding: 10px 15px;
+    gap: 13px;
+    border-radius: 22px;
+  }
+  .botanical-hero .hero-progress-icon {
+    position: relative;
+    display: grid;
+    width: 66px;
+    height: 66px;
+    flex: 0 0 66px;
+    place-items: center;
+    border-radius: 50%;
+    color: #4e8157;
+    background: conic-gradient(from -90deg,#528d61 0 var(--progress),#e5eadf var(--progress) 100%);
+  }
+  .botanical-hero .hero-progress-icon::before {
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: #fffdf8;
+    content: "";
+  }
+  .botanical-hero .hero-progress-icon > svg { display: none; }
+  .botanical-hero .hero-progress-number {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: #356b4b;
+    font-size: 17px;
+    font-weight: 850;
+    letter-spacing: -.6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .botanical-hero .hero-progress-heading strong { font-size: 12px; }
+  .botanical-hero .hero-progress-heading > span { display: none; }
+  .botanical-hero .hero-progress-count { font-size: 10px; }
+  .botanical-hero .hero-progress-count b { font-size: 17px; }
+  .botanical-hero .hero-progress-track { height: 7px; }
+}
+.botanical-stats { gap: 12px; }
+.botanical-stats .stat-card { min-height: 76px; border-radius: 21px; }
+.botanical-dashboard-grid { align-items: start; }
+.home-habits-card,.category-card,.finance-mini,.botanical-next-step,.botanical-quote-card {
+  border-radius: 23px;
+}
+.botanical-quote-card {
+  min-height: 145px;
+  background:
+    radial-gradient(circle at 92% 18%,rgba(223,237,208,.75) 0 14%,transparent 14.5%),
+    linear-gradient(135deg,#fff0e2,#fffaf3);
+}
+.finance-mini { position: relative; overflow: hidden; }
+.finance-mini::after {
+  position: absolute;
+  right: -8px;
+  bottom: -17px;
+  width: 112px;
+  height: 88px;
+  border-radius: 60% 40% 0 0;
+  background: url("/illustrations/botanical-gardener.svg") right bottom / auto 120px no-repeat;
+  opacity: .22;
+  content: "";
+  pointer-events: none;
+}
+
+/* Habits — weekly calendar strip, then progress and grouped routines. */
+.habit-week-strip {
+  display: grid;
+  grid-template-columns: 160px minmax(0,1fr);
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 15px;
+  padding: 13px 17px;
+  border: 1px solid #eee4da;
+  border-radius: 20px;
+  background: rgba(255,253,249,.92);
+  box-shadow: 0 7px 20px rgba(89,68,44,.045);
+}
+.habit-week-strip-heading { display: grid; gap: 4px; }
+.habit-week-strip-heading span { color: #9a9c8e; font-size: 8px; font-weight: 850; letter-spacing: 1.4px; }
+.habit-week-strip-heading strong { color: #455544; font-size: 12px; text-transform: capitalize; }
+.habit-week-days { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 6px; }
+.habit-week-day {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 2px 5px;
+  border-radius: 13px;
+  color: #92988a;
+}
+.habit-week-day small { font-size: 8px; text-transform: capitalize; }
+.habit-week-day strong { color: #53624f; font-size: 13px; font-weight: 750; }
+.habit-week-day > span { width: 4px; height: 4px; border-radius: 50%; background: transparent; }
+.habit-week-day.is-today {
+  color: #fff;
+  background: linear-gradient(145deg,#9884eb,#7964d9);
+  box-shadow: 0 5px 13px rgba(124,103,217,.17);
+}
+.habit-week-day.is-today strong { color: #fff; }
+.habit-week-day.is-today > span { background: #fff; }
+.habit-overview-grid { align-items: stretch; }
+.habit-progress-card,.habit-streak-summary { border-radius: 23px; }
+.habit-progress-card { background: linear-gradient(125deg,#fff0e2,#fffaf2 64%,#eff5e8); }
+
+/* Finance — balance surface and warm category/transaction cards. */
+.finance-balance {
+  border-radius: 25px;
+  background:
+    radial-gradient(circle at 95% 5%,rgba(222,239,209,.22) 0 18%,transparent 18.5%),
+    linear-gradient(135deg,#4d8062,#739d79);
+}
+.finance-metric { border-radius: 22px; }
+.finance-spend-summary { border-color: #f0e6dc; border-radius: 20px; background: linear-gradient(135deg,#fff8ee,#fffdf9); }
+.finance-spend-donut { box-shadow: 0 8px 18px rgba(94,85,60,.08); }
+.finance-transactions-panel,.finance-budget-panel { border-radius: 24px; }
+.transaction-icon { background: #eaf3e5; color: #57865d; }
+.transaction-icon.expense { background: #fff0e5; color: #c27b61; }
+.budget-item { border-radius: 17px; }
+
+/* Calendar and Insights — consistent paper cards and chart framing. */
+.calendar-panel,.calendar-summary,.insight-trend-panel,.insight-ai-panel { border-radius: 24px; }
+.calendar-summary { border-color: #f0e5d8; }
+.calendar-summary-stats > div { background: rgba(255,255,255,.74); }
+.calendar-day.selected { background: linear-gradient(135deg,#927bea,#aa9be9); }
+.insight-trend-chart { border-radius: 17px 17px 0 0; }
+.insight-trend-bar.activity { background: linear-gradient(180deg,#a7c98d,#5c9567); }
+.insight-highlight { border-radius: 23px; }
+.insight-ai-panel { background: linear-gradient(135deg,#fffdf9,#fff8f0); }
+
+/* Goals — progress cards with a soft botanical accent. */
+.goal-list { gap: 13px; }
+.goal-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border-color: #eee4da;
+  border-radius: 19px;
+  background: linear-gradient(135deg,#fffaf2,#fffdf9 65%,#f4f7ec);
+}
+.goal-card::after {
+  position: absolute;
+  top: -30px;
+  right: -27px;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: rgba(211,229,194,.28);
+  box-shadow: 0 0 0 15px rgba(211,229,194,.1);
+  content: "";
+  pointer-events: none;
+}
+.goal-card > * { position: relative; z-index: 1; }
+.goal-card .module-tag { background: #f0eaff; }
+.goal-card .module-progress-track { height: 9px; border-radius: 999px; }
+.goal-card .module-progress-track > span { background: linear-gradient(90deg,#78a96d,#a8ca8d); }
+
+/* Settings — preference cards plus the existing export/import workflow. */
+.settings-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 15px;
+  padding: 15px 18px;
+  border: 1px solid #eee4da;
+  border-radius: 21px;
+  background: linear-gradient(110deg,#fff1e6,#f3f7eb);
+}
+.settings-profile-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  place-items: center;
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(145deg,#6f9b6e,#477956);
+  box-shadow: 0 6px 16px rgba(68,119,81,.16);
+}
+.settings-profile-mark span { font-size: 20px; font-weight: 850; }
+.settings-profile-copy { display: grid; min-width: 0; flex: 1; gap: 3px; }
+.settings-profile-copy small { color: #8d9b82; font-size: 8px; font-weight: 850; letter-spacing: 1.3px; }
+.settings-profile-copy strong { color: #394c3a; font-size: 14px; }
+.settings-profile-copy > span { color: #8b9584; font-size: 10px; }
+.settings-profile-status { display: inline-flex; align-items: center; gap: 5px; color: #60835b; font-size: 9px; font-weight: 750; }
+.settings-preferences-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; margin-bottom: 19px; }
+.settings-preference-card { border-radius: 22px; }
+.settings-theme-options { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.settings-theme-options button {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px 5px;
+  border: 1px solid #eee7df;
+  border-radius: 15px;
+  color: #76816f;
+  background: #fffaf5;
+}
+.settings-theme-options button > span { color: #8f7ae5; font-size: 20px; line-height: 1; }
+.settings-theme-options button strong { color: #4b5948; font-size: 10px; }
+.settings-theme-options button small { color: #9a9c90; font-size: 8px; }
+.settings-theme-options button.active { border-color: #b9a9ee; background: #f3efff; box-shadow: 0 4px 12px rgba(136,117,216,.1); }
+.settings-vacation-toggle { display: flex; align-items: center; gap: 10px; padding: 11px 0; }
+.settings-vacation-icon { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border-radius: 13px; color: #57855c; background: #eaf3e5; }
+.settings-vacation-toggle > span:nth-child(2) { display: grid; flex: 1; gap: 3px; }
+.settings-vacation-toggle strong { color: #455543; font-size: 11px; }
+.settings-vacation-toggle small { color: #96998e; font-size: 9px; }
+.settings-vacation-toggle input { width: 38px; height: 22px; accent-color: #638e65; }
+.settings-about-note { display: flex; align-items: flex-start; gap: 9px; margin-top: 8px; padding: 11px 12px; border-radius: 14px; background: linear-gradient(120deg,#fff2e7,#f3f7ec); }
+.settings-about-note > span { color: #c28a61; font-family: Georgia,serif; font-size: 28px; line-height: .9; }
+.settings-about-note p { margin: 0; color: #788370; font-size: 9px; line-height: 1.55; }
+.settings-section-heading { display: grid; gap: 3px; margin: 19px 2px 11px; }
+.settings-section-heading span { color: #96998b; font-size: 8px; font-weight: 850; letter-spacing: 1.4px; }
+.settings-section-heading strong { color: #394b3a; font-size: 17px; }
+.backup-card { border-radius: 22px; }
+
+/* Tree — illustrated level journey as the central visual of the page. */
+.tree-page { display: grid; gap: 16px; min-width: 0; }
+.tree-journey-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(260px,.82fr) minmax(0,1.18fr);
+  grid-template-rows: minmax(275px,1fr) auto;
+  min-height: 386px;
+  overflow: hidden;
+  border: 1px solid #e6eadb;
+  border-radius: 29px;
+  background:
+    radial-gradient(circle at 74% 20%,rgba(255,255,255,.8) 0 13%,transparent 13.4%),
+    radial-gradient(circle at 91% 15%,rgba(223,236,208,.9) 0 20%,transparent 20.4%),
+    linear-gradient(125deg,#f4f8e9 0%,#fff8eb 48%,#fff0e2 100%);
+  box-shadow: 0 13px 30px rgba(87,91,59,.08);
+}
+.tree-journey-hero::before {
+  position: absolute;
+  z-index: -1;
+  right: -8%;
+  bottom: 42px;
+  width: 80%;
+  height: 115px;
+  border-radius: 52% 48% 0 0;
+  background: rgba(191,215,164,.35);
+  box-shadow: 0 23px 0 rgba(164,198,143,.2),0 43px 0 rgba(145,185,128,.12);
+  content: "";
+}
+.tree-journey-copy { position: relative; z-index: 3; align-self: center; padding: 34px 10px 34px 34px; }
+.tree-journey-kicker { color: #8e9a7d; font-size: 8px; font-weight: 900; letter-spacing: 1.6px; }
+.tree-journey-copy h2 { margin: 11px 0 8px; color: #36523b; font-size: clamp(27px,3vw,38px); font-weight: 820; line-height: 1.08; letter-spacing: -1.35px; }
+.tree-journey-copy > p { max-width: 320px; margin: 0 0 16px; color: #7f8e78; font-size: 11px; line-height: 1.65; }
+.tree-level-lockup { display: flex; align-items: center; gap: 8px; margin: 2px 0 14px; }
+.tree-level-badge { padding: 6px 11px; border-radius: 999px; color: #fff; background: linear-gradient(120deg,#8d79e4,#6f5bc8); box-shadow: 0 5px 12px rgba(111,91,200,.19); font-size: 9px; font-weight: 900; letter-spacing: .65px; }
+.tree-level-name { color: #64745e; font-size: 10px; font-weight: 750; }
+.tree-level-progress-copy { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; max-width: 310px; margin-bottom: 6px; }
+.tree-level-progress-copy strong { color: #4e8558; font-size: 14px; font-weight: 850; }
+.tree-level-progress-copy span { color: #909987; font-size: 8px; }
+.tree-level-progress { width: min(100%,310px); height: 9px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.8); box-shadow: inset 0 1px 3px rgba(82,105,67,.11); }
+.tree-level-progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#80af70,#b7d38d); transition: width .35s ease; }
+.tree-level-footnote { display: block; margin-top: 6px; color: #9ba08f; font-size: 8px; }
+.tree-journey-art { position: relative; display: grid; min-width: 0; min-height: 275px; place-items: center; overflow: hidden; }
+.tree-journey-art::before { position: absolute; top: 11%; width: min(68%,330px); aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.56); box-shadow: 0 0 0 16px rgba(255,255,255,.2),0 0 0 34px rgba(255,255,255,.12); content: ""; }
+.tree-main-art { position: relative; z-index: 2; display: block; width: min(100%,430px); height: auto; object-fit: contain; mix-blend-mode: multiply; filter: saturate(.93); }
+.tree-art-orbit { position: absolute; z-index: 1; display: block; border-radius: 50%; background: #f6cda8; opacity: .52; }
+.tree-art-orbit-one { top: 19%; right: 11%; width: 23px; height: 23px; box-shadow: 23px 15px 0 -7px #e9a67b; }
+.tree-art-orbit-two { left: 13%; bottom: 21%; width: 15px; height: 15px; background: #9fbd81; box-shadow: 19px -12px 0 -4px #9fbd81; }
+.tree-art-badge { position: absolute; z-index: 4; top: 15px; right: 24px; display: inline-flex; align-items: center; gap: 5px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.8); border-radius: 999px; color: #59805a; background: rgba(255,255,255,.75); font-size: 9px; font-weight: 800; backdrop-filter: blur(8px); }
+.tree-art-ground { position: absolute; z-index: 1; right: 3%; bottom: 17px; left: 3%; height: 41px; border-radius: 50%; background: linear-gradient(180deg,#d9e7bd,#b7ce9a); opacity: .7; }
+.tree-art-level-stamp { position: absolute; z-index: 5; right: 13%; bottom: 23px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.9); border-radius: 999px; color: #fff; background: linear-gradient(110deg,#8e79e7,#6e58ca); box-shadow: 0 6px 14px rgba(96,79,178,.22); font-size: 9px; font-weight: 900; }
+.tree-weekly-ribbon { display: flex; grid-column: 1/-1; align-items: center; gap: 11px; margin: 0 18px 16px; padding: 11px 15px; border: 1px solid rgba(255,255,255,.88); border-radius: 17px; background: rgba(255,253,247,.77); backdrop-filter: blur(10px); }
+.tree-weekly-ribbon-icon { display: grid; width: 34px; height: 34px; flex: none; place-items: center; border-radius: 50%; color: #548358; background: #eaf3e2; }
+.tree-weekly-ribbon > span:nth-child(2) { display: grid; flex: 1; gap: 2px; }
+.tree-weekly-ribbon small { color: #9b9e8e; font-size: 7px; font-weight: 850; letter-spacing: 1px; }
+.tree-weekly-ribbon strong { color: #4b6649; font-size: 10px; }
+.tree-weekly-ribbon-meta { color: #8c9b80; font-size: 8px; font-weight: 750; }
+.tree-season-stats { gap: 11px; }
+.tree-season-stats > div { border-color: #eee6dc; border-radius: 18px; background: rgba(255,253,249,.94); box-shadow: 0 7px 18px rgba(89,68,44,.045); }
+.tree-season-stats strong { color: #3f714b; }
+.tree-detail-grid > .card { min-height: 160px; }
+.tree-watering-count strong { color: #5e9664; }
+.tree-wisdom-quote { padding: 6px 0; }
+.tree-wisdom-quote p { color: #61745e; font-size: 12px; line-height: 1.65; }
+.tree-lifetime-path { gap: 10px; }
+.tree-lifetime-stage { padding: 12px 8px; border-radius: 18px; background: linear-gradient(140deg,#fffaf2,#f6f7ed); }
+.tree-lifetime-stage img { width: 88px; height: 88px; object-fit: contain; mix-blend-mode: multiply; }
+.tree-lifetime-stage.current { border-color: #a7c58e; background: linear-gradient(140deg,#eef6e8,#fffaf0); box-shadow: 0 7px 17px rgba(90,132,77,.1); }
+.tree-lifetime-stage.achieved { border-color: #dce8d3; }
+.tree-lifetime-stage.locked img { filter: grayscale(.55); opacity: .46; }
+
+@media (max-width: 760px) {
+  .habit-week-strip { grid-template-columns: 1fr; gap: 9px; padding: 11px 12px; border-radius: 17px; }
+  .habit-week-strip-heading { display: flex; justify-content: space-between; align-items: center; }
+  .habit-week-days { gap: 4px; }
+  .habit-week-day { padding: 6px 1px 4px; border-radius: 11px; }
+  .habit-week-day small { font-size: 7px; }
+  .habit-week-day strong { font-size: 12px; }
+  .settings-preferences-grid { grid-template-columns: 1fr; gap: 11px; }
+  .settings-profile-card { padding: 12px; }
+  .settings-profile-status { font-size: 0; gap: 0; }
+  .settings-profile-status svg { width: 17px; height: 17px; }
+  .tree-journey-hero {
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: minmax(230px,auto) auto auto;
+    min-height: 0;
+    border-radius: 24px;
+  }
+  .tree-journey-art { grid-row: 1; min-height: 248px; }
+  .tree-main-art { width: min(100%,300px); }
+  .tree-journey-copy { grid-row: 2; padding: 0 20px 17px; }
+  .tree-journey-copy h2 { margin: 7px 0 6px; font-size: 26px; }
+  .tree-journey-copy > p { max-width: none; margin-bottom: 10px; }
+  .tree-level-lockup { margin-bottom: 10px; }
+  .tree-weekly-ribbon { grid-row: 3; margin: 0 11px 11px; padding: 9px 10px; }
+  .tree-weekly-ribbon strong { font-size: 9px; }
+  .tree-weekly-ribbon-meta { font-size: 7px; }
+  .tree-season-stats { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .tree-season-stats > div { padding: 12px; }
+  .tree-season-stats > div:last-child { grid-column: 1/-1; }
+  .tree-lifetime-path { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .tree-lifetime-stage img { width: 76px; height: 76px; }
+}
+@media (max-width: 430px) {
+  .botanical-dashboard-page .botanical-hero { min-height: 228px; }
+  .botanical-dashboard-page .botanical-hero::after { right: -3%; bottom: 52px; width: 84%; height: 85%; opacity: .98; }
+  .botanical-dashboard-page .botanical-stats > :nth-child(4) { display: none; }
+  .settings-theme-options { gap: 5px; }
+  .settings-theme-options button { padding: 10px 3px; }
+  .tree-journey-art { min-height: 225px; }
+  .tree-main-art { width: min(100%,270px); }
+  .tree-art-badge { top: 11px; right: 13px; }
+  .tree-art-level-stamp { right: 10%; bottom: 17px; }
+  .tree-season-stats strong { font-size: 20px; }
+  .tree-weekly-ribbon { gap: 7px; }
+  .tree-weekly-ribbon-icon { width: 30px; height: 30px; }
+}
+@media (max-width: 360px) {
+  .habit-week-strip { padding: 9px; }
+  .tree-journey-art { min-height: 205px; }
+  .tree-main-art { width: 235px; }
+  .tree-journey-copy { padding-left: 15px; padding-right: 15px; }
+}
+
+/* Dark mode counterparts for the expanded botanical pages. */
+html[data-theme="dark"] body { background: var(--canvas); }
+html[data-theme="dark"] .habit-week-strip,
+html[data-theme="dark"] .settings-preference-card,
+html[data-theme="dark"] .tree-season-stats > div,
+html[data-theme="dark"] .goal-card,
+html[data-theme="dark"] .backup-card { border-color: var(--line); background: var(--surface); }
+html[data-theme="dark"] .habit-week-day strong,
+html[data-theme="dark"] .settings-profile-copy strong,
+html[data-theme="dark"] .settings-theme-options button strong,
+html[data-theme="dark"] .settings-vacation-toggle strong,
+html[data-theme="dark"] .settings-section-heading strong { color: var(--ink); }
+html[data-theme="dark"] .settings-profile-card,
+html[data-theme="dark"] .settings-about-note { border-color: var(--line); background: var(--surface-soft); }
+html[data-theme="dark"] .settings-theme-options button { border-color: var(--line); color: var(--ink-soft); background: var(--surface-soft); }
+html[data-theme="dark"] .settings-theme-options button.active { border-color: #8574cb; background: #393452; }
+html[data-theme="dark"] .tree-journey-hero { border-color: var(--line); background: linear-gradient(130deg,#2c4030,#3a4934 54%,#4a3a34); }
+html[data-theme="dark"] .tree-journey-copy h2,
+html[data-theme="dark"] .tree-level-name,
+html[data-theme="dark"] .tree-season-stats strong { color: var(--ink); }
+html[data-theme="dark"] .tree-journey-art::before { background: rgba(255,255,255,.12); }
+html[data-theme="dark"] .tree-main-art,
+html[data-theme="dark"] .tree-lifetime-stage img { mix-blend-mode: normal; }
+html[data-theme="dark"] .tree-weekly-ribbon { border-color: var(--line); background: rgba(38,52,42,.85); }
+html[data-theme="dark"] .tree-weekly-ribbon strong,
+html[data-theme="dark"] .tree-wisdom-quote p { color: var(--ink-soft); }
+html[data-theme="dark"] .tree-lifetime-stage { border-color: var(--line); background: var(--surface-soft); }
+html[data-theme="dark"] .tree-lifetime-stage.current { background: #334a35; }
+html[data-theme="dark"] .insight-ai-panel { border-color: var(--line); background: var(--surface); }
