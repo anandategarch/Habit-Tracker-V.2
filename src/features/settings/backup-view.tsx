@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
-import { Archive, Download, FileUp, LoaderCircle, ShieldCheck } from "lucide-react";
+import { Archive, Download, FileUp, LoaderCircle, ShieldCheck, Sprout } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import type { WorkspaceSettings } from "@/lib/module-types";
 
