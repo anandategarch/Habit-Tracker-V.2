@@ -259,7 +259,7 @@ export function RutinaApp() {
   if (!workspaceReady || !modulesReady) {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
-        <div className="workspace-loading-brand"><span className="brand-mark"><RutinaMark size={25} /></span><strong>rutina<span>.</span></strong></div>
+        <div className="workspace-loading-brand"><span className="brand-mark"><RutinaMark size={25} /></span><strong>Rutina<span>.</span></strong></div>
         <span className="workspace-loading-spinner" aria-hidden="true" />
         <p>Menyiapkan ruang pribadimu…</p>
         <small>Menghubungkan data dan memuat aktivitas</small>

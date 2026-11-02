@@ -883,3 +883,15 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 .tree-splash-copy p { color: #7d8978; }
 .tree-splash-skip { color: #477d57; border-color: #e2e9d9; background: rgba(255,253,248,.88); }
 @media (max-width: 600px) { .tree-artwork { border-radius: 17px; } }
+
+
+html[data-theme="dark"] .tree-artwork {
+  border-color: var(--line);
+  background: linear-gradient(145deg,#334536,#3c4f3d);
+}
+html[data-theme="dark"] .tree-artwork img,
+html[data-theme="dark"] .tree-lifetime-stage img { mix-blend-mode: normal; }
+html[data-theme="dark"] .tree-lifetime-stage {
+  border-color: var(--line);
+  background: var(--surface-soft);
+}
