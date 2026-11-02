@@ -22,8 +22,8 @@ Menjaga desain, implementasi, dan perilaku produk tetap konsisten ketika fitur b
 14. Jangan menambahkan dependency tanpa kebutuhan yang jelas. Gunakan Lucide untuk ikon agar satu gaya.
 15. Jangan menghapus fitur atau field domain tanpa menjelaskan alasannya di PR.
 16. Koneksi database hanya boleh berada di `src/lib/server` dan API Route Handler; jangan import `@libsql/client` dari komponen client.
-17. Jangan pernah menaruh `TURSO_AUTH_TOKEN`, password aplikasi, atau session secret ke kode, commit, browser bundle, log, atau prefix `NEXT_PUBLIC_`.
-18. Semua endpoint data Turso harus memvalidasi sesi server-side dan memvalidasi payload sebelum SQL.
+17. Jangan pernah menaruh `TURSO_AUTH_TOKEN` ke kode, commit, browser bundle, log, atau prefix `NEXT_PUBLIC_`.
+18. Deployment Vercel harus dilindungi dengan Vercel Authentication pada cakupan All Deployments; endpoint data tetap wajib memvalidasi payload sebelum SQL. Jangan menambahkan bypass autentikasi platform.
 19. Query SQL harus menggunakan parameter binding; hindari menyisipkan input pengguna ke string SQL.
 20. Perubahan schema harus memperbarui migration SQL dan initializer idempoten.
 

@@ -6,13 +6,11 @@
 src/
   app/
     api/
-      auth/                 Password login, session, logout
-      workspace/            API workspace yang dilindungi sesi
+      workspace/            API workspace; deployment dilindungi Vercel Authentication
     layout.tsx               Root layout dan metadata
     page.tsx                 Entry point aplikasi
     globals.css              Design tokens dan styling
   components/
-    auth/                    Access gate
     ui/                      Primitive UI dan dialog
   features/
     app/                     App shell dan navigasi
@@ -25,7 +23,6 @@ src/
   lib/
     server/
       turso.ts               Server-only libSQL client
-      auth.ts                Signed HttpOnly session
       schema.ts              Idempotent schema initializer
       workspace-repository.ts SQL repository
     use-workspace.ts         Client store, local fallback, remote sync
@@ -41,7 +38,7 @@ db/
 
 Saat Turso aktif:
 
-`UI -> useWorkspace -> protected Next.js Route Handler -> server-only repository -> Turso`
+`Browser -> Vercel Authentication -> UI -> useWorkspace -> Next.js Route Handler -> server-only repository -> Turso`
 
 Saat Turso belum dikonfigurasi:
 
@@ -61,8 +58,9 @@ Tabel dibuat otomatis secara idempoten ketika endpoint workspace pertama kali di
 
 ## Sinkronisasi dan migrasi lokal
 
-- Turso menjadi sumber data utama ketika environment database tersedia dan sesi valid.
+- Turso menjadi sumber data utama ketika kredensial database tersedia.
 - LocalStorage tetap dipakai sebagai fallback saat database belum dikonfigurasi atau belum dapat dijangkau.
+- Saat aplikasi pertama dibuka pada perangkat/browser baru, UI menunggu pembacaan awal Turso selesai agar data demo tidak tampil sesaat sebelum data cloud.
 - Pada koneksi pertama ke database kosong, snapshot yang sebelumnya tersimpan di LocalStorage akan dikirim ke Turso satu kali.
 - Check-in hari ini disimpan terpisah dari definisi habit sehingga struktur mendukung riwayat harian.
 - Snapshot workspace ditulis melalui satu transaksi libSQL agar habit, check-in hari ini, transaksi, dan budget tersimpan secara konsisten.
@@ -70,9 +68,10 @@ Tabel dibuat otomatis secara idempoten ketika endpoint workspace pertama kali di
 ## Keamanan
 
 - `TURSO_DATABASE_URL` dan `TURSO_AUTH_TOKEN` hanya dibaca server-side.
-- Saat Turso aktif, API workspace mensyaratkan password aplikasi dan signed HttpOnly session cookie.
-- Password aplikasi dan session secret wajib disediakan melalui environment variable.
-- Implementasi saat ini merupakan workspace satu pemilik, belum autentikasi multi-user. Jangan membuka akses untuk banyak pengguna sebelum menambahkan identitas pengguna dan isolasi data.
+- Deployment Vercel dilindungi dengan Vercel Authentication pada cakupan **All Deployments** (Production, Preview, dan domain deployment yang terhubung).
+- Perlindungan Vercel membatasi akses aplikasi dan API ke akun yang memiliki akses team Vercel minimal Viewer. Gunakan akun Vercel yang sama pada desktop dan HP.
+- API workspace tidak membuat sesi atau meminta password aplikasi; aksesnya bergantung pada Deployment Protection di lapisan platform Vercel.
+- Kredensial Turso tetap server-only. Jangan menonaktifkan Vercel Authentication atau mengekspos server pengembangan lokal ke internet.
 - Jangan mencetak environment variable atau token ke log.
 
 ## Arah evolusi

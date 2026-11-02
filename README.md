@@ -67,12 +67,16 @@ SQL awal tersedia di `db/migrations/0001_initial.sql`. API memastikan tabel ters
 Salin `.env.example` ke `.env.local` untuk lokal, lalu isi:
 - `TURSO_DATABASE_URL`
 - `TURSO_AUTH_TOKEN`
-- `RUTINA_APP_PASSWORD` (minimal 12 karakter)
-- `RUTINA_SESSION_SECRET` (minimal 32 karakter; buat dengan `openssl rand -base64 32`)
 
-Di Vercel tambahkan ke **Project → Settings → Environment Variables** untuk Production/Preview sesuai kebutuhan, kemudian redeploy. Jangan memakai prefix `NEXT_PUBLIC_` dan jangan commit `.env.local`.
+Di Vercel, isi kedua variabel tersebut pada **Project → Settings → Environment Variables** untuk Production. Setelah mengubah variabel, buat deployment baru. Jangan memakai prefix `NEXT_PUBLIC_` dan jangan commit `.env.local`.
 
-Saat Turso aktif, Rutina mengunci API data dengan password satu pemilik dan cookie sesi HttpOnly selama 14 hari. Ini bukan autentikasi multi-pengguna; jangan bagikan password aplikasi. Saat variabel Turso belum tersedia, aplikasi tetap berjalan dalam mode demo LocalStorage.
+### Perlindungan akses
+
+Rutina tidak memakai halaman login atau password internal. Deployment Vercel dilindungi dengan **Vercel Authentication** pada cakupan **All Deployments**. Hanya akun yang memiliki akses ke team Vercel proyek ini (minimal Viewer) yang dapat membuka aplikasi dan API datanya.
+
+Kamu dapat membuka Rutina dari desktop maupun HP melalui browser. Di HP, masuk ke Vercel menggunakan akun yang sama dengan akun yang memiliki akses ke proyek, lalu buka URL deployment Rutina. Jangan menonaktifkan Deployment Protection atau membagikan akses team kepada orang lain. Vercel Authentication melindungi deployment; server Turso tetap menyimpan kredensial database secara server-side.
+
+Saat menjalankan `npm run dev` secara lokal, perlindungan Vercel Authentication tidak berlaku. Jangan mengekspos server lokal ke jaringan publik. Jika variabel Turso belum tersedia, aplikasi tetap berjalan dengan LocalStorage/demo fallback.
 
 ## Aturan kontribusi
 
