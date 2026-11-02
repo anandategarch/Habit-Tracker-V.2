@@ -13,9 +13,12 @@ export function TreeSplash() {
 
     if (!isStandalone || prefersReducedMotion) return;
 
-    setVisible(true);
-    const timeout = window.setTimeout(() => setVisible(false), 3900);
-    return () => window.clearTimeout(timeout);
+    const showTimeout = window.setTimeout(() => setVisible(true), 0);
+    const hideTimeout = window.setTimeout(() => setVisible(false), 3900);
+    return () => {
+      window.clearTimeout(showTimeout);
+      window.clearTimeout(hideTimeout);
+    };
   }, []);
 
   if (!visible) return null;
