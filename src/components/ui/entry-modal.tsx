@@ -18,8 +18,14 @@ export function EntryModal({ mode, onClose, onSubmit }: {
 }) {
   const isHabit = mode === "habit";
   const dialogRef = useRef<HTMLElement>(null);
+  const onCloseRef = useRef(onClose);
 
   useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const firstFocusable = dialogRef.current?.querySelector<HTMLElement>("[autofocus]") ?? dialogRef.current?.querySelector<HTMLElement>("input, select, button");
@@ -27,13 +33,14 @@ export function EntryModal({ mode, onClose, onSubmit }: {
     return () => {
       document.body.style.overflow = previousOverflow;
       window.clearTimeout(focusTimeout);
+      previousFocus?.focus();
     };
   }, []);
 
   function handleDialogKeyDown(event: KeyboardEvent<HTMLElement>) {
     if (event.key === "Escape") {
       event.preventDefault();
-      onClose();
+      onCloseRef.current();
       return;
     }
     if (event.key !== "Tab" || !dialogRef.current) return;
