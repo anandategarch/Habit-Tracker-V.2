@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import {
   ArrowDownLeft, ArrowUpRight, BookOpen, Check, Clock3, Droplets,
-  Dumbbell, Flame, Moon, PencilLine, Target,
+  Dumbbell, Flame, Moon, PencilLine, Sprout, Target,
 } from "lucide-react";
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
