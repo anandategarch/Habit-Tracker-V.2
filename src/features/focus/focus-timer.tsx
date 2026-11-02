@@ -37,26 +37,27 @@ export function FocusTimer() {
       <div className="focus-card-heading">
         <div>
           <div className="small-label">RUANG FOKUS</div>
-          <h2 className="section-title" style={{ marginTop: 5 }}>Satu hal dalam satu waktu.</h2>
-          <p className="section-caption">Ambil jeda dari distraksi, beri ruang untuk hal penting.</p>
+          <h2 className="section-title">Satu hal dalam satu waktu.</h2>
+          <p className="section-caption">Fokus 25 menit. Beri ruang untuk hal yang penting.</p>
         </div>
         <span className="focus-icon"><Timer size={18} /></span>
       </div>
       <div className="focus-timer-layout">
-        <div className="focus-ring" style={{ "--progress": `${progress}%` } as CSSProperties}>
+        <div className="focus-ring" style={{ "--progress": `${progress}%` } as CSSProperties} role="timer" aria-label={`Sisa waktu ${formatTime(remaining)}`}>
           <div className="focus-ring-inner">
             <strong>{formatTime(remaining)}</strong>
             <span>{isComplete ? "SELESAI" : running ? "SEDANG FOKUS" : "SESI 25 MENIT"}</span>
           </div>
         </div>
         <div className="focus-actions">
-          <button className="primary-button" onClick={() => setRunning((current) => !current)} disabled={isComplete}>
+          <button className="primary-button" type="button" onClick={() => setRunning((current) => !current)} disabled={isComplete}>
             {running ? <Pause size={14} /> : <Play size={14} />}
             {running ? "Jeda" : isComplete ? "Selesai" : "Mulai fokus"}
           </button>
-          <button className="secondary-button" onClick={reset}><RotateCcw size={13} /> Ulangi</button>
+          <button className="secondary-button" type="button" onClick={reset}><RotateCcw size={13} /> Ulangi</button>
         </div>
       </div>
+      <p className="focus-timer-foot">{isComplete ? "Sesi fokus selesai. Istirahat sejenak sebelum mulai lagi." : running ? "Jauhkan distraksi dan fokus pada satu hal." : "Timer berjalan selama halaman tetap terbuka."}</p>
     </section>
   );
 }

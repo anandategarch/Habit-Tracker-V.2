@@ -11,31 +11,33 @@ function PageIntro({ eyebrow, title, subtitle, action }: {
 }) {
   return (
     <div className="page-intro">
-      <div>
+      <div className="page-intro-copy">
         <div className="eyebrow">{eyebrow}</div>
         <h1 className="page-title">{title}</h1>
         <p className="page-subtitle">{subtitle}</p>
       </div>
-      {action}
+      {action && <div className="page-intro-action">{action}</div>}
     </div>
   );
 }
 
-function PrimaryButton({ children, onClick, type = "button" }: {
-  children: ReactNode; onClick?: () => void; type?: "button" | "submit";
+function PrimaryButton({ children, onClick, type = "button", disabled = false }: {
+  children: ReactNode; onClick?: () => void; type?: "button" | "submit"; disabled?: boolean;
 }) {
-  return <button className="primary-button" type={type} onClick={onClick}>{children}</button>;
+  return <button className="primary-button" type={type} onClick={onClick} disabled={disabled}>{children}</button>;
 }
 
-function IconAction({ label, children, onClick }: { label: string; children: ReactNode; onClick?: () => void }) {
-  return <button className="icon-button" aria-label={label} title={label} onClick={onClick}>{children}</button>;
+function IconAction({ label, children, onClick, className = "" }: {
+  label: string; children: ReactNode; onClick?: () => void; className?: string;
+}) {
+  return <button type="button" className={`icon-button ${className}`} aria-label={label} title={label} onClick={onClick}>{children}</button>;
 }
 
 function SectionHeading({ title, caption, action }: { title: string; caption?: string; action?: ReactNode }) {
   return (
     <div className="section-heading">
-      <div><h2 className="section-title">{title}</h2>{caption && <p className="section-caption">{caption}</p>}</div>
-      {action}
+      <div className="section-heading-copy"><h2 className="section-title">{title}</h2>{caption && <p className="section-caption">{caption}</p>}</div>
+      {action && <div className="section-heading-action">{action}</div>}
     </div>
   );
 }
@@ -47,40 +49,50 @@ function HabitGlyph({ icon }: { icon: Habit["icon"] }) {
 
 function HabitRow({ habit, onToggle }: { habit: Habit; onToggle: (id: string) => void }) {
   return (
-    <div className="habit-row">
+    <article className={`habit-row ${habit.completed ? "is-complete" : ""}`}>
       <div className="habit-icon"><HabitGlyph icon={habit.icon} /></div>
       <div className="habit-main">
         <div className="habit-name">{habit.title}</div>
-        <div className="habit-meta"><span><Clock3 size={11} /> {habit.time}</span><span>{habit.duration} menit</span><span><Flame size={11} /> {habit.streak} hari</span></div>
+        <div className="habit-meta">
+          <span><Clock3 size={11} /> {habit.time}</span>
+          <span>{habit.duration} menit</span>
+          <span><Flame size={11} /> {habit.streak} hari</span>
+        </div>
       </div>
-      <button className={`check-button ${habit.completed ? "done" : ""}`} aria-label={habit.completed ? `Batalkan ${habit.title}` : `Selesaikan ${habit.title}`} onClick={() => onToggle(habit.id)}>
+      <button
+        type="button"
+        className={`check-button ${habit.completed ? "done" : ""}`}
+        aria-label={habit.completed ? `Batalkan ${habit.title}` : `Tandai ${habit.title} selesai`}
+        aria-pressed={habit.completed}
+        onClick={() => onToggle(habit.id)}
+      >
         {habit.completed && <Check size={15} strokeWidth={2.8} />}
       </button>
-    </div>
+    </article>
   );
 }
 
 function TransactionRow({ transaction }: { transaction: Transaction }) {
   const income = transaction.type === "income";
   return (
-    <div className="transaction-row">
+    <article className="transaction-row">
       <div className={`transaction-icon ${income ? "" : "expense"}`}>
         {income ? <ArrowDownLeft size={17} /> : <ArrowUpRight size={17} />}
       </div>
-      <div>
+      <div className="transaction-copy">
         <div className="transaction-title">{transaction.title}</div>
-        <div className="transaction-meta">{transaction.category} · {formatDate(transaction.date)}</div>
+        <div className="transaction-meta">{transaction.category} <span>·</span> {formatDate(transaction.date)}</div>
       </div>
       <div className={`transaction-amount ${income ? "income" : "expense"}`}>{income ? "+" : "−"}{formatRupiah(transaction.amount)}</div>
-    </div>
+    </article>
   );
 }
 
-function StatCard({ label, value, foot, icon: Icon }: {
-  label: string; value: string; foot: string; icon: typeof Target;
+function StatCard({ label, value, foot, icon: Icon, tone = "default" }: {
+  label: string; value: string; foot: string; icon: typeof Target; tone?: "default" | "green" | "amber";
 }) {
   return (
-    <div className="stat-card">
+    <div className={`stat-card tone-${tone}`}>
       <div className="stat-top"><span className="small-label">{label}</span><span className="stat-icon"><Icon size={15} /></span></div>
       <div className="metric-value">{value}</div>
       <div className="stat-foot">{foot}</div>
@@ -88,4 +100,17 @@ function StatCard({ label, value, foot, icon: Icon }: {
   );
 }
 
-export { PageIntro, PrimaryButton, IconAction, SectionHeading, HabitGlyph, HabitRow, TransactionRow, StatCard };
+function EmptyState({ icon: Icon = Sprout, title, description, action }: {
+  icon?: typeof Target; title: string; description: string; action?: ReactNode;
+}) {
+  return (
+    <div className="empty-state">
+      <span className="empty-state-icon"><Icon size={22} /></span>
+      <strong>{title}</strong>
+      <p>{description}</p>
+      {action && <div className="empty-state-action">{action}</div>}
+    </div>
+  );
+}
+
+export { PageIntro, PrimaryButton, IconAction, SectionHeading, HabitGlyph, HabitRow, TransactionRow, StatCard, EmptyState };
