@@ -1,19 +1,26 @@
 import type { Metadata, Viewport } from "next";
+import { PwaRegister } from "@/components/pwa/pwa-register";
+import { TreeSplash } from "@/components/pwa/tree-splash";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Rutina — hidup lebih terarah",
   description: "Ruang pribadi untuk membangun kebiasaan dan mengelola keuangan dengan lebih sadar.",
   applicationName: "Rutina",
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Rutina",
   },
+  icons: {
+    icon: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f5f7f2",
+  themeColor: "#275642",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -22,7 +29,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
-      <body>{children}</body>
+      <body>
+        <PwaRegister />
+        <TreeSplash />
+        {children}
+      </body>
     </html>
   );
 }

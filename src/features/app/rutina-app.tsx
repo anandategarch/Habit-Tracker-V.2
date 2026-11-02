@@ -17,6 +17,7 @@ import { InsightsView } from "@/features/insights/insights-view";
 import { IconAction } from "@/components/ui/primitives";
 import { EntryModal } from "@/components/ui/entry-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
+import { PwaInstallButton } from "@/components/pwa/install-button";
 
 const navigation: { id: TabId; label: string; icon: typeof Home }[] = [
   { id: "home", label: "Home", icon: Home },
@@ -144,6 +145,7 @@ export function RutinaApp() {
           <div className="topbar-note">Make room for what matters.</div>
           <div className="topbar-actions">
             <IconAction label="Cari (Ctrl K)" onClick={() => setSearchOpen(true)}><Search size={17} /></IconAction>
+            <PwaInstallButton />
             <div className="avatar" style={{ width: 34, height: 34, fontSize: 12 }}>R</div>
           </div>
         </header>
