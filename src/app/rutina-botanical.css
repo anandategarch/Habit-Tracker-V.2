@@ -895,3 +895,128 @@ html[data-theme="dark"] .tree-lifetime-stage {
   border-color: var(--line);
   background: var(--surface-soft);
 }
+
+
+/* TECNO CAMON 50 PRO 5G mobile reference: compact 19.5:9 phone layout. */
+.hero-progress-number { display: none; }
+
+@media (max-width: 430px) {
+  .botanical-dashboard-page { min-width: 0; }
+  .botanical-dashboard-page > .page-intro {
+    gap: 6px;
+    margin-bottom: 13px;
+  }
+  .botanical-dashboard-page > .page-intro .page-intro-action { display: none; }
+  .botanical-dashboard-page > .page-intro .page-title {
+    margin-top: 5px;
+    margin-bottom: 3px;
+    font-size: clamp(23px, 6.1vw, 25px);
+    letter-spacing: -.9px;
+  }
+  .botanical-dashboard-page > .page-intro .page-subtitle {
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .botanical-dashboard-page .botanical-hero {
+    min-height: 226px;
+    padding: 12px 14px 88px;
+    border-radius: 21px;
+  }
+  .botanical-dashboard-page .botanical-hero .hero-copy { display: none; }
+  .botanical-dashboard-page .botanical-hero::after {
+    right: -2%;
+    bottom: 51px;
+    width: 82%;
+    height: 86%;
+    opacity: .96;
+  }
+  .botanical-dashboard-page .hero-progress-card {
+    left: 11px;
+    bottom: 11px;
+    width: calc(100% - 22px);
+    min-height: 65px;
+    gap: 11px;
+    padding: 8px 11px;
+    border-radius: 17px;
+  }
+  .botanical-dashboard-page .hero-progress-icon {
+    position: relative;
+    display: grid;
+    width: 49px;
+    height: 49px;
+    flex: 0 0 49px;
+    place-items: center;
+    border-radius: 50%;
+    color: #477d57;
+    background: conic-gradient(from -90deg, #5d9868 0 var(--progress), #e5eadf var(--progress) 100%);
+    box-shadow: none;
+  }
+  .botanical-dashboard-page .hero-progress-icon::before {
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--surface);
+    content: "";
+  }
+  .botanical-dashboard-page .hero-progress-icon > svg { display: none; }
+  .botanical-dashboard-page .hero-progress-number {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: #477d57;
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: -.3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .botanical-dashboard-page .hero-progress-copy { gap: 3px; }
+  .botanical-dashboard-page .hero-progress-heading strong { font-size: 11px; }
+  .botanical-dashboard-page .hero-progress-heading > span { display: none; }
+  .botanical-dashboard-page .hero-progress-count { font-size: 9px; }
+  .botanical-dashboard-page .hero-progress-count b { font-size: 14px; }
+  .botanical-dashboard-page .hero-progress-track { height: 6px; }
+
+  .botanical-dashboard-page .botanical-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .botanical-dashboard-page .botanical-stats > :nth-child(4) { display: none; }
+  .botanical-dashboard-page .botanical-stats .stat-card {
+    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 5px;
+    row-gap: 2px;
+    min-height: 60px;
+    padding: 9px 7px;
+    border-radius: 15px;
+  }
+  .botanical-dashboard-page .botanical-stats .stat-icon {
+    grid-row: 1 / 3;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+  .botanical-dashboard-page .botanical-stats .stat-top .small-label {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 7px;
+    letter-spacing: 0;
+    line-height: 1.2;
+  }
+  .botanical-dashboard-page .botanical-stats .metric-value {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 11px;
+    letter-spacing: -.35px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .botanical-dashboard-page .botanical-stats .stat-foot { display: none; }
+  .botanical-dashboard-page .botanical-dashboard-grid { gap: 12px; }
+  .botanical-dashboard-page .home-habits-card { padding: 15px; }
+}
+
+html[data-theme="dark"] .botanical-dashboard-page .hero-progress-icon::before {
+  background: var(--surface);
+}
