@@ -2,10 +2,9 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  CalendarDays, ChartLine, Cloud, CloudOff, Home, ListChecks, LoaderCircle,
-  RefreshCw, Search, Sprout, WalletCards, Target, BriefcaseBusiness,
-  HeartPulse, Dumbbell, ClipboardCheck, TreeDeciduous, Grid2X2, ChevronRight, Sun, Moon, Monitor, Settings,
+  Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, Sun, Moon, Monitor,
 } from "lucide-react";
+import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { isScheduledOn, parseNumberList } from "@/lib/habit-schedule";
@@ -22,19 +21,19 @@ import { PwaInstallButton } from "@/components/pwa/install-button";
 import { useModules } from "@/lib/use-modules";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 
-const navigation: { id: TabId; label: string; icon: typeof Home; description: string }[] = [
-  { id: "home", label: "Beranda", icon: Home, description: "Ringkasan hari ini" },
-  { id: "habits", label: "Kebiasaan", icon: ListChecks, description: "Atur ritme harian" },
-  { id: "finance", label: "Keuangan", icon: WalletCards, description: "Kelola arus uang" },
-  { id: "calendar", label: "Kalender", icon: CalendarDays, description: "Lihat jadwal" },
-  { id: "insights", label: "Insight", icon: ChartLine, description: "Pahami progres" },
-  { id: "goals", label: "Tujuan", icon: Target, description: "Goals dan milestones" },
-  { id: "checkin", label: "Check-in", icon: ClipboardCheck, description: "Mood, energi, dan jurnal" },
-  { id: "work", label: "Meja Kerja", icon: BriefcaseBusiness, description: "Task board, catatan, rutinitas" },
-  { id: "wellness", label: "Wellness", icon: HeartPulse, description: "Air, protein, dan berat badan" },
-  { id: "training", label: "Latihan", icon: Dumbbell, description: "Workout, program, dan kardio" },
-  { id: "tree", label: "Pohon", icon: TreeDeciduous, description: "Level dan perjalanan progres" },
-  { id: "settings", label: "Pengaturan", icon: Settings, description: "Backup dan preferensi data" },
+const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
+  { id: "home", label: "Beranda", icon: "home", description: "Ringkasan hari ini" },
+  { id: "habits", label: "Kebiasaan", icon: "habits", description: "Atur ritme harian" },
+  { id: "finance", label: "Keuangan", icon: "finance", description: "Kelola arus uang" },
+  { id: "calendar", label: "Kalender", icon: "calendar", description: "Lihat jadwal" },
+  { id: "insights", label: "Insight", icon: "insights", description: "Pahami progres" },
+  { id: "goals", label: "Tujuan", icon: "goals", description: "Goals dan milestones" },
+  { id: "checkin", label: "Check-in", icon: "checkin", description: "Mood, energi, dan jurnal" },
+  { id: "work", label: "Meja Kerja", icon: "work", description: "Task board, catatan, rutinitas" },
+  { id: "wellness", label: "Wellness", icon: "wellness", description: "Air, protein, dan berat badan" },
+  { id: "training", label: "Latihan", icon: "training", description: "Workout, program, dan kardio" },
+  { id: "tree", label: "Pohon", icon: "growth", description: "Level dan perjalanan progres" },
+  { id: "settings", label: "Pengaturan", icon: "settings", description: "Backup dan preferensi data" },
 ];
 const mobilePrimary = navigation.filter((item) => ["home", "habits", "finance", "calendar"].includes(item.id));
 const mobileMore = navigation.filter((item) => !mobilePrimary.some((primary) => primary.id === item.id));
@@ -243,7 +242,7 @@ export function RutinaApp() {
   if (!workspaceReady || !modulesReady) {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
-        <div className="workspace-loading-brand"><span className="brand-mark"><Sprout size={22} /></span><strong>rutina<span>.</span></strong></div>
+        <div className="workspace-loading-brand"><span className="brand-mark"><AppIcon name="growth" size={22} /></span><strong>rutina<span>.</span></strong></div>
         <span className="workspace-loading-spinner" aria-hidden="true" />
         <p>Menyiapkan ruang pribadimu…</p>
         <small>Menghubungkan data dan memuat aktivitas</small>
@@ -255,13 +254,13 @@ export function RutinaApp() {
     <div className="app-shell">
       <aside className="desktop-sidebar">
         <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); }} aria-label="Rutina, kembali ke beranda">
-          <span className="brand-mark"><Sprout size={22} strokeWidth={1.9} /></span>
+          <span className="brand-mark"><AppIcon name="growth" size={22} /></span>
           <span className="brand-copy"><span className="brand-name">rutina<span>.</span></span><span className="brand-sub">grow at your pace</span></span>
         </a>
 
         <div className="nav-label">WORKSPACE</div>
         <nav className="side-nav" aria-label="Navigasi utama">
-          {navigation.map(({ id, label, icon: Icon, description }) => (
+          {navigation.map(({ id, label, icon, description }) => (
             <button
               key={id}
               type="button"
@@ -269,7 +268,7 @@ export function RutinaApp() {
               aria-current={activeTab === id ? "page" : undefined}
               onClick={() => setActiveTab(id)}
             >
-              <span className="nav-link-icon"><Icon size={18} strokeWidth={1.8} /></span>
+              <span className="nav-link-icon"><AppIcon name={icon} size={19} /></span>
               <span className="nav-link-copy"><strong>{label}</strong><small>{description}</small></span>
               {activeTab === id && <span className="nav-active-indicator" />}
             </button>
@@ -306,7 +305,7 @@ export function RutinaApp() {
       <main className="main-shell">
         <header className="topbar">
           <div className="mobile-brand">
-            <span className="brand-mark"><Sprout size={18} /></span>
+            <span className="brand-mark"><AppIcon name="growth" size={19} /></span>
             <span>rutina<span>.</span></span>
           </div>
           <div className="topbar-context">
@@ -348,7 +347,7 @@ export function RutinaApp() {
       </main>
 
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
-        {mobilePrimary.map(({ id, label, icon: Icon }) => (
+        {mobilePrimary.map(({ id, label, icon }) => (
           <button
             key={id}
             type="button"
@@ -356,7 +355,7 @@ export function RutinaApp() {
             aria-current={activeTab === id ? "page" : undefined}
             onClick={() => setActiveTab(id)}
           >
-            <Icon size={19} strokeWidth={1.9} />
+            <AppIcon name={icon} size={19} />
             <span>{label}</span>
           </button>
         ))}
