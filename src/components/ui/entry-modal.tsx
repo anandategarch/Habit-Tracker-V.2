@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import { Check, X } from "lucide-react";
 import type { TransactionCategory } from "@/lib/types";
+import type { Wallet } from "@/lib/module-types";
 import { todayISO } from "@/lib/format";
 import { IconAction, PrimaryButton } from "@/components/ui/primitives";
 
@@ -11,10 +12,11 @@ const categories: TransactionCategory[] = [
   "Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya",
 ];
 
-export function EntryModal({ mode, onClose, onSubmit }: {
+export function EntryModal({ mode, onClose, onSubmit, wallets = [] }: {
   mode: "habit" | "transaction";
   onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  wallets?: Wallet[];
 }) {
   const isHabit = mode === "habit";
   const dialogRef = useRef<HTMLElement>(null);
