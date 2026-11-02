@@ -770,6 +770,8 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 .insight-trend-bar { display: block; width: min(17px,35%); min-height: 5px; border-radius: 8px 8px 3px 3px; }
 .insight-trend-bar.mood { background: linear-gradient(180deg,#a28de9,#8069d5); }
 .insight-trend-bar.energy { background: linear-gradient(180deg,#a6c98a,#6f9d67); }
+.insight-trend-bar.activity { background: linear-gradient(180deg,#a6c98a,#5f9567); }
+.insight-trend-value { color: #4f8056; font-size: 10px; font-weight: 800; }
 .insight-trend-day small { color: #96988c; font-size: 9px; text-transform: capitalize; }
 .insight-trend-legend { display: flex; align-items: center; gap: 14px; margin-top: 12px; color: #8b9084; font-size: 9px; }
 .insight-trend-legend span { display: inline-flex; align-items: center; gap: 5px; }
