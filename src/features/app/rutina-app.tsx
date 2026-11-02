@@ -38,6 +38,8 @@ export function RutinaApp() {
     required: false,
     authenticated: false,
     setupRequired: false,
+    passwordReady: false,
+    sessionSecretReady: false,
   });
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
@@ -59,7 +61,7 @@ export function RutinaApp() {
         if (!response.ok) throw new Error("Gagal memeriksa sesi.");
         return response.json();
       })
-      .then((state: { required: boolean; authenticated: boolean; setupRequired: boolean }) => {
+      .then((state: { required: boolean; authenticated: boolean; setupRequired: boolean; passwordReady: boolean; sessionSecretReady: boolean }) => {
         if (!active) return;
         setAuthState({ checking: false, ...state });
       })
@@ -70,6 +72,8 @@ export function RutinaApp() {
           required: false,
           authenticated: true,
           setupRequired: false,
+          passwordReady: false,
+          sessionSecretReady: false,
         });
       });
 
@@ -128,6 +132,8 @@ export function RutinaApp() {
         required: true,
         authenticated: true,
         setupRequired: false,
+        passwordReady: true,
+        sessionSecretReady: true,
       });
       const connected = await refreshWorkspace();
       if (!connected) await refreshWorkspace();
@@ -196,7 +202,15 @@ export function RutinaApp() {
   }
 
   if (authState.setupRequired) {
-    return <AccessGate mode="setup" />;
+    return (
+      <AccessGate
+        mode="setup"
+        setupStatus={{
+          passwordReady: authState.passwordReady,
+          sessionSecretReady: authState.sessionSecretReady,
+        }}
+      />
+    );
   }
 
   if (authState.required && !authState.authenticated) {
