@@ -39,6 +39,7 @@ const schemaStatements = [
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE TABLE IF NOT EXISTS habit_metadata (habit_id TEXT PRIMARY KEY, payload TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
+  `CREATE TABLE IF NOT EXISTS habit_daily_progress (habit_id TEXT NOT NULL, activity_date TEXT NOT NULL, current_amount REAL NOT NULL DEFAULT 0, time_spent_minutes INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (habit_id, activity_date))`,
   `CREATE TABLE IF NOT EXISTS transaction_metadata (transaction_id TEXT PRIMARY KEY, wallet_id TEXT, tags_json TEXT NOT NULL DEFAULT '[]', split_group_id TEXT, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
   `CREATE TABLE IF NOT EXISTS workspace_modules (module_key TEXT PRIMARY KEY, payload TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
   "CREATE INDEX IF NOT EXISTS idx_habits_sort_order ON habits(sort_order, created_at)",
