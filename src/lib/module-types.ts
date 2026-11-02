@@ -25,7 +25,7 @@ export interface WorkspaceSettings { vacationMode: boolean; theme: "system" | "l
 export interface WorkspaceModules {
   goals: Goal[]; checkins: DailyCheckin[]; tasks: WorkTask[]; notes: WorkNote[];
   routines: WorkRoutine[]; wellness: WellnessEntry[]; workouts: WorkoutSession[];
-  programs: WorkoutProgram[]; progressPhotos: ProgressPhoto[]; finance: FinanceExtras;
+  programs: WorkoutProgram[]; progressPhotos: ProgressPhoto[]; settings: WorkspaceSettings; finance: FinanceExtras;
 }
 export type WorkspaceModuleKey = keyof WorkspaceModules;
 export type UpdateWorkspaceModule = <K extends WorkspaceModuleKey>(
