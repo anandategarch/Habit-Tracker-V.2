@@ -28,14 +28,12 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   const [selectedDate, setSelectedDate] = useState(today);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [checkins, setCheckins] = useState<CheckinRecord[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [historyError, setHistoryError] = useState("");
+  const [loadedMonthKey, setLoadedMonthKey] = useState<string | null>(null);
+  const [historyErrorMonth, setHistoryErrorMonth] = useState<string | null>(null);
 
   const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setHistoryError("");
     void fetch(`/api/history?month=${encodeURIComponent(monthKey)}`, { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Riwayat tidak dapat dimuat.");
@@ -45,14 +43,15 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
         if (cancelled) return;
         setHistory(Array.isArray(data.records) ? data.records : []);
         setCheckins(Array.isArray(data.checkins) ? data.checkins : []);
+        setLoadedMonthKey(monthKey);
+        setHistoryErrorMonth(null);
       })
       .catch(() => {
         if (cancelled) return;
         setHistory([]);
         setCheckins([]);
-        setHistoryError("Riwayat kalender tidak dapat dimuat. Periksa koneksi atau status sinkronisasi database.");
-      })
-      .finally(() => { if (!cancelled) setLoading(false); });
+        setHistoryErrorMonth(monthKey);
+      });
     return () => { cancelled = true; };
   }, [monthKey]);
 
@@ -64,6 +63,10 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   const selectedLabel = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
     .format(new Date(`${selectedDate}T00:00:00`));
 
+  const loading = loadedMonthKey !== monthKey && historyErrorMonth !== monthKey;
+  const historyError = historyErrorMonth === monthKey
+    ? "Riwayat kalender tidak dapat dimuat. Periksa koneksi atau status sinkronisasi database."
+    : "";
   const currentHistory = loadedMonthKey === monthKey ? history : [];
   const currentCheckins = loadedMonthKey === monthKey ? checkins : [];
   const historyByDate = useMemo(() => {
