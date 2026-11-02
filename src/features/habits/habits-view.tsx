@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { ListChecks, ListFilter, Plus, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { summarizeHabits } from "@/lib/habits";
@@ -40,7 +40,7 @@ export function HabitsView({ habits, onToggle, onAdd }: { habits: Habit[]; onTog
             <div className="habit-progress-value">{progress}<span>%</span></div>
             <p>{completed} dari {total} kebiasaan telah selesai.</p>
           </div>
-          <div className="habit-progress-ring" style={{ "--progress": `${progress}%` }}>
+          <div className="habit-progress-ring" style={{ "--progress": `${progress}%` } as CSSProperties}>
             <strong>{completed}<small>/{total}</small></strong>
             <span>SELESAI</span>
           </div>
