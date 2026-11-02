@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { Budget, Habit, Transaction } from "@/lib/types";
-import { getAuthSetupState, hasValidSession } from "@/lib/server/auth";
 import { readWorkspace, writeWorkspace } from "@/lib/server/workspace-repository";
 import { isTursoConfigured } from "@/lib/server/turso";
 
@@ -49,7 +48,7 @@ function isBudget(value: unknown): value is Budget {
   );
 }
 
-async function authorize() {
+function authorizeDatabase() {
   if (!isTursoConfigured()) {
     return NextResponse.json(
       { error: "Turso belum dikonfigurasi. Aplikasi masih menggunakan penyimpanan lokal." },
@@ -57,22 +56,11 @@ async function authorize() {
     );
   }
 
-  if (getAuthSetupState().setupRequired) {
-    return NextResponse.json(
-      { error: "Atur RUTINA_APP_PASSWORD dan RUTINA_SESSION_SECRET sebelum mengaktifkan database." },
-      { status: 503 },
-    );
-  }
-
-  if (!(await hasValidSession())) {
-    return NextResponse.json({ error: "Sesi tidak valid. Silakan masuk kembali." }, { status: 401 });
-  }
-
   return null;
 }
 
 export async function GET(request: Request) {
-  const denied = await authorize();
+  const denied = authorizeDatabase();
   if (denied) return denied;
 
   const url = new URL(request.url);
@@ -93,7 +81,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const denied = await authorize();
+  const denied = authorizeDatabase();
   if (denied) return denied;
 
   let body: unknown;

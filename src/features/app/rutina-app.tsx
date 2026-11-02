@@ -2,12 +2,11 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  CalendarDays, ChartLine, Home, ListChecks, LogOut, MoreHorizontal, Search,
+  CalendarDays, ChartLine, Home, ListChecks, MoreHorizontal, Search,
   Sprout, WalletCards,
 } from "lucide-react";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
-import { AccessGate } from "@/components/auth/access-gate";
 import { summarizeTransactions } from "@/lib/finance";
 import { useWorkspace } from "@/lib/use-workspace";
 import { DashboardView } from "@/features/dashboard/dashboard-view";
@@ -33,16 +32,6 @@ export function RutinaApp() {
   const [toast, setToast] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [authState, setAuthState] = useState({
-    checking: true,
-    required: false,
-    authenticated: false,
-    setupRequired: false,
-    passwordReady: false,
-    sessionSecretReady: false,
-  });
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
   const {
     habits,
     transactions,
@@ -50,37 +39,8 @@ export function RutinaApp() {
     syncStatus,
     updateHabits,
     updateTransactions,
-    refreshWorkspace,
+    isReady: workspaceReady,
   } = useWorkspace();
-
-  useEffect(() => {
-    let active = true;
-
-    fetch("/api/auth/session", { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Gagal memeriksa sesi.");
-        return response.json();
-      })
-      .then((state: { required: boolean; authenticated: boolean; setupRequired: boolean; passwordReady: boolean; sessionSecretReady: boolean }) => {
-        if (!active) return;
-        setAuthState({ checking: false, ...state });
-      })
-      .catch(() => {
-        if (!active) return;
-        setAuthState({
-          checking: false,
-          required: false,
-          authenticated: true,
-          setupRequired: false,
-          passwordReady: false,
-          sessionSecretReady: false,
-        });
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -110,47 +70,6 @@ export function RutinaApp() {
     () => summarizeTransactions(monthTransactions),
     [monthTransactions],
   );
-
-  async function handleLogin(password: string) {
-    setLoginLoading(true);
-    setLoginError("");
-
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-      const result = (await response.json()) as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(result.error ?? "Tidak dapat masuk ke Rutina.");
-      }
-
-      setAuthState({
-        checking: false,
-        required: true,
-        authenticated: true,
-        setupRequired: false,
-        passwordReady: true,
-        sessionSecretReady: true,
-      });
-      const connected = await refreshWorkspace();
-      if (!connected) await refreshWorkspace();
-    } catch (error) {
-      setLoginError(error instanceof Error ? error.message : "Terjadi kesalahan saat masuk.");
-    } finally {
-      setLoginLoading(false);
-    }
-  }
-
-  async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setAuthState((current) => ({
-      ...current,
-      authenticated: false,
-    }));
-  }
 
   const syncLabel =
     syncStatus === "synced" ? "Tersinkron ke Turso" :
@@ -197,30 +116,14 @@ export function RutinaApp() {
     setToast("Transaksi berhasil dicatat.");
   }
 
-  if (authState.checking) {
-    return <AccessGate mode="loading" />;
-  }
-
-  if (authState.setupRequired) {
+  if (!workspaceReady) {
     return (
-      <AccessGate
-        mode="setup"
-        setupStatus={{
-          passwordReady: authState.passwordReady,
-          sessionSecretReady: authState.sessionSecretReady,
-        }}
-      />
-    );
-  }
-
-  if (authState.required && !authState.authenticated) {
-    return (
-      <AccessGate
-        mode="login"
-        loading={loginLoading}
-        error={loginError}
-        onSubmit={(password) => void handleLogin(password)}
-      />
+      <main className="workspace-loading" role="status" aria-live="polite">
+        <div className="workspace-loading-content">
+          <span className="workspace-loading-spinner" aria-hidden="true" />
+          <span>Menyiapkan Rutina dan menyinkronkan data...</span>
+        </div>
+      </main>
     );
   }
 
@@ -241,7 +144,6 @@ export function RutinaApp() {
           <div className="topbar-note">Make room for what matters.</div>
           <div className="topbar-actions">
             <IconAction label="Cari (Ctrl K)" onClick={() => setSearchOpen(true)}><Search size={17} /></IconAction>
-            {authState.required && <IconAction label="Keluar" onClick={() => void handleLogout()}><LogOut size={17} /></IconAction>}
             <div className="avatar" style={{ width: 34, height: 34, fontSize: 12 }}>R</div>
           </div>
         </header>

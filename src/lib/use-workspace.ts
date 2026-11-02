@@ -34,6 +34,7 @@ let remoteReady = false;
 let refreshPromise: Promise<boolean> | null = null;
 let writeQueue: Promise<void> = Promise.resolve();
 let autoRefreshStarted = false;
+let workspaceReady = false;
 
 if (typeof window !== "undefined") {
   try {
@@ -63,6 +64,10 @@ function getSnapshot(): string {
 
 function getSyncStatus(): SyncStatus {
   return syncStatus;
+}
+
+function getWorkspaceReady(): boolean {
+  return workspaceReady;
 }
 
 function emitChange(): void {
@@ -188,7 +193,9 @@ export async function refreshWorkspace(): Promise<boolean> {
       return false;
     }
   })().finally(() => {
+    workspaceReady = true;
     refreshPromise = null;
+    emitChange();
   });
 
   return refreshPromise;
@@ -215,6 +222,7 @@ function subscribe(callback: () => void): () => void {
 export function useWorkspace() {
   const serialized = useSyncExternalStore(subscribe, getSnapshot, () => SERVER_SNAPSHOT);
   const status = useSyncExternalStore(subscribe, getSyncStatus, () => "local" as SyncStatus);
+  const isReady = useSyncExternalStore(subscribe, getWorkspaceReady, () => false);
   const snapshot = normalizeSnapshot(serialized);
 
   useEffect(() => {
@@ -244,6 +252,7 @@ export function useWorkspace() {
     transactions: snapshot.transactions,
     budgets: snapshot.budgets,
     syncStatus: status,
+    isReady,
     updateHabits,
     updateTransactions,
     refreshWorkspace,
