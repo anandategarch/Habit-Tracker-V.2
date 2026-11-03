@@ -426,18 +426,18 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
 
   // --- Habit groups (butuh lookup untuk groupName) ---
   const groupMap = new Map<string, HabitGroup>();
-  const habitGroups: HabitGroup[] = asArray(data.habitGroups)
+  const habitGroups: HabitGroup[] = asArray<LegacyHabitGroup>(data.habitGroups)
     .filter((g): g is LegacyHabitGroup => Boolean(g && typeof g.id === "string" && typeof g.name === "string"))
     .map((g) => {
       const mapped: HabitGroup = { id: g.id, name: g.name, color: g.color || "#64748b" };
       groupMap.set(g.id, mapped);
       return mapped;
     });
-  report.habitGroups.total = asArray(data.habitGroups).length;
+  report.habitGroups.total = asArray<LegacyHabitGroup>(data.habitGroups).length;
   report.habitGroups.migrated = habitGroups.length;
 
   // --- Habit logs → check-in history + today's completed flag ---
-  const allLogs = asArray(data.habitLogs);
+  const allLogs = asArray<LegacyHabitLog>(data.habitLogs);
   report.habitCheckins.total = allLogs.length;
   const habitCheckins: Array<{ habitId: string; completedOn: string }> = [];
   const todayLogs = new Set<string>(); // habitId yang completed hari ini
@@ -537,7 +537,7 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
   report.fundSources.migrated = wallets.length;
 
   // --- Weekly budgets ---
-  const legacyWeekly = asArray(data.weeklyBudgets);
+  const legacyWeekly = asArray<LegacyWeeklyBudget>(data.weeklyBudgets);
   report.weeklyBudgets.total = legacyWeekly.length;
   const weeklyBudgets: WeeklyBudget[] = legacyWeekly
     .filter((w): w is LegacyWeeklyBudget => Boolean(w && typeof w.category === "string" && typeof w.amount === "number"))
@@ -551,7 +551,7 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
   const budgets: Budget[] = [];
 
   // --- Daily logs → checkins + wellness ---
-  const legacyDaily = asArray(data.dailyLogs);
+  const legacyDaily = asArray<LegacyDailyLog>(data.dailyLogs);
   report.dailyLogs.total = legacyDaily.length;
   const checkins: DailyCheckin[] = [];
   const wellness: WellnessEntry[] = [];
@@ -580,10 +580,10 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
   report.dailyLogs.toWellness = wellness.length;
 
   // --- Work routines ---
-  const legacyRoutines = asArray(data.workRoutines);
+  const legacyRoutines = asArray<LegacyWorkRoutine>(data.workRoutines);
   report.workRoutines.total = legacyRoutines.length;
   const routineLogMap = new Map<string, string>(); // routineId → lastDone (ISO date)
-  for (const log of asArray(data.workRoutineLogs)) {
+  for (const log of asArray<LegacyWorkRoutineLog>(data.workRoutineLogs)) {
     if (!log || typeof log.routineId !== "string") continue;
     if (!log.done) continue;
     const dayKey = typeof log.dayKey === "string" ? toISODate(log.dayKey) : "";
@@ -603,7 +603,7 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
   report.workRoutines.migrated = routines.length;
 
   // --- Work tasks ---
-  const legacyTasks = asArray(data.workTasks);
+  const legacyTasks = asArray<LegacyWorkTask>(data.workTasks);
   report.workTasks.total = legacyTasks.length;
   const tasks: WorkTask[] = legacyTasks
     .filter((t): t is LegacyWorkTask => Boolean(t && typeof t.id === "string" && typeof t.title === "string"))
@@ -625,7 +625,7 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
   report.workTasks.migrated = tasks.length;
 
   // --- Work notes ---
-  const legacyNotes = asArray(data.workNotes);
+  const legacyNotes = asArray<LegacyWorkNote>(data.workNotes);
   report.workNotes.total = legacyNotes.length;
   const notes: WorkNote[] = legacyNotes
     .filter((n): n is LegacyWorkNote => Boolean(n && typeof n.id === "string" && typeof n.content === "string"))
@@ -648,13 +648,13 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
   report.workNotes.migrated = notes.length;
 
   // --- Goals (V1 kosong di backup ini) ---
-  report.goals.total = asArray(data.goals).length;
+  report.goals.total = asArray<Record<string, unknown>>(data.goals).length;
   report.goals.migrated = 0;
 
   // --- Savings goals / recurring / category rules (V1 kosong) ---
-  report.savingsGoals.total = asArray(data.savingsGoals).length;
-  report.recurring.total = asArray(data.recurringTransactions).length;
-  report.categoryRules.total = asArray(data.transactionRules).length;
+  report.savingsGoals.total = asArray<Record<string, unknown>>(data.savingsGoals).length;
+  report.recurring.total = asArray<Record<string, unknown>>(data.recurringTransactions).length;
+  report.categoryRules.total = asArray<Record<string, unknown>>(data.transactionRules).length;
 
   // --- Settings ---
   const legacySettings = data.appSettings as LegacyAppSettings | undefined;
