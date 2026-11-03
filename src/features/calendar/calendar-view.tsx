@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock3, Heart, LoaderCircle } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock3, Heart, RefreshCw } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { EmptyState, IconAction, PageIntro } from "@/components/ui/primitives";
@@ -30,6 +30,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   const [checkins, setCheckins] = useState<CheckinRecord[]>([]);
   const [loadedMonthKey, setLoadedMonthKey] = useState<string | null>(null);
   const [historyErrorMonth, setHistoryErrorMonth] = useState<string | null>(null);
+  const [historyRetry, setHistoryRetry] = useState(0);
 
   const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
   useEffect(() => {
@@ -50,10 +51,11 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
         if (cancelled) return;
         setHistory([]);
         setCheckins([]);
+        setLoadedMonthKey(null);
         setHistoryErrorMonth(monthKey);
       });
     return () => { cancelled = true; };
-  }, [monthKey]);
+  }, [monthKey, historyRetry]);
 
   const firstDay = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
   const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
@@ -85,6 +87,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
 
   function moveMonth(offset: number) {
     const next = new Date(month.getFullYear(), month.getMonth() + offset, 1);
+    setHistoryErrorMonth(null);
     setMonth(next);
     const currentSelected = new Date(`${selectedDate}T00:00:00`);
     const maxDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
@@ -95,8 +98,14 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   }
   function goToToday() {
     const [year, monthNumber] = today.split("-").map(Number);
-    setMonth(new Date(year, monthNumber - 1, 1));
+    const todayMonth = new Date(year, monthNumber - 1, 1);
+    if (monthKey !== `${year}-${String(monthNumber).padStart(2, "0")}`) setHistoryErrorMonth(null);
+    setMonth(todayMonth);
     setSelectedDate(today);
+  }
+  function retryHistory() {
+    setHistoryErrorMonth(null);
+    setHistoryRetry((value) => value + 1);
   }
 
   const monthHeading = useMemo(() => monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1), [monthLabel]);
@@ -133,13 +142,14 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
             })}
           </div>
           <div className="calendar-legend"><span className="calendar-legend-dot today-dot" /> Hari ini <span className="calendar-legend-outline" /> Tanggal dipilih <span className="calendar-history-dot" /> Ada riwayat</div>
-          {loading && <div className="calendar-loading"><LoaderCircle size={14} className="spin" /> Memuat riwayat bulan ini…</div>}
+          {loading && <div className="calendar-loading" role="status" aria-live="polite"><span className="skeleton-shimmer calendar-loading-skeleton" aria-hidden="true" /> Memuat riwayat bulan ini…</div>}
+          {historyError && <div className="calendar-history-error" role="alert"><p>{historyError}</p><button type="button" className="insight-retry-button" onClick={retryHistory}><RefreshCw size={13} /> Coba lagi</button></div>}
         </section>
 
         <aside className="calendar-summary">
           <div className="calendar-summary-top"><span className="small-label">RINGKASAN TANGGAL</span><CalendarDays size={17} /></div>
           <div className="calendar-summary-date">{selectedLabel}</div>
-          {historyError ? <div className="calendar-history-note"><strong>Riwayat belum tersedia</strong><p>{historyError}</p></div> : (
+          {historyError ? <div className="calendar-history-note"><strong>Riwayat belum tersedia</strong><p>Catatan tanggal ini akan muncul kembali setelah koneksi pulih.</p></div> : (
             <>
               {selectedIsToday && <div className="calendar-summary-stats"><div><strong>{completedToday}</strong><span>Selesai</span></div><div><strong>{pendingToday}</strong><span>Tersisa</span></div></div>}
               {!selectedIsToday && <div className="calendar-summary-stats"><div><strong>{selectedRecords.length}</strong><span>Habit selesai</span></div><div><strong>{selectedCheckin ? "Ada" : "—"}</strong><span>Check-in</span></div></div>}
