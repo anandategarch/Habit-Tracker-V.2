@@ -68,8 +68,8 @@ Tabel dibuat otomatis secara idempoten ketika endpoint workspace pertama kali di
 ## Keamanan
 
 - `TURSO_DATABASE_URL` dan `TURSO_AUTH_TOKEN` hanya dibaca server-side.
-- Deployment Vercel dilindungi dengan Vercel Authentication pada cakupan **All Deployments** (Production, Preview, dan domain deployment yang terhubung).
-- Perlindungan Vercel membatasi akses aplikasi dan API ke akun yang memiliki akses team Vercel minimal Viewer. Gunakan akun Vercel yang sama pada desktop dan HP.
+- Akses aplikasi bergantung pada Vercel Deployment Protection; API tidak memiliki login internal atau isolasi akun. Pemeriksaan konfigurasi project `habittracker2` pada 3 November 2026 melaporkan SSO protection aktif untuk Preview, sedangkan perlindungan Production belum terkonfirmasi aktif.
+- Sebelum Production digunakan dengan data pribadi, verifikasi dan aktifkan Vercel Authentication pada cakupan **All Deployments**. Perlindungan platform tidak boleh diasumsikan aktif hanya berdasarkan dokumentasi.
 - API workspace tidak membuat sesi atau meminta password aplikasi; aksesnya bergantung pada Deployment Protection di lapisan platform Vercel.
 - Kredensial Turso tetap server-only. Jangan menonaktifkan Vercel Authentication atau mengekspos server pengembangan lokal ke internet.
 - Jangan mencetak environment variable atau token ke log.
