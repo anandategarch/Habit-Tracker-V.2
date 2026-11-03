@@ -39,6 +39,7 @@
     "node_modules",
     "examples/**",
     "skills/**",
-    "mini-services/**"
+    "mini-services/**",
+    "scripts/**"
   ]
 }
