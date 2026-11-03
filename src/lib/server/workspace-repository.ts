@@ -2,8 +2,7 @@ import "server-only";
 
 import type { Budget, Habit, Transaction } from "@/lib/types";
 import { isScheduledOn, normalizeSchedule } from "@/lib/habit-schedule";
-import { initialBudgets } from "@/lib/seed-data";
-import { db } from "@/lib/db";
+import { db, dbBatch, type BatchStatement } from "@/lib/db";
 
 export interface WorkspaceData {
   habits: Habit[];
@@ -27,23 +26,6 @@ function shiftDate(date: string, days: number): string {
 function asNumber(value: unknown): number {
   const number = Number(value);
   return Number.isFinite(number) ? number : 0;
-}
-
-// Seed awal anggaran (idempoten) — menggantikan INSERT OR IGNORE pada
-// initializer skema Turso versi asli.
-let seedPromise: Promise<void> | null = null;
-function ensureSeeded(): Promise<void> {
-  if (!seedPromise) {
-    seedPromise = (async () => {
-      for (const budget of initialBudgets) {
-        await db.$executeRaw`INSERT OR IGNORE INTO budgets (category, monthly_limit) VALUES (${budget.category}, ${budget.limit})`;
-      }
-    })().catch((error) => {
-      seedPromise = null;
-      throw error;
-    });
-  }
-  return seedPromise;
 }
 
 interface HabitRow {
@@ -90,8 +72,6 @@ interface BudgetRow {
 }
 
 export async function readWorkspace(today: string): Promise<WorkspaceData> {
-  await ensureSeeded();
-
   const [habitRows, transactionRows, budgetRows, metadataRows, habitMetadataRows, dailyProgressRows] = await Promise.all([
     db.$queryRaw<HabitRow[]>`
       SELECT
@@ -172,8 +152,6 @@ export async function readWorkspace(today: string): Promise<WorkspaceData> {
 }
 
 export async function writeWorkspace(input: WorkspaceInput, today: string): Promise<void> {
-  await ensureSeeded();
-
   // Schedules can arrive malformed (e.g. via backup import where only basic fields
   // are validated). Normalize once so stored metadata and every isScheduledOn call
   // below only ever see a valid daily/weekly/monthly shape.
@@ -182,12 +160,16 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
     schedule: normalizeSchedule(habit.schedule) ?? { kind: "daily" },
   }));
 
-  await db.$transaction(async (tx) => {
-    for (const [index, habit] of sanitizedHabits.entries()) {
-      await tx.$executeRaw`
-        INSERT INTO habits
+  // FASE 1 — kumpulkan SEMUA statement upsert lalu kirim via batch.
+  // Sebelumnya: ~650 query berurutan ke Turso remote ≈ 1 menit per save.
+  // Via batch (chunk 100 statement per round-trip) ≈ 1 detik.
+  const statements: BatchStatement[] = [];
+
+  for (const [index, habit] of sanitizedHabits.entries()) {
+    statements.push({
+      sql: `INSERT INTO habits
           (id, title, category, time, duration, icon, streak, sort_order, updated_at)
-          VALUES (${habit.id}, ${habit.title}, ${habit.category}, ${habit.time}, ${habit.duration}, ${habit.icon}, ${habit.streak}, ${index}, CURRENT_TIMESTAMP)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
           ON CONFLICT(id) DO UPDATE SET
             title = excluded.title,
             category = excluded.category,
@@ -196,86 +178,114 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
             icon = excluded.icon,
             streak = excluded.streak,
             sort_order = excluded.sort_order,
-            updated_at = CURRENT_TIMESTAMP`;
-      const habitExtra = {
-        kind: habit.kind ?? "normal", targetAmount: habit.targetAmount ?? null,
-        currentAmount: habit.currentAmount ?? 0, unit: habit.unit ?? "",
-        priority: habit.priority ?? "medium", difficulty: habit.difficulty ?? "easy",
-        groupName: habit.groupName ?? "", timeSpentMinutes: habit.timeSpentMinutes ?? 0,
-        schedule: habit.schedule ?? { kind: "daily" },
-      };
-      const habitPayload = JSON.stringify(habitExtra);
-      await tx.$executeRaw`
-        INSERT INTO habit_metadata (habit_id, payload, updated_at) VALUES (${habit.id}, ${habitPayload}, CURRENT_TIMESTAMP)
-          ON CONFLICT(habit_id) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`;
-      await tx.$executeRaw`
-        INSERT INTO habit_daily_progress (habit_id, activity_date, current_amount, time_spent_minutes, updated_at)
-          VALUES (${habit.id}, ${today}, ${habit.currentAmount ?? 0}, ${habit.timeSpentMinutes ?? 0}, CURRENT_TIMESTAMP)
+            updated_at = CURRENT_TIMESTAMP`,
+      args: [habit.id, habit.title, habit.category, habit.time, habit.duration, habit.icon, habit.streak, index],
+    });
+    const habitExtra = {
+      kind: habit.kind ?? "normal", targetAmount: habit.targetAmount ?? null,
+      currentAmount: habit.currentAmount ?? 0, unit: habit.unit ?? "",
+      priority: habit.priority ?? "medium", difficulty: habit.difficulty ?? "easy",
+      groupName: habit.groupName ?? "", timeSpentMinutes: habit.timeSpentMinutes ?? 0,
+      schedule: habit.schedule ?? { kind: "daily" },
+    };
+    statements.push({
+      sql: `INSERT INTO habit_metadata (habit_id, payload, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(habit_id) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`,
+      args: [habit.id, JSON.stringify(habitExtra)],
+    });
+    statements.push({
+      sql: `INSERT INTO habit_daily_progress (habit_id, activity_date, current_amount, time_spent_minutes, updated_at)
+          VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
           ON CONFLICT(habit_id, activity_date) DO UPDATE SET
             current_amount = excluded.current_amount,
             time_spent_minutes = excluded.time_spent_minutes,
-            updated_at = CURRENT_TIMESTAMP`;
-    }
+            updated_at = CURRENT_TIMESTAMP`,
+      args: [habit.id, today, habit.currentAmount ?? 0, habit.timeSpentMinutes ?? 0],
+    });
+  }
 
-    for (const item of input.transactions) {
-      await tx.$executeRaw`
-        INSERT INTO transactions
+  for (const item of input.transactions) {
+    statements.push({
+      sql: `INSERT INTO transactions
           (id, title, category, type, amount, transaction_date, updated_at)
-          VALUES (${item.id}, ${item.title}, ${item.category}, ${item.type}, ${item.amount}, ${item.date}, CURRENT_TIMESTAMP)
+          VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
           ON CONFLICT(id) DO UPDATE SET
             title = excluded.title,
             category = excluded.category,
             type = excluded.type,
             amount = excluded.amount,
             transaction_date = excluded.transaction_date,
-            updated_at = CURRENT_TIMESTAMP`;
-      const tagsJson = JSON.stringify(item.tags ?? []);
-      await tx.$executeRaw`
-        INSERT INTO transaction_metadata (transaction_id, wallet_id, tags_json, split_group_id, updated_at)
-          VALUES (${item.id}, ${item.walletId ?? null}, ${tagsJson}, ${item.splitGroupId ?? null}, CURRENT_TIMESTAMP)
+            updated_at = CURRENT_TIMESTAMP`,
+      args: [item.id, item.title, item.category, item.type, item.amount, item.date],
+    });
+    statements.push({
+      sql: `INSERT INTO transaction_metadata (transaction_id, wallet_id, tags_json, split_group_id, updated_at)
+          VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
           ON CONFLICT(transaction_id) DO UPDATE SET wallet_id = excluded.wallet_id,
-            tags_json = excluded.tags_json, split_group_id = excluded.split_group_id, updated_at = CURRENT_TIMESTAMP`;
-    }
+            tags_json = excluded.tags_json, split_group_id = excluded.split_group_id, updated_at = CURRENT_TIMESTAMP`,
+      args: [item.id, item.walletId ?? null, JSON.stringify(item.tags ?? []), item.splitGroupId ?? null],
+    });
+  }
 
-    for (const budget of input.budgets) {
-      await tx.$executeRaw`
-        INSERT INTO budgets (category, monthly_limit, updated_at)
-          VALUES (${budget.category}, ${budget.limit}, CURRENT_TIMESTAMP)
+  for (const budget of input.budgets) {
+    statements.push({
+      sql: `INSERT INTO budgets (category, monthly_limit, updated_at)
+          VALUES (?, ?, CURRENT_TIMESTAMP)
           ON CONFLICT(category) DO UPDATE SET
             monthly_limit = excluded.monthly_limit,
-            updated_at = CURRENT_TIMESTAMP`;
-    }
+            updated_at = CURRENT_TIMESTAMP`,
+      args: [budget.category, budget.limit],
+    });
+  }
 
-    await tx.$executeRaw`DELETE FROM habit_checkins WHERE completed_on = ${today}`;
+  statements.push({ sql: "DELETE FROM habit_checkins WHERE completed_on = ?", args: [today] });
 
-    for (const habit of sanitizedHabits) {
-      if (!habit.completed) continue;
-      await tx.$executeRaw`INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (${habit.id}, ${today})`;
-    }
+  for (const habit of sanitizedHabits) {
+    if (!habit.completed) continue;
+    statements.push({
+      sql: "INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (?, ?)",
+      args: [habit.id, today],
+    });
+  }
 
-    // Recompute consecutive completed days from stored check-ins.
-    // The cursor strictly decreases each iteration and the loop is bounded by a
-    // hard date floor, so a malformed schedule can never hang this transaction.
-    for (const habit of sanitizedHabits) {
-      const rows = await tx.$queryRaw<Array<{ completed_on: string }>>`
-        SELECT completed_on FROM habit_checkins
-        WHERE habit_id = ${habit.id} AND completed_on >= ${shiftDate(today, -364)} AND completed_on <= ${today}
-        ORDER BY completed_on DESC`;
-      if (rows.length === 0) continue;
-      const dates = new Set(rows.map((row) => String(row.completed_on)));
-      const earliest = shiftDate(today, -366);
-      let cursor = dates.has(today) ? today : shiftDate(today, -1);
-      let streak = 0;
-      while (cursor >= earliest) {
-        if (!isScheduledOn(habit.schedule, cursor)) {
-          cursor = shiftDate(cursor, -1);
-          continue;
-        }
-        if (!dates.has(cursor)) break;
-        streak += 1;
+  await dbBatch(statements);
+
+  // FASE 2 — hitung ulang streak dari check-in tersimpan. Semua SELECT dikirim
+  // dalam satu batch read, streak dihitung lokal, lalu semua UPDATE dikirim
+  // dalam satu batch write. The cursor strictly decreases each iteration and
+  // the loop is bounded by a hard date floor, so a malformed schedule can
+  // never hang this computation.
+  if (sanitizedHabits.length === 0) return;
+
+  const selectResults = await dbBatch(sanitizedHabits.map((habit) => ({
+    sql: `SELECT completed_on FROM habit_checkins
+        WHERE habit_id = ? AND completed_on >= ? AND completed_on <= ?
+        ORDER BY completed_on DESC`,
+    args: [habit.id, shiftDate(today, -364), today],
+  })));
+
+  const streakUpdates: BatchStatement[] = [];
+  for (const [index, habit] of sanitizedHabits.entries()) {
+    const rows = selectResults[index] ?? [];
+    if (rows.length === 0) continue;
+    const dates = new Set(rows.map((row) => String((row as { completed_on: unknown }).completed_on)));
+    const earliest = shiftDate(today, -366);
+    let cursor = dates.has(today) ? today : shiftDate(today, -1);
+    let streak = 0;
+    while (cursor >= earliest) {
+      if (!isScheduledOn(habit.schedule, cursor)) {
         cursor = shiftDate(cursor, -1);
+        continue;
       }
-      await tx.$executeRaw`UPDATE habits SET streak = ${Math.min(streak, 365)}, updated_at = CURRENT_TIMESTAMP WHERE id = ${habit.id}`;
+      if (!dates.has(cursor)) break;
+      streak += 1;
+      cursor = shiftDate(cursor, -1);
     }
-  });
+    streakUpdates.push({
+      sql: "UPDATE habits SET streak = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      args: [Math.min(streak, 365), habit.id],
+    });
+  }
+
+  if (streakUpdates.length > 0) await dbBatch(streakUpdates);
 }

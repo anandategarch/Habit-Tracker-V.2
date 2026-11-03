@@ -198,3 +198,29 @@ export const db = new Proxy({} as DbApi, {
 export function getLibsql(): Client {
   return getClient()
 }
+
+// ---------------------------------------------------------------------------
+// Batch helper — kirim banyak statement dalam SATU round-trip transaksional.
+// Penting untuk performa Turso remote: round-trip per query ~50-150ms, jadi
+// 650 query berurutan = ~1 menit; lewat batch (di-chunk) cukup ~1 detik.
+// ---------------------------------------------------------------------------
+const BATCH_CHUNK_SIZE = 100
+
+export interface BatchStatement { sql: string; args: SqlValue[] }
+
+export async function dbBatch(statements: BatchStatement[]): Promise<Array<LibsqlRow[]>> {
+  if (statements.length === 0) return []
+  const client = getClient()
+  const results: Array<LibsqlRow[]> = []
+  for (let i = 0; i < statements.length; i += BATCH_CHUNK_SIZE) {
+    const chunk = statements.slice(i, i + BATCH_CHUNK_SIZE)
+    const chunkResults = await client.batch(
+      chunk.map((statement) => ({ sql: statement.sql, args: statement.args })),
+      "write",
+    )
+    for (const resultSet of chunkResults) {
+      results.push(((resultSet as { rows?: unknown })?.rows ?? []) as unknown as LibsqlRow[])
+    }
+  }
+  return results
+}

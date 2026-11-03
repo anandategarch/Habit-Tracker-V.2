@@ -15,50 +15,8 @@ function readLocal(): WorkspaceModules {
   }
 }
 
-function hasData(value: WorkspaceModules): boolean {
-  return Object.entries(value).some(([key, item]) => key === "finance"
-    ? Object.values(item as Record<string, unknown>).some((part) => Array.isArray(part) && part.length > 0)
-    : key === "settings"
-      ? Boolean((item as WorkspaceModules["settings"]).vacationMode || (item as WorkspaceModules["settings"]).theme !== "system")
-      : Array.isArray(item) && item.length > 0);
-}
-
 function persistLocal(value: WorkspaceModules): void {
   try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value)); } catch { /* memory state remains usable */ }
-}
-
-function mergeRecords<T>(local: T[], remote: T[], keyOf: (item: T) => string): T[] {
-  const merged = new Map<string, T>();
-  for (const item of local) merged.set(keyOf(item), item);
-  for (const item of remote) merged.set(keyOf(item), item);
-  return [...merged.values()];
-}
-
-function mergeModuleData(local: WorkspaceModules, remote: WorkspaceModules): WorkspaceModules {
-  return normalizeModules({
-    goals: mergeRecords(local.goals, remote.goals, (item) => item.id),
-    checkins: mergeRecords(local.checkins, remote.checkins, (item) => item.date),
-    tasks: mergeRecords(local.tasks, remote.tasks, (item) => item.id),
-    notes: mergeRecords(local.notes, remote.notes, (item) => item.id),
-    routines: mergeRecords(local.routines, remote.routines, (item) => item.id),
-    wellness: mergeRecords(local.wellness, remote.wellness, (item) => item.date),
-    workouts: mergeRecords(local.workouts, remote.workouts, (item) => item.id),
-    programs: mergeRecords(local.programs, remote.programs, (item) => item.id),
-    progressPhotos: mergeRecords(local.progressPhotos, remote.progressPhotos, (item) => item.id).slice(-5),
-    habitGroups: mergeRecords(local.habitGroups, remote.habitGroups, (item) => item.id),
-    settings: {
-      vacationMode: remote.settings.vacationMode || local.settings.vacationMode,
-      theme: remote.settings.theme !== "system" ? remote.settings.theme : local.settings.theme,
-    },
-    finance: {
-      wallets: mergeRecords(local.finance.wallets, remote.finance.wallets, (item) => item.id),
-      transfers: mergeRecords(local.finance.transfers, remote.finance.transfers, (item) => item.id),
-      recurring: mergeRecords(local.finance.recurring, remote.finance.recurring, (item) => item.id),
-      savingsGoals: mergeRecords(local.finance.savingsGoals, remote.finance.savingsGoals, (item) => item.id),
-      categoryRules: mergeRecords(local.finance.categoryRules, remote.finance.categoryRules, (item) => item.id),
-      weeklyBudgets: mergeRecords(local.finance.weeklyBudgets, remote.finance.weeklyBudgets, (item) => item.category),
-    },
-  });
 }
 
 export function useModules() {
@@ -68,7 +26,6 @@ export function useModules() {
 
   useEffect(() => {
     let cancelled = false;
-    const local = readLocal();
 
     void (async () => {
       try {
@@ -76,22 +33,16 @@ export function useModules() {
         if (!response.ok) throw new Error("Remote modules unavailable");
         const payload = await response.json() as { modules?: unknown };
         if (cancelled) return;
+        // Server (Turso) adalah sumber kebenaran tunggal — data remote SELALU
+        // menimpa localStorage. Dulu: merge localStorage (berisi data demo
+        // lama) + remote lalu push balik ke server — itu mencemari database.
+        // Push ke server HANYA terjadi lewat updateModule (aksi user eksplisit).
         const remote = normalizeModules(payload.modules);
-        const merged = mergeModuleData(local, remote);
-        setModules(merged);
-        persistLocal(merged);
+        setModules(remote);
+        persistLocal(remote);
         setRemoteReady(true);
-        if (hasData(merged) && (!hasData(remote) || JSON.stringify(merged) !== JSON.stringify(remote))) {
-          writeQueue = writeQueue.then(async () => {
-            await fetch("/api/modules", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ modules: merged }),
-            });
-          }).catch(() => undefined);
-        }
       } catch {
-        if (!cancelled) setModules(local);
+        if (!cancelled) setModules(readLocal());
         setRemoteReady(false);
       } finally {
         if (!cancelled) setReady(true);

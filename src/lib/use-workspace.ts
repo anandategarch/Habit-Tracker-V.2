@@ -3,7 +3,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import type { Budget, Habit, Transaction } from "@/lib/types";
 import { todayISO } from "@/lib/format";
-import { initialBudgets, initialHabits, getInitialTransactions } from "@/lib/seed-data";
 
 const STORAGE_KEY = "rutina.v2.workspace";
 const CHANGE_EVENT = "rutina:workspace-change";
@@ -21,17 +20,14 @@ interface RemoteWorkspace extends WorkspaceSnapshot {
 type Update<T> = T | ((current: T) => T);
 type SyncStatus = "local" | "syncing" | "synced" | "error";
 
-// Dibangun ulang saat dipanggil agar tanggal demo (todayISO) tidak membeku
-// pada saat proses pertama kali memuat modul.
-function seedSnapshot(): WorkspaceSnapshot {
-  return {
-    habits: initialHabits,
-    transactions: getInitialTransactions(),
-    budgets: initialBudgets,
-  };
+// Snapshot kosong — TANPA data demo. Server (Turso) adalah sumber kebenaran
+// tunggal. Sebelumnya snapshot demo + push localStorage ke server kosong
+// mencemari database dengan data yang bukan milik user.
+function emptySnapshot(): WorkspaceSnapshot {
+  return { habits: [], transactions: [], budgets: [] };
 }
 
-const SERVER_SNAPSHOT = JSON.stringify(seedSnapshot());
+const SERVER_SNAPSHOT = JSON.stringify(emptySnapshot());
 let memorySnapshot = SERVER_SNAPSHOT;
 let syncStatus: SyncStatus = "local";
 let remoteReady = false;
@@ -45,7 +41,7 @@ if (typeof window !== "undefined") {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored) memorySnapshot = JSON.stringify(normalizeSnapshot(stored));
   } catch {
-    // Keep the in-memory demo snapshot when browser storage is unavailable.
+    // Biarkan snapshot kosong saat browser storage tidak tersedia.
   }
 }
 
@@ -53,12 +49,12 @@ function normalizeSnapshot(raw: string): WorkspaceSnapshot {
   try {
     const parsed = JSON.parse(raw) as Partial<WorkspaceSnapshot>;
     return {
-      habits: Array.isArray(parsed.habits) ? parsed.habits : initialHabits,
-      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : getInitialTransactions(),
-      budgets: Array.isArray(parsed.budgets) ? parsed.budgets : initialBudgets,
+      habits: Array.isArray(parsed.habits) ? parsed.habits : [],
+      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
+      budgets: Array.isArray(parsed.budgets) ? parsed.budgets : [],
     };
   } catch {
-    return seedSnapshot();
+    return emptySnapshot();
   }
 }
 
@@ -83,17 +79,6 @@ function emitChange(): void {
 function setSyncStatus(status: SyncStatus): void {
   syncStatus = status;
   emitChange();
-}
-
-function readPersistedLocalSnapshot(): WorkspaceSnapshot | null {
-  if (typeof window === "undefined") return null;
-
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    return stored ? normalizeSnapshot(stored) : null;
-  } catch {
-    return null;
-  }
 }
 
 function publishSnapshot(snapshot: WorkspaceSnapshot): void {
@@ -157,32 +142,11 @@ export async function refreshWorkspace(): Promise<boolean> {
       }
 
       const remote = (await response.json()) as RemoteWorkspace;
-      const localSnapshot = readPersistedLocalSnapshot();
 
-      // First connection: preserve the user's existing browser data in the empty database.
-      if (
-        remote.isEmpty &&
-        localSnapshot &&
-        (localSnapshot.habits.length > 0 || localSnapshot.transactions.length > 0)
-      ) {
-        const migrationResponse = await fetch("/api/workspace", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...localSnapshot, today: todayISO() }),
-        });
-
-        if (!migrationResponse.ok) {
-          remoteReady = false;
-          setSyncStatus("error");
-          return false;
-        }
-
-        remoteReady = true;
-        publishSnapshot(localSnapshot);
-        setSyncStatus("synced");
-        return true;
-      }
-
+      // Server (Turso) adalah sumber kebenaran — data remote SELALU menimpa
+      // snapshot lokal. Dulu ada blok "first connection" yang push localStorage
+      // ke server kosong; itu mencemari database dengan data demo lama dan
+      // sudah dihapus dengan sengaja.
       remoteReady = true;
       publishSnapshot({
         habits: remote.habits,

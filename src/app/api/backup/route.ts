@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, dbBatch, type BatchStatement } from "@/lib/db";
 import { readWorkspace, writeWorkspace } from "@/lib/server/workspace-repository";
 import { normalizeModules, EMPTY_MODULES, type WorkspaceModules } from "@/lib/module-types";
 import { todayISO } from "@/lib/format";
@@ -136,15 +136,13 @@ export async function POST(request: Request) {
     const mergedModules = mergeModules(currentModules, incomingModules);
 
     await writeWorkspace(mergedWorkspace, todayISO());
-    await db.$transaction(async (tx) => {
-      for (const [key, value] of Object.entries(mergedModules)) {
-        const payload = JSON.stringify(value);
-        await tx.$executeRaw`
-          INSERT INTO workspace_modules (module_key, payload, updated_at)
-            VALUES (${key}, ${payload}, CURRENT_TIMESTAMP)
-            ON CONFLICT(module_key) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`;
-      }
-    });
+    const moduleStatements: BatchStatement[] = Object.entries(mergedModules).map(([key, value]) => ({
+      sql: `INSERT INTO workspace_modules (module_key, payload, updated_at)
+          VALUES (?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(module_key) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`,
+      args: [key, JSON.stringify(value)],
+    }));
+    if (moduleStatements.length > 0) await dbBatch(moduleStatements);
 
     return NextResponse.json({
       ok: true,

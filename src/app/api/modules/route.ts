@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db, dbBatch, type BatchStatement } from "@/lib/db";
 import { EMPTY_MODULES, normalizeModules, type WorkspaceModuleKey } from "@/lib/module-types";
 
 export const runtime = "nodejs";
@@ -52,16 +52,14 @@ export async function PUT(request: Request) {
   }
 
   try {
-    await db.$transaction(async (tx) => {
-      for (const [key, value] of entries) {
-        const payload = JSON.stringify(value);
-        await tx.$executeRaw`
-          INSERT INTO workspace_modules (module_key, payload, updated_at)
-            VALUES (${key}, ${payload}, CURRENT_TIMESTAMP)
+    const statements: BatchStatement[] = entries.map(([key, value]) => ({
+      sql: `INSERT INTO workspace_modules (module_key, payload, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(module_key) DO UPDATE SET
-              payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`;
-      }
-    });
+              payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`,
+      args: [key, JSON.stringify(value)],
+    }));
+    if (statements.length > 0) await dbBatch(statements);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Rutina module write failed:", error);

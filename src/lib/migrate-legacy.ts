@@ -1,6 +1,6 @@
 import "server-only";
 
-import { db } from "@/lib/db";
+import { db, dbBatch, type BatchStatement } from "@/lib/db";
 import { readWorkspace, writeWorkspace } from "@/lib/server/workspace-repository";
 import type { Budget, Habit, Transaction } from "@/lib/types";
 import {
@@ -544,10 +544,10 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
     .map((w) => ({ category: mapTransactionCategory(w.category), limit: w.amount }));
   report.weeklyBudgets.migrated = weeklyBudgets.length;
 
-  // V2 juga punya `budgets` (workspace) untuk limit bulanan. Karena V1 hanya punya
-  // weeklyBudgets dengan field `month`, kita tidak memigrasikannya ke workspace.budgets
-  // (kategori V1 tidak selalu cocok dengan enum V2). Workspace.budgets tetap pakai
-  // initialBudgets dari seed.
+  // V2 juga punya `budgets` (workspace) untuk limit bulanan. V1 hanya punya
+  // weeklyBudgets (dengan field `month`) yang dipetakan ke finance.weeklyBudgets.
+  // Backup V1 tidak punya data budget bulanan, jadi workspace.budgets dibiarkan
+  // kosong — user bisa menambahkannya sendiri lewat UI.
   const budgets: Budget[] = [];
 
   // --- Daily logs → checkins + wellness ---
@@ -769,12 +769,14 @@ export async function applyLegacyMigration(body: unknown, todayISO: string): Pro
   // 1. Insert historical habit check-ins SEBELUM writeWorkspace.
   //    writeWorkspace akan menghapus check-in HARI INI lalu menyisipkan ulang
   //    berdasarkan flag `completed` pada habit — check-in tanggal lain tidak
-  //    tersentuh, jadi riwayat streak tetap utuh.
-  await db.$transaction(async (tx) => {
-    for (const checkin of habitCheckins) {
-      await tx.$executeRaw`INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (${checkin.habitId}, ${checkin.completedOn})`;
-    }
-  });
+  //    tersentuh, jadi riwayat streak tetap utuh. Dikirim via batch (satu
+  //    round-trip) supaya migrasi ke Turso remote cepat.
+  if (habitCheckins.length > 0) {
+    await dbBatch(habitCheckins.map((checkin) => ({
+      sql: "INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (?, ?)",
+      args: [checkin.habitId, checkin.completedOn],
+    })));
+  }
 
   // 2. Gabungkan workspace (habits/transactions/budgets) dengan data yang ada.
   const currentWorkspace = await readWorkspace(todayISO);
@@ -786,17 +788,16 @@ export async function applyLegacyMigration(body: unknown, todayISO: string): Pro
   await writeWorkspace(mergedWorkspace, todayISO);
 
   // 3. Gabungkan & simpan modul (goals/checkins/tasks/notes/routines/wellness/finance).
+  //    Semua modul ditulis dalam satu batch (satu round-trip ke Turso).
   const currentModules = await readModules();
   const mergedModules = mergeModules(currentModules, incomingModules);
-  await db.$transaction(async (tx) => {
-    for (const [key, value] of Object.entries(mergedModules)) {
-      const payload = JSON.stringify(value);
-      await tx.$executeRaw`
-        INSERT INTO workspace_modules (module_key, payload, updated_at)
-          VALUES (${key}, ${payload}, CURRENT_TIMESTAMP)
-          ON CONFLICT(module_key) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`;
-    }
-  });
+  const moduleStatements: BatchStatement[] = Object.entries(mergedModules).map(([key, value]) => ({
+    sql: `INSERT INTO workspace_modules (module_key, payload, updated_at)
+          VALUES (?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(module_key) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`,
+    args: [key, JSON.stringify(value)],
+  }));
+  if (moduleStatements.length > 0) await dbBatch(moduleStatements);
 
   return {
     ok: true,
