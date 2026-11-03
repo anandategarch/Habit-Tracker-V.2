@@ -185,11 +185,20 @@ Arah produk visual berikutnya adalah **Playful Premium**: ilustrasi botanical ya
 
 Halaman Keuangan memakai komposisi yang lebih berorientasi pada pembacaan angka, sambil mempertahankan material dan warna Botanical Rutina.
 
-- Ringkasan utama menempatkan **arus kas bersih** sebagai angka paling dominan, dengan pemasukan dan pengeluaran sebagai konteks pendukung. Semua angka menggunakan transaksi bulan berjalan dan harus tetap sesuai helper perhitungan yang sudah ada.
-- Grafik arus uang membandingkan pemasukan dan pengeluaran per hari untuk tujuh hari terakhir. Grafik menggunakan seluruh riwayat transaksi agar minggu yang melewati pergantian bulan tidak kehilangan data hari sebelumnya.
-- Distribusi kategori menghitung pengeluaran aktual bulan berjalan. Kategori ditampilkan berdasarkan nilai terbesar; kategori tambahan digabung sebagai "Kategori lainnya" agar visual tetap ringkas.
+- Ringkasan utama menempatkan **arus kas bersih** sebagai angka paling dominan, dengan pemasukan dan pengeluaran sebagai konteks pendukung. Semua angka mengikuti transaksi pada periode laporan yang dipilih dan harus tetap sesuai helper perhitungan yang sudah ada.
+- Grafik arus uang membandingkan pemasukan dan pengeluaran per hari untuk tujuh hari yang berakhir pada tanggal akhir periode terpilih. Grafik menggunakan seluruh riwayat transaksi agar rentang yang melewati pergantian bulan tidak kehilangan data hari sebelumnya.
+- Distribusi kategori menghitung pengeluaran aktual pada periode laporan yang dipilih. Kategori ditampilkan berdasarkan nilai terbesar; kategori tambahan digabung sebagai "Kategori lainnya" agar visual tetap ringkas.
 - Kontrol anggaran dipisahkan dari distribusi pengeluaran. Setiap anggaran menampilkan realisasi, batas, persentase, sisa atau kelebihan, serta state ketika batas belum ditentukan.
 - Daftar transaksi menampilkan lima transaksi terbaru secara default, menyediakan filter jenis transaksi, dan dapat diperluas tanpa menghapus atau membatasi data sumber.
 - Empty state harus tetap membedakan belum ada transaksi, belum ada kategori pengeluaran, dan belum ada anggaran.
 - Tema gelap, fokus keyboard, reduced motion, dan layout mobile harus tetap berfungsi. Grafik dan progress memiliki label aksesibel.
 - Redesign hanya mengubah presentasi. Jangan mengubah schema transaksi/anggaran, formula arus kas, aturan kategori, penyimpanan, sinkronisasi, maupun API.
+
+
+### Periode laporan dan batas data historis
+
+- Pengguna dapat memilih bulan laporan dari bulan yang sudah berjalan atau bulan sebelumnya. Periode ini mengubah ringkasan arus kas, distribusi kategori, anggaran yang dibandingkan, dan daftar transaksi.
+- Grafik harian mengikuti tujuh hari sampai akhir periode yang dipilih. Untuk bulan berjalan, ujung rentang adalah tanggal hari ini; untuk bulan lampau, ujung rentang adalah hari terakhir bulan tersebut.
+- Grafik harus menyediakan nilai pemasukan dan pengeluaran per hari yang dapat dibaca, bukan hanya tinggi batang dan label tanggal.
+- Data `Budget` saat ini hanya menyimpan batas kategori yang berlaku sekarang, bukan histori perubahan batas per bulan. Saat melihat bulan lampau, UI wajib menyatakan bahwa perbandingan memakai batas anggaran yang dikonfigurasi saat ini; jangan menyajikannya sebagai rekaman batas historis.
+- Pemilih periode tidak boleh mengubah transaksi, menghapus histori, mengubah formula arus kas, ataupun membuat angka aset/saldo/prediksi yang tidak tersedia pada model data.

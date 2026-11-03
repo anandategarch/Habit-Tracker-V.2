@@ -7,6 +7,8 @@ import {
   ArrowUpRight,
   CalendarDays,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   CircleDollarSign,
   Coffee,
@@ -40,15 +42,43 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const [filter, setFilter] = useState<TransactionFilter>("all");
   const [showAllTransactions, setShowAllTransactions] = useState(false);
   const todayKey = todayISO();
-  const monthKey = todayKey.slice(0, 7);
+  const currentMonthKey = todayKey.slice(0, 7);
+  const [monthKey, setMonthKey] = useState(currentMonthKey);
   const monthTransactions = useMemo(
     () => transactions.filter((transaction) => transaction.date.slice(0, 7) === monthKey),
     [transactions, monthKey],
   );
-  const net = income - expense;
+  const periodSummary = useMemo(() => ({
+    income: monthTransactions
+      .filter((transaction) => transaction.type === "income")
+      .reduce((total, transaction) => total + transaction.amount, 0),
+    expense: monthTransactions
+      .filter((transaction) => transaction.type === "expense")
+      .reduce((total, transaction) => total + transaction.amount, 0),
+  }), [monthTransactions]);
+  const displayedIncome = monthKey === currentMonthKey ? income : periodSummary.income;
+  const displayedExpense = monthKey === currentMonthKey ? expense : periodSummary.expense;
+  const net = displayedIncome - displayedExpense;
 
-  // Daily totals are computed from the complete transaction history so the
-  // rolling seven-day chart remains correct across a month boundary.
+  const periodEndKey = useMemo(() => {
+    if (monthKey === currentMonthKey) return todayKey;
+    const [year, month] = monthKey.split("-").map(Number);
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    return `${monthKey}-${String(lastDay).padStart(2, "0")}`;
+  }, [monthKey, currentMonthKey, todayKey]);
+
+  function changeMonth(offset: number) {
+    const [year, month] = monthKey.split("-").map(Number);
+    const next = new Date(Date.UTC(year, month - 1 + offset, 1));
+    const nextKey = `${next.getUTCFullYear()}-${String(next.getUTCMonth() + 1).padStart(2, "0")}`;
+    if (nextKey <= currentMonthKey) {
+      setMonthKey(nextKey);
+      setShowAllTransactions(false);
+    }
+  }
+
+  // Daily totals use the complete transaction history; the seven-day window
+  // is then anchored to the end of the selected report period.
   const dailyTotals = useMemo(() => {
     const totals = new Map<string, { income: number; expense: number }>();
     transactions.forEach((transaction) => {
@@ -60,24 +90,26 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   }, [transactions]);
 
   const cashflowWeek = useMemo(() => {
-    const todayParts = todayKey.split("-").map(Number);
-    const todayUtc = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2]));
+    const endParts = periodEndKey.split("-").map(Number);
+    const periodEndUtc = new Date(Date.UTC(endParts[0], endParts[1] - 1, endParts[2]));
+    const dayFormatter = new Intl.DateTimeFormat("id-ID", {
+      weekday: "short",
+      day: "numeric",
+      timeZone: "Asia/Jakarta",
+    });
     return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(todayUtc);
-      date.setUTCDate(todayUtc.getUTCDate() - (6 - index));
+      const date = new Date(periodEndUtc);
+      date.setUTCDate(periodEndUtc.getUTCDate() - (6 - index));
       const iso = date.toISOString().slice(0, 10);
       const totals = dailyTotals.get(iso) ?? { income: 0, expense: 0 };
       return {
         iso,
         income: totals.income,
         expense: totals.expense,
-        label: new Intl.DateTimeFormat("id-ID", {
-          weekday: "short",
-          timeZone: "Asia/Jakarta",
-        }).format(new Date(iso + "T12:00:00+07:00")),
+        label: dayFormatter.format(new Date(iso + "T12:00:00+07:00")),
       };
     });
-  }, [dailyTotals, todayKey]);
+  }, [dailyTotals, periodEndKey]);
 
   const weeklyScale = Math.max(1, ...cashflowWeek.flatMap((day) => [day.income, day.expense]));
   const weeklyIncome = cashflowWeek.reduce((sum, day) => sum + day.income, 0);
@@ -124,10 +156,16 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     month: "long",
     year: "numeric",
     timeZone: "Asia/Jakarta",
-  }).format(new Date(todayKey + "T12:00:00+07:00"));
+  }).format(new Date(monthKey + "-01T12:00:00+07:00"));
+  const periodEndLabel = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(periodEndKey + "T12:00:00+07:00"));
   const cashflowMessage = net >= 0
-    ? "Pemasukan bulan ini masih lebih besar dari pengeluaran."
-    : "Pengeluaran bulan ini lebih besar dari pemasukan.";
+    ? "Pemasukan pada periode ini masih lebih besar dari pengeluaran."
+    : "Pengeluaran pada periode ini lebih besar dari pemasukan.";
 
   return (
     <>
@@ -138,7 +176,61 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
         action={<PrimaryButton onClick={onAdd}><Plus size={15} /> Catat transaksi</PrimaryButton>}
       />
 
-      <section className="finance-overview" aria-label="Ringkasan keuangan bulan ini">
+      <div className="finance-period-control">
+        <div className="finance-period-copy">
+          <span className="finance-period-label">PERIODE LAPORAN</span>
+          <strong aria-live="polite">{monthLabel}</strong>
+        </div>
+        <div className="finance-period-actions">
+          <button
+            type="button"
+            className="finance-month-step"
+            aria-label="Lihat bulan sebelumnya"
+            onClick={() => changeMonth(-1)}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <label className="finance-month-input-wrap">
+            <CalendarDays size={14} aria-hidden="true" />
+            <span className="sr-only">Pilih bulan laporan</span>
+            <input
+              className="finance-month-input"
+              type="month"
+              value={monthKey}
+              max={currentMonthKey}
+              aria-label="Pilih bulan laporan"
+              onChange={(event) => {
+                if (!event.target.value || event.target.value > currentMonthKey) return;
+                setMonthKey(event.target.value);
+                setShowAllTransactions(false);
+              }}
+            />
+          </label>
+          <button
+            type="button"
+            className="finance-month-step"
+            aria-label="Lihat bulan berikutnya"
+            onClick={() => changeMonth(1)}
+            disabled={monthKey >= currentMonthKey}
+          >
+            <ChevronRight size={16} />
+          </button>
+          {monthKey !== currentMonthKey && (
+            <button
+              type="button"
+              className="finance-current-month"
+              onClick={() => {
+                setMonthKey(currentMonthKey);
+                setShowAllTransactions(false);
+              }}
+            >
+              Bulan ini
+            </button>
+          )}
+        </div>
+      </div>
+
+      <section className="finance-overview" aria-label={`Ringkasan keuangan ${monthLabel}`}>
         <div className="card finance-balance">
           <span className="small-label">ARUS KAS BERSIH</span>
           <div className="metric-value">{formatRupiah(net)}</div>
@@ -150,16 +242,16 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             <span className="finance-metric-icon income"><ArrowDownLeft size={15} /></span>
             PEMASUKAN
           </span>
-          <div className="metric-value metric-positive">{formatCompactRupiah(income)}</div>
-          <span className="stat-foot">Total uang masuk bulan ini</span>
+          <div className="metric-value metric-positive">{formatCompactRupiah(displayedIncome)}</div>
+          <span className="stat-foot">Total pemasukan dalam periode ini</span>
         </section>
         <section className="card finance-metric">
           <span className="finance-metric-label">
             <span className="finance-metric-icon expense"><ArrowUpRight size={15} /></span>
             PENGELUARAN
           </span>
-          <div className="metric-value metric-negative">{formatCompactRupiah(expense)}</div>
-          <span className="stat-foot">Total uang keluar bulan ini</span>
+          <div className="metric-value metric-negative">{formatCompactRupiah(displayedExpense)}</div>
+          <span className="stat-foot">Total pengeluaran dalam periode ini</span>
         </section>
       </section>
 
@@ -168,9 +260,9 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
           <div>
             <span className="finance-section-kicker">ARUS UANG</span>
             <h2 className="section-title" id="finance-cashflow-title">Pemasukan vs pengeluaran</h2>
-            <p className="section-caption">Pergerakan harian selama 7 hari terakhir</p>
+            <p className="section-caption">7 hari hingga {periodEndLabel} dalam periode terpilih</p>
           </div>
-          <div className="finance-chart-totals" aria-label="Total arus uang tujuh hari terakhir">
+          <div className="finance-chart-totals" aria-label="Total arus uang pada tujuh hari periode terpilih">
             <div><span className="finance-chart-dot income" /><span>Masuk</span><strong>{formatCompactRupiah(weeklyIncome)}</strong></div>
             <div><span className="finance-chart-dot expense" /><span>Keluar</span><strong>{formatCompactRupiah(weeklyExpense)}</strong></div>
           </div>
@@ -178,11 +270,11 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
         {weeklyIncome === 0 && weeklyExpense === 0 ? (
           <div className="finance-chart-empty">
             <Sprout size={18} />
-            <span>Belum ada transaksi dalam 7 hari terakhir.</span>
+            <span>Belum ada transaksi dalam tujuh hari pada periode ini.</span>
           </div>
         ) : (
           <div className="finance-chart-plot">
-            <svg viewBox="0 0 600 154" role="img" aria-label="Grafik batang pemasukan dan pengeluaran harian selama tujuh hari terakhir">
+            <svg viewBox="0 0 600 154" role="img" aria-label="Grafik batang pemasukan dan pengeluaran harian pada tujuh hari periode terpilih">
               <line className="finance-chart-gridline" x1="12" y1="16" x2="588" y2="16" />
               <line className="finance-chart-gridline" x1="12" y1="64" x2="588" y2="64" />
               <line className="finance-chart-baseline" x1="12" y1="112" x2="588" y2="112" />
@@ -191,7 +283,11 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
                 const incomeHeight = day.income / weeklyScale * 88;
                 const expenseHeight = day.expense / weeklyScale * 88;
                 return (
-                  <g key={day.iso}>
+                  <g
+                    key={day.iso}
+                    aria-label={`${day.label}: masuk ${formatRupiah(day.income)}, keluar ${formatRupiah(day.expense)}`}
+                  >
+                    <title>{`${day.label} — Masuk ${formatRupiah(day.income)}; Keluar ${formatRupiah(day.expense)}`}</title>
                     <rect
                       className="finance-chart-bar income"
                       x={x}
@@ -215,13 +311,30 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             </svg>
           </div>
         )}
+        {(weeklyIncome > 0 || weeklyExpense > 0) && (
+          <div className="finance-day-detail-grid" aria-label="Rincian pemasukan dan pengeluaran per hari">
+            {cashflowWeek.map((day) => (
+              <div className="finance-day-detail" key={day.iso}>
+                <span className="finance-day-detail-label">{day.label}</span>
+                <div className="finance-day-detail-value income">
+                  <small>Masuk</small>
+                  <strong>{formatCompactRupiah(day.income)}</strong>
+                </div>
+                <div className="finance-day-detail-value expense">
+                  <small>Keluar</small>
+                  <strong>{formatCompactRupiah(day.expense)}</strong>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <div className="finance-analysis-grid">
         <section className="card card-pad finance-category-panel">
           <SectionHeading
             title="Ke mana uang pergi?"
-            caption="Distribusi pengeluaran menurut kategori bulan ini"
+            caption="Distribusi pengeluaran menurut kategori pada periode terpilih"
           />
           <div className="finance-category-total">
             <span>Total pengeluaran tercatat</span>
@@ -268,7 +381,16 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
         </section>
 
         <section className="card card-pad finance-budget-panel">
-          <SectionHeading title="Kontrol anggaran" caption="Pantau realisasi terhadap batas bulanan" />
+          <SectionHeading
+            title="Kontrol anggaran"
+            caption="Pantau realisasi terhadap batas bulanan"
+          />
+          {monthKey !== currentMonthKey && (
+            <p className="finance-budget-period-note">
+              Perbandingan periode lampau memakai batas anggaran yang dikonfigurasi saat ini.
+              Riwayat perubahan batas per bulan belum tersedia.
+            </p>
+          )}
           {spendByCategory.length > 0 ? (
             <div className="budget-list">
               {spendByCategory.map((budget) => {
