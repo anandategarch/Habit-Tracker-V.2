@@ -22,6 +22,7 @@ import { EntryModal } from "@/components/ui/entry-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
 import { PwaInstallButton } from "@/components/pwa/install-button";
 import { useModules } from "@/lib/use-modules";
+import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 
 const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
@@ -608,7 +609,7 @@ export function RutinaApp() {
         </div>
         <div className="site-footer-meta">
           <a href="https://github.com/anandategarch/Habit-Tracker-V.2" target="_blank" rel="noreferrer noopener">Sumber</a>
-          <span className="site-footer-version" aria-label="Versi aplikasi">v2 · {new Date().getFullYear()}</span>
+          <span className="site-footer-version" aria-label="Versi aplikasi">{APP_VERSION_LABEL}</span>
           <span aria-hidden="true">Tumbuh dalam langkah kecil.</span>
         </div>
       </footer>

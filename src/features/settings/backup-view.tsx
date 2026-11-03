@@ -4,6 +4,7 @@ import { useState, type ChangeEvent } from "react";
 import { Archive, Download, FileUp, LoaderCircle, ShieldCheck, Sprout, Wand2, AlertTriangle } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import type { WorkspaceSettings } from "@/lib/module-types";
+import { APP_VERSION_LABEL } from "@/lib/version";
 
 interface LegacyReport {
   sourceFormat: string;
@@ -167,7 +168,7 @@ export function BackupView({ settings, onUpdateSettings }: {
     <section className="settings-profile-card">
       <span className="settings-profile-mark"><span>R</span></span>
       <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadimu</strong><span>Rutina · Grow at your pace</span></div>
-      <span className="settings-profile-status"><ShieldCheck size={14} /> Data terlindungi</span>
+      <span className="settings-profile-status" aria-label={`Versi ${APP_VERSION_LABEL}`}><ShieldCheck size={14} /> {APP_VERSION_LABEL}</span>
     </section>
     <div className="settings-preferences-grid">
       <section className="card card-pad settings-preference-card">
