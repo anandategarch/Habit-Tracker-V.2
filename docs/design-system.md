@@ -186,7 +186,7 @@ Arah produk visual berikutnya adalah **Playful Premium**: ilustrasi botanical ya
 Halaman Keuangan memakai komposisi yang lebih berorientasi pada pembacaan angka, sambil mempertahankan material dan warna Botanical Rutina.
 
 - Ringkasan utama menempatkan **arus kas bersih** sebagai angka paling dominan, dengan pemasukan dan pengeluaran sebagai konteks pendukung. Semua angka menggunakan transaksi bulan berjalan dan harus tetap sesuai helper perhitungan yang sudah ada.
-- Grafik arus uang membandingkan pemasukan dan pengeluaran per hari untuk tujuh hari terakhir. Grafik menggunakan seluruh riwayat transaksi agar minggu yang melewati pergantian bulan tidak kehilangan data hari sebelumnya.
+- Grafik arus uang membandingkan pemasukan dan pengeluaran per hari untuk tujuh hari yang berakhir pada tanggal akhir periode terpilih. Grafik menggunakan seluruh riwayat transaksi agar rentang yang melewati pergantian bulan tidak kehilangan data hari sebelumnya.
 - Distribusi kategori menghitung pengeluaran aktual bulan berjalan. Kategori ditampilkan berdasarkan nilai terbesar; kategori tambahan digabung sebagai "Kategori lainnya" agar visual tetap ringkas.
 - Kontrol anggaran dipisahkan dari distribusi pengeluaran. Setiap anggaran menampilkan realisasi, batas, persentase, sisa atau kelebihan, serta state ketika batas belum ditentukan.
 - Daftar transaksi menampilkan lima transaksi terbaru secara default, menyediakan filter jenis transaksi, dan dapat diperluas tanpa menghapus atau membatasi data sumber.
