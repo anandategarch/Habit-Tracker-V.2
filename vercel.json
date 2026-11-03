@@ -1,0 +1,33 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "design/brand-and-botanical-asset-polish": false,
+      "design/full-botanical-guideline-alignment": false,
+      "design/premium-ui-motion-icons": false,
+      "design/tecnocamon50-mobile-layout": false,
+      "feat/botanical-loading-states": false,
+      "feat/pedoman-ui-fidelity-polish": false,
+      "feat/sandbox-turso-ui-audit": false,
+      "feat/ui-polish-ux-reliability": false,
+      "feat/vercel-auth-no-app-login": false,
+      "feature/pwa-tree-splash": false,
+      "feature/turso-cloud-sync": false,
+      "fix/auth-setup-diagnostics": false,
+      "fix/bugfixes-found-by-code-review": false,
+      "fix/mobile-dashboard-hero-visibility": false,
+      "foundation/mobile-first-rutina": false,
+      "integrate/source-feature-suite": false,
+      "polish/complete-ui-ux": false,
+      "polish/full-motion-mobile-ui": false,
+      "redesign/insights-weekly-progress": false,
+      "redesign/playful-botanical-2026": false,
+      "redesign/playful-botanical-ui": false,
+      "redesign/rutina-growth-experience-3": false,
+      "v2": false,
+      "main": true,
+      "redesign/rutina-finance-calm-fintech": true,
+      "chore/vercel-deployment-hygiene": false
+    }
+  }
+}
