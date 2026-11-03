@@ -3112,3 +3112,407 @@ html[data-theme="dark"] .habit-detail-tag.priority-medium { color: #d9b27c; back
 .botanical-dashboard-page .botanical-hero .hero-kicker { font-size: 10.5px; }
 .botanical-dashboard-page .botanical-hero .hero-description { color: #465343; font-size: 11.5px; line-height: 1.55; }
 html[data-theme="dark"] .botanical-dashboard-page .botanical-hero .hero-description { color: var(--ink-soft); }
+
+/* ==========================================================================
+   AUDIT MOBILE v0.2.3 (2026-11-03) — audit menyeluruh 4 agen paralel
+   pada viewport iPhone SE 375×667. Menutup celah cascade, kontras, target
+   sentuh, zoom iOS, overflow modal, dan safe-area. Blok ini menang cascade
+   karena ditempatkan paling akhir; semua selector di sini menimpa rule lama.
+   ========================================================================== */
+
+/* --- A. Topbar: sembunyikan avatar di mobile (cascade conflict fix) ---
+   globals.css:2090 menyembunyikan .topbar-avatar di <=960px, tapi rule lama
+   .topbar .topbar-avatar { display: grid } (specificity 0,2,0) menimpa.
+   Header overflow ~19px di 375px → avatar terpotong. --- */
+@media (max-width: 960px) {
+  .topbar .topbar-avatar { display: none !important; }
+}
+
+/* --- B. Safe-area: topbar hormati notch, footer bersih dari nav bawah --- */
+@media (max-width: 960px) {
+  .topbar {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: 0;
+  }
+  /* Footer butuh clearance agar konten tidak tertutup nav bawah fixed
+     (nav 62px + gap 8px + ruang napas 26px). */
+  .site-footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
+
+/* --- C. Habit-progress-card: teks tak terlihat di latar hijau gelap ---
+   Saat tab "Kebiasaan" aktif, .habit-progress-card jadi hijau gelap
+   (#167952→#32a77e) tapi teks tetap hijau gelap → tak terbaca (1.4:1). --- */
+.app-shell[data-active-tab="habits"] .habit-progress-card .small-label,
+.app-shell[data-active-tab="habits"] .habit-progress-card .habit-progress-copy p {
+  color: rgba(255, 255, 255, .82);
+}
+.app-shell[data-active-tab="habits"] .habit-progress-card .habit-progress-value,
+.app-shell[data-active-tab="habits"] .habit-progress-card .habit-progress-ring strong {
+  color: #fff;
+}
+.app-shell[data-active-tab="habits"] .habit-progress-card .habit-progress-ring::before {
+  background: rgba(14, 82, 54, .55);
+}
+.app-shell[data-active-tab="habits"] .habit-progress-card .habit-progress-ring {
+  background: conic-gradient(#7fe6a8 var(--progress, 0deg), rgba(255, 255, 255, .18) 0);
+}
+
+/* --- D. Hero-ring dashboard: teks gelap di cakram gelap → perbaiki ---
+   Ring punya disc #2b5a42 dengan teks #2c362c (kontras 1.6:1). --- */
+.hero-ring::before { background: #f3efe6; }
+.hero-ring-label strong { color: #2c362c; }
+.hero-ring-label small { color: #6c7a6d; }
+html[data-theme="dark"] .hero-ring::before { background: #2a3a2c; }
+html[data-theme="dark"] .hero-ring-label strong { color: var(--ink); }
+html[data-theme="dark"] .hero-ring-label small { color: var(--muted); }
+
+/* --- E. Habit-week-day.is-today: violet terlarang → botanical green --- */
+.habit-week-day.is-today {
+  background: linear-gradient(145deg, #417a57, #2f5e40);
+  box-shadow: 0 5px 13px rgba(47, 98, 69, .22);
+  color: #fff;
+}
+.habit-week-day.is-today strong { color: #fff; }
+.habit-week-day.is-today small { color: rgba(255, 255, 255, .85); }
+
+/* --- F. Focus-ring: override global 105px → 88px di mobile ---
+   globals.css:994 (global, 105px) menimpa globals.css:308 (<=680, 88px)
+   karena urutan source. Ring terlalu besar di 375px. --- */
+@media (max-width: 680px) {
+  .focus-ring { width: 88px; height: 88px; }
+  .focus-ring::before { inset: 6px; }
+  .focus-ring-inner { width: 74px; height: 74px; }
+  .focus-ring-inner strong { font-size: 20px; }
+}
+@media (max-width: 600px) {
+  .focus-card { padding: 15px; }
+  .focus-actions .primary-button,
+  .focus-actions .secondary-button { min-height: 40px; font-size: 10.5px; }
+  .focus-timer-foot { font-size: 10.5px; line-height: 1.55; }
+}
+
+/* --- G. iOS auto-zoom: input < 16px memicu zoom halaman saat fokus ---
+   .form-control 11px, .search-field input 11px → zoom 145% tak bisa di-zoom out. --- */
+@media (max-width: 640px) {
+  .form-control,
+  .form-field input,
+  .form-field select,
+  .form-field textarea,
+  .amount-field .form-control,
+  .search-field input {
+    font-size: 16px;
+  }
+  .amount-field .form-control { padding-left: 38px; }
+}
+
+/* --- H. Entry modal: flex-column + form-actions sticky agar Simpan terlihat
+   tanpa scroll di iPhone SE 667px (form ~665px > modal 607px). --- */
+@media (max-width: 600px) {
+  .entry-modal {
+    display: flex;
+    flex-direction: column;
+    max-height: 90svh;
+  }
+  .entry-modal .form-grid {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
+  }
+  .entry-modal .form-actions {
+    position: sticky;
+    bottom: 0;
+    margin: 0 -17px calc(-18px - env(safe-area-inset-bottom));
+    padding: 13px 17px calc(13px + env(safe-area-inset-bottom));
+    background: #fffdf9;
+    border-top: 1px solid var(--line);
+    z-index: 2;
+  }
+  html[data-theme="dark"] .entry-modal .form-actions { background: var(--surface); }
+  .transaction-type-control label span { min-height: 44px; }
+  /* form-two-columns kolaps lebih awal (bukan 430px) supaya dua kolom
+     tidak sesak di 420-600px dengan font 16px. */
+  .form-two-columns { grid-template-columns: 1fr; }
+}
+
+/* --- I. Transaksi: jumlah 9px → 11px, judul max-width 130px hapus ---
+   .transaction-amount 9px tak terbaca; .transaction-title max-width 130px
+   memotong "Belanja bulanan keluarga" → "Belanja bulanan kel…". --- */
+@media (max-width: 600px) {
+  .transaction-amount { font-size: 11px; }
+  .transaction-title {
+    max-width: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .transaction-meta { font-size: 10px; }
+}
+
+/* --- J. Grafik keuangan SVG: label hari ~5.8px di layar (SVG 11px × skala 0.525) ---
+   Naikkan font SVG agar label hari terbaca di 375px. --- */
+@media (max-width: 760px) {
+  .finance-chart-day { font-size: 18px; }
+  .finance-chart-totals strong { font-size: 12px; }
+}
+@media (max-width: 600px) {
+  .finance-chart-day { font-size: 19px; }
+}
+
+/* --- K. Insight trend chart tahun: 12 kolom overflow label bulan ---
+   Label "Jan"..."Des" 11px di kolom 21.4px → overlap. Tambah overflow handling. --- */
+@media (max-width: 600px) {
+  .insight-trend-day small {
+    font-size: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .insight-trend-value {
+    font-size: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .insight-number { font-size: 28px; letter-spacing: -1.2px; }
+  .insight-number span { font-size: 14px; }
+  .insight-period-tabs button { min-height: 40px; padding: 0 12px; font-size: 11px; }
+  .insight-checkin-grid { grid-template-columns: 1fr; gap: 8px; }
+  .insight-ai-heading {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .insight-ai-actions { justify-content: flex-start; }
+  .insight-trend-legend { flex-wrap: wrap; row-gap: 6px; }
+}
+
+/* --- L. Touch targets: naikkan ke >=40px (WCAG 2.5.5) ---
+   Habit-amount-stepper 29px, habit-history-action 30px, time-analysis close 25px,
+   category-filters 29px, group-manager delete tanpa padding, calendar-day 36px,
+   calendar-today-button 34px, calendar prev/next 38px, finance-filters 33px,
+   finance-expand-button 35px, search close 38px, settings checkbox 38×22,
+   primary-button 43px, secondary-button 39px, next-step-action 35px,
+   garden-journey-link tanpa padding. --- */
+.habit-amount-stepper button { width: 40px; height: 40px; }
+.habit-amount-stepper { gap: 6px; }
+.habit-history-action {
+  min-height: 40px;
+  padding: 0 12px;
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+}
+.time-analysis-head button { width: 40px; height: 40px; border-radius: 12px; }
+.category-filters button { min-height: 36px; padding: 0 12px; font-size: 10px; }
+.group-manager-item button { min-height: 36px; padding: 6px 10px; border-radius: 9px; }
+.group-color-input { width: 40px; height: 40px; }
+.secondary-button, .module-small-button { min-height: 40px; }
+.next-step-action { min-height: 40px; }
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 4px 2px;
+  margin: -4px 0;
+  border-radius: 8px;
+}
+.garden-journey-link {
+  padding: 10px 4px;
+  margin-left: -4px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+}
+.primary-button { min-height: 44px; }
+@media (max-width: 600px) {
+  .calendar-day { min-height: 40px; font-size: 10px; }
+  .calendar-weekday { font-size: 9px; letter-spacing: 0; }
+  .calendar-today-button { min-height: 40px; padding: 0 12px; font-size: 10px; }
+  .calendar-actions .icon-button { width: 40px; height: 40px; min-width: 40px; }
+  .calendar-panel::after { display: none; }
+  .calendar-head .section-caption { display: none; }
+  .finance-filters button { min-height: 40px; padding: 0 14px; font-size: 10.5px; }
+  .finance-expand-button { min-height: 40px; padding: 0 12px; font-size: 10.5px; }
+  .search-heading .icon-button { width: 44px; height: 44px; }
+  .settings-vacation-toggle { min-height: 48px; padding: 14px 0; }
+  .settings-vacation-toggle input { width: 44px; height: 26px; }
+  .backup-card .primary-button { width: 100%; justify-content: center; }
+  .settings-profile-card { flex-wrap: wrap; gap: 10px; }
+  .settings-profile-status { flex-basis: 100%; justify-content: flex-start; }
+  .settings-menu-card a > span:nth-child(2) { min-width: 0; }
+  .settings-menu-card a strong,
+  .settings-menu-card a small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.calendar-history-dot { width: 6px; height: 6px; }
+
+/* --- M. Kontras teks muted: naikkan dari ~2.0-2.7:1 ke ~6.0:1 (AA) ---
+   Banyak label 7-10px warna pucat (#9a9c8e dsb.) tak terbaca di ponsel.
+   Konsolidasi ke --ink-soft + bump font ke >=9px. --- */
+.quote-caption,
+.habit-week-strip-heading span,
+.settings-profile-copy small,
+.settings-theme-options button small,
+.settings-section-heading span,
+.tree-journey-kicker,
+.tree-level-footnote,
+.tree-level-progress-copy span,
+.tree-weekly-ribbon small,
+.tree-weekly-ribbon-meta,
+.hero-ring-label small,
+.quick-action-copy small,
+.finance-panel-empty,
+.finance-chart-empty,
+.finance-budget-panel .budget-values span,
+.stat-card .stat-foot,
+.finance-section-kicker,
+.finance-chart-totals > div > span:not(.finance-chart-dot),
+.finance-category-total > span,
+.insight-trend-legend small,
+.insight-cashflow-row small,
+.insight-net-row,
+.insight-empty p,
+.insight-trend-empty p,
+.growth-wrapped-metric small,
+.settings-about-note p {
+  color: #5d6e60;
+}
+.quote-caption,
+.habit-week-strip-heading span,
+.settings-profile-copy small,
+.settings-theme-options button small,
+.settings-section-heading span,
+.tree-journey-kicker,
+.tree-level-footnote,
+.tree-level-progress-copy span,
+.tree-weekly-ribbon small,
+.tree-weekly-ribbon-meta,
+.quick-action-copy small {
+  font-size: 9px;
+}
+.settings-about-note p,
+.settings-vacation-toggle small,
+.insight-cashflow-row small,
+.insight-net-row,
+.insight-empty p,
+.insight-trend-empty p,
+.growth-wrapped-metric small,
+.stat-card .stat-foot {
+  font-size: 10px;
+}
+.finance-section-kicker { font-size: 10.5px; letter-spacing: 1px; }
+.finance-chart-totals > div > span:not(.finance-chart-dot) { font-size: 10px; }
+.finance-category-total > span { font-size: 10px; letter-spacing: .8px; }
+html[data-theme="dark"] .quote-caption,
+html[data-theme="dark"] .habit-week-strip-heading span,
+html[data-theme="dark"] .settings-profile-copy small,
+html[data-theme="dark"] .settings-theme-options button small,
+html[data-theme="dark"] .settings-section-heading span,
+html[data-theme="dark"] .tree-journey-kicker,
+html[data-theme="dark"] .tree-level-footnote,
+html[data-theme="dark"] .tree-level-progress-copy span,
+html[data-theme="dark"] .tree-weekly-ribbon small,
+html[data-theme="dark"] .tree-weekly-ribbon-meta,
+html[data-theme="dark"] .hero-ring-label small,
+html[data-theme="dark"] .quick-action-copy small,
+html[data-theme="dark"] .finance-panel-empty,
+html[data-theme="dark"] .finance-chart-empty,
+html[data-theme="dark"] .finance-budget-panel .budget-values span,
+html[data-theme="dark"] .stat-card .stat-foot,
+html[data-theme="dark"] .finance-section-kicker,
+html[data-theme="dark"] .finance-chart-totals > div > span:not(.finance-chart-dot),
+html[data-theme="dark"] .finance-category-total > span,
+html[data-theme="dark"] .insight-trend-legend small,
+html[data-theme="dark"] .insight-cashflow-row small,
+html[data-theme="dark"] .insight-net-row,
+html[data-theme="dark"] .insight-empty p,
+html[data-theme="dark"] .insight-trend-empty p,
+html[data-theme="dark"] .growth-wrapped-metric small,
+html[data-theme="dark"] .settings-about-note p {
+  color: var(--ink-soft);
+}
+
+/* --- N. Teks kecil lain yang masih 7-8px di berbagai tempat --- */
+@media (max-width: 760px) {
+  .habit-week-day small { font-size: 9px; }
+  .habit-week-day strong { font-size: 11px; }
+}
+.weekly-comparison { font-size: 10px; line-height: 1.5; }
+@media (max-width: 430px) {
+  .daily-intention-meta span { padding: 5px 9px; font-size: 9px; }
+}
+.focus-ring-inner span { font-size: 9px; letter-spacing: .65px; }
+.finance-balance-trend-heading span,
+.finance-balance-trend-heading small,
+.finance-balance-trend-days small { font-size: 10px; }
+
+/* --- O. Budget status "Melebihi batas": coral pucat gagal AA → gelapkan --- */
+.budget-status.over,
+.budget-hint.over { color: #a04836; }
+
+/* --- P. Search results: jumlah terpotong + footer 8px --- */
+.search-result-amount {
+  flex: none;
+  max-width: 38%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-footer { font-size: 10px; }
+.search-footer kbd { font-size: 9px; }
+
+/* --- Q. Finance: mini-value 26px tanpa reduksi mobile + metric di 390px --- */
+@media (max-width: 430px) {
+  .finance-mini-value { font-size: 22px; }
+  .habit-progress-value { font-size: 28px; letter-spacing: -1.4px; }
+}
+@media (max-width: 390px) {
+  .finance-balance .metric-value { font-size: 23px; }
+}
+
+/* --- R. Finance day-detail grid: 3 kol tidak rata di 7 kartu → 7 kol scroll --- */
+@media (max-width: 420px) {
+  .finance-day-detail-grid {
+    grid-template-columns: repeat(7, minmax(48px, 1fr));
+    gap: 3px;
+    overflow-x: auto;
+  }
+  .finance-day-detail { padding: 6px 4px; }
+  .finance-day-detail-value strong { font-size: 10px; }
+}
+
+/* --- S. Transaction-icon dark mode + entry-modal radio dark mode --- */
+html[data-theme="dark"] .transaction-icon { background: #2a3a2c; color: #b6d4a6; }
+html[data-theme="dark"] .transaction-icon.expense { background: #3a2c28; color: #d49880; }
+html[data-theme="dark"] .transaction-type-control label span {
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .transaction-type-control input:checked + span {
+  color: #b6d6b0;
+  background: rgba(65, 122, 87, .22);
+  border-color: #417a57;
+}
+
+/* --- T. Truncation safety: judul habit di next-step card + group heading --- */
+.next-step-card h2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.group-manager-heading small {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.habit-amount-caption { overflow-wrap: anywhere; }

@@ -11,3 +11,4 @@ coverage/
 
 # Personal workspace exports must never be committed
 rutina-backup*.json
+tool-results/
