@@ -1,0 +1,242 @@
+    30→function Field({ label, children }: { label: string; children: ReactNode }) {
+    31→  return <label className="form-field"><span className="form-label">{label}</span>{children}</label>;
+    32→}
+    33→function Panel({ title, caption, children }: { title: string; caption?: string; children: ReactNode }) {
+    34→  return <section className="card card-pad"><SectionHeading title={title} caption={caption} /><div className="module-card-body">{children}</div></section>;
+    35→}
+    36→function Intro({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle: string }) {
+    37→  return <PageIntro eyebrow={eyebrow} title={title} subtitle={subtitle} />;
+    38→}
+    39→function Metric({ label, value, foot }: { label: string; value: string; foot: string }) {
+    40→  return <div className="stat-card"><div className="small-label">{label}</div><div className="metric-value">{value}</div><div className="stat-foot">{foot}</div></div>;
+    41→}
+    42→function NoData({ children }: { children: string }) {
+    43→  return <div className="module-empty"><Sprout size={20} /><p>{children}</p></div>;
+    44→}
+    45→
+    46→export function ModulesView({ tab, modules, updateModule }: {
+    47→  tab: "goals" | "checkin" | "work" | "wellness" | "training" | "tree" | "settings";
+    48→  modules: WorkspaceModules; updateModule: UpdateWorkspaceModule;
+    49→}) {
+    50→  if (tab === "goals") return <GoalsView modules={modules} updateModule={updateModule} />;
+    51→  if (tab === "checkin") return <CheckinView modules={modules} updateModule={updateModule} />;
+    52→  if (tab === "work") return <WorkView modules={modules} updateModule={updateModule} />;
+    53→  if (tab === "wellness") {
+    54→    // Remount only when the tracked *date* changes (first entry of the day or
+    55→    // midnight rollover). Keying on the whole entry re-mounted the view on every
+    56→    // water-button tap and silently discarded unsaved protein/weight/note input.
+    57→    const wellnessToday = modules.wellness.find((item) => item.date === today()) ?? null;
+    58→    return <WellnessView key={wellnessToday?.date ?? "empty"} modules={modules} updateModule={updateModule} />;
+    59→  }
+    60→  if (tab === "training") return <TrainingView modules={modules} updateModule={updateModule} />;
+    61→  if (tab === "settings") return <BackupView settings={modules.settings} onUpdateSettings={(update) => updateModule("settings", update)} />;
+    62→  return <TreeView modules={modules} />;
+    63→}
+    64→
+    65→function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
+    66→  function submit(event: FormEvent<HTMLFormElement>) {
+    67→    event.preventDefault();
+    68→    const data = new FormData(event.currentTarget);
+    69→    const title = String(data.get("title") || "").trim();
+    70→    if (!title) return;
+    71→    const milestones: Milestone[] = String(data.get("milestones") || "").split("\n").map((value) => value.trim()).filter(Boolean).map((value) => ({ id: id(), title: value, completed: false }));
+    72→    const goal: Goal = {
+    73→      id: id(), title, description: String(data.get("description") || ""),
+    74→      category: String(data.get("category") || "Personal"), dueDate: String(data.get("dueDate") || ""),
+    75→      milestones, completed: false, createdAt: today(),
+    76→    };
+    77→    updateModule("goals", (items) => [goal, ...items]);
+    78→    event.currentTarget.reset();
+    79→  }
+    80→  const active = modules.goals.filter((goal) => !goal.completed).length;
+    81→  const completed = modules.goals.length - active;
+    82→  const steps = modules.goals.reduce((sum, goal) => sum + goal.milestones.length, 0);
+    83→  const doneSteps = modules.goals.reduce((sum, goal) => sum + goal.milestones.filter((step) => step.completed).length, 0);
+    84→  return <>
+    85→    <Intro eyebrow="GOALS & MILESTONES" title="Ubah niat menjadi progres." subtitle="Pecah tujuan besar menjadi langkah yang bisa diselesaikan satu per satu." />
+    86→    <div className="module-metrics"><Metric label="TUJUAN AKTIF" value={String(active)} foot="Masih berjalan" /><Metric label="TUJUAN SELESAI" value={String(completed)} foot="Sudah dicapai" /><Metric label="MILESTONES" value={`${doneSteps}/${steps}`} foot="Langkah diselesaikan" /></div>
+    87→    <div className="module-two-col">
+    88→      <Panel title="Tujuan baru" caption="Tuliskan hasil yang ingin dicapai dan milestone-nya">
+    89→        <form className="form-grid" onSubmit={submit}>
+    90→          <Field label="Nama tujuan"><input className={field} name="title" maxLength={100} required placeholder="Contoh: Menyelesaikan sertifikasi" /></Field>
+    91→          <Field label="Deskripsi"><textarea className={field} name="description" rows={2} placeholder="Mengapa tujuan ini penting?" /></Field>
+    92→          <div className="form-two-columns">
+    93→            <Field label="Kategori"><select className={field} name="category"><option>Personal</option><option>Health</option><option>Learning</option><option>Finance</option><option>Career</option></select></Field>
+    94→            <Field label="Tenggat"><input className={field} name="dueDate" type="date" /></Field>
+    95→          </div>
+    96→          <Field label="Milestones (satu per baris)"><textarea className={field} name="milestones" rows={3} placeholder={"Riset langkah pertama\nSelesaikan bagian awal\nEvaluasi hasil"} /></Field>
+    97→          <PrimaryButton type="submit"><Plus size={15} /> Simpan tujuan</PrimaryButton>
+    98→        </form>
+    99→      </Panel>
+   100→      <Panel title="Daftar tujuan" caption={`${modules.goals.length} tujuan tersimpan`}>
+   101→        {modules.goals.length ? <div className="module-list goal-list">{modules.goals.map((goal) => {
+   102→          const done = goal.milestones.filter((step) => step.completed).length;
+   103→          const progress = goal.milestones.length ? Math.round(done / goal.milestones.length * 100) : (goal.completed ? 100 : 0);
+   104→          return <article className="module-item goal-card" key={goal.id}>
+   105→            <div className="module-item-top"><div><span className="module-tag">{goal.category}</span><h3>{goal.title}</h3><p>{goal.description || "Tidak ada deskripsi."}</p></div><button className="module-icon-action danger" onClick={() => updateModule("goals", (items) => remove(items, goal.id))} aria-label={`Hapus tujuan ${goal.title}`}><Trash2 size={15} /></button></div>
+   106→            {goal.dueDate && <small className="module-muted">Tenggat {formatDate(goal.dueDate)}</small>}
+   107→            <div className="module-progress-track"><span style={{ width: `${progress}%` }} /></div>
+   108→            <div className="module-inline-meta"><small>{done}/{goal.milestones.length} milestone · {progress}%</small><button className={secondary} onClick={() => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, completed: !item.completed } : item))}>{goal.completed ? "Buka kembali" : "Tandai selesai"}</button></div>
+   109→            {goal.milestones.map((step) => <label className="module-check-row" key={step.id}><input type="checkbox" checked={step.completed} onChange={(event) => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, milestones: item.milestones.map((part) => part.id === step.id ? { ...part, completed: event.target.checked } : part) } : item))} /><span className={step.completed ? "is-done" : ""}>{step.title}</span></label>)}
+   110→          </article>;
+   111→        })}</div> : <NoData>Belum ada tujuan. Mulai dengan satu hasil yang ingin kamu capai.</NoData>}
+   112→      </Panel>
+   113→    </div>
+   114→  </>;
+   115→}
+   116→
+   117→function CheckinView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
+   118→  const date = today();
+   119→  const current = modules.checkins.find((item) => item.date === date);
+   120→  function submit(event: FormEvent<HTMLFormElement>) {
+   121→    event.preventDefault();
+   122→    const form = new FormData(event.currentTarget);
+   123→    const record: DailyCheckin = { date, mood: Number(form.get("mood") || 3), energy: Number(form.get("energy") || 3), sleepHours: Number(form.get("sleep") || 7), notes: String(form.get("notes") || "").trim() };
+   124→    updateModule("checkins", (items) => [record, ...items.filter((item) => item.date !== date)].sort((a, b) => b.date.localeCompare(a.date)));
+   125→  }
+   126→  return <>
+   127→    <Intro eyebrow="DAILY CHECK-IN & JOURNAL" title="Periksa keadaan dirimu." subtitle="Catat suasana hati, energi, tidur, dan hal yang ingin kamu ingat hari ini." />
+   128→    <div className="module-two-col">
+   129→      <Panel title="Check-in hari ini" caption={current ? "Perbarui catatanmu bila diperlukan." : "Tidak perlu sempurna. Catat apa adanya."}>
+   130→        <form className="form-grid" onSubmit={submit}>
+   131→          <div className="form-two-columns">
+   132→            <Field label="Mood (1–5)"><select className={field} name="mood" defaultValue={String(current?.mood ?? 3)}>{[1,2,3,4,5].map((n) => <option key={n} value={n}>{n} · {["","Sangat berat","Kurang baik","Biasa","Baik","Sangat baik"][n]}</option>)}</select></Field>
+   133→            <Field label="Energi (1–5)"><select className={field} name="energy" defaultValue={String(current?.energy ?? 3)}>{[1,2,3,4,5].map((n) => <option key={n} value={n}>{n} · {["","Sangat rendah","Rendah","Cukup","Tinggi","Sangat tinggi"][n]}</option>)}</select></Field>
+   134→          </div>
+   135→          <Field label="Durasi tidur (jam)"><input className={field} name="sleep" type="number" min="0" max="24" step=".5" defaultValue={current?.sleepHours ?? 7} /></Field>
+   136→          <Field label="Jurnal singkat"><textarea className={field} name="notes" rows={6} defaultValue={current?.notes ?? ""} placeholder="Apa yang berjalan baik? Apa yang terasa berat?" /></Field>
+   137→          <PrimaryButton type="submit"><Check size={15} /> Simpan check-in</PrimaryButton>
+   138→        </form>
+   139→      </Panel>
+   140→      <Panel title="Riwayat check-in" caption={`${modules.checkins.length} hari tercatat`}>
+   141→        {modules.checkins.length ? <div className="module-list">{modules.checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 45).map((item) => <article className="module-item" key={item.date}><div className="module-item-top"><strong>{formatDate(item.date)}</strong><span className="module-tag">Mood {item.mood}/5 · Energi {item.energy}/5</span></div><p className="module-muted">Tidur {item.sleepHours} jam</p>{item.notes && <p>{item.notes}</p>}</article>)}</div> : <NoData>Riwayat check-in muncul setelah catatan pertama disimpan.</NoData>}
+   142→      </Panel>
+   143→    </div>
+   144→  </>;
+   145→}
+   146→
+   147→function WorkView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
+   148→  const [section, setSection] = useState<"tasks" | "notes" | "routines">("tasks");
+   149→  const [status, setStatus] = useState<TaskStatus | "all">("all");
+   150→  function addTask(event: FormEvent<HTMLFormElement>) {
+   151→    event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); if (!title) return;
+   152→    const item: WorkTask = { id: id(), title, description: String(data.get("description") || ""), priority: String(data.get("priority") || "medium") as WorkTask["priority"], status: "todo", dueDate: String(data.get("dueDate") || ""), createdAt: today() };
+   153→    updateModule("tasks", (items) => [item, ...items]); event.currentTarget.reset();
+   154→  }
+   155→  function addNote(event: FormEvent<HTMLFormElement>) {
+   156→    event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); const body = String(data.get("body") || "").trim(); if (!title || !body) return;
+   157→    const item: WorkNote = { id: id(), title, body, tags: String(data.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean), updatedAt: new Date().toISOString() };
+   158→    updateModule("notes", (items) => [item, ...items]); event.currentTarget.reset();
+   159→  }
+   160→  function addRoutine(event: FormEvent<HTMLFormElement>) {
+   161→    event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); if (!title) return;
+   162→    const item: WorkRoutine = { id: id(), title, description: String(data.get("description") || ""), frequency: String(data.get("frequency") || "Harian"), lastDone: "" };
+   163→    updateModule("routines", (items) => [item, ...items]); event.currentTarget.reset();
+   164→  }
+   165→  const taskList = modules.tasks.filter((item) => status === "all" || item.status === status);
+   166→  return <>
+   167→    <Intro eyebrow="PERSONAL WORKSPACE" title="Ruang untuk menyelesaikan sesuatu." subtitle="Kelola tugas, rutinitas kerja, dan catatan dalam satu tempat." />
+   168→    <div className="module-tabs"><button className={section === "tasks" ? "active" : ""} onClick={() => setSection("tasks")}>Task board <span>{modules.tasks.length}</span></button><button className={section === "notes" ? "active" : ""} onClick={() => setSection("notes")}>Catatan <span>{modules.notes.length}</span></button><button className={section === "routines" ? "active" : ""} onClick={() => setSection("routines")}>Rutinitas <span>{modules.routines.length}</span></button></div>
+   169→    {section === "tasks" && <div className="module-two-col">
+   170→      <Panel title="Tugas baru" caption="Simpan tindakan yang jelas dan bisa diselesaikan"><form className="form-grid" onSubmit={addTask}><Field label="Nama tugas"><input className={field} name="title" required maxLength={120} placeholder="Apa yang perlu diselesaikan?" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} /></Field><div className="form-two-columns"><Field label="Prioritas"><select className={field} name="priority"><option value="low">Rendah</option><option value="medium">Sedang</option><option value="high">Tinggi</option></select></Field><Field label="Tenggat"><input className={field} name="dueDate" type="date" /></Field></div><PrimaryButton type="submit"><Plus size={15} /> Tambah tugas</PrimaryButton></form></Panel>
+   171→      <Panel title="Task board" caption={`${modules.tasks.filter((task) => task.status === "done").length} dari ${modules.tasks.length} tugas selesai`}><div className="module-tabs compact">{(["all", "todo", "doing", "done"] as const).map((value) => <button key={value} className={status === value ? "active" : ""} onClick={() => setStatus(value)}>{value === "all" ? "Semua" : value === "todo" ? "To do" : value === "doing" ? "Berjalan" : "Selesai"}</button>)}</div>{taskList.length ? <div className="module-list">{taskList.map((task) => <article className="module-item" key={task.id}><div className="module-item-top"><div><span className={`module-priority ${task.priority}`}>{task.priority}</span><h3>{task.title}</h3>{task.description && <p>{task.description}</p>}</div><button className="module-icon-action danger" onClick={() => updateModule("tasks", (items) => remove(items, task.id))} aria-label={`Hapus tugas ${task.title}`}><Trash2 size={15} /></button></div><div className="module-inline-meta"><small>{task.dueDate ? formatDate(task.dueDate) : "Tanpa tenggat"}</small><select className="module-status-select" value={task.status} onChange={(event) => updateModule("tasks", (items) => items.map((item) => item.id === task.id ? { ...item, status: event.target.value as TaskStatus } : item))}><option value="todo">To do</option><option value="doing">Berjalan</option><option value="done">Selesai</option></select></div></article>)}</div> : <NoData>Tidak ada tugas pada filter ini.</NoData>}</Panel>
+   172→    </div>}
+   173→    {section === "notes" && <div className="module-two-col"><Panel title="Catatan baru" caption="Simpan ide, referensi, atau ringkasan"><form className="form-grid" onSubmit={addNote}><Field label="Judul"><input className={field} name="title" required maxLength={100} /></Field><Field label="Isi"><textarea className={field} name="body" rows={6} required /></Field><Field label="Tag (pisahkan dengan koma)"><input className={field} name="tags" placeholder="kerja, ide, referensi" /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan catatan</PrimaryButton></form></Panel><Panel title="Catatan tersimpan" caption={`${modules.notes.length} catatan`}>{modules.notes.length ? <div className="module-list">{modules.notes.map((note) => <article className="module-item" key={note.id}><div className="module-item-top"><h3>{note.title}</h3><button className="module-icon-action danger" onClick={() => updateModule("notes", (items) => remove(items, note.id))} aria-label={`Hapus catatan ${note.title}`}><Trash2 size={15} /></button></div><p>{note.body}</p><div className="module-chip-row">{note.tags.map((tag) => <span className="module-tag" key={tag}>{tag}</span>)}</div><small className="module-muted">Diperbarui {new Date(note.updatedAt).toLocaleDateString("id-ID")}</small></article>)}</div> : <NoData>Belum ada catatan.</NoData>}</Panel></div>}
+   174→    {section === "routines" && <div className="module-two-col"><Panel title="Rutinitas baru" caption="Pekerjaan berulang yang ingin dijaga"><form className="form-grid" onSubmit={addRoutine}><Field label="Nama rutinitas"><input className={field} name="title" required /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} /></Field><Field label="Frekuensi"><select className={field} name="frequency"><option>Harian</option><option>Hari kerja</option><option>Setiap minggu</option><option>Setiap bulan</option></select></Field><PrimaryButton type="submit"><Plus size={15} /> Tambah rutinitas</PrimaryButton></form></Panel><Panel title="Rutinitas tersimpan">{modules.routines.length ? <div className="module-list">{modules.routines.map((item) => <article className="module-item" key={item.id}><div className="module-item-top"><div><h3>{item.title}</h3><p>{item.description}</p><small className="module-muted">{item.frequency}</small></div><button className="module-icon-action danger" onClick={() => updateModule("routines", (items) => remove(items, item.id))} aria-label={`Hapus rutinitas ${item.title}`}><Trash2 size={15} /></button></div><button className={secondary} onClick={() => updateModule("routines", (items) => items.map((routine) => routine.id === item.id ? { ...routine, lastDone: today() } : routine))}>Tandai dilakukan hari ini {item.lastDone === today() ? "✓" : ""}</button></article>)}</div> : <NoData>Belum ada rutinitas kerja.</NoData>}</Panel></div>}
+   175→  </>;
+   176→}
+   177→
+   178→function WellnessView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
+   179→  const current = modules.wellness.find((item) => item.date === today()) ?? { date: today(), waterMl: 0, proteinGrams: 0, weightKg: null, note: "" };
+   180→  const [weight, setWeight] = useState(current.weightKg?.toString() ?? "");
+   181→  const [protein, setProtein] = useState(String(current.proteinGrams));
+   182→  const [note, setNote] = useState(current.note);
+   183→  function save() {
+   184→    const next: WellnessEntry = { ...current, weightKg: weight ? Number(weight) : current.weightKg, proteinGrams: Math.max(0, Number(protein) || 0), note };
+   185→    updateModule("wellness", (items) => [next, ...items.filter((item) => item.date !== today())].sort((a, b) => b.date.localeCompare(a.date)));
+   186→  }
+   187→  const weights = modules.wellness.filter((item) => item.weightKg !== null).slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15);
+   188→  return <>
+   189→    <Intro eyebrow="WELLNESS TRACKER" title="Rawat kebutuhan dasarmu." subtitle="Pantau hidrasi, protein, dan perubahan berat badan tanpa menebak-nebak." />
+   190→    <div className="module-metrics"><Metric label="AIR HARI INI" value={`${current.waterMl.toLocaleString("id-ID")} ml`} foot="Target awal 2.000 ml" /><Metric label="PROTEIN" value={`${current.proteinGrams} g`} foot={`${Math.round(current.proteinGrams)} gram tercatat`} /><Metric label="BERAT TERAKHIR" value={current.weightKg ? `${current.weightKg} kg` : "—"} foot="Catatan hari ini" /></div>
+   191→    <div className="module-two-col"><Panel title="Hidrasi" caption="Tambah setiap kali minum air"><div className="wellness-water-ring"><div><strong>{current.waterMl.toLocaleString("id-ID")}</strong><small>ml hari ini</small></div></div><div className="module-button-row">{[150, 250, 350, 500].map((amount) => <button className={secondary} key={amount} onClick={() => updateModule("wellness", (items) => { const base = items.find((item) => item.date === today()) ?? current; return [{ ...base, waterMl: base.waterMl + amount }, ...items.filter((item) => item.date !== today())]; })}>+{amount} ml</button>)}<button className={secondary} onClick={() => updateModule("wellness", (items) => items.map((item) => item.date === today() ? { ...item, waterMl: Math.max(0, item.waterMl - 250) } : item))}>−250 ml</button></div><div className="module-progress-track"><span style={{ width: `${Math.min(100, current.waterMl / 2000 * 100)}%` }} /></div></Panel><Panel title="Nutrisi & berat badan" caption="Masukkan catatan tubuh hari ini"><div className="form-grid"><Field label="Protein (gram)"><input className={field} type="number" min="0" max="1000" value={protein} onChange={(event) => setProtein(event.target.value)} /></Field><Field label="Berat badan (kg)"><input className={field} type="number" min="1" max="500" step=".1" value={weight} onChange={(event) => setWeight(event.target.value)} placeholder="Contoh: 65.5" /></Field><Field label="Catatan"><textarea className={field} rows={2} value={note} onChange={(event) => setNote(event.target.value)} /></Field><PrimaryButton onClick={save}><Check size={15} /> Simpan data wellness</PrimaryButton></div>{weights.length > 0 && <div className="module-list">{weights.map((item) => <div className="module-inline-meta" key={item.date}><small>{formatDate(item.date)}</small><strong>{item.weightKg} kg</strong></div>)}</div>}</Panel></div>
+   192→  </>;
+   193→}
+   194→
+   195→function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
+   196→  const [seconds, setSeconds] = useState(90);
+   197→  const [remaining, setRemaining] = useState(90);
+   198→  const [running, setRunning] = useState(false);
+   199→  const [photoBusy, setPhotoBusy] = useState(false);
+   200→  useEffect(() => {
+   201→    if (!running) return;
+   202→    const timer = window.setInterval(() => setRemaining((value) => {
+   203→      if (value <= 1) { window.clearInterval(timer); setRunning(false); return 0; }
+   204→      return value - 1;
+   205→    }), 1000);
+   206→    return () => window.clearInterval(timer);
+   207→  }, [running]);
+   208→
+   209→  function addWorkout(event: FormEvent<HTMLFormElement>) {
+   210→    event.preventDefault(); const data = new FormData(event.currentTarget);
+   211→    const exercise = String(data.get("exercise") || "").trim(); if (!exercise) return;
+   212→    const session: WorkoutSession = {
+   213→      id: id(), date: String(data.get("date") || today()), title: String(data.get("title") || "Sesi latihan"),
+   214→      durationMinutes: Math.max(0, Number(data.get("duration")) || 0), cardioMinutes: Math.max(0, Number(data.get("cardio")) || 0),
+   215→      notes: String(data.get("notes") || ""),
+   216→      exercises: [{ id: id(), name: exercise, sets: Math.max(1, Number(data.get("sets")) || 1), reps: Math.max(1, Number(data.get("reps")) || 1), weightKg: Math.max(0, Number(data.get("weight")) || 0) }],
+   217→    };
+   218→    updateModule("workouts", (items) => [session, ...items]); event.currentTarget.reset();
+   219→  }
+   220→  function addProgram(event: FormEvent<HTMLFormElement>) {
+   221→    event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); if (!title) return;
+   222→    const program: WorkoutProgram = { id: id(), title, days: String(data.get("days") || "Senin, Rabu, Jumat"), description: String(data.get("description") || ""), active: true };
+   223→    updateModule("programs", (items) => [program, ...items.map((item) => ({ ...item, active: false }))]); event.currentTarget.reset();
+   224→  }
+   225→  async function addPhoto(event: ChangeEvent<HTMLInputElement>) {
+   226→    const file = event.target.files?.[0]; if (!file) return;
+   227→    if (!file.type.startsWith("image/")) { window.alert("Pilih file gambar."); return; }
+   228→    if (file.size > 12 * 1024 * 1024) { window.alert("Ukuran foto maksimal 12 MB sebelum kompresi."); return; }
+   229→    setPhotoBusy(true);
+   230→    try {
+   231→      const imageData = await compressPhoto(file);
+   232→      if (imageData.length > 280_000) throw new Error("Ukuran foto masih terlalu besar setelah kompresi.");
+   233→      const photo: ProgressPhoto = { id: id(), date: today(), label: "Foto progres", note: "", imageData };
+   234→      updateModule("progressPhotos", (items) => [photo, ...items].slice(0, 5));
+   235→    } catch (error) {
+   236→      window.alert(error instanceof Error ? error.message : "Gagal memproses foto.");
+   237→    } finally { setPhotoBusy(false); event.target.value = ""; }
+   238→  }
+   239→  const totalMinutes = modules.workouts.reduce((sum, item) => sum + item.durationMinutes + item.cardioMinutes, 0);
+   240→  const readiness = modules.checkins.find((item) => item.date === today());
+   241→  return <>
+   242→    <Intro eyebrow="WORKOUT & TRAINING" title="Latihan dengan progres yang tercatat." subtitle="Simpan program, sesi latihan, kardio, foto progres, dan waktu istirahat. Fitur peta otot tidak disertakan." />
+   243→    <div className="module-metrics"><Metric label="SESI LATIHAN" value={String(modules.workouts.length)} foot="Seluruh riwayat" /><Metric label="TOTAL DURASI" value={`${totalMinutes} mnt`} foot="Latihan dan kardio" /><Metric label="KESIAPAN HARI INI" value={readiness ? `${Math.round((readiness.mood + readiness.energy) / 10 * 100)}%` : "—"} foot={readiness ? "Dari mood dan energi" : "Isi daily check-in dahulu"} /></div>
+   244→    <div className="module-two-col"><Panel title="Catat sesi latihan" caption="Log gerakan, set, repetisi, beban, dan kardio"><form className="form-grid" onSubmit={addWorkout}><Field label="Nama sesi"><input className={field} name="title" defaultValue="Full body" maxLength={80} /></Field><div className="form-two-columns"><Field label="Tanggal"><input className={field} name="date" type="date" defaultValue={today()} /></Field><Field label="Durasi latihan (menit)"><input className={field} name="duration" type="number" min="0" defaultValue="45" /></Field></div><Field label="Nama gerakan"><input className={field} name="exercise" required placeholder="Contoh: Push-up" /></Field><div className="form-three-columns"><Field label="Set"><input className={field} name="sets" type="number" min="1" defaultValue="3" /></Field><Field label="Repetisi"><input className={field} name="reps" type="number" min="1" defaultValue="10" /></Field><Field label="Beban (kg)"><input className={field} name="weight" type="number" min="0" step=".5" defaultValue="0" /></Field></div><Field label="Kardio (menit)"><input className={field} name="cardio" type="number" min="0" defaultValue="0" /></Field><Field label="Catatan"><textarea className={field} name="notes" rows={2} /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan latihan</PrimaryButton></form></Panel><Panel title="Program latihan" caption="Simpan split latihan mingguan"><form className="form-grid" onSubmit={addProgram}><Field label="Nama program"><input className={field} name="title" required placeholder="Contoh: Strength 3 hari" /></Field><Field label="Hari latihan"><input className={field} name="days" placeholder="Senin, Rabu, Jumat" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} /></Field><PrimaryButton type="submit"><Plus size={15} /> Buat program</PrimaryButton></form>{modules.programs.map((program) => <article className="module-item" key={program.id}><div className="module-item-top"><div><h3>{program.title} {program.active && <span className="module-tag">Aktif</span>}</h3><p>{program.days} · {program.description}</p></div><button className="module-icon-action danger" onClick={() => updateModule("programs", (items) => remove(items, program.id))} aria-label={`Hapus program ${program.title}`}><Trash2 size={14} /></button></div><button className={secondary} onClick={() => updateModule("programs", (items) => items.map((item) => ({ ...item, active: item.id === program.id })))}>Jadikan aktif</button></article>)}</Panel></div>
+   245→    <div className="module-two-col"><Panel title="Riwayat latihan" caption="Setiap sesi yang kamu catat">{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div><button className="module-icon-action danger" onClick={() => updateModule("workouts", (items) => remove(items, session.id))} aria-label="Hapus sesi"><Trash2 size={14} /></button></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData>Belum ada sesi latihan.</NoData>}</Panel><Panel title="Rest timer" caption="Atur waktu jeda antar set"><div className="rest-timer"><strong>{String(Math.floor(remaining / 60)).padStart(2, "0")}:{String(remaining % 60).padStart(2, "0")}</strong><div className="module-button-row">{[30, 60, 90, 120, 180].map((value) => <button className={seconds === value ? "primary-button module-small-button" : secondary} key={value} onClick={() => { setSeconds(value); setRemaining(value); setRunning(false); }}>{value}s</button>)}</div><div className="module-button-row"><button className="primary-button module-small-button" disabled={remaining === 0} onClick={() => setRunning((value) => !value)}>{running ? "Pause" : remaining === 0 ? "Selesai" : "Mulai"}</button><button className={secondary} onClick={() => { setRunning(false); setRemaining(seconds); }}>Reset</button></div></div></Panel></div>
+   246→    <Panel title="Foto progres" caption="Foto dikompresi sebelum disimpan; maksimal 5 foto aktif"><label className="module-upload"><ImagePlus size={20} /><span>{photoBusy ? "Mengompresi foto…" : "Tambah foto progres"}</span><input type="file" accept="image/*" disabled={photoBusy} onChange={addPhoto} /></label>{modules.progressPhotos.length > 0 && <div className="module-photo-grid">{/* eslint-disable @next/next/no-img-element -- data URL JPEG hasil kompresi klien; optimasi next/image tidak berlaku untuk data URL */}{modules.progressPhotos.map((photo) => <figure key={photo.id}><img src={photo.imageData} alt={`Foto progres ${photo.date}`} /><figcaption>{formatDate(photo.date)}<button onClick={() => updateModule("progressPhotos", (items) => remove(items, photo.id))} aria-label="Hapus foto"><X size={13} /></button></figcaption></figure>)}{/* eslint-enable @next/next/no-img-element */}</div>}</Panel>
+   247→  </>;
+   248→}
+   249→
+   250→interface GrowthSummary {
+   251→  today: string;
+   252→  weekStart: string;
+   253→  totalXp: number;
+   254→  weeklyXp: number;
+   255→  level: number;
+   256→  levelProgress: number;
+   257→  currentStreak: number;
+   258→  completedGoals: number;
+   259→  scheduledToday: number;
+   260→  completedToday: number;
+   261→  vacationMode: boolean;
+   262→  stage: { id: string; label: string; threshold: number; next: number | null; artwork: string; tagline: string; index: number; xpToNext: number | null; progress: number };
+   263→  artwork: string;
+   264→  wisdom: string;
+   265→  worstHabit: { id: string; name: string; rate: number } | null;
+   266→  totalLogs: number;
+   267→}
+   268→
+   269→function TreeView({ modules }: { modules: WorkspaceModules }) {
+
+[showing lines 30-269 of 484; use offset=270 with limit to continue reading]
