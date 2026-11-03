@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type CSSProperties } from "react";
+import { toast } from "sonner";
 import { ListChecks, ListFilter, Plus, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { HabitGroup } from "@/lib/module-types";
@@ -109,7 +110,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
 
       <section className="card card-pad habit-groups-manager">
         <button type="button" className="group-manager-heading" aria-expanded={groupsOpen} onClick={() => setGroupsOpen((value) => !value)}><span><strong>Grup kebiasaan</strong><small>{groups.length} grup tersimpan · kelompokkan rutinitas berdasarkan konteks</small></span><span>{groupsOpen ? "Tutup" : "Kelola"}</span></button>
-        {groupsOpen && <div className="group-manager-body"><form className="group-create-form" onSubmit={(event) => { event.preventDefault(); const name = groupNameInput.trim(); if (!name || !onCreateGroup || groups.some((item) => item.name.toLocaleLowerCase("id-ID") === name.toLocaleLowerCase("id-ID"))) return; onCreateGroup(name, groupColor); setGroupNameInput(""); }}><input className="form-control" value={groupNameInput} onChange={(event) => setGroupNameInput(event.target.value)} placeholder="Nama grup baru, misalnya Rutinitas Pagi" maxLength={40} aria-label="Nama grup baru" /><input className="group-color-input" type="color" value={groupColor} onChange={(event) => setGroupColor(event.target.value)} aria-label="Warna grup baru" /><button className="secondary-button module-small-button" type="submit" disabled={!groupNameInput.trim()}>Tambah grup</button></form>{groups.length > 0 && <div className="group-manager-list">{groups.map((group) => <div className="group-manager-item" key={group.id}><span className="group-color-dot" style={{ backgroundColor: group.color }} /><strong>{group.name}</strong><small>{habits.filter((habit) => habit.groupName === group.name).length} habit</small><button type="button" onClick={() => onDeleteGroup?.(group.id)} aria-label={`Hapus grup ${group.name}`}>Hapus</button></div>)}</div>}</div>}
+        {groupsOpen && <div className="group-manager-body"><form className="group-create-form" onSubmit={(event) => { event.preventDefault(); const name = groupNameInput.trim(); if (!name || !onCreateGroup || groups.some((item) => item.name.toLocaleLowerCase("id-ID") === name.toLocaleLowerCase("id-ID"))) { if (groups.some((item) => item.name.toLocaleLowerCase("id-ID") === name.toLocaleLowerCase("id-ID"))) toast.warning(`Grup "${name}" sudah ada.`); return; } onCreateGroup(name, groupColor); toast.success("Grup kebiasaan ditambahkan.", { description: name }); setGroupNameInput(""); }}><input className="form-control" value={groupNameInput} onChange={(event) => setGroupNameInput(event.target.value)} placeholder="Nama grup baru, misalnya Rutinitas Pagi" maxLength={40} aria-label="Nama grup baru" /><input className="group-color-input" type="color" value={groupColor} onChange={(event) => setGroupColor(event.target.value)} aria-label="Warna grup baru" /><button className="secondary-button module-small-button" type="submit" disabled={!groupNameInput.trim()}>Tambah grup</button></form>{groups.length > 0 && <div className="group-manager-list">{groups.map((group) => <div className="group-manager-item" key={group.id}><span className="group-color-dot" style={{ backgroundColor: group.color }} /><strong>{group.name}</strong><small>{habits.filter((habit) => habit.groupName === group.name).length} habit</small><button type="button" onClick={() => { onDeleteGroup?.(group.id); toast.success("Grup dihapus.", { description: group.name }); }} aria-label={`Hapus grup ${group.name}`}>Hapus</button></div>)}</div>}</div>}
       </section>
 
       <section className="card card-pad habits-panel">
@@ -122,9 +123,9 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
           </label>
           <select className="group-filter-select" aria-label="Filter grup habit" value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)}><option value="all">Semua grup</option>{groups.map((group) => <option value={group.name} key={group.id}>{group.name}</option>)}</select>
           <div className="completion-filters" role="group" aria-label="Filter status kebiasaan">
-            <button type="button" className={completionFilter === "all" ? "active" : ""} onClick={() => setCompletionFilter("all")}>Semua</button>
-            <button type="button" className={completionFilter === "pending" ? "active" : ""} onClick={() => setCompletionFilter("pending")}>Belum selesai</button>
-            <button type="button" className={completionFilter === "completed" ? "active" : ""} onClick={() => setCompletionFilter("completed")}>Selesai</button>
+            <button type="button" className={completionFilter === "all" ? "active" : ""} aria-pressed={completionFilter === "all"} onClick={() => setCompletionFilter("all")}>Semua</button>
+            <button type="button" className={completionFilter === "pending" ? "active" : ""} aria-pressed={completionFilter === "pending"} onClick={() => setCompletionFilter("pending")}>Belum selesai</button>
+            <button type="button" className={completionFilter === "completed" ? "active" : ""} aria-pressed={completionFilter === "completed"} onClick={() => setCompletionFilter("completed")}>Selesai</button>
           </div>
         </div>
         <div className="category-filters" role="group" aria-label="Filter kategori">

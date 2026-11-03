@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { PwaRegister } from "@/components/pwa/pwa-register";
 import { TreeSplash } from "@/components/pwa/tree-splash";
+import { ThemeProvider } from "@/components/pwa/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "@fontsource-variable/nunito";
 import "./globals.css";
 import "./rutina-botanical.css";
@@ -26,7 +28,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fff7ef",
+  // Adaptive themeColor so the OS status bar matches the active theme.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fff7ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#1d2821" },
+  ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -34,11 +40,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <body>
-        <PwaRegister />
-        <TreeSplash />
-        {children}
+        <ThemeProvider>
+          <PwaRegister />
+          <TreeSplash />
+          {children}
+          <Toaster position="top-center" richColors closeButton />
+        </ThemeProvider>
       </body>
     </html>
   );

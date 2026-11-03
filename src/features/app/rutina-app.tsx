@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import {
   Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import { RutinaMark } from "@/components/ui/rutina-mark";
+import { ThemeToggle } from "@/components/pwa/theme-toggle";
 import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { isScheduledOn, parseNumberList } from "@/lib/habit-schedule";
@@ -57,7 +59,6 @@ type SyncStatus = "local" | "syncing" | "synced" | "error";
 export function RutinaApp() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [modal, setModal] = useState<"habit" | "transaction" | null>(null);
-  const [toast, setToast] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
@@ -75,13 +76,6 @@ export function RutinaApp() {
     isReady: workspaceReady,
   } = useWorkspace();
   const { modules, updateModule, ready: modulesReady } = useModules();
-  // Tema selalu "light" — dark mode dinonaktifkan sesuai permintaan user.
-  const selectedTheme: "light" = "light";
-  const themeLabel = "Terang";
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = "light";
-  }, []);
 
   useEffect(() => {
     let frame = 0;
@@ -110,10 +104,24 @@ export function RutinaApp() {
   }, [workspaceReady, habits, activeHabitTimer]);
 
   useEffect(() => {
-    if (!toast) return;
-    const timeout = window.setTimeout(() => setToast(""), 3200);
-    return () => window.clearTimeout(timeout);
-  }, [toast]);
+    // Toasts are now handled by Sonner (mounted in layout.tsx) — no local
+    // auto-dismiss timer needed.
+  }, []);
+
+  // Surface remote-write errors via Sonner so users know when a change
+    // failed to sync to Turso. We only fire once per transition into the
+    // error state so we don't spam on every render.
+    const previousSyncRef = useRef<SyncStatus | null>(null);
+    useEffect(() => {
+      const prev = previousSyncRef.current;
+      if (syncStatus === "error" && prev !== "error") {
+        toast.error("Perubahan belum tersinkron", {
+          description: "Sambungan ke server terputus. Coba lagi dalam sekejap.",
+          action: { label: "Coba lagi", onClick: () => void refreshWorkspace() },
+        });
+      }
+      previousSyncRef.current = syncStatus as SyncStatus;
+    }, [syncStatus, refreshWorkspace]);
 
   useEffect(() => {
     function handleKeyboard(event: KeyboardEvent) {
@@ -187,17 +195,17 @@ export function RutinaApp() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const title = String(data.get("title") ?? "").trim();
-    if (!title) return;
+    if (!title) { toast.warning("Nama kebiasaan tidak boleh kosong."); return; }
 
     const scheduleKind = String(data.get("scheduleKind") || "daily");
     let schedule: Habit["schedule"] = { kind: "daily" };
     if (scheduleKind === "weekly") {
       const days = parseNumberList(String(data.get("scheduleDays") || ""), 0, 6);
-      if (!days.length) { setToast("Pilih minimal satu hari untuk jadwal mingguan."); return; }
+      if (!days.length) { toast.warning("Pilih minimal satu hari untuk jadwal mingguan."); return; }
       schedule = { kind: "weekly", days };
     } else if (scheduleKind === "monthly") {
       const dates = parseNumberList(String(data.get("scheduleDates") || ""), 1, 31);
-      if (!dates.length) { setToast("Pilih minimal satu tanggal untuk jadwal bulanan."); return; }
+      if (!dates.length) { toast.warning("Pilih minimal satu tanggal untuk jadwal bulanan."); return; }
       schedule = { kind: "monthly", dates };
     }
 
@@ -224,7 +232,7 @@ export function RutinaApp() {
 
     updateHabits((current) => [...current, habit]);
     setModal(null);
-    setToast("Kebiasaan baru berhasil ditambahkan.");
+    toast.success("Kebiasaan baru berhasil ditambahkan.", { description: title });
   }
 
   function submitTransaction(event: FormEvent<HTMLFormElement>) {
@@ -232,7 +240,11 @@ export function RutinaApp() {
     const data = new FormData(event.currentTarget);
     const amount = Math.round(Number(data.get("amount")));
     const title = String(data.get("title") ?? "").trim();
-    if (!title || !Number.isFinite(amount) || amount <= 0) return;
+    if (!title || !Number.isFinite(amount) || amount <= 0) {
+      if (!title) toast.warning("Nama transaksi tidak boleh kosong.");
+      else toast.warning("Nominal transaksi harus lebih besar dari 0.");
+      return;
+    }
 
     const transaction: Transaction = {
       id: crypto.randomUUID(),
@@ -247,7 +259,7 @@ export function RutinaApp() {
 
     updateTransactions((current) => [transaction, ...current]);
     setModal(null);
-    setToast("Transaksi berhasil dicatat.");
+    toast.success("Transaksi berhasil dicatat.", { description: `${transaction.type === "income" ? "+" : "−"}Rp ${transaction.amount.toLocaleString("id-ID")} · ${title}` });
   }
 
   if (!workspaceReady || !modulesReady) {
@@ -263,6 +275,7 @@ export function RutinaApp() {
 
   return (
     <div className="app-shell" data-active-tab={activeTab}>
+      <a href="#main-content" className="skip-link">Lewati ke konten utama</a>
       <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
         <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); setMoreOpen(false); }} aria-label="Rutina, kembali ke beranda">
           <span className="brand-mark"><RutinaMark size={27} /></span>
@@ -333,7 +346,7 @@ export function RutinaApp() {
           <span className="rail-sync-indicator" />
         </button>
 
-        <div id="workspace-menu" className={`workspace-menu-panel ${moreOpen ? "is-open" : ""}`} aria-hidden={!moreOpen}>
+        <div id="workspace-menu" className={`workspace-menu-panel ${moreOpen ? "is-open" : ""}`} aria-hidden={!moreOpen} inert={!moreOpen}>
           <div className="menu-panel-header">
             <div>
               <span className="menu-panel-kicker">YOUR SPACE</span>
@@ -427,7 +440,7 @@ export function RutinaApp() {
       </aside>
       {moreOpen && <button type="button" className="workspace-menu-scrim" aria-label="Tutup menu navigasi" onClick={() => setMoreOpen(false)} />}
 
-      <main className="main-shell">
+      <main className="main-shell" id="main-content">
         <header className="topbar">
           <div className="mobile-brand">
             <span className="brand-mark"><RutinaMark size={22} /></span>
@@ -453,6 +466,7 @@ export function RutinaApp() {
               {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
             </button>
             <PwaInstallButton />
+            <ThemeToggle />
             <button
               type="button"
               className="topbar-bell"
@@ -470,7 +484,7 @@ export function RutinaApp() {
           </div>
         </header>
 
-        <div className="content-wrap page-transition" key={activeTab}>
+        <div className="content-wrap page-transition">
           {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} onAddTransaction={() => setModal("transaction")} onOpenFeatures={() => { setQuickActionOpen(false); setMoreOpen(true); }} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
           {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
@@ -587,7 +601,17 @@ export function RutinaApp() {
         onClose={() => { setSearchOpen(false); setSearchQuery(""); }}
         onNavigate={(tab) => setActiveTab(tab)}
       />
-      {toast && <div role="status" aria-live="polite" className="toast"><span className="toast-dot" />{toast}</div>}
+      <footer className="site-footer" role="contentinfo">
+        <div className="site-footer-brand">
+          <span className="footer-mark" aria-hidden="true" />
+          <span>Rutina</span>
+        </div>
+        <div className="site-footer-meta">
+          <a href="https://github.com/anandategarch/Habit-Tracker-V.2" target="_blank" rel="noreferrer noopener">Sumber</a>
+          <span className="site-footer-version" aria-label="Versi aplikasi">v2 · {new Date().getFullYear()}</span>
+          <span aria-hidden="true">Tumbuh dalam langkah kecil.</span>
+        </div>
+      </footer>
     </div>
   );
 }
