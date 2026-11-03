@@ -1703,3 +1703,355 @@ html[data-theme="dark"] .weekly-trend-badge { color: var(--primary); background:
 @media (max-width: 600px) {
   .botanical-hero { padding-bottom: 108px; }
 }
+
+
+/* ===== Dashboard composition aligned to PEDOMAN UI Gambar 3 ===== */
+.hero-quote-bubble {
+  position: absolute;
+  z-index: 2;
+  top: 30px;
+  right: 28%;
+  width: min(224px, 27%);
+  padding: 17px 19px;
+  border: 1px solid rgba(255,255,255,.86);
+  border-radius: 23px 23px 6px 23px;
+  color: #42483c;
+  background: rgba(255,248,235,.91);
+  box-shadow: 0 8px 22px rgba(93,75,53,.08);
+  backdrop-filter: blur(10px);
+}
+.hero-quote-bubble p { margin: 0; font-size: 13px; font-weight: 720; line-height: 1.48; }
+.hero-quote-bubble span { display: block; margin-top: 7px; color: #89907d; font-size: 9px; font-weight: 700; }
+
+.dashboard-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 16px;
+  margin-top: 16px;
+}
+.dashboard-feature-grid > .card { min-width: 0; }
+.dashboard-feature-grid .home-habits-card,
+.dashboard-feature-grid .weekly-trend-card { height: 100%; }
+.weekly-trend-card { display: flex; flex-direction: column; min-width: 0; }
+.weekly-trend-layout {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+.weekly-progress-ring {
+  position: relative;
+  display: grid;
+  width: 112px;
+  height: 112px;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(from -90deg, #528d61 0 var(--progress), #e4eadf var(--progress) 100%);
+}
+.weekly-progress-ring::before {
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: #fffdf8;
+  content: "";
+}
+.weekly-progress-ring > div {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+.weekly-progress-ring strong { color: #303a30; font-size: 25px; font-weight: 850; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.weekly-progress-ring small { color: #8b9483; font-size: 7px; font-weight: 850; letter-spacing: 1px; }
+.weekly-trend-chart {
+  min-width: 0;
+  min-height: 142px;
+  gap: clamp(3px, .8vw, 9px);
+  padding: 8px 4px 0;
+}
+.weekly-trend-chart .insight-trend-bars { height: 84px; }
+.weekly-trend-chart .insight-trend-bar { width: min(19px, 55%); }
+.weekly-trend-chart .insight-trend-day { gap: 6px; }
+.weekly-trend-chart .insight-trend-day small { font-size: 8px; }
+.weekly-trend-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 13px;
+}
+.weekly-comparison { color: #899181; font-size: 9px; line-height: 1.4; }
+.weekly-comparison.positive { color: #4d8b60; font-weight: 750; }
+.weekly-comparison.negative { color: #bf7b63; font-weight: 750; }
+.weekly-add-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 39px;
+  flex: none;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(115deg,#927bea,#765cdb);
+  box-shadow: 0 7px 17px rgba(119,92,219,.19);
+  font-size: 10px;
+  font-weight: 800;
+}
+.weekly-add-action:hover { background: linear-gradient(115deg,#8569e0,#684dce); transform: translateY(-1px); }
+.dashboard-support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 16px;
+}
+.dashboard-support-grid > * { min-width: 0; }
+.dashboard-support-bottom { display: grid; align-content: start; gap: 12px; min-width: 0; }
+.dashboard-support-bottom:empty { display: none; }
+.weekly-trend-card .insight-trend-empty { flex: 1; }
+
+@media (max-width: 1180px) {
+  .hero-quote-bubble { display: none; }
+  .dashboard-support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 960px) {
+  .dashboard-feature-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .dashboard-support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .weekly-trend-layout { grid-template-columns: 104px minmax(0, 1fr); gap: 10px; }
+  .weekly-progress-ring { width: 98px; height: 98px; }
+  .weekly-progress-ring::before { inset: 8px; }
+  .weekly-progress-ring strong { font-size: 22px; }
+}
+@media (max-width: 600px) {
+  .dashboard-feature-grid { margin-top: 12px; }
+  .dashboard-support-grid { grid-template-columns: minmax(0, 1fr); margin-top: 12px; }
+  .weekly-trend-layout { grid-template-columns: 82px minmax(0, 1fr); gap: 8px; }
+  .weekly-progress-ring { width: 78px; height: 78px; }
+  .weekly-progress-ring::before { inset: 6px; }
+  .weekly-progress-ring strong { font-size: 18px; }
+  .weekly-progress-ring small { font-size: 6px; }
+  .weekly-trend-chart { min-height: 116px; gap: 3px; padding-right: 0; padding-left: 0; }
+  .weekly-trend-chart .insight-trend-bars { height: 68px; }
+  .weekly-trend-chart .insight-trend-value { font-size: 8px; }
+  .weekly-trend-chart .insight-trend-day small { font-size: 7px; }
+  .weekly-trend-footer { align-items: flex-start; flex-direction: column; }
+  .weekly-add-action { width: 100%; min-height: 42px; }
+  .weekly-comparison { font-size: 8px; }
+  .hero-quote-bubble { display: none; }
+}
+html[data-theme="dark"] .hero-quote-bubble {
+  border-color: var(--line);
+  color: var(--ink);
+  background: rgba(38,52,42,.92);
+}
+html[data-theme="dark"] .hero-quote-bubble span,
+html[data-theme="dark"] .weekly-comparison { color: var(--muted); }
+html[data-theme="dark"] .weekly-progress-ring { background: conic-gradient(from -90deg,#80ad79 0 var(--progress),#435345 var(--progress) 100%); }
+html[data-theme="dark"] .weekly-progress-ring::before { background: var(--surface); }
+html[data-theme="dark"] .weekly-progress-ring strong { color: var(--ink); }
+html[data-theme="dark"] .weekly-progress-ring small { color: var(--muted); }
+@media (prefers-reduced-motion: reduce) {
+  .weekly-add-action { transition: none !important; }
+}
+
+
+/* ===== Botanical page polish: Goals and Settings ===== */
+.goal-create-panel { margin: 14px 0; scroll-margin-top: 88px; }
+.goal-list-panel { margin-top: 15px; }
+.goal-list-panel .goal-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+.goal-card { min-width: 0; }
+.goal-card-top {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+}
+.goal-card-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 14px;
+  color: #7967d2;
+  background: #f0eaff;
+}
+.goal-card-copy { display: grid; min-width: 0; gap: 4px; }
+.goal-card-copy h3 { margin: 1px 0 0; color: #384438; font-size: 14px; line-height: 1.35; font-weight: 820; }
+.goal-card-copy p { margin: 0; color: #899184; font-size: 10px; line-height: 1.5; }
+.goal-due-date { display: block; margin-top: 10px; }
+.goal-progress-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
+.goal-progress-heading span { color: #939889; font-size: 8px; font-weight: 850; letter-spacing: 1px; }
+.goal-progress-heading strong { color: #55865b; font-size: 12px; font-weight: 850; }
+.goal-card .module-inline-meta { margin-top: 8px; }
+.goal-milestones { display: grid; gap: 5px; margin-top: 12px; padding-top: 11px; border-top: 1px solid rgba(232,224,211,.8); }
+.goal-milestones-label { color: #96998c; font-size: 7px; font-weight: 850; letter-spacing: 1.15px; }
+.goal-milestones .module-check-row { padding: 5px 0; }
+.goal-no-milestones { margin: 10px 0 0; color: #96998c; font-size: 9px; line-height: 1.5; }
+.goal-card.is-complete { border-color: #cfe0c8; background: linear-gradient(135deg,#f0f7eb,#fffdf9 72%); }
+.goal-card.is-complete .goal-card-icon { color: #4e8b5e; background: #e4f1df; }
+.goal-empty-state { display: grid; justify-items: center; gap: 12px; padding: 10px 0; }
+.goal-empty-state .primary-button { min-height: 40px; }
+
+.settings-profile-card { scroll-margin-top: 88px; }
+.settings-profile-mark {
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid rgba(255,255,255,.9);
+  border-radius: 50%;
+  background: #f2eaff;
+}
+.settings-profile-mark img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.settings-menu-card {
+  display: grid;
+  gap: 0;
+  margin: 0 0 15px;
+  padding: 5px 16px;
+  border: 1px solid #eee4da;
+  border-radius: 21px;
+  background: rgba(255,253,249,.94);
+  box-shadow: var(--shadow-card);
+}
+.settings-menu-card a {
+  display: grid;
+  grid-template-columns: 37px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 59px;
+  border-bottom: 1px solid #f1e9df;
+  color: inherit;
+  text-decoration: none;
+}
+.settings-menu-card a:last-child { border-bottom: 0; }
+.settings-menu-card a > span:nth-child(2) { display: grid; gap: 3px; }
+.settings-menu-card a strong { color: #465143; font-size: 11px; font-weight: 800; }
+.settings-menu-card a small { color: #989b8f; font-size: 9px; }
+.settings-menu-card a > svg:last-child { color: #9b9b8f; }
+.settings-menu-card a:hover strong { color: #7661d1; }
+.settings-menu-icon {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border-radius: 12px;
+  color: #6d956b;
+  background: #edf5e7;
+}
+.settings-menu-card a:nth-child(2) .settings-menu-icon { color: #c18150; background: #fff0e4; }
+.settings-menu-card a:nth-child(3) .settings-menu-icon { color: #7b69d0; background: #f0eaff; }
+.settings-menu-card a:nth-child(4) .settings-menu-icon { color: #6b9b9c; background: #e9f4f1; }
+.settings-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 12px 0;
+  scroll-margin-top: 88px;
+}
+.settings-info-card > div:last-child { min-width: 0; }
+.settings-info-card .section-heading { margin-bottom: 0; }
+.settings-info-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  place-items: center;
+  border-radius: 13px;
+  color: #bc8151;
+  background: #fff0e4;
+}
+.settings-about-tagline { display: block; margin-top: 7px; color: #7f8d78; font-size: 9px; font-weight: 700; }
+#settings-preferences, #settings-backup { scroll-margin-top: 88px; }
+
+html[data-theme="dark"] .goal-card-copy h3,
+html[data-theme="dark"] .settings-menu-card a strong { color: var(--ink); }
+html[data-theme="dark"] .goal-card-copy p,
+html[data-theme="dark"] .goal-no-milestones,
+html[data-theme="dark"] .settings-menu-card a small,
+html[data-theme="dark"] .settings-about-tagline { color: var(--muted); }
+html[data-theme="dark"] .goal-milestones { border-color: var(--line); }
+html[data-theme="dark"] .goal-card.is-complete { border-color: #4b674a; background: #2c4030; }
+html[data-theme="dark"] .settings-menu-card { border-color: var(--line); background: var(--surface); }
+html[data-theme="dark"] .settings-menu-card a { border-color: var(--line); }
+html[data-theme="dark"] .settings-menu-icon { background: #354b38; color: #a8c99a; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(2) .settings-menu-icon { color: #e0aa7c; background: #49392d; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(3) .settings-menu-icon { color: #b3a3f0; background: #3d3a55; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(4) .settings-menu-icon { color: #9bc9c5; background: #2d4542; }
+
+@media (max-width: 900px) {
+  .goal-list-panel .goal-list { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 600px) {
+  .goal-card { padding: 14px; }
+  .settings-menu-card { padding: 3px 12px; }
+  .settings-menu-card a { min-height: 56px; }
+  .settings-info-card { padding: 14px; }
+}
+
+
+/* Insights period selector and compact botanical chart rhythm. */
+.insight-period-tabs {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  gap: 4px;
+  width: fit-content;
+  margin: 0 0 16px;
+  padding: 4px;
+  border: 1px solid #eee4da;
+  border-radius: 999px;
+  background: rgba(255,253,249,.88);
+}
+.insight-period-tabs button {
+  min-height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  color: #7f8679;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 760;
+}
+.insight-period-tabs button.active {
+  color: #fff;
+  background: linear-gradient(110deg,#927bea,#aa9be9);
+  box-shadow: 0 4px 11px rgba(124,103,217,.16);
+}
+.insight-trend-panel .insight-trend-chart { transition: min-height .2s ease; }
+.insight-period-highlight { border-radius: 23px; }
+html[data-theme="dark"] .insight-period-tabs { border-color: var(--line); background: var(--surface); }
+html[data-theme="dark"] .insight-period-tabs button { color: var(--muted); }
+html[data-theme="dark"] .insight-period-tabs button.active { color: #fff; }
+
+.tree-detail-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  min-height: 38px;
+  margin-top: 13px;
+  padding: 0 15px;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(115deg,#927bea,#765cdb);
+  box-shadow: 0 6px 15px rgba(119,92,219,.17);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 800;
+}
+.tree-detail-cta:hover { background: linear-gradient(115deg,#8569e0,#684dce); }
+#tree-growth-details { scroll-margin-top: 88px; }
+html[data-theme="dark"] .tree-detail-cta { color: #fff; }
+
+@media (max-width: 600px) {
+  .insight-period-tabs { display: grid; width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .insight-period-tabs button { padding: 0 8px; }
+  .insight-trend-chart { gap: 4px; }
+}

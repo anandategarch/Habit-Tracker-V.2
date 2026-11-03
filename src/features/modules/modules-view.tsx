@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { BackupView } from "@/features/settings/backup-view";
-import { ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Trash2, X } from "lucide-react";
+import { ArrowRight, ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Target, Trash2, X } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
 import type { Transaction } from "@/lib/types";
@@ -63,6 +63,7 @@ export function ModulesView({ tab, modules, updateModule }: {
 }
 
 function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
+  const [createOpen, setCreateOpen] = useState(false);
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -76,41 +77,47 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
     };
     updateModule("goals", (items) => [goal, ...items]);
     event.currentTarget.reset();
+    setCreateOpen(false);
   }
   const active = modules.goals.filter((goal) => !goal.completed).length;
   const completed = modules.goals.length - active;
   const steps = modules.goals.reduce((sum, goal) => sum + goal.milestones.length, 0);
   const doneSteps = modules.goals.reduce((sum, goal) => sum + goal.milestones.filter((step) => step.completed).length, 0);
   return <>
-    <Intro eyebrow="GOALS & MILESTONES" title="Ubah niat menjadi progres." subtitle="Pecah tujuan besar menjadi langkah yang bisa diselesaikan satu per satu." />
-    <div className="module-metrics"><Metric label="TUJUAN AKTIF" value={String(active)} foot="Masih berjalan" /><Metric label="TUJUAN SELESAI" value={String(completed)} foot="Sudah dicapai" /><Metric label="MILESTONES" value={`${doneSteps}/${steps}`} foot="Langkah diselesaikan" /></div>
-    <div className="module-two-col">
-      <Panel title="Tujuan baru" caption="Tuliskan hasil yang ingin dicapai dan milestone-nya">
-        <form className="form-grid" onSubmit={submit}>
-          <Field label="Nama tujuan"><input className={field} name="title" maxLength={100} required placeholder="Contoh: Menyelesaikan sertifikasi" /></Field>
-          <Field label="Deskripsi"><textarea className={field} name="description" rows={2} placeholder="Mengapa tujuan ini penting?" /></Field>
-          <div className="form-two-columns">
-            <Field label="Kategori"><select className={field} name="category"><option>Personal</option><option>Health</option><option>Learning</option><option>Finance</option><option>Career</option></select></Field>
-            <Field label="Tenggat"><input className={field} name="dueDate" type="date" /></Field>
+    <PageIntro eyebrow="GOALS & MILESTONES" title="Ubah niat menjadi progres." subtitle="Pecah tujuan besar menjadi langkah yang bisa diselesaikan satu per satu." action={<PrimaryButton onClick={() => setCreateOpen((value) => !value)}><Plus size={15} /> {createOpen ? "Tutup form" : "Tujuan baru"}</PrimaryButton>} />
+    <div className="module-metrics"><Metric label="TUJUAN AKTIF" value={String(active)} foot="Masih berjalan" /><Metric label="TUJUAN SELESAI" value={String(completed)} foot="Sudah dicapai" /><Metric label="MILESTONES" value={doneSteps + "/" + steps} foot="Langkah diselesaikan" /></div>
+    {createOpen && <section className="card card-pad goal-create-panel" id="goal-create-panel">
+      <SectionHeading title="Tujuan baru" caption="Tuliskan hasil yang ingin dicapai dan milestone-nya." />
+      <form className="form-grid" onSubmit={submit}>
+        <Field label="Nama tujuan"><input className={field} name="title" maxLength={100} required placeholder="Contoh: Menyelesaikan sertifikasi" /></Field>
+        <Field label="Deskripsi"><textarea className={field} name="description" rows={2} placeholder="Mengapa tujuan ini penting?" /></Field>
+        <div className="form-two-columns">
+          <Field label="Kategori"><select className={field} name="category"><option>Personal</option><option>Health</option><option>Learning</option><option>Finance</option><option>Career</option></select></Field>
+          <Field label="Tenggat"><input className={field} name="dueDate" type="date" /></Field>
+        </div>
+        <Field label="Milestones (satu per baris)"><textarea className={field} name="milestones" rows={3} placeholder={"Riset langkah pertama\nSelesaikan bagian awal\nEvaluasi hasil"} /></Field>
+        <div className="module-button-row"><PrimaryButton type="submit"><Plus size={15} /> Simpan tujuan</PrimaryButton><button type="button" className={secondary} onClick={() => setCreateOpen(false)}>Batal</button></div>
+      </form>
+    </section>}
+    <section className="card card-pad goal-list-panel">
+      <SectionHeading title="Tujuanmu" caption={modules.goals.length + " tujuan tersimpan · " + doneSteps + " dari " + steps + " milestone selesai"} />
+      {modules.goals.length ? <div className="module-list goal-list">{modules.goals.map((goal) => {
+        const done = goal.milestones.filter((step) => step.completed).length;
+        const progress = goal.completed ? 100 : goal.milestones.length ? Math.round(done / goal.milestones.length * 100) : 0;
+        return <article className={"module-item goal-card" + (goal.completed ? " is-complete" : "")} key={goal.id}>
+          <div className="module-item-top goal-card-top">
+            <span className="goal-card-icon"><Target size={20} /></span>
+            <div className="goal-card-copy"><span className="module-tag">{goal.category}</span><h3>{goal.title}</h3><p>{goal.description || "Tidak ada deskripsi."}</p></div>
+            <button className="module-icon-action danger" type="button" onClick={() => updateModule("goals", (items) => remove(items, goal.id))} aria-label={"Hapus tujuan " + goal.title}><Trash2 size={15} /></button>
           </div>
-          <Field label="Milestones (satu per baris)"><textarea className={field} name="milestones" rows={3} placeholder={"Riset langkah pertama\nSelesaikan bagian awal\nEvaluasi hasil"} /></Field>
-          <PrimaryButton type="submit"><Plus size={15} /> Simpan tujuan</PrimaryButton>
-        </form>
-      </Panel>
-      <Panel title="Daftar tujuan" caption={`${modules.goals.length} tujuan tersimpan`}>
-        {modules.goals.length ? <div className="module-list goal-list">{modules.goals.map((goal) => {
-          const done = goal.milestones.filter((step) => step.completed).length;
-          const progress = goal.milestones.length ? Math.round(done / goal.milestones.length * 100) : (goal.completed ? 100 : 0);
-          return <article className="module-item goal-card" key={goal.id}>
-            <div className="module-item-top"><div><span className="module-tag">{goal.category}</span><h3>{goal.title}</h3><p>{goal.description || "Tidak ada deskripsi."}</p></div><button className="module-icon-action danger" onClick={() => updateModule("goals", (items) => remove(items, goal.id))} aria-label={`Hapus tujuan ${goal.title}`}><Trash2 size={15} /></button></div>
-            {goal.dueDate && <small className="module-muted">Tenggat {formatDate(goal.dueDate)}</small>}
-            <div className="module-progress-track"><span style={{ width: `${progress}%` }} /></div>
-            <div className="module-inline-meta"><small>{done}/{goal.milestones.length} milestone · {progress}%</small><button className={secondary} onClick={() => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, completed: !item.completed } : item))}>{goal.completed ? "Buka kembali" : "Tandai selesai"}</button></div>
-            {goal.milestones.map((step) => <label className="module-check-row" key={step.id}><input type="checkbox" checked={step.completed} onChange={(event) => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, milestones: item.milestones.map((part) => part.id === step.id ? { ...part, completed: event.target.checked } : part) } : item))} /><span className={step.completed ? "is-done" : ""}>{step.title}</span></label>)}
-          </article>;
-        })}</div> : <NoData>Belum ada tujuan. Mulai dengan satu hasil yang ingin kamu capai.</NoData>}
-      </Panel>
-    </div>
+          {goal.dueDate && <small className="module-muted goal-due-date">Tenggat {formatDate(goal.dueDate)}</small>}
+          <div className="goal-progress-heading"><span>PROGRES TUJUAN</span><strong>{progress}%</strong></div>
+          <div className="module-progress-track" role="progressbar" aria-label={"Progres tujuan " + goal.title} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}><span style={{ width: progress + "%" }} /></div>
+          <div className="module-inline-meta"><small>{done}/{goal.milestones.length} milestone</small><button type="button" className={secondary} onClick={() => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, completed: !item.completed } : item))}>{goal.completed ? "Buka kembali" : "Tandai selesai"}</button></div>
+          {goal.milestones.length > 0 ? <div className="goal-milestones"><span className="goal-milestones-label">LANGKAH BERIKUTNYA</span>{goal.milestones.map((step) => <label className="module-check-row" key={step.id}><input type="checkbox" checked={step.completed} onChange={(event) => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, milestones: item.milestones.map((part) => part.id === step.id ? { ...part, completed: event.target.checked } : part) } : item))} /><span className={step.completed ? "is-done" : ""}>{step.title}</span></label>)}</div> : <p className="goal-no-milestones">Belum ada milestone. Kamu tetap bisa menandai tujuan ini selesai kapan pun.</p>}
+        </article>;
+      })}</div> : <div className="goal-empty-state"><NoData>Belum ada tujuan. Mulai dengan satu hasil yang ingin kamu capai.</NoData><PrimaryButton onClick={() => setCreateOpen(true)}><Plus size={14} /> Buat tujuan pertama</PrimaryButton></div>}
+    </section>
   </>;
 }
 
@@ -312,6 +319,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
               <span style={{ width: String(growth.levelProgress) + "%" }} />
             </div>
             <small className="tree-level-footnote">Progres seumur hidup · tidak pernah direset</small>
+            <a className="tree-detail-cta" href="#tree-growth-details">Lihat Detail <ArrowRight size={13} /></a>
           </div>
           <div className="tree-journey-art" role="img" aria-label={"Ilustrasi pohon tahap " + growth.stage.label}>
             <span className="tree-art-orbit tree-art-orbit-one" />
@@ -334,7 +342,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
           <div><span className="small-label">BUAH EMAS</span><strong>{goalsCount}</strong><small>Tujuan yang telah selesai</small></div>
         </div>
 
-        <div className="module-two-col tree-detail-grid">
+        <div className="module-two-col tree-detail-grid" id="tree-growth-details">
           <Panel title="Penyiraman hari ini" caption="Setiap habit yang selesai membantu pertumbuhan hari ini">
             <div className="tree-watering-count"><strong>{growth.completedToday}/{growth.scheduledToday}</strong><span>habit terjadwal selesai</span></div>
             <div className="module-progress-track"><span style={{ width: String(growth.scheduledToday ? growth.completedToday / growth.scheduledToday * 100 : 0) + "%" }} /></div>

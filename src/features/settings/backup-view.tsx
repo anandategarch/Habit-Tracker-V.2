@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
-import { Archive, Download, FileUp, LoaderCircle, ShieldCheck, Sprout } from "lucide-react";
+import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sprout } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import type { WorkspaceSettings } from "@/lib/module-types";
 
@@ -94,12 +94,23 @@ export function BackupView({ settings, onUpdateSettings }: {
   return <>
     <PageIntro eyebrow="PREFERENSI & DATA" title="Ruang nyaman untuk bertumbuh." subtitle="Atur suasana Rutina dan jaga catatan kebiasaanmu tetap aman." />
     <section className="settings-profile-card">
-      <span className="settings-profile-mark"><span>R</span></span>
+      <span className="settings-profile-mark">
+        {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis untuk ukuran profil kecil */}
+        <img src="/illustrations/avatar.png" alt="Ilustrasi profil Rutina" width={52} height={52} />
+      </span>
       <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadimu</strong><span>Rutina · Grow at your pace</span></div>
       <span className="settings-profile-status"><ShieldCheck size={14} /> Data terlindungi</span>
     </section>
+
+    <nav className="settings-menu-card" aria-label="Navigasi pengaturan">
+      <a href="#settings-preferences"><span className="settings-menu-icon"><Settings2 size={17} /></span><span><strong>Preferensi aplikasi</strong><small>Tema dan ritme pribadi</small></span><ChevronRight size={17} /></a>
+      <a href="#settings-notifications"><span className="settings-menu-icon"><Bell size={17} /></span><span><strong>Notifikasi</strong><small>Pengingat habit yang belum selesai</small></span><ChevronRight size={17} /></a>
+      <a href="#settings-backup"><span className="settings-menu-icon"><Database size={17} /></span><span><strong>Data &amp; Backup</strong><small>Ekspor dan pulihkan workspace</small></span><ChevronRight size={17} /></a>
+      <a href="#settings-about"><span className="settings-menu-icon"><Info size={17} /></span><span><strong>Tentang Rutina</strong><small>Identitas dan filosofi aplikasi</small></span><ChevronRight size={17} /></a>
+    </nav>
+
     <div className="settings-preferences-grid">
-      <section className="card card-pad settings-preference-card">
+      <section className="card card-pad settings-preference-card" id="settings-preferences">
         <SectionHeading title="Preferensi tampilan" caption="Pilih suasana yang paling nyaman untukmu." />
         <div className="settings-theme-options" role="group" aria-label="Tema aplikasi">
           <button type="button" className={settings.theme === "system" ? "active" : ""} aria-pressed={settings.theme === "system"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "system" }))}><span>◐</span><strong>Sistem</strong><small>Ikuti perangkat</small></button>
@@ -117,7 +128,17 @@ export function BackupView({ settings, onUpdateSettings }: {
         <div className="settings-about-note"><span>“</span><p>Hal besar tumbuh dari langkah kecil. Kembali kapan pun kamu siap.</p></div>
       </section>
     </div>
-    <div className="settings-section-heading"><span>DATA & PEMULIHAN</span><strong>Backup workspace</strong></div>
+    <section className="card card-pad settings-info-card" id="settings-notifications">
+      <div className="settings-info-icon"><Bell size={18} /></div>
+      <div><SectionHeading title="Notifikasi kebiasaan" caption="Jumlah habit yang belum selesai ditampilkan pada badge ikon bel di header. Buka ikon tersebut untuk melihat daftar kebiasaan hari ini." /></div>
+    </section>
+
+    <section className="card card-pad settings-info-card" id="settings-about">
+      <div className="settings-info-icon"><Sprout size={18} /></div>
+      <div><SectionHeading title="Tentang Rutina" caption="Ruang pribadi untuk membangun kebiasaan baik, menjaga keseimbangan, dan bertumbuh lewat langkah kecil setiap hari." /><span className="settings-about-tagline">Grow at your pace · Small steps, meaningful growth.</span></div>
+    </section>
+
+    <div className="settings-section-heading" id="settings-backup"><span>DATA & PEMULIHAN</span><strong>Backup workspace</strong></div>
     <div className="module-two-col">
       <section className="card card-pad backup-card">
         <div className="backup-icon"><Archive size={22} /></div>

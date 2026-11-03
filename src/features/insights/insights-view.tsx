@@ -11,6 +11,7 @@ import { PageIntro, SectionHeading, StatCard } from "@/components/ui/primitives"
 const habitCategories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 type InsightType = "mood" | "sleep" | "performance" | "streak" | "finance";
 type Insight = { id: string; type: InsightType; title: string; text: string; habitId?: string };
+type InsightPeriod = "week" | "month" | "year";
 type HabitHistoryRecord = { habitId: string; title: string; date: string };
 
 function localInsights(checkins: DailyCheckin[], habits: Habit[], income: number, expense: number): Insight[] {
@@ -51,9 +52,12 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   const [source, setSource] = useState<"ai" | "rule-based" | "local">("local");
   const [loading, setLoading] = useState(true);
   const [sourceNote, setSourceNote] = useState("");
-  const [weeklyHistory, setWeeklyHistory] = useState<HabitHistoryRecord[]>([]);
-  const [weeklyHistoryLoading, setWeeklyHistoryLoading] = useState(true);
-  const [weeklyHistoryError, setWeeklyHistoryError] = useState(false);
+  const [weeklyHistorySnapshot, setWeeklyHistorySnapshot] = useState<{
+    key: string;
+    records: HabitHistoryRecord[];
+    error: boolean;
+  } | null>(null);
+  const [period, setPeriod] = useState<InsightPeriod>("week");
   // Keep the freshest local data available for the offline fallback without
   // re-running the (expensive, LLM-backed) request on every workspace change.
   const fallbackDataRef = useRef({ checkins, habits, income, expense });
@@ -62,54 +66,83 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   }, [checkins, habits, income, expense]);
 
   const todayKey = todayISO();
-  const weekDateKeys = useMemo(() => {
-    const todayAtJakartaMidday = new Date(`${todayKey}T12:00:00+07:00`);
-    return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(todayAtJakartaMidday);
-      date.setUTCDate(date.getUTCDate() - (6 - index));
+  const periodDateKeys = useMemo(() => {
+    if (period === "year") return [];
+    const count = period === "week" ? 7 : 30;
+    const anchor = new Date(todayKey + "T12:00:00+07:00");
+    return Array.from({ length: count }, (_, index) => {
+      const date = new Date(anchor);
+      date.setUTCDate(date.getUTCDate() - (count - 1 - index));
       return date.toISOString().slice(0, 10);
     });
-  }, [todayKey]);
+  }, [todayKey, period]);
+  const periodMonthKeys = useMemo(() => {
+    if (period === "year") {
+      const [year, month] = todayKey.slice(0, 7).split("-").map(Number);
+      return Array.from({ length: 12 }, (_, index) => {
+        const date = new Date(Date.UTC(year, month - 1 - (11 - index), 1));
+        return date.toISOString().slice(0, 7);
+      });
+    }
+    return [...new Set(periodDateKeys.map((date) => date.slice(0, 7)))];
+  }, [todayKey, period, periodDateKeys]);
+  const periodMonthKey = periodMonthKeys.join(",");
+  const weeklyHistoryLoading = weeklyHistorySnapshot?.key !== periodMonthKey;
+  const weeklyHistoryError = !weeklyHistoryLoading && Boolean(weeklyHistorySnapshot?.error);
+  const weeklyHistory = weeklyHistoryLoading ? [] : (weeklyHistorySnapshot?.records ?? []);
   const recentCheckins = useMemo(() => checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [checkins]);
   const trendCheckins = recentCheckins.slice(0, 7).reverse();
-  const weeklyActivity = useMemo(() => {
-    const completedByDate = new Map<string, number>();
-    weeklyHistory.forEach((record) => completedByDate.set(record.date, (completedByDate.get(record.date) ?? 0) + 1));
-    return weekDateKeys.map((date) => ({
-      date,
-      completed: date === todayKey ? habits.filter((habit) => habit.completed).length : (completedByDate.get(date) ?? 0),
+
+  const completedByDate = useMemo(() => {
+    const map = new Map<string, number>();
+    weeklyHistory.forEach((record) => map.set(record.date, (map.get(record.date) ?? 0) + 1));
+    map.set(todayKey, habits.filter((habit) => habit.completed).length);
+    return map;
+  }, [weeklyHistory, todayKey, habits]);
+  const trendData = useMemo(() => {
+    if (period === "year") {
+      return periodMonthKeys.map((month) => ({
+        key: month,
+        label: new Intl.DateTimeFormat("id-ID", { month: "short", timeZone: "UTC" }).format(new Date(month + "-01T00:00:00Z")),
+        completed: [...completedByDate.entries()].filter(([date]) => date.slice(0, 7) === month).reduce((sum, [, count]) => sum + count, 0),
+      }));
+    }
+    if (period === "month") {
+      return Array.from({ length: 5 }, (_, index) => {
+        const dates = periodDateKeys.slice(index * 7, (index + 1) * 7);
+        return { key: "week-" + index, label: "Minggu " + (index + 1), completed: dates.reduce((sum, date) => sum + (completedByDate.get(date) ?? 0), 0) };
+      }).filter((item) => item.key === "week-0" || item.completed > 0 || periodDateKeys.length > 28);
+    }
+    return periodDateKeys.map((date) => ({
+      key: date,
+      label: new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(date + "T12:00:00+07:00")),
+      completed: completedByDate.get(date) ?? 0,
     }));
-  }, [habits, todayKey, weekDateKeys, weeklyHistory]);
-  const weeklyActivityMax = Math.max(1, ...weeklyActivity.map((item) => item.completed));
-  const weeklyActivityTotal = weeklyActivity.reduce((sum, item) => sum + item.completed, 0);
+  }, [period, periodDateKeys, periodMonthKeys, completedByDate]);
+  const trendMax = Math.max(1, ...trendData.map((item) => item.completed));
+  const trendTotal = trendData.reduce((sum, item) => sum + item.completed, 0);
+  const periodTitle = period === "week" ? "Progress Mingguan" : period === "month" ? "Progress Bulanan" : "Progress Tahunan";
+  const periodCaption = period === "week" ? "7 hari terakhir" : period === "month" ? "30 hari terakhir" : "12 bulan terakhir";
   const moodAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.mood, 0) / recentCheckins.length : null;
   const energyAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.energy, 0) / recentCheckins.length : null;
   const sleepAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.sleepHours, 0) / recentCheckins.length : null;
 
   useEffect(() => {
     let cancelled = false;
-    const months = [...new Set(weekDateKeys.map((date) => date.slice(0, 7)))];
-    void Promise.all(months.map(async (month) => {
-      const response = await fetch(`/api/history?month=${encodeURIComponent(month)}`, { cache: "no-store" });
+    void Promise.all(periodMonthKeys.map(async (month) => {
+      const response = await fetch("/api/history?month=" + encodeURIComponent(month), { cache: "no-store" });
       if (!response.ok) throw new Error("Habit history unavailable");
       const payload = await response.json() as { records?: HabitHistoryRecord[] };
       return Array.isArray(payload.records) ? payload.records : [];
     }))
       .then((recordsByMonth) => {
-        if (cancelled) return;
-        setWeeklyHistory(recordsByMonth.flat());
-        setWeeklyHistoryError(false);
+        if (!cancelled) setWeeklyHistorySnapshot({ key: periodMonthKey, records: recordsByMonth.flat(), error: false });
       })
       .catch(() => {
-        if (cancelled) return;
-        setWeeklyHistory([]);
-        setWeeklyHistoryError(true);
-      })
-      .finally(() => {
-        if (!cancelled) setWeeklyHistoryLoading(false);
+        if (!cancelled) setWeeklyHistorySnapshot({ key: periodMonthKey, records: [], error: true });
       });
     return () => { cancelled = true; };
-  }, [weekDateKeys]);
+  }, [periodMonthKey, periodMonthKeys]);
 
   useEffect(() => {
     let cancelled = false;
@@ -138,6 +171,11 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   return (
     <>
       <PageIntro eyebrow="REFLEKSI PERKEMBANGAN" title="Lihat yang sudah tumbuh." subtitle="Ringkasan dari aktivitas, check-in, dan transaksi yang benar-benar tercatat." />
+      <div className="insight-period-tabs" role="group" aria-label="Rentang insight">
+        <button type="button" className={period === "week" ? "active" : ""} aria-pressed={period === "week"} onClick={() => setPeriod("week")}>Minggu</button>
+        <button type="button" className={period === "month" ? "active" : ""} aria-pressed={period === "month"} onClick={() => setPeriod("month")}>Bulan</button>
+        <button type="button" className={period === "year" ? "active" : ""} aria-pressed={period === "year"} onClick={() => setPeriod("year")}>Tahun</button>
+      </div>
       <div className="insights-stat-grid botanical-insight-stats">
         <StatCard label="Produktivitas" value={`${progress}%`} foot={`${completed} dari ${total} habit selesai hari ini`} icon={Target} tone="green" />
         <StatCard label="Streak terpanjang" value={`${longestStreak} hari`} foot="Pada satu kebiasaan" icon={Flame} tone="amber" />
@@ -145,29 +183,29 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       </div>
 
       <section className="card card-pad insight-trend-panel" aria-label="Ringkasan progres habit dan check-in selama tujuh hari terakhir">
-        <SectionHeading title="Progress mingguan" caption="Jumlah habit yang tercatat selesai setiap hari" />
+        <SectionHeading title={periodTitle} caption={"Jumlah habit yang tercatat selesai · " + periodCaption} />
         {weeklyHistoryLoading ? (
           <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Menyiapkan ringkasan mingguan</strong><p>Riwayat penyelesaian habit sedang dimuat.</p></div>
         ) : !weeklyHistoryError ? (
-          weeklyActivityTotal > 0 ? (
+          trendTotal > 0 ? (
             <>
-              <div className="insight-trend-chart">
-                {weeklyActivity.map((item) => (
-                  <div className="insight-trend-day" key={item.date} aria-label={`${item.date}: ${item.completed} habit selesai`}>
+              <div className="insight-trend-chart" style={{ gridTemplateColumns: "repeat(" + trendData.length + ", minmax(0, 1fr))" }}>
+                {trendData.map((item) => (
+                  <div className="insight-trend-day" key={item.key} aria-label={item.label + ": " + item.completed + " habit selesai"}>
                     <strong className="insight-trend-value">{item.completed}</strong>
                     <div className="insight-trend-bars">
-                      <span className="insight-trend-bar activity" style={{ height: item.completed ? `${Math.max(8, item.completed / weeklyActivityMax * 100)}%` : "0%" }} title={`${item.completed} habit selesai`} />
+                      <span className="insight-trend-bar activity" style={{ height: item.completed ? `${Math.max(8, item.completed / trendMax * 100)}%` : "0%" }} title={`${item.completed} habit selesai`} />
                     </div>
-                    <small>{new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${item.date}T12:00:00+07:00`))}</small>
+                    <small>{item.label}</small>
                   </div>
                 ))}
               </div>
-              <div className="insight-trend-legend"><span><i className="activity" /> Habit selesai</span><small>{weeklyActivityTotal} penyelesaian · 7 hari</small></div>
+              <div className="insight-trend-legend"><span><i className="activity" /> Habit selesai</span><small>{trendTotal} penyelesaian · {periodCaption}</small></div>
             </>
           ) : (
             <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p></div>
           )
-        ) : trendCheckins.length > 0 ? (
+        ) : period === "week" && trendCheckins.length > 0 ? (
           <>
             <div className="insight-trend-chart">
               {trendCheckins.map((item) => (
