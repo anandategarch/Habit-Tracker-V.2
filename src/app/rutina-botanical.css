@@ -1,6 +1,6 @@
 /* Rutina 2.0 — playful botanical visual system */
 :root {
---canvas: #fff7ef;
+  --canvas: #fff7ef;
   --surface: #fffdf9;
   --surface-soft: #fff3e9;
   --surface-green: #eef5e8;
@@ -23,7 +23,7 @@
   --shadow-card: 0 9px 28px rgba(92, 68, 44, .055);
   --shadow-float: 0 22px 55px rgba(92, 68, 44, .14);
   --content-width: 1500px;
---spend-color-0: #82a96f;
+  --spend-color-0: #82a96f;
   --spend-color-1: #f0a477;
   --spend-color-2: #9985df;
   --spend-color-3: #69a7a0;
@@ -31,7 +31,7 @@
   --spend-color-5: #d58b9a;
   --spend-color-6: #8c9eaf;
   --spend-color-7: #b3bf82;
---rutina-ivory: #fff7ef;
+  --rutina-ivory: #fff7ef;
   --rutina-paper: #fffdf9;
   --rutina-peach: #fff0e3;
   --rutina-sage: #a9c58e;
