@@ -32,15 +32,18 @@ export interface Habit {
 
 export type TransactionType = "income" | "expense";
 
-export type TransactionCategory =
-  | "Gaji"
-  | "Freelance"
-  | "Makanan"
-  | "Transportasi"
-  | "Tagihan"
-  | "Lifestyle"
-  | "Kesehatan"
-  | "Lainnya";
+/**
+ * Kategori transaksi. Dulu union 8 enum literal (Gaji, Makanan, dst), sekarang
+ * `string` supaya kategori custom dari Turso (tabel finance_categories — 27
+ * kategori granular: Kopi, Bensin, Tagihan Listrik, dst) juga diterima oleh
+ * type system. Validasi nilai tetap dilakukan di sisi API/server.
+ */
+export type TransactionCategory = string;
+
+/** Daftar kategori bawaan V2 (dipakai sebagai fallback bila Turso kosong). */
+export const DEFAULT_TRANSACTION_CATEGORIES: TransactionCategory[] = [
+  "Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya",
+];
 
 export interface Transaction {
   id: string;
