@@ -2712,3 +2712,16 @@ html[data-theme="dark"] .growth-wrapped-panel .growth-wrapped-metric strong { co
     transition-duration: .01ms !important;
   }
 }
+
+
+.garden-journey-link {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 0;
+  border: 0; color: #6d8a62; background: transparent; font-size: 9px; font-weight: 850;
+  transition: gap .18s ease, color .18s ease;
+}
+.garden-journey-link:hover { gap: 10px; color: #456d4b; }
+html[data-theme="dark"] .garden-journey-link { color: #c2d7b2; }
+html[data-theme="dark"] .garden-journey-link:hover { color: #e5f0db; }
+@media (max-width: 600px) {
+  .garden-journey-link { margin-top: 7px; font-size: 8px; }
+}
