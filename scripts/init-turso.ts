@@ -16,7 +16,7 @@ if (!url.startsWith("libsql://")) {
   process.exit(1);
 }
 
-const client = createClient({ url, authToken } as Record<string, unknown>);
+const client = createClient({ url, authToken });
 
 const DDL = [
   `CREATE TABLE IF NOT EXISTS habits (
