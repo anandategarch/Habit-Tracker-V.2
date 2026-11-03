@@ -94,7 +94,7 @@ export function PwaInstallButton() {
               <strong>iPhone</strong>
               <p>Buka halaman ini di Safari, tekan tombol <b>Bagikan</b> <Share2 size={14} aria-hidden="true" />, pilih <b>Tambahkan ke Layar Utama</b>, lalu tekan <b>Tambah</b>.</p>
             </div>
-            <p className="pwa-help-note">Setelah terpasang, buka Rutina dari ikon di layar utama. Login Vercel tetap diperlukan untuk mengakses workspace.</p>
+            <p className="pwa-help-note">Setelah terpasang, buka Rutina dari ikon di layar utama. Data workspace tersinkron otomatis saat aplikasi dibuka.</p>
           </section>
         </div>
       )}
