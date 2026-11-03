@@ -128,6 +128,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           <div className="hero-kicker">{vacationMode ? "A MOMENT TO REST" : "YOUR LITTLE GARDEN"}</div>
           <h2 className="hero-title">Tumbuh pelan,<br />tetap bertumbuh.</h2>
           <p className="hero-description">Setiap langkah kecil ikut membentuk hidup yang kamu pilih.</p>
+          <button className="garden-journey-link" type="button" onClick={() => onNavigate("tree")}>Lihat perjalanan pohonmu <ArrowRight size={13} /></button>
         </div>
         <div className="hero-quote-bubble" aria-label="Pengingat Rutina">
           <p>“Tidak ada taman yang tumbuh dalam satu malam. Kamu juga tidak harus.”</p>
