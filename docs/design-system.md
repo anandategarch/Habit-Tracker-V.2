@@ -140,3 +140,43 @@ Refinement ini mempertahankan identitas Playful Botanical dan seluruh struktur f
 - 430px ke bawah: statistik ringkas dua kolom, hero gardener tidak menutupi teks atau indikator progres, dan bottom navigation mempertahankan empat destinasi utama serta tombol +.
 - Safe-area bawah tetap diperhitungkan pada bottom navigation dan padding konten.
 - Semua kontrol yang mengubah data harus tetap menggunakan handler yang sudah ada; perubahan visual tidak mengubah schema, payload API, atau aturan sinkronisasi.
+
+## Rutina 3.0 — A Garden of Your Life
+
+Arah produk visual berikutnya adalah **Playful Premium**: ilustrasi botanical yang hangat dipadukan dengan layout editorial yang dewasa, ringkas, dan dapat dipercaya. Rutina harus terasa seperti ruang pribadi yang menyenangkan untuk dikunjungi kembali, bukan dashboard yang menilai produktivitas pengguna.
+
+### Prinsip pengalaman
+- **Gentle, not guilt-driven:** gunakan bahasa yang mengundang kembali, tidak memberi label gagal, malas, atau tertinggal.
+- **Small wins first:** tampilkan progres yang benar-benar tercatat dan hargai satu tindakan kecil tanpa membesarkan angka.
+- **One Thing Today:** utamakan satu kebiasaan berikutnya yang sudah ada di jadwal; jangan membuat tugas baru secara otomatis.
+- **Rest is allowed:** mode libur, hari tanpa jadwal, dan semua habit selesai harus mempunyai pesan yang berbeda dan tidak menghakimi.
+- **Evidence before praise:** semua jumlah, streak, progres, dan rangkuman harus berasal dari data workspace/histori. Jangan membuat angka contoh pada UI produksi.
+- **No streak punishment:** jangan menghapus level, menurunkan pohon, atau memberi pesan negatif ketika pengguna melewatkan hari.
+- **Privacy and trust:** data mood, tidur, dan keuangan hanya ditampilkan pada konteks fitur yang relevan dan label agregat harus menyebut rentang datanya.
+
+### Dashboard narrative
+1. Sapaan menyesuaikan waktu Asia/Jakarta dan keadaan hari ini.
+2. Hero "Your Little Garden" menggunakan ilustrasi gardener yang sudah ada dan progres habit hari ini.
+3. Ringkasan menampilkan sinyal terbatas: rekor konsistensi, habit aktif, dan arus kas bersih.
+4. "One Thing Today" memilih habit berikutnya dari jadwal yang sudah ada dan menyediakan timer atau penyelesaian melalui handler yang sudah tersedia.
+5. "Cerita minggu ini" merangkum histori penyelesaian 7 hari dan membandingkannya dengan 7 hari sebelumnya menggunakan bahasa yang netral.
+6. Check-in dan Focus Timer tetap menjadi pengalaman pendukung, tidak menggeser habit sebagai tindakan utama.
+
+### Growth Wrapped
+- Insights memakai histori API yang sudah ada untuk 7 hari, 30 hari, atau 12 bulan.
+- Jumlah penyelesaian berasal dari riwayat habit yang tersimpan.
+- Rata-rata mood selalu diberi label sebagai rata-rata dari check-in terakhir yang tersedia; jangan menyebutnya sebagai rata-rata periode yang dipilih bila cakupannya berbeda.
+- Saat histori gagal dimuat, tampilkan status error/placeholder, bukan angka nol yang bisa disalahartikan sebagai tidak ada progres.
+
+### Sistem visual
+- Ivory sebagai canvas, paper-white sebagai surface, botanical green untuk progres, sage untuk detail pertumbuhan, peach untuk kehangatan, dan lavender untuk primary action.
+- Gunakan tipografi Nunito yang ramah, hierarki judul yang ringkas, ruang kosong yang cukup, border lembut, dan shadow rendah.
+- Satu kartu hanya boleh memiliki satu tujuan utama. Jangan memberi semua kartu warna aksen yang berbeda.
+- Animasi harus singkat, dekoratif, tidak menghalangi input, dan mematuhi `prefers-reduced-motion`.
+- Fokus keyboard harus terlihat pada seluruh tombol, tautan, tab, input, select, dan textarea.
+- Desktop, tablet, dan mobile harus menjaga urutan informasi yang sama; mobile mengubah komposisi, bukan sekadar mengecilkan desktop.
+
+### Guardrail implementasi
+- Redesain ini presentation-first. Jangan mengubah formula streak, XP, jadwal, kategori, amount habit, keuangan, sinkronisasi, API, maupun schema.
+- Semua CTA harus terhubung ke callback yang sudah ada dan mempunyai status disabled yang benar.
+- Jangan menambah localStorage preference atau kolom database baru tanpa kebutuhan produk dan migrasi yang terencana.
