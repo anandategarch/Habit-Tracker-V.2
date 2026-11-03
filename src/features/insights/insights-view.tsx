@@ -52,9 +52,11 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   const [source, setSource] = useState<"ai" | "rule-based" | "local">("local");
   const [loading, setLoading] = useState(true);
   const [sourceNote, setSourceNote] = useState("");
-  const [weeklyHistory, setWeeklyHistory] = useState<HabitHistoryRecord[]>([]);
-  const [weeklyHistoryLoading, setWeeklyHistoryLoading] = useState(true);
-  const [weeklyHistoryError, setWeeklyHistoryError] = useState(false);
+  const [weeklyHistorySnapshot, setWeeklyHistorySnapshot] = useState<{
+    key: string;
+    records: HabitHistoryRecord[];
+    error: boolean;
+  } | null>(null);
   const [period, setPeriod] = useState<InsightPeriod>("week");
   // Keep the freshest local data available for the offline fallback without
   // re-running the (expensive, LLM-backed) request on every workspace change.
@@ -84,6 +86,10 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
     }
     return [...new Set(periodDateKeys.map((date) => date.slice(0, 7)))];
   }, [todayKey, period, periodDateKeys]);
+  const periodMonthKey = periodMonthKeys.join(",");
+  const weeklyHistoryLoading = weeklyHistorySnapshot?.key !== periodMonthKey;
+  const weeklyHistoryError = !weeklyHistoryLoading && Boolean(weeklyHistorySnapshot?.error);
+  const weeklyHistory = weeklyHistoryLoading ? [] : (weeklyHistorySnapshot?.records ?? []);
   const recentCheckins = useMemo(() => checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [checkins]);
   const trendCheckins = recentCheckins.slice(0, 7).reverse();
 
@@ -123,8 +129,6 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
 
   useEffect(() => {
     let cancelled = false;
-    setWeeklyHistoryLoading(true);
-    setWeeklyHistoryError(false);
     void Promise.all(periodMonthKeys.map(async (month) => {
       const response = await fetch("/api/history?month=" + encodeURIComponent(month), { cache: "no-store" });
       if (!response.ok) throw new Error("Habit history unavailable");
@@ -132,20 +136,13 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       return Array.isArray(payload.records) ? payload.records : [];
     }))
       .then((recordsByMonth) => {
-        if (cancelled) return;
-        setWeeklyHistory(recordsByMonth.flat());
-        setWeeklyHistoryError(false);
+        if (!cancelled) setWeeklyHistorySnapshot({ key: periodMonthKey, records: recordsByMonth.flat(), error: false });
       })
       .catch(() => {
-        if (cancelled) return;
-        setWeeklyHistory([]);
-        setWeeklyHistoryError(true);
-      })
-      .finally(() => {
-        if (!cancelled) setWeeklyHistoryLoading(false);
+        if (!cancelled) setWeeklyHistorySnapshot({ key: periodMonthKey, records: [], error: true });
       });
     return () => { cancelled = true; };
-  }, [periodMonthKeys]);
+  }, [periodMonthKey, periodMonthKeys]);
 
   useEffect(() => {
     let cancelled = false;
