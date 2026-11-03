@@ -302,7 +302,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               <div className="daily-intention-actions">
                 <button className="next-step-action" type="button" disabled={!onTimerToggle} onClick={() => onTimerToggle?.(upcomingHabit.id)} aria-pressed={activeTimerId === upcomingHabit.id}>
                   {activeTimerId === upcomingHabit.id ? <Pause size={15} /> : <Play size={15} />}
-                  {activeTimerId === upcomingHabit.id ? "Jeda fokus" : "Mulai fokus"}
+                  {activeTimerId === upcomingHabit.id ? "Hentikan timer habit" : "Mulai timer habit"}
                 </button>
                 <button className="daily-intention-complete" type="button" onClick={() => onToggle(upcomingHabit.id)}>
                   <Check size={14} /> Tandai selesai
