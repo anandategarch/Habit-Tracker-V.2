@@ -231,7 +231,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               </div>
             </>
           ) : (
-            <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p><button className="weekly-add-action" type="button" onClick={onOpenFeatures}><Plus size={14} /> Tambah Aktivitas</button></div>
+            <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p><button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button></div>
           )}
         </section>
       </div>
