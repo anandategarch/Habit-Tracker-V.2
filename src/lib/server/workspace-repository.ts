@@ -192,6 +192,17 @@ export async function writeWorkspace(input: WorkspaceInput, today: string): Prom
       });
     }
 
+    // Anggaran disinkronkan penuh: payload client adalah sumber kebenaran.
+    // Baris budget yang tidak ada di payload DIHAPUS. Tanpa ini, snapshot lama
+    // (mis. kategori kasar hasil migrasi V1) yang di-PUT client akan meninggalkan
+    // baris zombie "Belum ada pengeluaran" di panel anggaran selamanya.
+    await transaction.execute({
+      sql: input.budgets.length > 0
+        ? `DELETE FROM budgets WHERE category NOT IN (${input.budgets.map(() => "?").join(", ")})`
+        : "DELETE FROM budgets",
+      args: input.budgets.map((budget) => budget.category),
+    });
+
     for (const budget of input.budgets) {
       await transaction.execute({
         sql: `INSERT INTO budgets (category, monthly_limit, updated_at)
