@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { BackupView } from "@/features/settings/backup-view";
-import { ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Target, Trash2, X } from "lucide-react";
+import { ArrowRight, ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Target, Trash2, X } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
 import type { Transaction } from "@/lib/types";
