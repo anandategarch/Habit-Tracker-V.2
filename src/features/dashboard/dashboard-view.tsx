@@ -66,7 +66,7 @@ function useWeeklyActivity(habits: Habit[]) {
   return { days, loading: records === null, error: historyError, total, previousTotal, change: total - previousTotal };
 }
 
-function weekdayLabel(date: string) {(date: string) {
+function weekdayLabel(date: string) {
   return new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${date}T12:00:00+07:00`));
 }
 
