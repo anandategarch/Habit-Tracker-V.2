@@ -92,7 +92,10 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   const historyRequestKey = periodMonthKey + ":" + historyRetryVersion;
   const weeklyHistoryLoading = weeklyHistorySnapshot?.key !== historyRequestKey;
   const weeklyHistoryError = !weeklyHistoryLoading && Boolean(weeklyHistorySnapshot?.error);
-  const weeklyHistory = weeklyHistoryLoading ? [] : (weeklyHistorySnapshot?.records ?? []);
+  const weeklyHistory = useMemo(
+    () => weeklyHistoryLoading ? [] : (weeklyHistorySnapshot?.records ?? []),
+    [weeklyHistoryLoading, weeklyHistorySnapshot?.records],
+  );
   const recentCheckins = useMemo(() => checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [checkins]);
   const trendCheckins = recentCheckins.slice(0, 7).reverse();
 
