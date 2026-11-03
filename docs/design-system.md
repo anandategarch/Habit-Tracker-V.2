@@ -105,3 +105,8 @@ Urutan mobile:
 - Jangan menampilkan data demo seolah data keuangan nyata.
 - Jangan menambah tombol atau toggle yang belum memiliki perilaku nyata.
 - Perubahan UI harus mempertahankan aksi habit, milestone, transaksi, ekspor/impor backup, dan perilaku penyimpanan yang sudah berjalan.
+
+
+## Release quality gate
+
+Sebelum perubahan UI dinyatakan siap rilis, cek seluruh halaman utama pada lebar 360px, 403px, 430px, 600px, 768px, 960px, dan 1440px; verifikasi tema terang/gelap, fokus keyboard, reduced motion, serta tidak ada horizontal overflow. Semua permintaan data berbasis jaringan harus menampilkan status memuat, pesan gagal yang jelas, dan aksi coba lagi bila permintaan dapat diulang. Jangan menutupi konten yang masih dapat digunakan selama histori dimuat.

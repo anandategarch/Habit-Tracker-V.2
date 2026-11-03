@@ -1,6 +1,6 @@
 /* Rutina 2.0 — playful botanical visual system */
 :root {
-  --canvas: #fff7ef;
+--canvas: #fff7ef;
   --surface: #fffdf9;
   --surface-soft: #fff3e9;
   --surface-green: #eef5e8;
@@ -23,6 +23,22 @@
   --shadow-card: 0 9px 28px rgba(92, 68, 44, .055);
   --shadow-float: 0 22px 55px rgba(92, 68, 44, .14);
   --content-width: 1500px;
+--spend-color-0: #82a96f;
+  --spend-color-1: #f0a477;
+  --spend-color-2: #9985df;
+  --spend-color-3: #69a7a0;
+  --spend-color-4: #e8c36d;
+  --spend-color-5: #d58b9a;
+  --spend-color-6: #8c9eaf;
+  --spend-color-7: #b3bf82;
+--rutina-ivory: #fff7ef;
+  --rutina-paper: #fffdf9;
+  --rutina-peach: #fff0e3;
+  --rutina-sage: #a9c58e;
+  --rutina-leaf: #568a5d;
+  --rutina-leaf-dark: #356b4b;
+  --rutina-lavender: #8f7ae5;
+  --rutina-line: #eee4da;
 }
 
 html, body { background: var(--canvas); }
@@ -544,16 +560,7 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 
 
 /* Page fidelity pass — secondary pages share the same botanical visual rhythm. */
-:root {
-  --spend-color-0: #82a96f;
-  --spend-color-1: #f0a477;
-  --spend-color-2: #9985df;
-  --spend-color-3: #69a7a0;
-  --spend-color-4: #e8c36d;
-  --spend-color-5: #d58b9a;
-  --spend-color-6: #8c9eaf;
-  --spend-color-7: #b3bf82;
-}
+/* Design tokens consolidated into the single :root block at the top. */
 
 .habit-overview-grid {
   grid-template-columns: minmax(0, 1.3fr) minmax(220px, .7fr);
@@ -1025,16 +1032,7 @@ html[data-theme="dark"] .botanical-dashboard-page .hero-progress-icon::before {
 /* ==========================================================
    Rutina Botanical Guideline — full-page visual alignment
    ========================================================== */
-:root {
-  --rutina-ivory: #fff7ef;
-  --rutina-paper: #fffdf9;
-  --rutina-peach: #fff0e3;
-  --rutina-sage: #a9c58e;
-  --rutina-leaf: #568a5d;
-  --rutina-leaf-dark: #356b4b;
-  --rutina-lavender: #8f7ae5;
-  --rutina-line: #eee4da;
-}
+/* Design tokens consolidated into the single :root block at the top. */
 body { background: var(--rutina-ivory); }
 .page-title { color: #27382c; }
 .page-subtitle { color: #818b7b; }
@@ -2240,3 +2238,59 @@ html[data-theme="dark"] .backup-message.is-error { border-color: #68423b; color:
     animation: none !important;
   }
 }
+
+
+/* Final quality pass: accessible feedback, legible mobile metadata, and consistent controls. */
+.calendar-loading { justify-content: flex-start; min-height: 25px; font-size: 11px; }
+.calendar-loading-skeleton { width: 34px; height: 7px; flex: none; }
+.calendar-history-error {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  gap: 10px; margin-top: 11px; padding: 11px 12px;
+  border: 1px solid #f0d8d1; border-radius: 13px; color: #a55347; background: #fff3ef;
+}
+.calendar-history-error p { flex: 1 1 220px; margin: 0; font-size: 10px; line-height: 1.55; }
+.time-analysis-loading {
+  display: grid; gap: 11px; margin: 0 0 13px; padding: 14px;
+  border: 1px solid var(--line); border-radius: 15px; background: var(--surface-soft);
+}
+.time-analysis-skeleton-heading { width: 48%; height: 9px; }
+.time-analysis-skeleton-bars { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); align-items: end; gap: 8px; height: 62px; }
+.time-analysis-skeleton-bars span { height: 48%; border-radius: 6px 6px 2px 2px; }
+.time-analysis-skeleton-bars span:nth-child(2n) { height: 72%; }
+.time-analysis-skeleton-bars span:nth-child(3n) { height: 58%; }
+.time-analysis-skeleton-bars span:nth-child(5n) { height: 88%; }
+.time-analysis-loading-label { color: var(--muted); font-size: 10px; }
+.time-analysis-error { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.time-analysis-error > span { flex: 1 1 220px; }
+html[data-theme="dark"] .calendar-history-error { border-color: #68423b; color: #f0b8a9; background: #3d2c2a; }
+html[data-theme="dark"] .calendar-history-error .insight-retry-button { border-color: var(--line); color: var(--ink); background: var(--surface); }
+html[data-theme="dark"] .time-analysis-loading { border-color: var(--line); background: var(--surface-soft); }
+html[data-theme="dark"] .time-analysis-skeleton-bars span { background: #39493a; }
+
+@media (max-width: 600px) {
+  .topbar .topbar-avatar { display: grid; }
+  .topbar-actions { gap: 7px; }
+  .eyebrow, .small-label, .stat-foot, .finance-metric-label,
+  .habit-week-strip-heading span, .habit-week-day small,
+  .finance-spend-legend-copy strong, .finance-spend-legend-copy small, .finance-spend-legend-row > b,
+  .settings-profile-copy small, .settings-theme-options button small, .settings-section-heading span,
+  .tree-journey-kicker, .tree-level-progress-copy span, .tree-level-footnote,
+  .tree-weekly-ribbon small, .tree-weekly-ribbon-meta,
+  .finance-balance-trend-heading span, .finance-balance-trend-heading small, .finance-balance-trend-days small,
+  .hero-ring-label small, .weekly-progress-ring small, .weekly-trend-chart .insight-trend-day small,
+  .weekly-comparison, .goal-progress-heading span, .goal-milestones-label {
+    font-size: 9px;
+  }
+  .finance-spend-legend-copy strong,
+  .finance-spend-legend-copy small { white-space: normal; overflow-wrap: anywhere; }
+}
+@media (max-width: 430px) {
+  .botanical-dashboard-page .botanical-hero .hero-kicker { font-size: 9px; }
+  .stat-top .small-label { font-size: 9px; line-height: 1.3; }
+  .stat-foot { font-size: 9px; line-height: 1.35; }
+  .finance-spend-legend-copy small, .finance-spend-legend-row > b { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after { animation: none !important; }
+}
+

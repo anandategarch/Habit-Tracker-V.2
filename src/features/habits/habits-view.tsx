@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
-import { ListChecks, ListFilter, Plus, Search, Sparkles } from "lucide-react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
+import { ListChecks, ListFilter, Plus, RefreshCw, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { HabitGroup } from "@/lib/module-types";
 import { summarizeHabits } from "@/lib/habits";
@@ -25,6 +25,8 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
   const [timeAnalysis, setTimeAnalysis] = useState<{ habit: { id: string; title: string }; periodDays: number; summary: { totalMinutes: number; activeDays: number; averageMinutes: number }; byDay: Array<{ date: string; minutes: number }> } | null>(null);
   const [timeAnalysisLoading, setTimeAnalysisLoading] = useState(false);
   const [timeAnalysisError, setTimeAnalysisError] = useState("");
+  const [timeAnalysisRequest, setTimeAnalysisRequest] = useState<{ habitId: string; days: number } | null>(null);
+  const timeAnalysisRequestId = useRef(0);
   const [timeAnalysisDays, setTimeAnalysisDays] = useState(30);
   const today = todayISO();
   const todayParts = today.split("-").map(Number);
@@ -42,18 +44,22 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
     };
   });
   async function loadTimeAnalysis(habitId: string, days = timeAnalysisDays) {
+    const requestId = ++timeAnalysisRequestId.current;
+    setTimeAnalysisRequest({ habitId, days });
     setTimeAnalysisLoading(true);
     setTimeAnalysisError("");
+    setTimeAnalysis(null);
     try {
       const response = await fetch(`/api/habits/${encodeURIComponent(habitId)}/time-analysis?days=${days}`, { cache: "no-store" });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "Gagal memuat analisis waktu.");
-      setTimeAnalysis(payload);
+      if (requestId === timeAnalysisRequestId.current) setTimeAnalysis(payload);
     } catch (error) {
-      setTimeAnalysisError(error instanceof Error ? error.message : "Gagal memuat analisis waktu.");
-      setTimeAnalysis(null);
+      if (requestId === timeAnalysisRequestId.current) {
+        setTimeAnalysisError(error instanceof Error ? error.message : "Gagal memuat analisis waktu.");
+      }
     } finally {
-      setTimeAnalysisLoading(false);
+      if (requestId === timeAnalysisRequestId.current) setTimeAnalysisLoading(false);
     }
   }
   const scheduledHabits = showAllSchedules ? habits : habits.filter((habit) => isScheduledOn(habit.schedule, today));
@@ -142,8 +148,8 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
           ))}
         </div>
         {timeAnalysis && <section className="time-analysis-card"><div className="time-analysis-head"><div><strong>Analisis waktu · {timeAnalysis.habit.title}</strong><small>{timeAnalysis.summary.totalMinutes} menit · {timeAnalysis.summary.activeDays} hari aktif · rata-rata {timeAnalysis.summary.averageMinutes} menit/hari aktif</small></div><button type="button" onClick={() => setTimeAnalysis(null)} aria-label="Tutup analisis waktu">×</button></div><select className="group-filter-select" value={timeAnalysisDays} onChange={(event) => { const days = Number(event.target.value); setTimeAnalysisDays(days); void loadTimeAnalysis(timeAnalysis.habit.id, days); }} aria-label="Rentang analisis waktu"><option value={7}>7 hari</option><option value={30}>30 hari</option><option value={90}>90 hari</option></select><div className="time-analysis-chart">{timeAnalysis.byDay.map((day) => { const max = Math.max(1, ...timeAnalysis.byDay.map((item) => item.minutes)); return <div className="time-analysis-column" key={day.date} title={`${day.date}: ${day.minutes} menit`}><strong>{day.minutes ? `${day.minutes}m` : "—"}</strong><div><span style={{ height: `${day.minutes ? Math.max(4, day.minutes / max * 100) : 0}%` }} /></div><small>{day.date.slice(8, 10)}</small></div>; })}</div></section>}
-        {timeAnalysisLoading && <p className="module-muted">Memuat analisis waktu…</p>}
-        {timeAnalysisError && <p className="backup-message is-error" role="alert">{timeAnalysisError}</p>}
+        {timeAnalysisLoading && <div className="time-analysis-loading" role="status" aria-live="polite" aria-busy="true"><span className="skeleton-shimmer time-analysis-skeleton-heading" /><div className="time-analysis-skeleton-bars" aria-hidden="true">{Array.from({ length: 7 }, (_, index) => <span className="skeleton-shimmer" key={index} />)}</div><span className="time-analysis-loading-label">Memuat analisis waktu…</span></div>}
+        {timeAnalysisError && <div className="time-analysis-error backup-message is-error" role="alert"><span>{timeAnalysisError}</span><button type="button" className="insight-retry-button" disabled={timeAnalysisLoading || !timeAnalysisRequest} onClick={() => { if (timeAnalysisRequest) void loadTimeAnalysis(timeAnalysisRequest.habitId, timeAnalysisRequest.days); }}><RefreshCw size={13} /> Coba lagi</button></div>}
         <div className="habit-list">
           {filteredHabits.map((habit) => <div key={habit.id} className="habit-draggable" draggable onDragStart={() => setDraggedId(habit.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (!draggedId || draggedId === habit.id || !onReorder) return; const next = [...habits]; const from = next.findIndex((item) => item.id === draggedId); const to = next.findIndex((item) => item.id === habit.id); if (from < 0 || to < 0) return; const [moved] = next.splice(from, 1); next.splice(to, 0, moved); onReorder(next); setDraggedId(null); }}><HabitRow habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTimerToggle={onTimerToggle} onViewTimeAnalysis={loadTimeAnalysis} timerActive={activeTimerId === habit.id} timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0} paused={vacationMode} /></div>)}
         </div>
