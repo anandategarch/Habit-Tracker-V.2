@@ -193,3 +193,12 @@ Halaman Keuangan memakai komposisi yang lebih berorientasi pada pembacaan angka,
 - Empty state harus tetap membedakan belum ada transaksi, belum ada kategori pengeluaran, dan belum ada anggaran.
 - Tema gelap, fokus keyboard, reduced motion, dan layout mobile harus tetap berfungsi. Grafik dan progress memiliki label aksesibel.
 - Redesign hanya mengubah presentasi. Jangan mengubah schema transaksi/anggaran, formula arus kas, aturan kategori, penyimpanan, sinkronisasi, maupun API.
+
+
+### Periode laporan dan batas data historis
+
+- Pengguna dapat memilih bulan laporan dari bulan yang sudah berjalan atau bulan sebelumnya. Periode ini mengubah ringkasan arus kas, distribusi kategori, anggaran yang dibandingkan, dan daftar transaksi.
+- Grafik harian mengikuti tujuh hari sampai akhir periode yang dipilih. Untuk bulan berjalan, ujung rentang adalah tanggal hari ini; untuk bulan lampau, ujung rentang adalah hari terakhir bulan tersebut.
+- Grafik harus menyediakan nilai pemasukan dan pengeluaran per hari yang dapat dibaca, bukan hanya tinggi batang dan label tanggal.
+- Data `Budget` saat ini hanya menyimpan batas kategori yang berlaku sekarang, bukan histori perubahan batas per bulan. Saat melihat bulan lampau, UI wajib menyatakan bahwa perbandingan memakai batas anggaran yang dikonfigurasi saat ini; jangan menyajikannya sebagai rekaman batas historis.
+- Pemilih periode tidak boleh mengubah transaksi, menghapus histori, mengubah formula arus kas, ataupun membuat angka aset/saldo/prediksi yang tidak tersedia pada model data.
