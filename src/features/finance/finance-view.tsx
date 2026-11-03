@@ -77,8 +77,8 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     }
   }
 
-  // Daily totals are computed from the complete transaction history so the
-  // rolling seven-day chart remains correct across a month boundary.
+  // Daily totals use the complete transaction history; the seven-day window
+  // is then anchored to the end of the selected report period.
   const dailyTotals = useMemo(() => {
     const totals = new Map<string, { income: number; expense: number }>();
     transactions.forEach((transaction) => {
@@ -164,8 +164,8 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     timeZone: "Asia/Jakarta",
   }).format(new Date(periodEndKey + "T12:00:00+07:00"));
   const cashflowMessage = net >= 0
-    ? "Pemasukan bulan ini masih lebih besar dari pengeluaran."
-    : "Pengeluaran bulan ini lebih besar dari pemasukan.";
+    ? "Pemasukan pada periode ini masih lebih besar dari pengeluaran."
+    : "Pengeluaran pada periode ini lebih besar dari pemasukan.";
 
   return (
     <>
@@ -243,7 +243,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             PEMASUKAN
           </span>
           <div className="metric-value metric-positive">{formatCompactRupiah(displayedIncome)}</div>
-          <span className="stat-foot">Total uang masuk bulan ini</span>
+          <span className="stat-foot">Total pemasukan dalam periode ini</span>
         </section>
         <section className="card finance-metric">
           <span className="finance-metric-label">
@@ -251,7 +251,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             PENGELUARAN
           </span>
           <div className="metric-value metric-negative">{formatCompactRupiah(displayedExpense)}</div>
-          <span className="stat-foot">Total uang keluar bulan ini</span>
+          <span className="stat-foot">Total pengeluaran dalam periode ini</span>
         </section>
       </section>
 
@@ -262,7 +262,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             <h2 className="section-title" id="finance-cashflow-title">Pemasukan vs pengeluaran</h2>
             <p className="section-caption">7 hari hingga {periodEndLabel} dalam periode terpilih</p>
           </div>
-          <div className="finance-chart-totals" aria-label="Total arus uang tujuh hari terakhir">
+          <div className="finance-chart-totals" aria-label="Total arus uang pada tujuh hari periode terpilih">
             <div><span className="finance-chart-dot income" /><span>Masuk</span><strong>{formatCompactRupiah(weeklyIncome)}</strong></div>
             <div><span className="finance-chart-dot expense" /><span>Keluar</span><strong>{formatCompactRupiah(weeklyExpense)}</strong></div>
           </div>
@@ -270,11 +270,11 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
         {weeklyIncome === 0 && weeklyExpense === 0 ? (
           <div className="finance-chart-empty">
             <Sprout size={18} />
-            <span>Belum ada transaksi dalam 7 hari terakhir.</span>
+            <span>Belum ada transaksi dalam tujuh hari pada periode ini.</span>
           </div>
         ) : (
           <div className="finance-chart-plot">
-            <svg viewBox="0 0 600 154" role="img" aria-label="Grafik batang pemasukan dan pengeluaran harian selama tujuh hari terakhir">
+            <svg viewBox="0 0 600 154" role="img" aria-label="Grafik batang pemasukan dan pengeluaran harian pada tujuh hari periode terpilih">
               <line className="finance-chart-gridline" x1="12" y1="16" x2="588" y2="16" />
               <line className="finance-chart-gridline" x1="12" y1="64" x2="588" y2="64" />
               <line className="finance-chart-baseline" x1="12" y1="112" x2="588" y2="112" />
@@ -334,7 +334,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
         <section className="card card-pad finance-category-panel">
           <SectionHeading
             title="Ke mana uang pergi?"
-            caption="Distribusi pengeluaran menurut kategori bulan ini"
+            caption="Distribusi pengeluaran menurut kategori pada periode terpilih"
           />
           <div className="finance-category-total">
             <span>Total pengeluaran tercatat</span>
