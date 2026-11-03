@@ -1,7 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Activity, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Coffee, Heart, Plus, Receipt, Sprout } from "lucide-react";
+import {
+  Activity,
+  ArrowDownLeft,
+  ArrowUpRight,
+  CalendarDays,
+  ChevronDown,
+  ChevronUp,
+  CircleDollarSign,
+  Coffee,
+  Heart,
+  Plus,
+  Receipt,
+  Sprout,
+} from "lucide-react";
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
@@ -14,185 +27,352 @@ const budgetIcons: Record<string, typeof Coffee> = {
   Lifestyle: Heart,
 };
 
+const categoryPaletteLength = 8;
 type TransactionFilter = "all" | "income" | "expense";
 
 export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
-  transactions: Transaction[]; budgets: Budget[]; income: number; expense: number; onAdd: () => void;
+  transactions: Transaction[];
+  budgets: Budget[];
+  income: number;
+  expense: number;
+  onAdd: () => void;
 }) {
   const [filter, setFilter] = useState<TransactionFilter>("all");
-  const net = income - expense;
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
   const todayKey = todayISO();
-  const todayParts = todayKey.split("-").map(Number);
-  const todayUtc = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2]));
-  const cashflowWeek = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(todayUtc);
-    date.setUTCDate(todayUtc.getUTCDate() - (6 - index));
-    const iso = date.toISOString().slice(0, 10);
-    const dayIncome = transactions.filter((item) => item.date === iso && item.type === "income").reduce((sum, item) => sum + item.amount, 0);
-    const dayExpense = transactions.filter((item) => item.date === iso && item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
-    return {
-      iso,
-      net: dayIncome - dayExpense,
-      label: new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(iso + "T12:00:00+07:00")),
-    };
-  });
-  const cashflowScale = Math.max(1, ...cashflowWeek.map((item) => Math.abs(item.net)));
-  const cashflowPoints = cashflowWeek.map((item, index) => {
-    const x = 10 + index * 80;
-    const y = 44 - (item.net / cashflowScale) * 30;
-    return { x, y, key: item.iso, label: item.label, net: item.net };
-  });
-  const cashflowPolyline = cashflowPoints.map((point) => point.x + "," + point.y).join(" ");
-  const spendByCategory = summarizeBudgets(transactions, budgets);
+  const monthKey = todayKey.slice(0, 7);
+  const monthTransactions = useMemo(
+    () => transactions.filter((transaction) => transaction.date.slice(0, 7) === monthKey),
+    [transactions, monthKey],
+  );
+  const net = income - expense;
+
+  // Daily totals are computed from the complete transaction history so the
+  // rolling seven-day chart remains correct across a month boundary.
+  const dailyTotals = useMemo(() => {
+    const totals = new Map<string, { income: number; expense: number }>();
+    transactions.forEach((transaction) => {
+      const current = totals.get(transaction.date) ?? { income: 0, expense: 0 };
+      current[transaction.type] += transaction.amount;
+      totals.set(transaction.date, current);
+    });
+    return totals;
+  }, [transactions]);
+
+  const cashflowWeek = useMemo(() => {
+    const todayParts = todayKey.split("-").map(Number);
+    const todayUtc = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2]));
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(todayUtc);
+      date.setUTCDate(todayUtc.getUTCDate() - (6 - index));
+      const iso = date.toISOString().slice(0, 10);
+      const totals = dailyTotals.get(iso) ?? { income: 0, expense: 0 };
+      return {
+        iso,
+        income: totals.income,
+        expense: totals.expense,
+        label: new Intl.DateTimeFormat("id-ID", {
+          weekday: "short",
+          timeZone: "Asia/Jakarta",
+        }).format(new Date(iso + "T12:00:00+07:00")),
+      };
+    });
+  }, [dailyTotals, todayKey]);
+
+  const weeklyScale = Math.max(1, ...cashflowWeek.flatMap((day) => [day.income, day.expense]));
+  const weeklyIncome = cashflowWeek.reduce((sum, day) => sum + day.income, 0);
+  const weeklyExpense = cashflowWeek.reduce((sum, day) => sum + day.expense, 0);
+  const spendByCategory = useMemo(
+    () => summarizeBudgets(monthTransactions, budgets),
+    [monthTransactions, budgets],
+  );
+
   const expenseCategories = useMemo(() => {
     const totals = new Map<TransactionCategory, number>();
-    transactions.forEach((transaction) => {
+    monthTransactions.forEach((transaction) => {
       if (transaction.type !== "expense") return;
       totals.set(transaction.category, (totals.get(transaction.category) ?? 0) + transaction.amount);
     });
     return [...totals.entries()]
       .map(([category, spent]) => ({ category, spent }))
       .sort((a, b) => b.spent - a.spent);
-  }, [transactions]);
+  }, [monthTransactions]);
+
   const categorySpendTotal = expenseCategories.reduce((sum, item) => sum + item.spent, 0);
-  const categoryPalette = [
-    "var(--spend-color-0)", "var(--spend-color-1)", "var(--spend-color-2)", "var(--spend-color-3)",
-    "var(--spend-color-4)", "var(--spend-color-5)", "var(--spend-color-6)", "var(--spend-color-7)",
-  ];
-  const categoryGradient = expenseCategories.map((item, index) => {
-    const precedingSpend = expenseCategories
-      .slice(0, index)
-      .reduce((sum, category) => sum + category.spent, 0);
-    const start = categorySpendTotal > 0 ? precedingSpend / categorySpendTotal * 100 : 0;
-    const end = categorySpendTotal > 0 ? (precedingSpend + item.spent) / categorySpendTotal * 100 : 0;
-    return `${categoryPalette[index % categoryPalette.length]} ${start}% ${end}%`;
-  }).join(", ");
+  const visibleExpenseCategories = useMemo(() => {
+    const topCategories = expenseCategories.slice(0, 6);
+    const remainingSpend = expenseCategories
+      .slice(6)
+      .reduce((sum, item) => sum + item.spent, 0);
+    if (remainingSpend > 0) {
+      return [...topCategories, { category: "Kategori lainnya", spent: remainingSpend }];
+    }
+    return topCategories;
+  }, [expenseCategories]);
+
   const filteredTransactions = useMemo(
-    () => [...transactions]
+    () => [...monthTransactions]
       .filter((transaction) => filter === "all" || transaction.type === filter)
       .sort((a, b) => b.date.localeCompare(a.date)),
-    [transactions, filter],
+    [monthTransactions, filter],
   );
-  // Data difilter berdasarkan bulan Asia/Jakarta (todayISO), jadi label bulan
-  // harus memakai zona waktu yang sama agar tidak selisih di batas bulan.
-  const monthLabel = new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date());
+  const visibleTransactions = showAllTransactions
+    ? filteredTransactions
+    : filteredTransactions.slice(0, 5);
+
+  const monthLabel = new Intl.DateTimeFormat("id-ID", {
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(todayKey + "T12:00:00+07:00"));
+  const cashflowMessage = net >= 0
+    ? "Pemasukan bulan ini masih lebih besar dari pengeluaran."
+    : "Pengeluaran bulan ini lebih besar dari pemasukan.";
 
   return (
     <>
       <PageIntro
         eyebrow={`KEUANGAN PRIBADI · ${monthLabel.toUpperCase()}`}
-        title="Uang lebih terarah."
-        subtitle="Kenali arus uangmu, atur batas, dan ambil keputusan dengan sadar."
+        title="Keuanganmu."
+        subtitle="Lihat ke mana uang bergerak, lalu tentukan langkah berikutnya."
         action={<PrimaryButton onClick={onAdd}><Plus size={15} /> Catat transaksi</PrimaryButton>}
       />
 
-      <div className="finance-overview">
-        <section className="card finance-balance">
+      <section className="finance-overview" aria-label="Ringkasan keuangan bulan ini">
+        <div className="card finance-balance">
           <span className="small-label">ARUS KAS BERSIH</span>
           <div className="metric-value">{formatRupiah(net)}</div>
-          <span className="finance-balance-note">Pemasukan dikurangi pengeluaran bulan ini</span>
-          <div className="finance-balance-trend">
-            <div className="finance-balance-trend-heading"><span>TREND ARUS KAS</span><small>7 hari terakhir</small></div>
-            <svg viewBox="0 0 500 88" role="img" aria-label="Grafik arus kas bersih tujuh hari terakhir">
-              <line x1="8" y1="44" x2="492" y2="44" stroke="rgba(255,255,255,.22)" strokeDasharray="4 7" />
-              <polyline points={cashflowPolyline} fill="none" stroke="#d8edc8" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-              {cashflowPoints.map((point) => <circle key={point.key} cx={point.x} cy={point.y} r="4" fill="#fff8e8" stroke="#d8edc8" strokeWidth="2" />)}
-            </svg>
-            <div className="finance-balance-trend-days">{cashflowPoints.map((point) => <small key={point.key}>{point.label}</small>)}</div>
-          </div>
-        </section>
+          <span className="finance-balance-note">{cashflowMessage}</span>
+          <div className="finance-balance-period"><CalendarDays size={13} /> {monthLabel}</div>
+        </div>
         <section className="card finance-metric">
-          <span className="finance-metric-label"><span className="finance-metric-icon income"><ArrowDownLeft size={14} /></span> PEMASUKAN</span>
+          <span className="finance-metric-label">
+            <span className="finance-metric-icon income"><ArrowDownLeft size={15} /></span>
+            PEMASUKAN
+          </span>
           <div className="metric-value metric-positive">{formatCompactRupiah(income)}</div>
-          <span className="stat-foot">Total uang masuk</span>
+          <span className="stat-foot">Total uang masuk bulan ini</span>
         </section>
         <section className="card finance-metric">
-          <span className="finance-metric-label"><span className="finance-metric-icon expense"><ArrowUpRight size={14} /></span> PENGELUARAN</span>
+          <span className="finance-metric-label">
+            <span className="finance-metric-icon expense"><ArrowUpRight size={15} /></span>
+            PENGELUARAN
+          </span>
           <div className="metric-value metric-negative">{formatCompactRupiah(expense)}</div>
-          <span className="stat-foot">Total uang keluar</span>
+          <span className="stat-foot">Total uang keluar bulan ini</span>
         </section>
-      </div>
+      </section>
 
-      <div className="finance-content-grid">
-        <section className="card card-pad finance-transactions-panel">
+      <section className="card card-pad finance-chart-card" aria-labelledby="finance-cashflow-title">
+        <div className="finance-chart-header">
+          <div>
+            <span className="finance-section-kicker">ARUS UANG</span>
+            <h2 className="section-title" id="finance-cashflow-title">Pemasukan vs pengeluaran</h2>
+            <p className="section-caption">Pergerakan harian selama 7 hari terakhir</p>
+          </div>
+          <div className="finance-chart-totals" aria-label="Total arus uang tujuh hari terakhir">
+            <div><span className="finance-chart-dot income" /><span>Masuk</span><strong>{formatCompactRupiah(weeklyIncome)}</strong></div>
+            <div><span className="finance-chart-dot expense" /><span>Keluar</span><strong>{formatCompactRupiah(weeklyExpense)}</strong></div>
+          </div>
+        </div>
+        {weeklyIncome === 0 && weeklyExpense === 0 ? (
+          <div className="finance-chart-empty">
+            <Sprout size={18} />
+            <span>Belum ada transaksi dalam 7 hari terakhir.</span>
+          </div>
+        ) : (
+          <div className="finance-chart-plot">
+            <svg viewBox="0 0 600 154" role="img" aria-label="Grafik batang pemasukan dan pengeluaran harian selama tujuh hari terakhir">
+              <line className="finance-chart-gridline" x1="12" y1="16" x2="588" y2="16" />
+              <line className="finance-chart-gridline" x1="12" y1="64" x2="588" y2="64" />
+              <line className="finance-chart-baseline" x1="12" y1="112" x2="588" y2="112" />
+              {cashflowWeek.map((day, index) => {
+                const x = 30 + index * 82;
+                const incomeHeight = day.income / weeklyScale * 88;
+                const expenseHeight = day.expense / weeklyScale * 88;
+                return (
+                  <g key={day.iso}>
+                    <rect
+                      className="finance-chart-bar income"
+                      x={x}
+                      y={112 - incomeHeight}
+                      width="19"
+                      height={incomeHeight}
+                      rx="5"
+                    />
+                    <rect
+                      className="finance-chart-bar expense"
+                      x={x + 24}
+                      y={112 - expenseHeight}
+                      width="19"
+                      height={expenseHeight}
+                      rx="5"
+                    />
+                    <text className="finance-chart-day" x={x + 21} y="139" textAnchor="middle">{day.label}</text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        )}
+      </section>
+
+      <div className="finance-analysis-grid">
+        <section className="card card-pad finance-category-panel">
           <SectionHeading
-            title="Transaksi bulan ini"
-            caption={`${filteredTransactions.length} dari ${transactions.length} transaksi`}
-            action={<button className="text-button" type="button" onClick={onAdd}><Plus size={13} /> Tambah</button>}
+            title="Ke mana uang pergi?"
+            caption="Distribusi pengeluaran menurut kategori bulan ini"
           />
-          <div className="completion-filters finance-filters" role="group" aria-label="Filter jenis transaksi">
-            <button type="button" className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>Semua</button>
-            <button type="button" className={filter === "income" ? "active" : ""} onClick={() => setFilter("income")}>Pemasukan</button>
-            <button type="button" className={filter === "expense" ? "active" : ""} onClick={() => setFilter("expense")}>Pengeluaran</button>
+          <div className="finance-category-total">
+            <span>Total pengeluaran tercatat</span>
+            <strong>{formatCompactRupiah(categorySpendTotal)}</strong>
+            <small>{expenseCategories.length} kategori</small>
           </div>
-          <div className="transaction-list">
-            {filteredTransactions.map((transaction) => <TransactionRow key={transaction.id} transaction={transaction} />)}
-          </div>
-          {filteredTransactions.length === 0 && (
-            <EmptyState
-              icon={Receipt}
-              title={transactions.length === 0 ? "Belum ada transaksi" : "Tidak ada transaksi pada filter ini"}
-              description={transactions.length === 0 ? "Catat pemasukan atau pengeluaran pertama untuk mulai memahami arus uangmu." : "Coba pilih jenis transaksi yang lain."}
-              action={transactions.length === 0 ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Catat transaksi</PrimaryButton> : undefined}
-            />
+          {visibleExpenseCategories.length > 0 ? (
+            <div className="finance-category-list">
+              {visibleExpenseCategories.map((item, index) => {
+                const percentage = categorySpendTotal > 0
+                  ? item.spent / categorySpendTotal * 100
+                  : 0;
+                const tone = index % categoryPaletteLength;
+                return (
+                  <div className="finance-category-row" key={item.category}>
+                    <div className="finance-category-meta">
+                      <span className={`finance-category-name tone-${tone}`}>
+                        <span className="finance-category-swatch" />
+                        <strong>{item.category}</strong>
+                      </span>
+                      <strong className="finance-category-amount">{formatCompactRupiah(item.spent)}</strong>
+                    </div>
+                    <div
+                      className="finance-category-track"
+                      role="img"
+                      aria-label={`${item.category}: ${formatRupiah(item.spent)}, ${Math.round(percentage)} persen dari pengeluaran`}
+                    >
+                      <span
+                        className={`finance-category-fill tone-${tone}`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <span className="finance-category-percent">{Math.round(percentage)}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="finance-panel-empty">
+              <Sprout size={20} />
+              <p>Belum ada pengeluaran tercatat bulan ini. Kategori akan muncul setelah transaksi ditambahkan.</p>
+            </div>
           )}
         </section>
 
         <section className="card card-pad finance-budget-panel">
-          <SectionHeading title="Anggaran kategori" caption="Batas bulanan yang digunakan saat ini" />
-          <div className="finance-spend-summary">
-            <div className="finance-spend-heading">
-              <div><strong>Distribusi pengeluaran</strong><small>Proporsi dari transaksi bulan ini</small></div>
-              <span>{expenseCategories.length} kategori</span>
-            </div>
-            {categorySpendTotal > 0 ? (
-              <div className="finance-spend-content">
-                <div
-                  className="finance-spend-donut"
-                  style={{ background: `conic-gradient(${categoryGradient})` }}
-                  role="img"
-                  aria-label={`Distribusi pengeluaran bulan ini sebesar ${formatCompactRupiah(categorySpendTotal)} di ${expenseCategories.length} kategori`}
-                >
-                  <div><strong>{formatCompactRupiah(categorySpendTotal)}</strong><span>Total keluar</span></div>
-                </div>
-                <div className="finance-spend-legend">
-                  {expenseCategories.map((item, index) => (
-                    <div className="finance-spend-legend-row" key={item.category}>
-                      <span className={`finance-spend-swatch tone-${index % categoryPalette.length}`} />
-                      <span className="finance-spend-legend-copy"><strong>{item.category}</strong><small>{formatCompactRupiah(item.spent)}</small></span>
-                      <b>{Math.round(item.spent / categorySpendTotal * 100)}%</b>
+          <SectionHeading title="Kontrol anggaran" caption="Pantau realisasi terhadap batas bulanan" />
+          {spendByCategory.length > 0 ? (
+            <div className="budget-list">
+              {spendByCategory.map((budget) => {
+                const hasLimit = budget.limit > 0;
+                const ratio = hasLimit ? budget.spent / budget.limit * 100 : 0;
+                const displayRatio = Math.round(ratio);
+                const Icon = budgetIcons[budget.category] ?? CircleDollarSign;
+                const state = !hasLimit
+                  ? "no-limit"
+                  : budget.spent > budget.limit
+                    ? "over"
+                    : ratio >= 80
+                      ? "warning"
+                      : "";
+                const detail = !hasLimit
+                  ? "Batas anggaran belum ditentukan"
+                  : budget.spent > budget.limit
+                    ? `Melebihi batas ${formatCompactRupiah(budget.spent - budget.limit)}`
+                    : budget.spent === budget.limit
+                      ? "Batas anggaran tercapai"
+                      : budget.spent === 0
+                        ? `${formatCompactRupiah(budget.limit)} masih tersedia`
+                        : `Sisa ${formatCompactRupiah(budget.limit - budget.spent)}`;
+                return (
+                  <div className="budget-item" key={budget.category}>
+                    <div className="budget-head">
+                      <span className="budget-category"><Icon size={14} />{budget.category}</span>
+                      <strong className={state ? `budget-status ${state}` : "budget-status"}>
+                        {hasLimit ? `${displayRatio}%` : "—"}
+                      </strong>
                     </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="finance-spend-empty"><span><Sprout size={21} /></span><p>Belum ada pengeluaran tercatat bulan ini. Distribusi kategori akan muncul setelah transaksi ditambahkan.</p></div>
-            )}
-          </div>
-          <div className="budget-list">
-            {spendByCategory.map((budget) => {
-              const ratio = budget.limit > 0 ? budget.spent / budget.limit * 100 : (budget.spent > 0 ? 100 : 0);
-              const displayRatio = Math.round(ratio);
-              const Icon = budgetIcons[budget.category] ?? CircleDollarSign;
-              const state = ratio >= 100 ? "over" : ratio >= 80 ? "warning" : "";
-              return (
-                <div className="budget-item" key={budget.category}>
-                  <div className="budget-head">
-                    <span className="budget-category"><Icon size={14} />{budget.category}</span>
-                    <strong className={state ? `budget-status ${state}` : "budget-status"}>{displayRatio}%</strong>
+                    <div className="budget-values">
+                      {formatCompactRupiah(budget.spent)}
+                      <span> dari </span>
+                      {hasLimit ? formatCompactRupiah(budget.limit) : "Belum ada batas"}
+                    </div>
+                    <div
+                      className="budget-track"
+                      role={hasLimit ? "progressbar" : "img"}
+                      aria-label={`Anggaran ${budget.category}`}
+                      aria-valuenow={hasLimit ? Math.min(displayRatio, 100) : undefined}
+                      aria-valuemin={hasLimit ? 0 : undefined}
+                      aria-valuemax={hasLimit ? 100 : undefined}
+                    >
+                      <div className={`budget-fill ${state}`} style={{ width: `${Math.min(displayRatio, 100)}%` }} />
+                    </div>
+                    <div className={`budget-hint ${state}`}>{detail}</div>
                   </div>
-                  <div className="budget-values">{formatCompactRupiah(budget.spent)} <span>dari</span> {formatCompactRupiah(budget.limit)}</div>
-                  <div className="budget-track" role="progressbar" aria-label={`Anggaran ${budget.category}`} aria-valuenow={Math.min(displayRatio, 100)} aria-valuemin={0} aria-valuemax={100}>
-                    <div className={`budget-fill ${state}`} style={{ width: `${Math.min(displayRatio, 100)}%` }} />
-                  </div>
-                  <div className="budget-hint">{ratio >= 100 ? "Batas anggaran terlampaui" : ratio >= 80 ? "Mendekati batas anggaran" : budget.spent === 0 ? "Belum ada pengeluaran" : "Masih dalam batas anggaran"}</div>
-                </div>
-              );
-            })}
-            {spendByCategory.length === 0 && <p className="section-caption">Belum ada kategori anggaran yang tersedia.</p>}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="finance-panel-empty">
+              <CircleDollarSign size={20} />
+              <p>Belum ada kategori anggaran yang tersedia.</p>
+            </div>
+          )}
         </section>
       </div>
+
+      <section className="card card-pad finance-transactions-panel">
+        <SectionHeading
+          title="Aktivitas transaksi"
+          caption={`${filteredTransactions.length} transaksi pada ${monthLabel}`}
+          action={
+            filteredTransactions.length > 5 ? (
+              <button
+                className="finance-expand-button"
+                type="button"
+                onClick={() => setShowAllTransactions((current) => !current)}
+                aria-expanded={showAllTransactions}
+                aria-controls="finance-transaction-list"
+              >
+                {showAllTransactions ? "Tampilkan lebih sedikit" : `Lihat semua (${filteredTransactions.length})`}
+                {showAllTransactions ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+            ) : (
+              <button className="text-button" type="button" onClick={onAdd}><Plus size={13} /> Tambah</button>
+            )
+          }
+        />
+        <div className="completion-filters finance-filters" role="group" aria-label="Filter jenis transaksi">
+          <button type="button" className={filter === "all" ? "active" : ""} onClick={() => { setFilter("all"); setShowAllTransactions(false); }}>Semua</button>
+          <button type="button" className={filter === "income" ? "active" : ""} onClick={() => { setFilter("income"); setShowAllTransactions(false); }}>Pemasukan</button>
+          <button type="button" className={filter === "expense" ? "active" : ""} onClick={() => { setFilter("expense"); setShowAllTransactions(false); }}>Pengeluaran</button>
+        </div>
+        <div className="transaction-list" id="finance-transaction-list">
+          {visibleTransactions.map((transaction) => (
+            <TransactionRow key={transaction.id} transaction={transaction} />
+          ))}
+        </div>
+        {filteredTransactions.length === 0 && (
+          <EmptyState
+            icon={Receipt}
+            title={monthTransactions.length === 0 ? "Belum ada transaksi" : "Tidak ada transaksi pada filter ini"}
+            description={monthTransactions.length === 0
+              ? "Catat pemasukan atau pengeluaran pertama untuk mulai memahami arus uangmu."
+              : "Coba pilih jenis transaksi yang lain."}
+            action={monthTransactions.length === 0
+              ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Catat transaksi</PrimaryButton>
+              : undefined}
+          />
+        )}
+      </section>
     </>
   );
 }
