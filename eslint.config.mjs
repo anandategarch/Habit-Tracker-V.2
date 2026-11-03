@@ -5,5 +5,16 @@ import nextTs from "eslint-config-next/typescript";
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  // examples/, skills/, mini-services/, tool-results/ adalah aset platform,
+  // bukan kode aplikasi Rutina — jangan ikut di-lint.
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "examples/**",
+    "skills/**",
+    "mini-services/**",
+    "tool-results/**",
+  ]),
 ]);
