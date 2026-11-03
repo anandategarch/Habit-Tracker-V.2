@@ -41,7 +41,7 @@ function isTransaction(value: unknown): value is Transaction {
   return (
     typeof value.id === "string" && value.id.length > 0 && value.id.length <= 100 &&
     typeof value.title === "string" && value.title.trim().length > 0 && value.title.length <= 100 &&
-    ["Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya"].includes(String(value.category)) &&
+    typeof value.category === "string" && value.category.trim().length > 0 && value.category.length <= 60 &&
     (value.type === "income" || value.type === "expense") &&
     typeof value.amount === "number" && Number.isSafeInteger(value.amount) && value.amount > 0 &&
     typeof value.date === "string" && isValidDate(value.date) &&
@@ -54,7 +54,7 @@ function isTransaction(value: unknown): value is Transaction {
 function isBudget(value: unknown): value is Budget {
   if (!isRecord(value)) return false;
   return (
-    ["Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya"].includes(String(value.category)) &&
+    typeof value.category === "string" && value.category.trim().length > 0 && value.category.length <= 60 &&
     typeof value.limit === "number" && Number.isSafeInteger(value.limit) && value.limit >= 0
   );
 }
