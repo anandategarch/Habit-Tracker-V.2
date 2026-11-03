@@ -107,7 +107,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
         </section>
         <section className="card habit-streak-summary">
           <span className="streak-summary-icon"><Sparkles size={18} /></span>
-          <div className="small-label">STREAK TERPANJANG</div>
+          <div className="small-label">REKOR KONSISTENSI</div>
           <div className="streak-number">{longestStreak}<span> hari</span></div>
           <p>Pertahankan ritme yang sudah kamu bangun.</p>
         </section>
