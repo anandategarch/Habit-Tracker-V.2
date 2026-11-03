@@ -103,7 +103,7 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
       <SectionHeading title="Tujuanmu" caption={modules.goals.length + " tujuan tersimpan · " + doneSteps + " dari " + steps + " milestone selesai"} />
       {modules.goals.length ? <div className="module-list goal-list">{modules.goals.map((goal) => {
         const done = goal.milestones.filter((step) => step.completed).length;
-        const progress = goal.milestones.length ? Math.round(done / goal.milestones.length * 100) : (goal.completed ? 100 : 0);
+        const progress = goal.completed ? 100 : goal.milestones.length ? Math.round(done / goal.milestones.length * 100) : 0;
         return <article className={"module-item goal-card" + (goal.completed ? " is-complete" : "")} key={goal.id}>
           <div className="module-item-top goal-card-top">
             <span className="goal-card-icon"><Target size={20} /></span>
