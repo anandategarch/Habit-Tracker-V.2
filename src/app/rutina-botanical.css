@@ -1995,3 +1995,63 @@ html[data-theme="dark"] .settings-menu-card a:nth-child(4) .settings-menu-icon {
   .settings-menu-card a { min-height: 56px; }
   .settings-info-card { padding: 14px; }
 }
+
+
+/* Insights period selector and compact botanical chart rhythm. */
+.insight-period-tabs {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  gap: 4px;
+  width: fit-content;
+  margin: 0 0 16px;
+  padding: 4px;
+  border: 1px solid #eee4da;
+  border-radius: 999px;
+  background: rgba(255,253,249,.88);
+}
+.insight-period-tabs button {
+  min-height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  color: #7f8679;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 760;
+}
+.insight-period-tabs button.active {
+  color: #fff;
+  background: linear-gradient(110deg,#927bea,#aa9be9);
+  box-shadow: 0 4px 11px rgba(124,103,217,.16);
+}
+.insight-trend-panel .insight-trend-chart { transition: min-height .2s ease; }
+.insight-period-highlight { border-radius: 23px; }
+html[data-theme="dark"] .insight-period-tabs { border-color: var(--line); background: var(--surface); }
+html[data-theme="dark"] .insight-period-tabs button { color: var(--muted); }
+html[data-theme="dark"] .insight-period-tabs button.active { color: #fff; }
+
+.tree-detail-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  min-height: 38px;
+  margin-top: 13px;
+  padding: 0 15px;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(115deg,#927bea,#765cdb);
+  box-shadow: 0 6px 15px rgba(119,92,219,.17);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 800;
+}
+.tree-detail-cta:hover { background: linear-gradient(115deg,#8569e0,#684dce); }
+#tree-growth-details { scroll-margin-top: 88px; }
+html[data-theme="dark"] .tree-detail-cta { color: #fff; }
+
+@media (max-width: 600px) {
+  .insight-period-tabs { display: grid; width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .insight-period-tabs button { padding: 0 8px; }
+  .insight-trend-chart { gap: 4px; }
+}
