@@ -4,6 +4,7 @@ import { useState, type ChangeEvent } from "react";
 import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sprout } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import type { WorkspaceSettings } from "@/lib/module-types";
+import { APP_VERSION_LABEL } from "@/lib/version";
 
 function dateStamp(): string {
   const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
@@ -99,7 +100,7 @@ export function BackupView({ settings, onUpdateSettings }: {
         <img src="/illustrations/avatar.png" alt="Ilustrasi profil Rutina" width={52} height={52} />
       </span>
       <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadimu</strong><span>Rutina · Grow at your pace</span></div>
-      <span className="settings-profile-status"><ShieldCheck size={14} /> Data terlindungi</span>
+      <span className="settings-profile-status" aria-label={`Versi ${APP_VERSION_LABEL}`}><ShieldCheck size={14} /> {APP_VERSION_LABEL}</span>
     </section>
 
     <nav className="settings-menu-card" aria-label="Navigasi pengaturan">
