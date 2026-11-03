@@ -1,9 +1,31 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
-import { Archive, Download, FileUp, LoaderCircle, ShieldCheck, Sprout } from "lucide-react";
+import { Archive, Download, FileUp, LoaderCircle, ShieldCheck, Sprout, Wand2, AlertTriangle } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import type { WorkspaceSettings } from "@/lib/module-types";
+
+interface LegacyReport {
+  sourceFormat: string;
+  sourceKeys: string[];
+  habits: { total: number; migrated: number; skippedArchived: number };
+  habitCheckins: { total: number; inserted: number };
+  dailyLogs: { total: number; toCheckins: number; toWellness: number };
+  transactions: { total: number; migrated: number; skippedTransfer: number; skippedInvalid: number };
+  fundSources: { total: number; migrated: number };
+  weeklyBudgets: { total: number; migrated: number };
+  habitGroups: { total: number; migrated: number };
+  workRoutines: { total: number; migrated: number };
+  workTasks: { total: number; migrated: number };
+  workNotes: { total: number; migrated: number };
+  goals: { total: number; migrated: number };
+  savingsGoals: { total: number; migrated: number };
+  recurring: { total: number; migrated: number };
+  categoryRules: { total: number; migrated: number };
+  settings: { migrated: boolean; userName?: string; theme?: string };
+  unmappedCategories: string[];
+  notes: string[];
+}
 
 function dateStamp(): string {
   const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
@@ -18,8 +40,10 @@ export function BackupView({ settings, onUpdateSettings }: {
 }) {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [migrating, setMigrating] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
+  const [migrationReport, setMigrationReport] = useState<LegacyReport | null>(null);
 
   async function exportBackup() {
     setExporting(true);
@@ -91,6 +115,46 @@ export function BackupView({ settings, onUpdateSettings }: {
     }
   }
 
+  async function migrateLegacyBackup(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setError(false);
+    setMessage("");
+    setMigrationReport(null);
+    if (file.size > 20 * 1024 * 1024) {
+      setError(true);
+      setMessage("Ukuran file melebihi batas 20 MB.");
+      event.target.value = "";
+      return;
+    }
+    if (!window.confirm("Backup V1 (lama) akan ditransformasi & digabung dengan data V2. Field yang tidak ada di V2 diisi default. Lanjutkan migrasi?")) {
+      event.target.value = "";
+      return;
+    }
+
+    setMigrating(true);
+    try {
+      const raw = await file.text();
+      const parsed: unknown = JSON.parse(raw);
+      const response = await fetch("/api/migrate-legacy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || "Migrasi gagal.");
+      setMigrationReport(payload.report as LegacyReport);
+      setMessage("Migrasi dari backup V1 berhasil. Memuat ulang workspace…");
+      window.setTimeout(() => window.location.reload(), 1500);
+    } catch (reason) {
+      setError(true);
+      setMessage(reason instanceof Error ? reason.message : "File backup lama tidak dapat diproses.");
+    } finally {
+      setMigrating(false);
+      event.target.value = "";
+    }
+  }
+
   return <>
     <PageIntro eyebrow="PREFERENSI & DATA" title="Ruang nyaman untuk bertumbuh." subtitle="Atur suasana Rutina dan jaga catatan kebiasaanmu tetap aman." />
     <section className="settings-profile-card">
@@ -148,6 +212,53 @@ export function BackupView({ settings, onUpdateSettings }: {
         </div>
       </section>
     </div>
+
+    <div className="settings-section-heading"><span>MIGRASI V1 → V2</span><strong>Migrasi dari aplikasi lama</strong></div>
+    <section className="card card-pad backup-card">
+      <div className="backup-icon"><Wand2 size={22} /></div>
+      <SectionHeading
+        title="Migrasi backup V1 (Rutina lama)"
+        caption="Transformasi file backup dari aplikasi Rutina versi lama ke skema V2. Field yang tidak ada di V2 diisi default; kategori transaksi dipetakan ke enum V2."
+      />
+      <ul className="backup-includes">
+        <li>Habit (name→title, emoji→icon, priority/difficulty lowercase, streak dihitung ulang dari habitLogs)</li>
+        <li>habitLogs → riwayat check-in (streak historis dipulihkan)</li>
+        <li>Transactions (description→title, date→ISO date, kategori dipetakan, transfer dilewati)</li>
+        <li>fundSources → finance.wallets, weeklyBudgets → finance.weeklyBudgets</li>
+        <li>dailyLogs → checkins + wellness, workRoutines/Tasks/Notes → modul kerja</li>
+        <li>habitGroups, appSettings (userName tidak dipertahankan — tidak ada field di V2)</li>
+      </ul>
+      <label className="backup-upload">
+        <Wand2 size={17} />
+        <span>{migrating ? "Memigrasi data…" : "Pilih file backup V1 JSON"}</span>
+        <input type="file" accept="application/json,.json" disabled={migrating} onChange={migrateLegacyBackup} />
+      </label>
+      <div className="backup-safety-note">
+        <AlertTriangle size={16} />
+        <p>Backup V1 punya struktur berbeda dari V2. Banyak field tidak punya padanan langsung dan akan diisi default. Lihat laporan setelah migrasi untuk detail apa yang dikonversi & dilewati.</p>
+      </div>
+      {migrationReport && (
+        <div className="backup-migration-report" role="status">
+          <strong>Hasil migrasi:</strong>
+          <ul>
+            <li>Habit: {migrationReport.habits.migrated}/{migrationReport.habits.total} dimigrasi{migrationReport.habits.skippedArchived ? ` (${migrationReport.habits.skippedArchived} diarsipkan dilewati)` : ""}</li>
+            <li>Check-in historis: {migrationReport.habitCheckins.inserted} record</li>
+            <li>Transaksi: {migrationReport.transactions.migrated}/{migrationReport.transactions.total} dimigrasi{migrationReport.transactions.skippedTransfer ? `, ${migrationReport.transactions.skippedTransfer} transfer dilewati` : ""}{migrationReport.transactions.skippedInvalid ? `, ${migrationReport.transactions.skippedInvalid} invalid dilewati` : ""}</li>
+            <li>Dompet (fundSources): {migrationReport.fundSources.migrated}/{migrationReport.fundSources.total}</li>
+            <li>Weekly budgets: {migrationReport.weeklyBudgets.migrated}/{migrationReport.weeklyBudgets.total}</li>
+            <li>Daily logs → checkins: {migrationReport.dailyLogs.toCheckins}, wellness: {migrationReport.dailyLogs.toWellness}</li>
+            <li>Rutinitas kerja: {migrationReport.workRoutines.migrated}/{migrationReport.workRoutines.total}</li>
+            <li>Tugas kerja: {migrationReport.workTasks.migrated}/{migrationReport.workTasks.total}</li>
+            <li>Catatan kerja: {migrationReport.workNotes.migrated}/{migrationReport.workNotes.total}</li>
+            <li>Habit groups: {migrationReport.habitGroups.migrated}/{migrationReport.habitGroups.total}</li>
+            {migrationReport.unmappedCategories.length > 0 && (
+              <li>Kategori tidak terpetakan (→ Lainnya): {migrationReport.unmappedCategories.join(", ")}</li>
+            )}
+            {migrationReport.notes.map((note, i) => <li key={i}>⚠ {note}</li>)}
+          </ul>
+        </div>
+      )}
+    </section>
     {message && <p className={`backup-message ${error ? "is-error" : "is-success"}`} role="status">{message}</p>}
   </>;
 }

@@ -1631,6 +1631,10 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
 .backup-message { margin:10px 0 0; padding:10px 13px; border:1px solid var(--line); border-radius:12px; font-size:11px; line-height:1.5; }
 .backup-message.is-success { color:var(--primary); background:var(--primary-soft); }
 .backup-message.is-error { color:var(--danger); background:color-mix(in srgb,var(--danger) 9%,var(--surface)); }
+.backup-migration-report { margin:12px 0 0; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:var(--surface-soft); }
+.backup-migration-report > strong { display:block; margin-bottom:8px; color:var(--ink); font-size:11px; font-weight:750; }
+.backup-migration-report ul { display:grid; gap:5px; padding-left:18px; margin:0; color:var(--ink-soft); font-size:10px; line-height:1.55; }
+.backup-migration-report li::marker { color:var(--primary); }
 
 .habit-groups-manager { margin:0 0 14px; padding:0; overflow:hidden; }
 .group-manager-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; padding:14px 16px; border:0; color:var(--ink); background:transparent; text-align:left; }
