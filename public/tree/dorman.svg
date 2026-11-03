@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" fill="none"><defs>
+    <radialGradient id="halo" cx="50%" cy="43%" r="58%"><stop stop-color="#f8f5e9"/><stop offset="1" stop-color="#e9f2df"/></radialGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#9d7654"/><stop offset=".55" stop-color="#79583e"/><stop offset="1" stop-color="#654a39"/></linearGradient>
+    <linearGradient id="pot" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5a77e"/><stop offset="1" stop-color="#c87f62"/></linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="7"/></filter>
+  </defs>
+  <circle cx="240" cy="225" r="190" fill="url(#halo)"/>
+  <circle cx="240" cy="225" r="168" fill="#f7f5e9" opacity=".34"/>
+  <ellipse cx="240" cy="398" rx="113" ry="16" fill="#9bb58b" opacity=".23" filter="url(#soft)"/><path d="M102 370c48-19 91-25 138-22 53 4 96 15 138 22" stroke="#9cb987" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M139 373c61 16 141 17 202 0" stroke="#b5c99e" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M240 370c5-70-9-125 1-202" stroke="url(#wood)" stroke-width="20" stroke-linecap="round"/><path d="M240 287c-29-31-57-62-92-86m97 55c27-35 56-60 91-81m-92 29c-18-30-27-61-26-91m28 98c15-34 34-61 58-87m-64 130c-17-9-36-16-54-18m69 2c20-11 40-20 58-23" stroke="url(#wood)" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <g fill="#91a88a" opacity=".78"><circle cx="148" cy="189" r="8"/><circle cx="336" cy="175" r="7"/><circle cx="216" cy="134" r="7"/><circle cx="300" cy="132" r="6"/></g>
+    <path d="M157 252c-13-8-21-20-19-33 15 3 23 15 19 33Zm178-22c13-7 19-18 17-31-14 3-21 14-17 31Z" fill="#d5dfc8"/><ellipse cx="240" cy="380" rx="78" ry="13" fill="#c9d6be" opacity=".65"/>
+    <circle cx="122" cy="302" r="5" fill="#e8cfa6"/><circle cx="350" cy="290" r="4" fill="#e8cfa6"/><circle cx="301" cy="325" r="3" fill="#e8cfa6"/></svg>
