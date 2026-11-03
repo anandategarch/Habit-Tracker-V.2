@@ -1703,3 +1703,158 @@ html[data-theme="dark"] .weekly-trend-badge { color: var(--primary); background:
 @media (max-width: 600px) {
   .botanical-hero { padding-bottom: 108px; }
 }
+
+
+/* ===== Dashboard composition aligned to PEDOMAN UI Gambar 3 ===== */
+.hero-quote-bubble {
+  position: absolute;
+  z-index: 2;
+  top: 30px;
+  right: 28%;
+  width: min(224px, 27%);
+  padding: 17px 19px;
+  border: 1px solid rgba(255,255,255,.86);
+  border-radius: 23px 23px 6px 23px;
+  color: #42483c;
+  background: rgba(255,248,235,.91);
+  box-shadow: 0 8px 22px rgba(93,75,53,.08);
+  backdrop-filter: blur(10px);
+}
+.hero-quote-bubble p { margin: 0; font-size: 13px; font-weight: 720; line-height: 1.48; }
+.hero-quote-bubble span { display: block; margin-top: 7px; color: #89907d; font-size: 9px; font-weight: 700; }
+
+.dashboard-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 16px;
+  margin-top: 16px;
+}
+.dashboard-feature-grid > .card { min-width: 0; }
+.dashboard-feature-grid .home-habits-card,
+.dashboard-feature-grid .weekly-trend-card { height: 100%; }
+.weekly-trend-card { display: flex; flex-direction: column; min-width: 0; }
+.weekly-trend-layout {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+.weekly-progress-ring {
+  position: relative;
+  display: grid;
+  width: 112px;
+  height: 112px;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(from -90deg, #528d61 0 var(--progress), #e4eadf var(--progress) 100%);
+}
+.weekly-progress-ring::before {
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: #fffdf8;
+  content: "";
+}
+.weekly-progress-ring > div {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+.weekly-progress-ring strong { color: #303a30; font-size: 25px; font-weight: 850; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.weekly-progress-ring small { color: #8b9483; font-size: 7px; font-weight: 850; letter-spacing: 1px; }
+.weekly-trend-chart {
+  min-width: 0;
+  min-height: 142px;
+  gap: clamp(3px, .8vw, 9px);
+  padding: 8px 4px 0;
+}
+.weekly-trend-chart .insight-trend-bars { height: 84px; }
+.weekly-trend-chart .insight-trend-bar { width: min(19px, 55%); }
+.weekly-trend-chart .insight-trend-day { gap: 6px; }
+.weekly-trend-chart .insight-trend-day small { font-size: 8px; }
+.weekly-trend-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 13px;
+}
+.weekly-comparison { color: #899181; font-size: 9px; line-height: 1.4; }
+.weekly-comparison.positive { color: #4d8b60; font-weight: 750; }
+.weekly-comparison.negative { color: #bf7b63; font-weight: 750; }
+.weekly-add-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 39px;
+  flex: none;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(115deg,#927bea,#765cdb);
+  box-shadow: 0 7px 17px rgba(119,92,219,.19);
+  font-size: 10px;
+  font-weight: 800;
+}
+.weekly-add-action:hover { background: linear-gradient(115deg,#8569e0,#684dce); transform: translateY(-1px); }
+.dashboard-support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 16px;
+}
+.dashboard-support-grid > * { min-width: 0; }
+.dashboard-support-bottom { display: grid; align-content: start; gap: 12px; min-width: 0; }
+.dashboard-support-bottom:empty { display: none; }
+.weekly-trend-card .insight-trend-empty { flex: 1; }
+
+@media (max-width: 1180px) {
+  .hero-quote-bubble { display: none; }
+  .dashboard-support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 960px) {
+  .dashboard-feature-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .dashboard-support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .weekly-trend-layout { grid-template-columns: 104px minmax(0, 1fr); gap: 10px; }
+  .weekly-progress-ring { width: 98px; height: 98px; }
+  .weekly-progress-ring::before { inset: 8px; }
+  .weekly-progress-ring strong { font-size: 22px; }
+}
+@media (max-width: 600px) {
+  .dashboard-feature-grid { margin-top: 12px; }
+  .dashboard-support-grid { grid-template-columns: minmax(0, 1fr); margin-top: 12px; }
+  .weekly-trend-layout { grid-template-columns: 82px minmax(0, 1fr); gap: 8px; }
+  .weekly-progress-ring { width: 78px; height: 78px; }
+  .weekly-progress-ring::before { inset: 6px; }
+  .weekly-progress-ring strong { font-size: 18px; }
+  .weekly-progress-ring small { font-size: 6px; }
+  .weekly-trend-chart { min-height: 116px; gap: 3px; padding-right: 0; padding-left: 0; }
+  .weekly-trend-chart .insight-trend-bars { height: 68px; }
+  .weekly-trend-chart .insight-trend-value { font-size: 8px; }
+  .weekly-trend-chart .insight-trend-day small { font-size: 7px; }
+  .weekly-trend-footer { align-items: flex-start; flex-direction: column; }
+  .weekly-add-action { width: 100%; min-height: 42px; }
+  .weekly-comparison { font-size: 8px; }
+  .hero-quote-bubble { display: none; }
+}
+html[data-theme="dark"] .hero-quote-bubble {
+  border-color: var(--line);
+  color: var(--ink);
+  background: rgba(38,52,42,.92);
+}
+html[data-theme="dark"] .hero-quote-bubble span,
+html[data-theme="dark"] .weekly-comparison { color: var(--muted); }
+html[data-theme="dark"] .weekly-progress-ring { background: conic-gradient(from -90deg,#80ad79 0 var(--progress),#435345 var(--progress) 100%); }
+html[data-theme="dark"] .weekly-progress-ring::before { background: var(--surface); }
+html[data-theme="dark"] .weekly-progress-ring strong { color: var(--ink); }
+html[data-theme="dark"] .weekly-progress-ring small { color: var(--muted); }
+@media (prefers-reduced-motion: reduce) {
+  .weekly-add-action { transition: none !important; }
+}
