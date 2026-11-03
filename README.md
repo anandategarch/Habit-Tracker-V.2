@@ -73,9 +73,9 @@ Di Vercel, isi kedua variabel tersebut pada **Project → Settings → Environme
 
 ### Perlindungan akses
 
-Rutina tidak memakai halaman login atau password internal. Deployment Vercel dilindungi dengan **Vercel Authentication** pada cakupan **All Deployments**. Hanya akun yang memiliki akses ke team Vercel proyek ini (minimal Viewer) yang dapat membuka aplikasi dan API datanya.
+Rutina tidak memakai halaman login atau password internal. Akses aplikasi bergantung pada **Vercel Deployment Protection**. Pada pemeriksaan konfigurasi project `habittracker2` tanggal 3 November 2026, Vercel melaporkan SSO protection aktif untuk **Preview**, sedangkan perlindungan Production belum terkonfirmasi aktif. Karena endpoint data tidak memiliki sistem login internal, aktifkan dan verifikasi perlindungan **All Deployments** sebelum menggunakan Production dengan data pribadi.
 
-Kamu dapat membuka Rutina dari desktop maupun HP melalui browser. Di HP, masuk ke Vercel menggunakan akun yang sama dengan akun yang memiliki akses ke proyek, lalu buka URL deployment Rutina. Jangan menonaktifkan Deployment Protection atau membagikan akses team kepada orang lain. Vercel Authentication melindungi deployment; server Turso tetap menyimpan kredensial database secara server-side.
+Setelah perlindungan All Deployments diverifikasi, kamu dapat membuka Rutina dari desktop maupun HP melalui akun Vercel yang memiliki akses ke project. Jangan menonaktifkan Deployment Protection atau membagikan akses team kepada orang lain. Kredensial Turso tetap disimpan server-side.
 
 Saat menjalankan `npm run dev` secara lokal, perlindungan Vercel Authentication tidak berlaku. Jangan mengekspos server lokal ke jaringan publik. Jika variabel Turso belum tersedia, aplikasi tetap berjalan dengan LocalStorage/demo fallback.
 
