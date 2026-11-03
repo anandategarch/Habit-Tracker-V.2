@@ -319,6 +319,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
               <span style={{ width: String(growth.levelProgress) + "%" }} />
             </div>
             <small className="tree-level-footnote">Progres seumur hidup · tidak pernah direset</small>
+            <a className="tree-detail-cta" href="#tree-growth-details">Lihat Detail <ArrowRight size={13} /></a>
           </div>
           <div className="tree-journey-art" role="img" aria-label={"Ilustrasi pohon tahap " + growth.stage.label}>
             <span className="tree-art-orbit tree-art-orbit-one" />
@@ -341,7 +342,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
           <div><span className="small-label">BUAH EMAS</span><strong>{goalsCount}</strong><small>Tujuan yang telah selesai</small></div>
         </div>
 
-        <div className="module-two-col tree-detail-grid">
+        <div className="module-two-col tree-detail-grid" id="tree-growth-details">
           <Panel title="Penyiraman hari ini" caption="Setiap habit yang selesai membantu pertumbuhan hari ini">
             <div className="tree-watering-count"><strong>{growth.completedToday}/{growth.scheduledToday}</strong><span>habit terjadwal selesai</span></div>
             <div className="module-progress-track"><span style={{ width: String(growth.scheduledToday ? growth.completedToday / growth.scheduledToday * 100 : 0) + "%" }} /></div>
