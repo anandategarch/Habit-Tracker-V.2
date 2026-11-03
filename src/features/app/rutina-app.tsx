@@ -20,7 +20,6 @@ import { EntryModal } from "@/components/ui/entry-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
 import { PwaInstallButton } from "@/components/pwa/install-button";
 import { useModules } from "@/lib/use-modules";
-import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 
 const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
@@ -496,7 +495,7 @@ export function RutinaApp() {
         <div className="content-wrap page-transition" key={activeTab}>
           {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
-          {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
+          {activeTab === "finance" && <><FinanceView transactions={transactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} checkins={modules.checkins} />}
           {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree" || activeTab === "settings") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
@@ -611,17 +610,6 @@ export function RutinaApp() {
         onNavigate={(tab) => setActiveTab(tab)}
       />
       {toast && <div role="status" aria-live="polite" className="toast"><span className="toast-dot" />{toast}</div>}
-      <footer className="site-footer" role="contentinfo">
-        <div className="site-footer-brand">
-          <span className="footer-mark" aria-hidden="true" />
-          <span>Rutina</span>
-        </div>
-        <div className="site-footer-meta">
-          <a href="https://github.com/anandategarch/Habit-Tracker-V.2" target="_blank" rel="noreferrer noopener">Sumber</a>
-          <span className="site-footer-version" aria-label="Versi aplikasi">{APP_VERSION_LABEL}</span>
-          <span aria-hidden="true">Tumbuh dalam langkah kecil.</span>
-        </div>
-      </footer>
     </div>
   );
 }
