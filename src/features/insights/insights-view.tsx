@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Activity, ArrowDownLeft, ArrowUpRight, BrainCircuit, Flame, HeartPulse, Moon, PiggyBank, Sprout, Target, WalletCards } from "lucide-react";
+import { Activity, ArrowDownLeft, ArrowUpRight, BrainCircuit, Flame, HeartPulse, Moon, PiggyBank, RefreshCw, Sprout, Target, WalletCards } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { DailyCheckin } from "@/lib/module-types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
@@ -57,6 +57,8 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
     records: HabitHistoryRecord[];
     error: boolean;
   } | null>(null);
+  const [historyRetryVersion, setHistoryRetryVersion] = useState(0);
+  const [aiRetryVersion, setAiRetryVersion] = useState(0);
   const [period, setPeriod] = useState<InsightPeriod>("week");
   // Keep the freshest local data available for the offline fallback without
   // re-running the (expensive, LLM-backed) request on every workspace change.
@@ -87,7 +89,8 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
     return [...new Set(periodDateKeys.map((date) => date.slice(0, 7)))];
   }, [todayKey, period, periodDateKeys]);
   const periodMonthKey = periodMonthKeys.join(",");
-  const weeklyHistoryLoading = weeklyHistorySnapshot?.key !== periodMonthKey;
+  const historyRequestKey = periodMonthKey + ":" + historyRetryVersion;
+  const weeklyHistoryLoading = weeklyHistorySnapshot?.key !== historyRequestKey;
   const weeklyHistoryError = !weeklyHistoryLoading && Boolean(weeklyHistorySnapshot?.error);
   const weeklyHistory = weeklyHistoryLoading ? [] : (weeklyHistorySnapshot?.records ?? []);
   const recentCheckins = useMemo(() => checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [checkins]);
@@ -136,13 +139,13 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       return Array.isArray(payload.records) ? payload.records : [];
     }))
       .then((recordsByMonth) => {
-        if (!cancelled) setWeeklyHistorySnapshot({ key: periodMonthKey, records: recordsByMonth.flat(), error: false });
+        if (!cancelled) setWeeklyHistorySnapshot({ key: historyRequestKey, records: recordsByMonth.flat(), error: false });
       })
       .catch(() => {
-        if (!cancelled) setWeeklyHistorySnapshot({ key: periodMonthKey, records: [], error: true });
+        if (!cancelled) setWeeklyHistorySnapshot({ key: historyRequestKey, records: [], error: true });
       });
     return () => { cancelled = true; };
-  }, [periodMonthKey, periodMonthKeys]);
+  }, [historyRequestKey, periodMonthKeys]);
 
   useEffect(() => {
     let cancelled = false;
@@ -166,7 +169,7 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, []);
+  }, [aiRetryVersion]);
 
   return (
     <>
@@ -185,7 +188,13 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       <section className="card card-pad insight-trend-panel" aria-label="Ringkasan progres habit dan check-in selama tujuh hari terakhir">
         <SectionHeading title={periodTitle} caption={"Jumlah habit yang tercatat selesai · " + periodCaption} />
         {weeklyHistoryLoading ? (
-          <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Menyiapkan ringkasan mingguan</strong><p>Riwayat penyelesaian habit sedang dimuat.</p></div>
+          <div className="insight-history-skeleton" role="status" aria-live="polite">
+            <span className="sr-only">Memuat data progres {periodCaption}.</span>
+            <div className="insight-skeleton-bars">
+              {Array.from({ length: period === "year" ? 12 : period === "month" ? 5 : 7 }, (_, index) => <span className="insight-skeleton-day" key={index}><i className="skeleton-shimmer" /></span>)}
+            </div>
+            <div className="insight-skeleton-legend"><span className="skeleton-shimmer" /><span className="skeleton-shimmer" /></div>
+          </div>
         ) : !weeklyHistoryError ? (
           trendTotal > 0 ? (
             <>
@@ -221,7 +230,7 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
             <div className="insight-trend-legend"><span><i className="mood" /> Mood</span><span><i className="energy" /> Energi</span><small>Fallback dari check-in</small></div>
           </>
         ) : (
-          <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Riwayat mingguan belum tersedia</strong><p>Hubungkan database dan simpan aktivitas harian untuk melihat progres di sini.</p></div>
+          <div className="insight-trend-empty" role="status"><span><Sprout size={22} /></span><strong>Riwayat belum dapat dimuat</strong><p>Periksa koneksi lalu coba ambil data kembali. Catatan lokal tetap aman.</p><button className="weekly-retry-action" type="button" onClick={() => setHistoryRetryVersion((current) => current + 1)}><RefreshCw size={13} /> Coba lagi</button></div>
         )}
       </section>
 
@@ -268,11 +277,18 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       </div>
 
       <section className="card card-pad insight-ai-panel">
-        <div className="insight-ai-heading"><div><SectionHeading title="AI Insights" caption="Pola yang dibaca dari habit, check-in, dan transaksi." />{sourceNote && <p className="insight-source-note">{sourceNote}</p>}</div><span className={`insight-source-badge ${source}`}>{loading ? "Memuat…" : source === "ai" ? "AI aktif" : source === "rule-based" ? "Analisis data" : "Mode lokal"}</span></div>
-        <div className="insight-ai-list">{insights.map((item) => {
-          const Icon = insightIcon[item.type] ?? BrainCircuit;
-          return <article className="insight-ai-item" key={item.id}><span><Icon size={16} /></span><div><strong>{item.title}</strong><p>{item.text}</p></div></article>;
-        })}{loading && <p className="module-muted">Menganalisis data yang tersedia…</p>}</div>
+        <div className="insight-ai-heading"><div><SectionHeading title="AI Insights" caption="Pola yang dibaca dari habit, check-in, dan transaksi." />{sourceNote && <p className="insight-source-note">{sourceNote}</p>}</div><div className="insight-ai-actions"><span className={`insight-source-badge ${source}`}>{loading ? "Memuat…" : source === "ai" ? "AI aktif" : source === "rule-based" ? "Analisis data" : "Mode lokal"}</span>{!loading && source === "local" && <button className="insight-retry-button" type="button" onClick={() => { setLoading(true); setAiRetryVersion((current) => current + 1); }}><RefreshCw size={12} /> Coba lagi</button>}</div></div>
+        <div className="insight-ai-list">
+          {loading ? (
+            <div className="insight-ai-skeleton" role="status" aria-live="polite">
+              <span className="sr-only">Rutina sedang menganalisis data.</span>
+              {Array.from({ length: 3 }, (_, index) => <div className="insight-ai-skeleton-row" key={index}><span className="skeleton-shimmer" /><div><i className="skeleton-shimmer" /><i className="skeleton-shimmer" /></div></div>)}
+            </div>
+          ) : insights.map((item) => {
+            const Icon = insightIcon[item.type] ?? BrainCircuit;
+            return <article className="insight-ai-item" key={item.id}><span><Icon size={16} /></span><div><strong>{item.title}</strong><p>{item.text}</p></div></article>;
+          })}
+        </div>
       </section>
     </>
   );
