@@ -2653,3 +2653,141 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   .bottom-nav .bottom-nav-action svg,
   .bottom-nav .mobile-quick-action { transition: none !important; }
 }
+
+
+/* Finance period navigation and readable daily values */
+.finance-period-control {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:-8px 0 17px;
+  padding:12px 15px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:var(--surface);
+}
+.finance-period-copy { display:grid; gap:3px; min-width:0; }
+.finance-period-label { color:var(--muted); font-size:9px; font-weight:780; letter-spacing:1px; }
+.finance-period-copy strong { overflow:hidden; color:var(--ink); font-size:12px; font-weight:760; text-overflow:ellipsis; white-space:nowrap; }
+.finance-period-actions { display:flex; align-items:center; gap:7px; }
+.finance-month-step {
+  display:grid;
+  place-items:center;
+  width:35px;
+  height:35px;
+  flex:none;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--ink-soft);
+  background:var(--surface-soft);
+  transition:background .18s ease,border-color .18s ease,color .18s ease;
+}
+.finance-month-step:hover:not(:disabled) { color:var(--primary); border-color:var(--sage); background:var(--surface-green); }
+.finance-month-step:disabled { cursor:not-allowed; opacity:.38; }
+.finance-month-input-wrap {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-height:35px;
+  padding:0 9px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--muted);
+  background:var(--surface-soft);
+}
+.finance-month-input {
+  width:128px;
+  min-width:0;
+  min-height:33px;
+  padding:0;
+  border:0;
+  outline:0;
+  color:var(--ink);
+  background:transparent;
+  font:inherit;
+  font-size:10px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+.finance-month-input:focus-visible { outline:2px solid var(--sage); outline-offset:2px; border-radius:4px; }
+.finance-current-month {
+  min-height:35px;
+  padding:0 11px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--primary);
+  background:var(--surface);
+  font-size:9px;
+  font-weight:760;
+  white-space:nowrap;
+}
+.finance-current-month:hover { border-color:var(--sage); background:var(--surface-green); }
+.finance-day-detail-grid {
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:7px;
+  margin-top:12px;
+}
+.finance-day-detail {
+  display:grid;
+  gap:7px;
+  min-width:0;
+  padding:9px 8px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--surface-soft);
+}
+.finance-day-detail-label {
+  overflow:hidden;
+  color:var(--ink-soft);
+  font-size:9px;
+  font-weight:760;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.finance-day-detail-value { display:grid; gap:2px; min-width:0; }
+.finance-day-detail-value small { color:var(--muted); font-size:8px; line-height:1.2; }
+.finance-day-detail-value strong {
+  overflow:hidden;
+  color:var(--ink);
+  font-size:9px;
+  font-weight:740;
+  font-variant-numeric:tabular-nums;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.finance-day-detail-value.income strong { color:#398151; }
+.finance-day-detail-value.expense strong { color:#bd715e; }
+.finance-budget-period-note {
+  margin:-4px 0 8px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--muted);
+  background:var(--surface-soft);
+  font-size:9px;
+  line-height:1.55;
+}
+@media (max-width:760px) {
+  .finance-period-control { align-items:stretch; flex-direction:column; gap:9px; margin:-5px 0 13px; padding:11px 12px; }
+  .finance-period-actions { justify-content:flex-start; }
+  .finance-day-detail-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+}
+@media (max-width:420px) {
+  .finance-period-actions { gap:5px; }
+  .finance-month-input-wrap { flex:1; min-width:0; }
+  .finance-month-input { width:100%; font-size:9px; }
+  .finance-current-month { padding:0 8px; }
+  .finance-day-detail-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+  .finance-day-detail { padding:8px 6px; }
+  .finance-day-detail-value strong { font-size:8px; }
+}
+@media (max-width:360px) {
+  .finance-period-control { padding:10px; }
+  .finance-period-actions { gap:4px; }
+  .finance-month-step { width:31px; height:33px; }
+  .finance-current-month { min-height:33px; padding:0 6px; font-size:8px; }
+  .finance-month-input-wrap { gap:4px; padding:0 6px; }
+  .finance-day-detail-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
