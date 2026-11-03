@@ -2,66 +2,106 @@
 
 ## Arah visual
 
-**Quiet botanical productivity**: hangat, natural, modern, dan ringan. UI harus terasa seperti ruang pribadi yang menenangkan, bukan panel administrasi yang padat.
+**Playful Botanical**: hangat, segar, ramah, dan terinspirasi ruang tumbuh. UI harus terasa seperti ruang pribadi yang ringan, bukan panel administrasi yang padat. Gunakan ilustrasi tanaman, bentuk organik, permukaan seperti kertas hangat, serta aksen lavender untuk interaksi penting.
+
+**Sumber acuan visual:** `PEDOMAN UI.zip` di root repository. Gambar 3 (*Rutina Playful Botanical App Showcase*) adalah master reference untuk Dashboard dan shell aplikasi. Gambar 1–2 menjadi referensi pendukung halaman Kebiasaan, Keuangan, Kalender, Insights, Goals, Tree, dan Pengaturan.
 
 ## Fondasi visual
 
-| Token | Nilai / tujuan |
-|---|---|
-| Canvas | Warm off-white dengan sedikit nuansa hijau |
-| Surface | Putih hangat untuk kartu dan panel |
-| Primary | Forest green untuk aksi utama dan navigasi aktif |
-| Accent | Sage untuk progress dan status positif |
-| Ink | Charcoal kehijauan untuk teks utama |
-| Muted | Abu-abu kehijauan untuk metadata |
-| Border | Garis tipis dengan kontras rendah |
-| Radius | 12 / 18 / 24 px; gunakan konsisten sesuai skala komponen |
-| Shadow | Halus; hindari glow dan shadow berat |
-| Motion | 160–240ms untuk feedback, 320–620ms untuk transisi layar, dengan stagger ringan |
+| Token / peran | Nilai acuan | Penggunaan |
+|---|---|---|
+| Canvas / ivory | `#fff7ef` | Latar utama |
+| Surface / paper | `#fffdf9` | Kartu, panel, dan form |
+| Soft peach | `#fff0e3` | Permukaan hero dan highlight hangat |
+| Botanical green | `#417a57` | Identitas, aksi positif, dan progres |
+| Deep leaf | `#2f6245` | Kontras hijau dan state kuat |
+| Sage | `#a9c58f` | Dekorasi dan status pertumbuhan |
+| Lavender | `#8f7ae5` | Navigasi aktif, primary CTA, dan kontrol terpilih |
+| Border | `#efe4d9` | Garis pemisah lembut |
+| Ink | `#292a25` | Teks utama |
+| Muted | `#8b9185` | Metadata dan keterangan |
 
-Nilai token aktual berada di `src/app/globals.css`. Komponen tidak boleh mendefinisikan ulang warna ad hoc.
+Warna tombol utama dan state aktif menggunakan gradasi lavender yang lembut. Hijau tetap menjadi identitas botanical serta warna untuk progres dan status positif. Jangan menggunakan lavender sebagai pengganti semua status hijau.
+
+### Radius, shadow, dan spacing
+
+- Radius kecil: sekitar 13px untuk kontrol dan elemen ringkas.
+- Radius kartu: sekitar 19–24px.
+- Radius hero: sekitar 28–30px.
+- Kartu memakai border tipis dan shadow lembut; hindari glow kuat.
+- Jarak antarbagian utama umumnya 12–16px; jaga padding mobile tetap hemat.
+- Tombol penting memiliki tinggi sentuh minimum 40–44px.
+
+Token dasar berada di `src/app/globals.css`. Lapisan tema Botanical dan aturan halaman berada di `src/app/rutina-botanical.css`, yang dimuat setelah stylesheet dasar. Bila menambah token atau mengubah peran warna, perbarui keduanya secara konsisten dan jangan membuat warna ad hoc di JSX.
 
 ## Tipografi dan hierarki
 
-- Gunakan satu keluarga sans-serif sistem yang bersih.
-- Judul halaman: besar tetapi tidak berlebihan.
-- Angka finansial: tabular numerals agar mudah dibandingkan.
-- Metadata: lebih kecil dan muted, tetap terbaca pada ponsel.
-- Hindari terlalu banyak weight dan ukuran font dalam satu layar.
+- Gunakan **Nunito Variable** untuk seluruh antarmuka.
+- Judul halaman tegas tetapi bersahabat; hindari ukuran berlebihan.
+- Angka keuangan dan statistik menggunakan tabular numerals.
+- Metadata lebih kecil dan muted, tetapi tetap terbaca pada layar ponsel.
+- Gunakan variasi weight secara terukur, bukan banyak keluarga font.
 
-## Komponen
+## Komposisi halaman
 
-- **App shell:** sidebar pada desktop, bottom navigation pada mobile.
-- **Surface/Card:** permukaan untuk mengelompokkan satu konteks.
-- **Primary button:** satu aksi dominan per konteks.
-- **Icon button:** aksi sekunder wajib memiliki aria-label.
-- **Metric:** label, angka, dan konteks periode.
-- **Progress:** selalu disertai label atau angka; jangan mengandalkan warna saja.
-- **Form field:** label terlihat, ukuran sentuh nyaman, error eksplisit.
+### App shell
 
-## Layout rules
+- Desktop: sidebar berlabel, topbar dengan pencarian, bell, dan avatar.
+- Mobile: header ringkas dengan brand, bell, avatar, serta bottom navigation.
+- Tombol `+` di tengah bottom navigation adalah akses utama aksi cepat pada ponsel.
+- Jangan menampilkan kembali baris Quick Actions desktop sebagai duplikasi menu `+` pada mobile.
 
-- Desain dasar mulai dari 360px.
-- Konten mobile satu kolom, dengan kartu ringkas dan urutan prioritas.
-- Di desktop, gunakan grid dua kolom hanya jika menambah keterbacaan.
-- Bottom navigation memakai safe-area inset.
-- Tombol penting memiliki tinggi minimum 44px.
-- Hindari scroll horizontal kecuali untuk kontrol yang memang berupa carousel.
+### Dashboard — master reference
 
-## Motion dan micro-interaction
+Urutan desktop:
+1. Greeting dan tanggal.
+2. Hero botanical dengan ilustrasi gardener, progress habit hari ini, dan quote bubble.
+3. Empat kartu statistik: streak, total habit, saldo, aktivitas.
+4. Dua kartu utama berdampingan: **Habit Utama** dan **Progress Mingguan**.
+5. Kartu pendukung untuk komposisi kebiasaan, keuangan, langkah berikutnya, dan focus timer.
 
-- Gunakan satu bahasa easing dari token `--ease-rutina` dan `--ease-spring`.
-- Pergantian tab memakai entrance halus; kartu dan baris dapat stagger pendek (sekitar 45–65ms).
-- Hover lift hanya aktif pada perangkat dengan pointer/hover; jangan mengandalkan hover untuk aksi penting.
-- Tombol memberi feedback tekan singkat; status selesai memakai animasi konfirmasi yang kecil.
-- Dialog desktop muncul dengan scale/fade; dialog mobile menjadi bottom sheet.
-- Timer, progress ring, chart, dan progress anggaran memakai transisi yang halus.
-- Semua animasi harus menghormati `prefers-reduced-motion`; jangan menghapus informasi ketika animasi dimatikan.
-- Hindari animasi looping yang mencolok. Animasi ambient harus lambat dan tidak mengganggu fokus.
+Kartu Progress Mingguan menampilkan ring progres harian yang diberi label dengan jelas, tujuh batang histori, perbandingan jumlah penyelesaian dengan tujuh hari sebelumnya jika histori tersedia, serta aksi untuk menambahkan aktivitas. Jangan membuat persentase perbandingan yang tidak dapat diturunkan dari data.
 
-## Jangan dilakukan
+Urutan mobile:
+1. Greeting.
+2. Hero dan progress ring.
+3. Tiga statistik ringkas.
+4. Daftar Habit Utama.
+5. Ringkasan mingguan dan kartu pendukung di bawahnya.
+6. Bottom navigation dengan tombol `+`.
 
-- Jangan gunakan gradien berlebihan, glassmorphism di semua kartu, emoji sebagai ikon utama, atau banyak warna status sekaligus.
-- Jangan menciptakan warna baru untuk setiap kategori.
-- Jangan menampilkan data demo seolah data keuangan real.
-- Jangan menambah ornamen yang mengganggu keterbacaan.
+### Halaman pendukung
+
+- **Kebiasaan:** weekly calendar strip, progres hari ini, streak, lalu daftar kebiasaan. Filter dan analisis lanjutan tidak boleh mengalahkan daftar habit sebagai fokus.
+- **Keuangan:** saldo dan tren arus kas menjadi fokus; lanjutkan dengan transaksi, distribusi kategori, dan anggaran.
+- **Kalender:** grid bulan dan ringkasan tanggal terpilih berbagi satu sistem kartu.
+- **Insights:** pilihan Minggu/Bulan/Tahun harus mengubah rentang data yang benar-benar dimuat. Grafik harus menyebut periode dan satuan hitung dengan jelas.
+- **Goals:** tujuan ditampilkan sebagai kartu progres dan milestones; form pembuatan adalah aksi sekunder.
+- **Tree:** ilustrasi pertumbuhan menjadi fokus utama, didampingi level, XP, progres, dan jalur tahap.
+- **Pengaturan:** profil ilustratif, menu preferensi, informasi notifikasi yang benar, backup, dan informasi aplikasi. Jangan menampilkan kontrol untuk kemampuan yang belum tersedia.
+
+## Responsive rules
+
+- Desain dimulai dari 360px, dengan target QA utama 403 × 881 CSS px (kelas perangkat TECNO CAMON 50 PRO 5G).
+- 430px ke bawah: Dashboard memakai tiga stat card, hero ringkas, dan bottom nav; hindari horizontal overflow.
+- 600–960px: konten satu kolom atau dua kolom hanya bila masih terbaca.
+- Desktop di atas 960px: sidebar expanded dan grid dua kolom untuk konten utama.
+- Bottom nav harus menghormati safe-area inset.
+- Jangan mengandalkan hover untuk aksi penting.
+
+## Motion dan aksesibilitas
+
+- Gunakan transisi singkat untuk feedback, dengan easing yang konsisten.
+- Hormati `prefers-reduced-motion`; informasi dan status tetap jelas tanpa animasi.
+- Semua icon button harus memiliki accessible name.
+- Progress ring/bar harus mempunyai label atau nilai yang bisa dibaca teknologi bantu.
+- Gunakan fokus keyboard yang terlihat dan target sentuh yang memadai.
+- Empty state, loading, dan error state harus dibedakan; jangan menampilkan grafik kosong sebagai data sukses.
+
+## Prinsip data dan perilaku
+
+- Semua angka insight dan keuangan harus berasal dari data yang tercatat; jelaskan periode dan satuannya.
+- Perbandingan periode hanya ditampilkan ketika kedua rentang memiliki histori yang dapat diperiksa.
+- Jangan menampilkan data demo seolah data keuangan nyata.
+- Jangan menambah tombol atau toggle yang belum memiliki perilaku nyata.
+- Perubahan UI harus mempertahankan aksi habit, milestone, transaksi, ekspor/impor backup, dan perilaku penyimpanan yang sudah berjalan.
