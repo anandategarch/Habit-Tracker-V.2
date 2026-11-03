@@ -110,3 +110,33 @@ Urutan mobile:
 ## Release quality gate
 
 Sebelum perubahan UI dinyatakan siap rilis, cek seluruh halaman utama pada lebar 360px, 403px, 430px, 600px, 768px, 960px, dan 1440px; verifikasi tema terang/gelap, fokus keyboard, reduced motion, serta tidak ada horizontal overflow. Semua permintaan data berbasis jaringan harus menampilkan status memuat, pesan gagal yang jelas, dan aksi coba lagi bila permintaan dapat diulang. Jangan menutupi konten yang masih dapat digunakan selama histori dimuat.
+
+## Playful Botanical 2.0 — refinement
+
+Refinement ini mempertahankan identitas Playful Botanical dan seluruh struktur fitur aktual. Tujuannya adalah membuat aplikasi terasa seperti personal growth garden yang rapi dan dewasa: hangat, organik, editorial, tetapi tetap efisien untuk pencatatan harian.
+
+### Material dan hierarki
+
+- Canvas memakai ivory hangat (--canvas), sedangkan kartu memakai paper (--surface) dengan border tipis dan shadow rendah.
+- Botanical green tetap dipakai untuk progres, aksi positif, dan identitas habit. Lavender dipakai secara terukur untuk navigasi aktif, pilihan, dan primary action; jangan mengubahnya menjadi warna status sukses.
+- Peach menjadi aksen suasana dan hero, bukan latar untuk semua kartu. Sage dipakai untuk progres dan detail ilustratif.
+- Sidebar desktop adalah paper rail yang tenang. Grup navigasi dan nama menu harus mengikuti navigation pada src/features/app/rutina-app.tsx.
+- Dashboard mempertahankan urutan data aktual: greeting, hero gardener, statistik, habit utama, progress mingguan, komposisi habit, aktivitas, keuangan, dan focus timer.
+- Halaman Habit, Finance, Calendar, Insights, Goals, Check-in, Meja Kerja, Wellness, Training, Tree, dan Settings menggunakan material kartu, form, tab, dan status yang konsisten. Jangan membuat angka contoh atau quick action yang belum terhubung ke callback.
+
+### Aturan interaksi
+
+- Primary action menggunakan lavender; aksi penyelesaian/progres habit menggunakan botanical green.
+- Status sukses, warning, error, dan netral harus dibedakan melalui warna semantik yang sudah ada; jangan memberi warna dekoratif pada status.
+- Input, select, textarea, filter, dan tab harus tetap memperlihatkan fokus keyboard.
+- Card hover hanya boleh memberi feedback ringan; informasi tidak boleh bergantung pada hover.
+- Empty, loading, error, dan retry state tetap dipertahankan pada seluruh request data.
+- Hormati prefers-reduced-motion. Animasi dekoratif tidak boleh menjadi satu-satunya penanda status.
+
+### Responsive contract
+
+- Desktop: sidebar berlabel tetap terlihat dan konten tidak melebar melewati batas baca.
+- 961–1180px: sidebar dan konten harus tetap muat tanpa horizontal overflow.
+- 430px ke bawah: statistik ringkas dua kolom, hero gardener tidak menutupi teks atau indikator progres, dan bottom navigation mempertahankan empat destinasi utama serta tombol +.
+- Safe-area bawah tetap diperhitungkan pada bottom navigation dan padding konten.
+- Semua kontrol yang mengubah data harus tetap menggunakan handler yang sudah ada; perubahan visual tidak mengubah schema, payload API, atau aturan sinkronisasi.
