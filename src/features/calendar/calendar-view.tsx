@@ -35,7 +35,6 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
   useEffect(() => {
     let cancelled = false;
-    setHistoryErrorMonth(null);
     void fetch(`/api/history?month=${encodeURIComponent(monthKey)}`, { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Riwayat tidak dapat dimuat.");
@@ -87,6 +86,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
 
   function moveMonth(offset: number) {
     const next = new Date(month.getFullYear(), month.getMonth() + offset, 1);
+    setHistoryErrorMonth(null);
     setMonth(next);
     const currentSelected = new Date(`${selectedDate}T00:00:00`);
     const maxDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
@@ -97,10 +97,13 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
   }
   function goToToday() {
     const [year, monthNumber] = today.split("-").map(Number);
-    setMonth(new Date(year, monthNumber - 1, 1));
+    const todayMonth = new Date(year, monthNumber - 1, 1);
+    if (monthKey !== `${year}-${String(monthNumber).padStart(2, "0")}`) setHistoryErrorMonth(null);
+    setMonth(todayMonth);
     setSelectedDate(today);
   }
   function retryHistory() {
+    setHistoryErrorMonth(null);
     setHistoryRetry((value) => value + 1);
   }
 
