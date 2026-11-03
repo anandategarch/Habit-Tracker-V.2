@@ -261,9 +261,20 @@ export function RutinaApp() {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
         <div className="workspace-loading-brand"><span className="brand-mark"><RutinaMark size={25} /></span><strong>Rutina<span>.</span></strong></div>
-        <span className="workspace-loading-spinner" aria-hidden="true" />
-        <p>Menyiapkan ruang pribadimu…</p>
-        <small>Menghubungkan data dan memuat aktivitas</small>
+        <div className="workspace-sprout-loader" role="img" aria-label="Ilustrasi tunas sedang tumbuh">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <ellipse className="workspace-sprout-shadow" cx="60" cy="101" rx="31" ry="6" />
+            <path className="workspace-sprout-stem" d="M60 96 C60 78 59 62 61 44" />
+            <path className="workspace-sprout-leaf workspace-sprout-leaf-left" d="M60 64 C39 65 28 53 31 37 C48 37 60 47 60 64Z" />
+            <path className="workspace-sprout-leaf workspace-sprout-leaf-right" d="M61 49 C62 29 75 19 92 22 C94 39 81 50 61 49Z" />
+            <path className="workspace-sprout-vein" d="M60 62 C49 52 41 46 34 41 M62 47 C73 38 81 31 88 26" />
+          </svg>
+        </div>
+        <div className="workspace-loading-copy">
+          <p>Menyiapkan ruang pribadimu…</p>
+          <small>Menghubungkan data dan merapikan aktivitas</small>
+          <div className="workspace-loading-track" aria-hidden="true"><span /></div>
+        </div>
       </main>
     );
   }
