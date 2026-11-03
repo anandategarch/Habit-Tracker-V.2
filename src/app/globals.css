@@ -2747,11 +2747,11 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   white-space:nowrap;
 }
 .finance-day-detail-value { display:grid; gap:2px; min-width:0; }
-.finance-day-detail-value small { color:var(--muted); font-size:8px; line-height:1.2; }
+.finance-day-detail-value small { color:var(--muted); font-size:9px; line-height:1.25; }
 .finance-day-detail-value strong {
   overflow:hidden;
   color:var(--ink);
-  font-size:9px;
+  font-size:10px;
   font-weight:740;
   font-variant-numeric:tabular-nums;
   text-overflow:ellipsis;
@@ -2777,11 +2777,11 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
 @media (max-width:420px) {
   .finance-period-actions { gap:5px; }
   .finance-month-input-wrap { flex:1; min-width:0; }
-  .finance-month-input { width:100%; font-size:9px; }
+  .finance-month-input { width:100%; font-size:10px; }
   .finance-current-month { padding:0 8px; }
   .finance-day-detail-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
   .finance-day-detail { padding:8px 6px; }
-  .finance-day-detail-value strong { font-size:8px; }
+  .finance-day-detail-value strong { font-size:9px; }
 }
 @media (max-width:360px) {
   .finance-period-control { padding:10px; }
