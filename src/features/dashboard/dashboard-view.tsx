@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Activity, ArrowRight, Check, Flame, HeartPulse, Plus, Sprout, TrendingUp, WalletCards } from "lucide-react";
+import { Activity, ArrowRight, Check, Flame, HeartPulse, Plus, RefreshCw, Sprout, TrendingUp, WalletCards } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
@@ -27,6 +27,7 @@ function useWeeklyActivity(habits: Habit[]) {
   const previousDates = historyDates.slice(0, 7);
   const [records, setRecords] = useState<HistoryRecord[] | null>(null);
   const [historyError, setHistoryError] = useState(false);
+  const [retryVersion, setRetryVersion] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,7 +49,7 @@ function useWeeklyActivity(habits: Habit[]) {
         setHistoryError(true);
       });
     return () => { cancelled = true; };
-  }, [historyDates]);
+  }, [historyDates, retryVersion]);
 
   const completedByDate = useMemo(() => {
     const map = new Map<string, number>();
@@ -63,7 +64,15 @@ function useWeeklyActivity(habits: Habit[]) {
 
   const previousTotal = previousDates.reduce((sum, date) => sum + (completedByDate.get(date) ?? 0), 0);
   const total = days.reduce((sum, day) => sum + day.completed, 0);
-  return { days, loading: records === null, error: historyError, total, previousTotal, change: total - previousTotal };
+  return {
+    days,
+    loading: records === null,
+    error: historyError,
+    total,
+    previousTotal,
+    change: total - previousTotal,
+    retry: () => setRetryVersion((current) => current + 1),
+  };
 }
 
 function weekdayLabel(date: string) {
@@ -202,9 +211,18 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
             action={<span className="weekly-trend-badge"><TrendingUp size={12} /> {weekly.total} selesai</span>}
           />
           {weekly.loading ? (
-            <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Menyiapkan ringkasan mingguan</strong><p>Riwayat penyelesaian habit sedang dimuat.</p></div>
+            <div className="weekly-loading-skeleton" role="status" aria-live="polite">
+              <span className="sr-only">Memuat ringkasan progres mingguan.</span>
+              <div className="weekly-skeleton-layout">
+                <span className="skeleton-shimmer weekly-skeleton-ring" />
+                <div className="weekly-skeleton-bars">
+                  {Array.from({ length: 7 }, (_, index) => <span className="weekly-skeleton-day" key={index}><i className="skeleton-shimmer" /></span>)}
+                </div>
+              </div>
+              <span className="skeleton-shimmer weekly-skeleton-line" />
+            </div>
           ) : weekly.error ? (
-            <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Riwayat mingguan belum tersedia</strong><p>Progres hari ini tetap tersedia. Grafik akan muncul saat riwayat dapat dimuat.</p></div>
+            <div className="insight-trend-empty" role="status"><span><Sprout size={22} /></span><strong>Riwayat mingguan belum tersedia</strong><p>Progres hari ini tetap tersedia. Coba muat ulang ringkasan saat koneksi sudah siap.</p><button className="weekly-retry-action" type="button" onClick={weekly.retry}><RefreshCw size={13} /> Coba lagi</button></div>
           ) : weekly.total > 0 ? (
             <>
               <div className="weekly-trend-layout">

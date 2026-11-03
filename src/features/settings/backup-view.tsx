@@ -159,7 +159,7 @@ export function BackupView({ settings, onUpdateSettings }: {
         <div className="backup-icon"><FileUp size={22} /></div>
         <SectionHeading title="Impor backup" caption="Gabungkan file backup V2 tanpa menghapus record lain yang sudah ada." />
         <label className="backup-upload">
-          <FileUp size={17} />
+          {importing ? <LoaderCircle size={17} className="spin" /> : <FileUp size={17} />}
           <span>{importing ? "Memulihkan data…" : "Pilih file backup JSON"}</span>
           <input type="file" accept="application/json,.json" disabled={importing} onChange={importBackup} />
         </label>
