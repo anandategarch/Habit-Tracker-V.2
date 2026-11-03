@@ -1858,3 +1858,140 @@ html[data-theme="dark"] .weekly-progress-ring small { color: var(--muted); }
 @media (prefers-reduced-motion: reduce) {
   .weekly-add-action { transition: none !important; }
 }
+
+
+/* ===== Botanical page polish: Goals and Settings ===== */
+.goal-create-panel { margin: 14px 0; scroll-margin-top: 88px; }
+.goal-list-panel { margin-top: 15px; }
+.goal-list-panel .goal-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+.goal-card { min-width: 0; }
+.goal-card-top {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+}
+.goal-card-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 14px;
+  color: #7967d2;
+  background: #f0eaff;
+}
+.goal-card-copy { display: grid; min-width: 0; gap: 4px; }
+.goal-card-copy h3 { margin: 1px 0 0; color: #384438; font-size: 14px; line-height: 1.35; font-weight: 820; }
+.goal-card-copy p { margin: 0; color: #899184; font-size: 10px; line-height: 1.5; }
+.goal-due-date { display: block; margin-top: 10px; }
+.goal-progress-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
+.goal-progress-heading span { color: #939889; font-size: 8px; font-weight: 850; letter-spacing: 1px; }
+.goal-progress-heading strong { color: #55865b; font-size: 12px; font-weight: 850; }
+.goal-card .module-inline-meta { margin-top: 8px; }
+.goal-milestones { display: grid; gap: 5px; margin-top: 12px; padding-top: 11px; border-top: 1px solid rgba(232,224,211,.8); }
+.goal-milestones-label { color: #96998c; font-size: 7px; font-weight: 850; letter-spacing: 1.15px; }
+.goal-milestones .module-check-row { padding: 5px 0; }
+.goal-no-milestones { margin: 10px 0 0; color: #96998c; font-size: 9px; line-height: 1.5; }
+.goal-card.is-complete { border-color: #cfe0c8; background: linear-gradient(135deg,#f0f7eb,#fffdf9 72%); }
+.goal-card.is-complete .goal-card-icon { color: #4e8b5e; background: #e4f1df; }
+.goal-empty-state { display: grid; justify-items: center; gap: 12px; padding: 10px 0; }
+.goal-empty-state .primary-button { min-height: 40px; }
+
+.settings-profile-card { scroll-margin-top: 88px; }
+.settings-profile-mark {
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid rgba(255,255,255,.9);
+  border-radius: 50%;
+  background: #f2eaff;
+}
+.settings-profile-mark img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.settings-menu-card {
+  display: grid;
+  gap: 0;
+  margin: 0 0 15px;
+  padding: 5px 16px;
+  border: 1px solid #eee4da;
+  border-radius: 21px;
+  background: rgba(255,253,249,.94);
+  box-shadow: var(--shadow-card);
+}
+.settings-menu-card a {
+  display: grid;
+  grid-template-columns: 37px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 59px;
+  border-bottom: 1px solid #f1e9df;
+  color: inherit;
+  text-decoration: none;
+}
+.settings-menu-card a:last-child { border-bottom: 0; }
+.settings-menu-card a > span:nth-child(2) { display: grid; gap: 3px; }
+.settings-menu-card a strong { color: #465143; font-size: 11px; font-weight: 800; }
+.settings-menu-card a small { color: #989b8f; font-size: 9px; }
+.settings-menu-card a > svg:last-child { color: #9b9b8f; }
+.settings-menu-card a:hover strong { color: #7661d1; }
+.settings-menu-icon {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border-radius: 12px;
+  color: #6d956b;
+  background: #edf5e7;
+}
+.settings-menu-card a:nth-child(2) .settings-menu-icon { color: #c18150; background: #fff0e4; }
+.settings-menu-card a:nth-child(3) .settings-menu-icon { color: #7b69d0; background: #f0eaff; }
+.settings-menu-card a:nth-child(4) .settings-menu-icon { color: #6b9b9c; background: #e9f4f1; }
+.settings-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 12px 0;
+  scroll-margin-top: 88px;
+}
+.settings-info-card > div:last-child { min-width: 0; }
+.settings-info-card .section-heading { margin-bottom: 0; }
+.settings-info-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  place-items: center;
+  border-radius: 13px;
+  color: #bc8151;
+  background: #fff0e4;
+}
+.settings-about-tagline { display: block; margin-top: 7px; color: #7f8d78; font-size: 9px; font-weight: 700; }
+#settings-preferences, #settings-backup { scroll-margin-top: 88px; }
+
+html[data-theme="dark"] .goal-card-copy h3,
+html[data-theme="dark"] .settings-menu-card a strong { color: var(--ink); }
+html[data-theme="dark"] .goal-card-copy p,
+html[data-theme="dark"] .goal-no-milestones,
+html[data-theme="dark"] .settings-menu-card a small,
+html[data-theme="dark"] .settings-about-tagline { color: var(--muted); }
+html[data-theme="dark"] .goal-milestones { border-color: var(--line); }
+html[data-theme="dark"] .goal-card.is-complete { border-color: #4b674a; background: #2c4030; }
+html[data-theme="dark"] .settings-menu-card { border-color: var(--line); background: var(--surface); }
+html[data-theme="dark"] .settings-menu-card a { border-color: var(--line); }
+html[data-theme="dark"] .settings-menu-icon { background: #354b38; color: #a8c99a; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(2) .settings-menu-icon { color: #e0aa7c; background: #49392d; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(3) .settings-menu-icon { color: #b3a3f0; background: #3d3a55; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(4) .settings-menu-icon { color: #9bc9c5; background: #2d4542; }
+
+@media (max-width: 900px) {
+  .goal-list-panel .goal-list { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 600px) {
+  .goal-card { padding: 14px; }
+  .settings-menu-card { padding: 3px 12px; }
+  .settings-menu-card a { min-height: 56px; }
+  .settings-info-card { padding: 14px; }
+}
