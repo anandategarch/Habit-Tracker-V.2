@@ -132,6 +132,18 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   const moodAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.mood, 0) / recentCheckins.length : null;
   const energyAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.energy, 0) / recentCheckins.length : null;
   const sleepAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.sleepHours, 0) / recentCheckins.length : null;
+  const growthHeadline = period === "week"
+    ? "Tujuh hari, banyak langkah kecil."
+    : period === "month"
+      ? "Satu bulan yang terus membentuk ceritamu."
+      : "Lihat perjalanan yang kamu bangun sepanjang tahun.";
+  const growthSummary = weeklyHistoryLoading
+    ? "Rutina sedang menyusun catatan perkembanganmu."
+    : weeklyHistoryError
+      ? "Riwayat belum dapat dimuat. Catatan yang sudah tersimpan tetap aman."
+      : trendTotal > 0
+        ? `Ada ${trendTotal} penyelesaian habit yang tercatat dalam ${periodCaption}. Setiap langkah kecil layak dihargai.`
+        : `Belum ada penyelesaian habit yang tercatat dalam ${periodCaption}. Kamu bisa mulai lagi kapan pun siap.`;
 
   useEffect(() => {
     let cancelled = false;
@@ -182,9 +194,27 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
         <button type="button" className={period === "month" ? "active" : ""} aria-pressed={period === "month"} onClick={() => setPeriod("month")}>Bulan</button>
         <button type="button" className={period === "year" ? "active" : ""} aria-pressed={period === "year"} onClick={() => setPeriod("year")}>Tahun</button>
       </div>
+
+      <section className="growth-wrapped-panel" aria-label="Ringkasan perjalananmu">
+        <div className="growth-wrapped-copy">
+          <span className="growth-wrapped-kicker">YOUR GROWTH STORY</span>
+          <h2>{growthHeadline}</h2>
+          <p>{growthSummary}</p>
+        </div>
+        <div className="growth-wrapped-metrics">
+          <div className="growth-wrapped-metric">
+            <span className="growth-wrapped-icon"><Sprout size={17} /></span>
+            <div><strong>{weeklyHistoryLoading || weeklyHistoryError ? "—" : trendTotal.toLocaleString("id-ID")}</strong><small>Habit selesai · {periodCaption}</small></div>
+          </div>
+          <div className="growth-wrapped-metric">
+            <span className="growth-wrapped-icon mood"><HeartPulse size={17} /></span>
+            <div><strong>{moodAverage === null ? "—" : moodAverage.toFixed(1) + "/5"}</strong><small>Rata-rata mood · {recentCheckins.length} check-in terakhir</small></div>
+          </div>
+        </div>
+      </section>
       <div className="insights-stat-grid botanical-insight-stats">
-        <StatCard label="Produktivitas" value={`${progress}%`} foot={`${completed} dari ${total} habit selesai hari ini`} icon={Target} tone="green" />
-        <StatCard label="Streak terpanjang" value={`${longestStreak} hari`} foot="Pada satu kebiasaan" icon={Flame} tone="amber" />
+        <StatCard label="Progres hari ini" value={`${progress}%`} foot={`${completed} dari ${total} habit selesai hari ini`} icon={Target} tone="green" />
+        <StatCard label="Rekor konsistensi" value={`${longestStreak} hari`} foot="Satu capaian yang pernah kamu bangun" icon={Flame} tone="amber" />
         <StatCard label="Arus kas bersih" value={formatCompactRupiah(totalNet)} foot="Bulan berjalan" icon={PiggyBank} />
       </div>
 
@@ -274,7 +304,7 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
           <section className="insight-highlight">
             <div className="small-label">CATATAN HARI INI</div>
             <div className="insight-number">{completed}<span>/{total}</span></div>
-            <p className="section-caption">{total === 0 ? "Belum ada kebiasaan tersimpan." : total === completed ? "Semua kebiasaan hari ini sudah selesai." : `${total - completed} kebiasaan masih bisa kamu selesaikan hari ini.`}</p>
+            <p className="section-caption">{total === 0 ? "Belum ada kebiasaan tersimpan." : total === completed ? "Semua kebiasaan hari ini sudah kamu rawat. Luangkan waktu untuk menikmati progresmu." : "Masih ada ruang untuk melanjutkan, satu langkah kecil kapan pun kamu siap."}</p>
           </section>
         </div>
       </div>
