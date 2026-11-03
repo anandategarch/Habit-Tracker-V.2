@@ -8,3 +8,6 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 .vercel/
+
+# Personal workspace exports must never be committed
+rutina-backup*.json
