@@ -51,6 +51,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
         if (cancelled) return;
         setHistory([]);
         setCheckins([]);
+        setLoadedMonthKey(null);
         setHistoryErrorMonth(monthKey);
       });
     return () => { cancelled = true; };
