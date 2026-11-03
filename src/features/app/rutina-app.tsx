@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus, Sun, Moon, Monitor,
+  Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import { RutinaMark } from "@/components/ui/rutina-mark";
@@ -75,20 +75,13 @@ export function RutinaApp() {
     isReady: workspaceReady,
   } = useWorkspace();
   const { modules, updateModule, ready: modulesReady } = useModules();
-  const selectedTheme = modules.settings.theme;
-  const themeLabel = selectedTheme === "system" ? "Sistem" : selectedTheme === "dark" ? "Gelap" : "Terang";
+  // Tema selalu "light" — dark mode dinonaktifkan sesuai permintaan user.
+  const selectedTheme: "light" = "light";
+  const themeLabel = "Terang";
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const applyTheme = () => {
-      const resolved = selectedTheme === "system" ? (media.matches ? "dark" : "light") : selectedTheme;
-      document.documentElement.dataset.theme = resolved;
-    };
-    applyTheme();
-    if (selectedTheme !== "system") return;
-    media.addEventListener("change", applyTheme);
-    return () => media.removeEventListener("change", applyTheme);
-  }, [selectedTheme]);
+    document.documentElement.dataset.theme = "light";
+  }, []);
 
   useEffect(() => {
     let frame = 0;
@@ -458,10 +451,6 @@ export function RutinaApp() {
               aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
             >
               {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
-            </button>
-            <button type="button" className="theme-toggle" onClick={() => updateModule("settings", (current) => ({ ...current, theme: current.theme === "light" ? "dark" : current.theme === "dark" ? "system" : "light" }))} aria-label={`Tema: ${themeLabel}. Ganti tema.`} title={`Tema: ${themeLabel}`}>
-              {selectedTheme === "system" ? <Monitor size={16} /> : selectedTheme === "dark" ? <Moon size={16} /> : <Sun size={16} />}
-              <span>{themeLabel}</span>
             </button>
             <PwaInstallButton />
             <button

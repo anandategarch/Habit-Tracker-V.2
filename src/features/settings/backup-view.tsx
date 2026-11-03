@@ -171,11 +171,9 @@ export function BackupView({ settings, onUpdateSettings }: {
     </section>
     <div className="settings-preferences-grid">
       <section className="card card-pad settings-preference-card">
-        <SectionHeading title="Preferensi tampilan" caption="Pilih suasana yang paling nyaman untukmu." />
+        <SectionHeading title="Preferensi tampilan" caption="Rutina saat ini hanya tersedia dalam tema terang." />
         <div className="settings-theme-options" role="group" aria-label="Tema aplikasi">
-          <button type="button" className={settings.theme === "system" ? "active" : ""} aria-pressed={settings.theme === "system"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "system" }))}><span>◐</span><strong>Sistem</strong><small>Ikuti perangkat</small></button>
-          <button type="button" className={settings.theme === "light" ? "active" : ""} aria-pressed={settings.theme === "light"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "light" }))}><span>☀</span><strong>Terang</strong><small>Nuansa hangat</small></button>
-          <button type="button" className={settings.theme === "dark" ? "active" : ""} aria-pressed={settings.theme === "dark"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "dark" }))}><span>☾</span><strong>Gelap</strong><small>Lebih redup</small></button>
+          <button type="button" className="active" aria-pressed={true} aria-disabled={true} disabled><span>☀</span><strong>Terang</strong><small>Nuansa hangat</small></button>
         </div>
       </section>
       <section className="card card-pad settings-preference-card">
