@@ -3,9 +3,16 @@
 // dipakai di codebase (db.$queryRaw, db.$executeRaw, db.$transaction) supaya
 // semua file yang import { db } tetap berfungsi tanpa perubahan.
 //
-// Catatan: Prisma 6 adapter-libsql mereject URL libsql:// di schema datasource
-// (provider sqlite expects file:). Daripada melawan Prisma, kita pakai
-// @libsql/client langsung dengan wrapper yang meniru API Prisma.
+// IMPORTANT: FULLY lazy initialization.
+//   Vercel/Next.js build mengevaluasi module-level code di SEMUA route handlers
+//   saat "collect page data". Pada build-time, DATABASE_URL belum ter-set
+//   (env vars di-load saat runtime deploy). Kalau kita init libsql client di
+//   module top-level, URL kosong → URL_INVALID error → build gagal.
+//
+//   Solusi: `db` adalah Proxy. Setiap property access ($queryRaw, $executeRaw,
+//   dst) mengembalikan FUNCTION yang baru init libsql client saat dipanggil
+//   (di runtime request), BUKAN saat di-access. Jadi `typeof db.$queryRaw`
+//   atau destructure di build-time TIDAK trigger init → tidak throw.
 // ---------------------------------------------------------------------------
 import { createClient, type Client } from "@libsql/client";
 import { readFileSync, existsSync } from "node:fs";
@@ -31,24 +38,6 @@ function loadEnvFile(): void {
   }
 }
 loadEnvFile()
-
-const TURSO_URL = process.env.DATABASE_URL ?? ""
-const TURSO_TOKEN = process.env.DATABASE_AUTH_TOKEN ?? undefined
-
-if (!TURSO_URL || TURSO_URL === "undefined") {
-  console.error("[db] DATABASE_URL kosong/invalid — periksa .env")
-}
-
-const globalForLibsql = globalThis as unknown as { libsqlClient: Client | undefined }
-
-if (!globalForLibsql.libsqlClient) {
-  globalForLibsql.libsqlClient = createClient({
-    url: TURSO_URL,
-    authToken: TURSO_TOKEN,
-    syncInterval: 0,
-    syncMode: "offline",
-  } as Record<string, unknown>)
-}
 
 // ---------------------------------------------------------------------------
 // Tagged template helpers — tiru API Prisma: db.$queryRaw`SELECT ...` dan
@@ -76,53 +65,136 @@ function buildQuery(strings: TemplateStringsArray, ...values: unknown[]): { sql:
 
 export interface LibsqlRow { [key: string]: unknown }
 
-class DbWrapper {
-  private client: Client
-  constructor(client: Client) {
-    this.client = client
-  }
+type QueryRawFn = <T = LibsqlRow[]>(strings: TemplateStringsArray, ...values: unknown[]) => Promise<T>
+type ExecuteRawFn = (strings: TemplateStringsArray, ...values: unknown[]) => Promise<number>
+interface TxLike { $queryRaw: QueryRawFn; $executeRaw: ExecuteRawFn }
+type TransactionFn = <T>(fn: (tx: TxLike) => Promise<T>) => Promise<T>
+type ConnectFn = () => Promise<void>
+type DisconnectFn = () => Promise<void>
 
-  $queryRaw = async <T = LibsqlRow[]>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T> => {
+function makeQueryRaw(client: Client): QueryRawFn {
+  return async function <T = LibsqlRow[]>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T> {
     const { sql, args } = buildQuery(strings, ...values)
-    const result = await this.client.execute({ sql, args })
-    // Normalisasi baris: @libsql/client mengembalikan array-like + named keys.
+    const result = await client.execute({ sql, args })
     return (result.rows ?? []) as unknown as T
-  }
-
-  $executeRaw = async (strings: TemplateStringsArray, ...values: unknown[]): Promise<number> => {
-    const { sql, args } = buildQuery(strings, ...values)
-    const result = await this.client.execute({ sql, args })
-    return Number(result.rowsAffected ?? 0)
-  }
-
-  $transaction = async <T>(fn: (tx: { $queryRaw: typeof this.$queryRaw; $executeRaw: typeof this.$executeRaw }) => Promise<T>): Promise<T> => {
-    // libsql client tidak punya transaction batch native yang sederhana;
-    // kita pakai pendekatan "best-effort" — jalankan fn dengan wrapper yang
-    // pakai client yang sama. Untuk konsistensi transaksi penuh perlu
-    // transaction() API libsql (experimental); tapi untuk workspace Rutina
-    // (insert/update beberapa baris berurutan) ini sudah cukup aman karena
-    // operasi idempoten (ON CONFLICT) dan error di tengah hanya menyisakan
-    // sebagian data — bukan korupsi.
-    const tx = {
-      $queryRaw: this.$queryRaw,
-      $executeRaw: this.$executeRaw,
-    }
-    return fn(tx)
-  }
-
-  async $connect(): Promise<void> {
-    // libsql client auto-connect; noop di sini.
-  }
-
-  async $disconnect(): Promise<void> {
-    this.client.close()
   }
 }
 
-export const db = new DbWrapper(globalForLibsql.libsqlClient)
-export const libsql = globalForLibsql.libsqlClient
+function makeExecuteRaw(client: Client): ExecuteRawFn {
+  return async function (strings: TemplateStringsArray, ...values: unknown[]): Promise<number> {
+    const { sql, args } = buildQuery(strings, ...values)
+    const result = await client.execute({ sql, args })
+    return Number(result.rowsAffected ?? 0)
+  }
+}
 
-// Inisialisasi: pastikan koneksi bisa (log error awal kalau gagal).
-db.$queryRaw`SELECT 1`.catch((error: unknown) => {
-  console.error("[db] Gagal koneksi awal ke Turso/libSQL:", error)
+function makeTransaction(client: Client): TransactionFn {
+  return async function <T>(fn: (tx: TxLike) => Promise<T>): Promise<T> {
+    // libsql client tidak punya transaction batch native yang sederhana;
+    // kita pakai pendekatan "best-effort" — jalankan fn dengan wrapper yang
+    // pakai client yang sama. Operasi Rutina idempoten (ON CONFLICT) jadi aman.
+    const tx: TxLike = {
+      $queryRaw: makeQueryRaw(client),
+      $executeRaw: makeExecuteRaw(client),
+    }
+    return fn(tx)
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Lazy client holder — baru dibuat saat dipakai pertama kali (di runtime
+// request, BUKAN saat module load di build-time).
+// ---------------------------------------------------------------------------
+let _client: Client | null = null
+
+function getClient(): Client {
+  if (_client) return _client
+  const url = process.env.DATABASE_URL ?? ""
+  const authToken = process.env.DATABASE_AUTH_TOKEN ?? undefined
+  if (!url || url === "undefined") {
+    throw new Error(
+      "[db] DATABASE_URL kosong/invalid. Pastikan env var DATABASE_URL ter-set " +
+      "(mis. di Vercel Project Settings > Environment Variables) dengan nilai " +
+      "'libsql://...' (Turso database URL)."
+    )
+  }
+  _client = createClient({
+    url,
+    authToken,
+  })
+  return _client
+}
+
+// ---------------------------------------------------------------------------
+// `db` adalah Proxy. Property access mengembalikan LAZY FUNCTION yang baru
+// init client saat DIPANGGIL. Jadi:
+//   - Module load di build-time → Proxy dibuat, getClient() TIDAK dipanggil → aman
+//   - `typeof db.$queryRaw` di build-time → return "function" tanpa init → aman
+//   - `db.$queryRaw\`SELECT ...\`` di runtime request → init client, execute query
+// ---------------------------------------------------------------------------
+type DbApi = {
+  $queryRaw: QueryRawFn
+  $executeRaw: ExecuteRawFn
+  $transaction: TransactionFn
+  $connect: ConnectFn
+  $disconnect: DisconnectFn
+}
+
+// Cache method implementations supaya tidak buat closure baru tiap property access.
+let _lazyQueryRaw: QueryRawFn | null = null
+let _lazyExecuteRaw: ExecuteRawFn | null = null
+let _lazyTransaction: TransactionFn | null = null
+
+function lazyQueryRaw(): QueryRawFn {
+  if (_lazyQueryRaw) return _lazyQueryRaw
+  _lazyQueryRaw = (async function (strings: TemplateStringsArray, ...values: unknown[]) {
+    return makeQueryRaw(getClient())(strings, ...values)
+  }) as QueryRawFn
+  return _lazyQueryRaw
+}
+
+function lazyExecuteRaw(): ExecuteRawFn {
+  if (_lazyExecuteRaw) return _lazyExecuteRaw
+  _lazyExecuteRaw = (function (strings: TemplateStringsArray, ...values: unknown[]) {
+    return makeExecuteRaw(getClient())(strings, ...values)
+  }) as ExecuteRawFn
+  return _lazyExecuteRaw
+}
+
+function lazyTransaction(): TransactionFn {
+  if (_lazyTransaction) return _lazyTransaction
+  _lazyTransaction = (function <T>(fn: (tx: TxLike) => Promise<T>): Promise<T> {
+    return makeTransaction(getClient())(fn)
+  }) as TransactionFn
+  return _lazyTransaction
+}
+
+const LAZY_CONNECT: ConnectFn = async () => { /* libsql auto-connect; noop */ }
+const LAZY_DISCONNECT: DisconnectFn = async () => {
+  if (_client) { _client.close(); _client = null }
+  _lazyQueryRaw = null
+  _lazyExecuteRaw = null
+  _lazyTransaction = null
+}
+
+const METHOD_MAP: Record<string, unknown> = {
+  $queryRaw: lazyQueryRaw(),
+  $executeRaw: lazyExecuteRaw(),
+  $transaction: lazyTransaction(),
+  $connect: LAZY_CONNECT,
+  $disconnect: LAZY_DISCONNECT,
+}
+
+export const db = new Proxy({} as DbApi, {
+  get(_target, prop: string | symbol) {
+    if (typeof prop === "string" && prop in METHOD_MAP) {
+      return METHOD_MAP[prop]
+    }
+    return undefined
+  },
 })
+
+// Export libsql client getter (lazy) untuk script init-turso & admin.
+export function getLibsql(): Client {
+  return getClient()
+}
