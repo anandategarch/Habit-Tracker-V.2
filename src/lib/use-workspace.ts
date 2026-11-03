@@ -109,13 +109,47 @@ function publishSnapshot(snapshot: WorkspaceSnapshot): void {
   emitChange();
 }
 
+// ---------------------------------------------------------------------------
+// fetch dengan retry otomatis. Transient failure (server sesaat tidak siap,
+// blip jaringan, 5xx sesaat) jangan langsung jadi "error" yang memunculkan
+// status "Belum tersinkron". Coba ulang sampai 3x dengan backoff 400ms / 800ms.
+// Hanya setelah semua percobaan gagal baru lempar → caller set "error".
+// Status 4xx (mis. 401/503) TIDAK di-retry — itu kegagalan permanen
+// (auth/konfigurasi), langsung dikembalikan ke caller untuk dihandle.
+// ---------------------------------------------------------------------------
+const SYNC_MAX_ATTEMPTS = 3;
+const SYNC_BACKOFF_MS = 400;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(input: string, init?: RequestInit): Promise<Response> {
+  let lastResponse: Response | null = null;
+  for (let attempt = 1; attempt <= SYNC_MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(input, init);
+      if (response.status >= 500 && attempt < SYNC_MAX_ATTEMPTS) {
+        lastResponse = response;
+        await sleep(SYNC_BACKOFF_MS * attempt);
+        continue;
+      }
+      return response;
+    } catch (err) {
+      if (attempt >= SYNC_MAX_ATTEMPTS) throw err;
+      await sleep(SYNC_BACKOFF_MS * attempt);
+    }
+  }
+  return lastResponse ?? new Response("retry exhausted", { status: 503 });
+}
+
 function enqueueRemoteWrite(snapshot: WorkspaceSnapshot): void {
   if (!remoteReady) return;
 
   setSyncStatus("syncing");
   writeQueue = writeQueue
     .then(async () => {
-      const response = await fetch("/api/workspace", {
+      const response = await fetchWithRetry("/api/workspace", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...snapshot, today: todayISO() }),
@@ -140,7 +174,7 @@ export async function refreshWorkspace(): Promise<boolean> {
     setSyncStatus("syncing");
 
     try {
-      const response = await fetch(`/api/workspace?today=${encodeURIComponent(todayISO())}`, {
+      const response = await fetchWithRetry(`/api/workspace?today=${encodeURIComponent(todayISO())}`, {
         cache: "no-store",
       });
 
@@ -165,7 +199,7 @@ export async function refreshWorkspace(): Promise<boolean> {
         localSnapshot &&
         (localSnapshot.habits.length > 0 || localSnapshot.transactions.length > 0)
       ) {
-        const migrationResponse = await fetch("/api/workspace", {
+        const migrationResponse = await fetchWithRetry("/api/workspace", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...localSnapshot, today: todayISO() }),
