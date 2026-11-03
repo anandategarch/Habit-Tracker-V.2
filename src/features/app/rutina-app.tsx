@@ -20,6 +20,7 @@ import { EntryModal } from "@/components/ui/entry-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
 import { PwaInstallButton } from "@/components/pwa/install-button";
 import { useModules } from "@/lib/use-modules";
+import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 
 const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
@@ -610,6 +611,17 @@ export function RutinaApp() {
         onNavigate={(tab) => setActiveTab(tab)}
       />
       {toast && <div role="status" aria-live="polite" className="toast"><span className="toast-dot" />{toast}</div>}
+      <footer className="site-footer" role="contentinfo">
+        <div className="site-footer-brand">
+          <span className="footer-mark" aria-hidden="true" />
+          <span>Rutina</span>
+        </div>
+        <div className="site-footer-meta">
+          <a href="https://github.com/anandategarch/Habit-Tracker-V.2" target="_blank" rel="noreferrer noopener">Sumber</a>
+          <span className="site-footer-version" aria-label="Versi aplikasi">{APP_VERSION_LABEL}</span>
+          <span aria-hidden="true">Tumbuh dalam langkah kecil.</span>
+        </div>
+      </footer>
     </div>
   );
 }
