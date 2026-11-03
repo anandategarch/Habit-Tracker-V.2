@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Skema ini mereplikasi struktur SQL asli Rutina (lihat db/migrations/0001_initial.sql
+// pada repositori sumber). Semua penulisan data dilakukan lewat SQL mentah
+// ($queryRaw/$executeRaw) di src/lib/server/workspace-repository.ts, sehingga
+// kolom waktu disimpan sebagai teks CURRENT_TIMESTAMP seperti aslinya.
+
+model Habit {
+  id        String @id
+  title     String
+  category  String
+  time      String
+  duration  Int    @default(15)
+  icon      String @default("write")
+  streak    Int    @default(0)
+  sortOrder Int    @default(0) @map("sort_order")
+  createdAt String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at")
+  updatedAt String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at")
+
+  @@index([sortOrder, createdAt(sort: Asc)])
+  @@map("habits")
+}
+
+model HabitCheckin {
+  habitId     String @map("habit_id")
+  completedOn String @map("completed_on")
+  createdAt   String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at")
+
+  @@id([habitId, completedOn])
+  @@index([completedOn])
+  @@map("habit_checkins")
+}
+
+model HabitMetadata {
+  habitId  String @id @map("habit_id")
+  payload  String
+  updatedAt String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at")
+
+  @@map("habit_metadata")
+}
+
+model HabitDailyProgress {
+  habitId          String @map("habit_id")
+  activityDate     String @map("activity_date")
+  currentAmount    Float  @default(0) @map("current_amount")
+  timeSpentMinutes Int    @default(0) @map("time_spent_minutes")
+  updatedAt        String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at")
+
+  @@id([habitId, activityDate])
+  @@map("habit_daily_progress")
+}
+
+model Transaction {
+  id              String @id
+  title           String
+  category        String
+  type            String
+  amount          Int
+  transactionDate String @map("transaction_date")
+  createdAt       String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("created_at")
+  updatedAt       String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at")
+
+  @@index([transactionDate(sort: Desc)])
+  @@map("transactions")
+}
+
+model TransactionMetadata {
+  transactionId String  @id @map("transaction_id")
+  walletId      String? @map("wallet_id")
+  tagsJson      String  @default("[]") @map("tags_json")
+  splitGroupId  String? @map("split_group_id")
+  updatedAt     String  @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at")
+
+  @@map("transaction_metadata")
+}
+
+model Budget {
+  category    String @id
+  monthlyLimit Int   @map("monthly_limit")
+  updatedAt   String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at")
+
+  @@map("budgets")
+}
+
+model WorkspaceModule {
+  moduleKey String @id @map("module_key")
+  payload   String
+  updatedAt String @default(dbgenerated("CURRENT_TIMESTAMP")) @map("updated_at")
+
+  @@map("workspace_modules")
+}
