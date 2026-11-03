@@ -112,7 +112,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         ? "Semua langkah terjadwal sudah kamu rawat. Sisakan ruang untuk menikmati harimu."
         : completed > 0
           ? `${completed} langkah sudah kamu lakukan. Pilih satu hal kecil berikutnya, sesuai ritmemu.`
-          : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai."; 
+          : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
 
   return (
     <div className="botanical-dashboard-page">
