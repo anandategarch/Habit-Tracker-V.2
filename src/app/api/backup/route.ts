@@ -4,6 +4,7 @@ import { readWorkspace, writeWorkspace } from "@/lib/server/workspace-repository
 import { normalizeModules, EMPTY_MODULES, type WorkspaceModules } from "@/lib/module-types";
 import { todayISO } from "@/lib/format";
 import type { Budget, Habit, Transaction } from "@/lib/types";
+import { isLegacyBackup, applyLegacyMigration } from "@/lib/migrate-legacy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -100,6 +101,20 @@ export async function POST(request: Request) {
   try { body = await request.json(); } catch {
     return NextResponse.json({ error: "File backup bukan JSON yang valid." }, { status: 400 });
   }
+
+  // AUTO-ROUTE: jika file ternyata backup V1 (lama, tanpa envelope rutina-v2-backup),
+  // delegasikan ke pipeline migrasi V1→V2 supaya user tidak perlu pilih tombol khusus.
+  if (isLegacyBackup(body)) {
+    try {
+      const result = await applyLegacyMigration(body, todayISO());
+      return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
+    } catch (error) {
+      console.error("Rutina legacy migration (via backup endpoint) failed:", error);
+      const message = error instanceof Error ? error.message : "Gagal memigrasi backup legacy. Data yang sudah ada tidak dihapus.";
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
+  }
+
   if (!isRecord(body) || body.format !== "rutina-v2-backup" || body.version !== 1 ||
       !isRecord(body.data) || !validateWorkspace(body.data.workspace)) {
     return NextResponse.json({ error: "Format backup tidak dikenali atau datanya tidak lengkap." }, { status: 400 });

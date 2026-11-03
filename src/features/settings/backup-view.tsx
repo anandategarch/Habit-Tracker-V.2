@@ -79,13 +79,14 @@ export function BackupView({ settings, onUpdateSettings }: {
     if (!file) return;
     setError(false);
     setMessage("");
+    setMigrationReport(null);
     if (file.size > 20 * 1024 * 1024) {
       setError(true);
       setMessage("Ukuran file melebihi batas 20 MB.");
       event.target.value = "";
       return;
     }
-    if (!window.confirm("Backup akan digabung dengan data V2 saat ini. Data yang sudah ada tidak dihapus. Record dengan ID/tanggal yang sama dapat diperbarui dari backup. Lanjutkan?")) {
+    if (!window.confirm("Backup akan digabung dengan data V2 saat ini. File backup V1 (lama) akan otomatis dimigrasi ke skema V2. Data yang sudah ada tidak dihapus. Record dengan ID/tanggal yang sama dapat diperbarui dari backup. Lanjutkan?")) {
       event.target.value = "";
       return;
     }
@@ -101,11 +102,17 @@ export function BackupView({ settings, onUpdateSettings }: {
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Pemulihan backup gagal.");
-      const restored = payload.restored && typeof payload.restored === "object"
-        ? Object.values(payload.restored as Record<string, unknown>).reduce<number>((sum, value) => sum + (typeof value === "number" ? value : 0), 0)
-        : 0;
-      setMessage(`Backup berhasil digabung. ${restored.toLocaleString("id-ID")} record diproses. Memuat ulang workspace…`);
-      window.location.reload();
+      // Jika endpoint auto-route file V1 ke migrasi, tampilkan report migrasi.
+      if (payload.mode === "legacy-migration" && payload.report) {
+        setMigrationReport(payload.report as LegacyReport);
+        setMessage("File backup V1 (lama) terdeteksi & berhasil dimigrasi ke V2. Memuat ulang workspace…");
+      } else {
+        const restored = payload.restored && typeof payload.restored === "object"
+          ? Object.values(payload.restored as Record<string, unknown>).reduce<number>((sum, value) => sum + (typeof value === "number" ? value : 0), 0)
+          : 0;
+        setMessage(`Backup berhasil digabung. ${restored.toLocaleString("id-ID")} record diproses. Memuat ulang workspace…`);
+      }
+      window.setTimeout(() => window.location.reload(), 1500);
     } catch (reason) {
       setError(true);
       setMessage(reason instanceof Error ? reason.message : "File backup tidak dapat diproses.");
@@ -200,7 +207,7 @@ export function BackupView({ settings, onUpdateSettings }: {
 
       <section className="card card-pad backup-card">
         <div className="backup-icon"><FileUp size={22} /></div>
-        <SectionHeading title="Impor backup" caption="Gabungkan file backup V2 tanpa menghapus record lain yang sudah ada." />
+        <SectionHeading title="Impor backup" caption="Gabungkan file backup V2, atau upload file backup V1 (lama) — otomatis terdeteksi & dimigrasi ke skema V2." />
         <label className="backup-upload">
           <FileUp size={17} />
           <span>{importing ? "Memulihkan data…" : "Pilih file backup JSON"}</span>
@@ -208,7 +215,7 @@ export function BackupView({ settings, onUpdateSettings }: {
         </label>
         <div className="backup-safety-note">
           <ShieldCheck size={16} />
-          <p>Impor menggunakan mode gabung. Record dengan ID, tanggal, atau kategori yang sama diperbarui; record lainnya tetap dipertahankan. Buat backup sebelum mengimpor file besar.</p>
+          <p>Impor menggunakan mode gabung. File backup V1 (format lama) otomatis ditransformasi ke V2. Record dengan ID, tanggal, atau kategori yang sama diperbarui; record lainnya tetap dipertahankan.</p>
         </div>
       </section>
     </div>

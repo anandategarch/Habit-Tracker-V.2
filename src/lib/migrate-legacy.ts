@@ -1,5 +1,7 @@
 import "server-only";
 
+import { db } from "@/lib/db";
+import { readWorkspace, writeWorkspace } from "@/lib/server/workspace-repository";
 import type { Budget, Habit, Transaction } from "@/lib/types";
 import {
   normalizeModules,
@@ -699,5 +701,122 @@ export function migrateLegacyBackup(input: unknown, todayISO: string): Migration
     modules: normalizedModules,
     habitCheckins,
     report,
+  };
+}
+
+// ============================================================================
+// Shared DB write logic — dipakai /api/migrate-legacy DAN /api/backup (auto-route)
+// ============================================================================
+
+function mergeByKey<T>(current: T[], incoming: T[], keyOf: (item: T) => string): T[] {
+  const values = new Map<string, T>();
+  for (const item of current) values.set(keyOf(item), item);
+  for (const item of incoming) values.set(keyOf(item), item);
+  return [...values.values()];
+}
+
+async function readModules(): Promise<WorkspaceModules> {
+  const rows = await db.$queryRaw<Array<{ module_key: string; payload: string }>>`SELECT module_key, payload FROM workspace_modules`;
+  const value: Record<string, unknown> = { ...EMPTY_MODULES };
+  for (const row of rows) {
+    try { value[String(row.module_key)] = JSON.parse(String(row.payload)); } catch { /* ignore one malformed module */ }
+  }
+  return normalizeModules(value);
+}
+
+function mergeModules(current: WorkspaceModules, incoming: WorkspaceModules): WorkspaceModules {
+  return {
+    goals: mergeByKey(current.goals, incoming.goals, (item) => item.id),
+    checkins: mergeByKey(current.checkins, incoming.checkins, (item) => item.date),
+    tasks: mergeByKey(current.tasks, incoming.tasks, (item) => item.id),
+    notes: mergeByKey(current.notes, incoming.notes, (item) => item.id),
+    routines: mergeByKey(current.routines, incoming.routines, (item) => item.id),
+    wellness: mergeByKey(current.wellness, incoming.wellness, (item) => item.date),
+    workouts: mergeByKey(current.workouts, incoming.workouts, (item) => item.id),
+    programs: mergeByKey(current.programs, incoming.programs, (item) => item.id),
+    progressPhotos: mergeByKey(current.progressPhotos, incoming.progressPhotos, (item) => item.id).slice(0, 5),
+    habitGroups: mergeByKey(current.habitGroups, incoming.habitGroups, (item) => item.id),
+    settings: incoming.settings ?? current.settings,
+    finance: {
+      wallets: mergeByKey(current.finance.wallets, incoming.finance.wallets, (item) => item.id),
+      transfers: mergeByKey(current.finance.transfers, incoming.finance.transfers, (item) => item.id),
+      recurring: mergeByKey(current.finance.recurring, incoming.finance.recurring, (item) => item.id),
+      savingsGoals: mergeByKey(current.finance.savingsGoals, incoming.finance.savingsGoals, (item) => item.id),
+      categoryRules: mergeByKey(current.finance.categoryRules, incoming.finance.categoryRules, (item) => item.id),
+      weeklyBudgets: mergeByKey(current.finance.weeklyBudgets, incoming.finance.weeklyBudgets, (item) => item.category),
+    },
+  };
+}
+
+export interface ApplyMigrationResult {
+  ok: true;
+  mode: "legacy-migration";
+  report: MigrationReport;
+  restored: Record<string, number>;
+}
+
+/**
+ * Jalankan migrasi V1 → V2: insert check-in historis, gabungkan workspace,
+ * gabungkan & simpan modul. Dipakai bersama oleh endpoint /api/migrate-legacy
+ * dan /api/backup (auto-route file V1).
+ *
+ * Fungsi ini TIDAK membungkus error — pemanggil bertanggung jawab try/catch.
+ */
+export async function applyLegacyMigration(body: unknown, todayISO: string): Promise<ApplyMigrationResult> {
+  const migration = migrateLegacyBackup(body, todayISO);
+  const { workspace, modules: incomingModules, habitCheckins, report } = migration;
+
+  // 1. Insert historical habit check-ins SEBELUM writeWorkspace.
+  //    writeWorkspace akan menghapus check-in HARI INI lalu menyisipkan ulang
+  //    berdasarkan flag `completed` pada habit — check-in tanggal lain tidak
+  //    tersentuh, jadi riwayat streak tetap utuh.
+  await db.$transaction(async (tx) => {
+    for (const checkin of habitCheckins) {
+      await tx.$executeRaw`INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (${checkin.habitId}, ${checkin.completedOn})`;
+    }
+  });
+
+  // 2. Gabungkan workspace (habits/transactions/budgets) dengan data yang ada.
+  const currentWorkspace = await readWorkspace(todayISO);
+  const mergedWorkspace = {
+    habits: mergeByKey(currentWorkspace.habits, workspace.habits, (item) => item.id),
+    transactions: mergeByKey(currentWorkspace.transactions, workspace.transactions, (item) => item.id),
+    budgets: mergeByKey(currentWorkspace.budgets, workspace.budgets, (item) => item.category),
+  };
+  await writeWorkspace(mergedWorkspace, todayISO);
+
+  // 3. Gabungkan & simpan modul (goals/checkins/tasks/notes/routines/wellness/finance).
+  const currentModules = await readModules();
+  const mergedModules = mergeModules(currentModules, incomingModules);
+  await db.$transaction(async (tx) => {
+    for (const [key, value] of Object.entries(mergedModules)) {
+      const payload = JSON.stringify(value);
+      await tx.$executeRaw`
+        INSERT INTO workspace_modules (module_key, payload, updated_at)
+          VALUES (${key}, ${payload}, CURRENT_TIMESTAMP)
+          ON CONFLICT(module_key) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`;
+    }
+  });
+
+  return {
+    ok: true,
+    mode: "legacy-migration",
+    report,
+    restored: {
+      habits: workspace.habits.length,
+      transactions: workspace.transactions.length,
+      budgets: workspace.budgets.length,
+      habitCheckins: habitCheckins.length,
+      goals: incomingModules.goals.length,
+      checkins: incomingModules.checkins.length,
+      tasks: incomingModules.tasks.length,
+      notes: incomingModules.notes.length,
+      routines: incomingModules.routines.length,
+      wellness: incomingModules.wellness.length,
+      workouts: incomingModules.workouts.length,
+      habitGroups: incomingModules.habitGroups.length,
+      financeWallets: incomingModules.finance.wallets.length,
+      financeWeeklyBudgets: incomingModules.finance.weeklyBudgets.length,
+    },
   };
 }
