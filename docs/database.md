@@ -13,12 +13,9 @@ Jangan gunakan prefix `NEXT_PUBLIC_`, jangan commit token ke repository, dan jan
 
 Rutina tidak menggunakan password aplikasi, registrasi, atau cookie sesi internal.
 
-Deployment Vercel pada proyek `habittracker2` dilindungi melalui **Vercel Authentication** dengan cakupan **All Deployments**. Perlindungan ini mencakup Production dan Preview. Hanya akun Vercel yang memiliki akses ke team pemilik proyek yang dapat membuka aplikasi dan endpoint API.
+Rutina mengandalkan **Vercel Deployment Protection**; aplikasi tidak menyediakan login internal atau otorisasi per-user di API. Pada pemeriksaan konfigurasi project `habittracker2` tanggal 3 November 2026, Vercel melaporkan SSO protection aktif untuk **Preview**, sedangkan perlindungan Production belum terkonfirmasi aktif. Karena itu, konfigurasi aktual belum memenuhi rekomendasi All Deployments.
 
-Untuk memakai Rutina dari perangkat lain, termasuk HP:
-1. Buka URL Production Rutina.
-2. Masuk melalui Vercel menggunakan akun yang memiliki akses ke proyek.
-3. Setelah lolos perlindungan Vercel, Rutina terbuka tanpa password aplikasi.
+Sebelum menggunakan Production dengan data pribadi, atur Vercel Authentication/Deployment Protection pada cakupan **All Deployments**, lalu verifikasi akses Production dan Preview menggunakan akun yang memang diizinkan. Jangan menganggap dokumentasi ini sebagai bukti konfigurasi sudah aktif.
 
 Jangan menonaktifkan Deployment Protection atau mengekspos server pengembangan lokal ke internet. Saat menjalankan `npm run dev`, perlindungan Vercel tidak berlaku.
 
