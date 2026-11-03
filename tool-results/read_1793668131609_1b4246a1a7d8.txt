@@ -1,0 +1,605 @@
+     1→"use client";
+     2→
+     3→import { useEffect, useMemo, useState, type FormEvent } from "react";
+     4→import {
+     5→  Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus, Sun, Moon, Monitor,
+     6→} from "lucide-react";
+     7→import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
+     8→import { RutinaMark } from "@/components/ui/rutina-mark";
+     9→import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
+    10→import { todayISO } from "@/lib/format";
+    11→import { isScheduledOn, parseNumberList } from "@/lib/habit-schedule";
+    12→import { summarizeTransactions } from "@/lib/finance";
+    13→import { useWorkspace } from "@/lib/use-workspace";
+    14→import { DashboardView } from "@/features/dashboard/dashboard-view";
+    15→import { HabitsView } from "@/features/habits/habits-view";
+    16→import { FinanceView } from "@/features/finance/finance-view";
+    17→import { CalendarView } from "@/features/calendar/calendar-view";
+    18→import { InsightsView } from "@/features/insights/insights-view";
+    19→import { EntryModal } from "@/components/ui/entry-modal";
+    20→import { SearchDialog } from "@/components/ui/search-dialog";
+    21→import { PwaInstallButton } from "@/components/pwa/install-button";
+    22→import { useModules } from "@/lib/use-modules";
+    23→import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
+    24→
+    25→const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
+    26→  { id: "home", label: "Beranda", icon: "home", description: "Ringkasan hari ini" },
+    27→  { id: "habits", label: "Kebiasaan", icon: "habits", description: "Atur ritme harian" },
+    28→  { id: "finance", label: "Keuangan", icon: "finance", description: "Kelola arus uang" },
+    29→  { id: "calendar", label: "Kalender", icon: "calendar", description: "Lihat jadwal" },
+    30→  { id: "insights", label: "Insight", icon: "insights", description: "Pahami progres" },
+    31→  { id: "goals", label: "Tujuan", icon: "goals", description: "Goals dan milestones" },
+    32→  { id: "checkin", label: "Check-in", icon: "checkin", description: "Mood, energi, dan jurnal" },
+    33→  { id: "work", label: "Meja Kerja", icon: "work", description: "Task board, catatan, rutinitas" },
+    34→  { id: "wellness", label: "Wellness", icon: "wellness", description: "Air, protein, dan berat badan" },
+    35→  { id: "training", label: "Latihan", icon: "training", description: "Workout, program, dan kardio" },
+    36→  { id: "tree", label: "Pohon", icon: "growth", description: "Level dan perjalanan progres" },
+    37→  { id: "settings", label: "Pengaturan", icon: "settings", description: "Backup dan preferensi data" },
+    38→];
+    39→const mobilePrimary = navigation.filter((item) => ["home", "habits", "finance", "calendar"].includes(item.id));
+    40→const navigationGroups: { label: string; ids: TabId[] }[] = [
+    41→  { label: "Overview", ids: ["home", "habits", "calendar"] },
+    42→  { label: "Money & Insight", ids: ["finance", "insights"] },
+    43→  { label: "Growth", ids: ["goals", "checkin", "tree"] },
+    44→  { label: "Lifestyle", ids: ["wellness", "training"] },
+    45→  { label: "Workspace", ids: ["work"] },
+    46→  { label: "System", ids: ["settings"] },
+    47→];
+    48→
+    49→const desktopNavigationGroups: { label: string; ids: TabId[] }[] = [
+    50→  { label: "MENU UTAMA", ids: ["home", "habits", "finance", "calendar", "insights"] },
+    51→  { label: "RUANG PERSONAL", ids: ["goals", "checkin", "work", "wellness", "training", "tree"] },
+    52→  { label: "PREFERENSI", ids: ["settings"] },
+    53→];
+    54→
+    55→type SyncStatus = "local" | "syncing" | "synced" | "error";
+    56→
+    57→export function RutinaApp() {
+    58→  const [activeTab, setActiveTab] = useState<TabId>("home");
+    59→  const [modal, setModal] = useState<"habit" | "transaction" | null>(null);
+    60→  const [toast, setToast] = useState("");
+    61→  const [searchOpen, setSearchOpen] = useState(false);
+    62→  const [searchQuery, setSearchQuery] = useState("");
+    63→  const [moreOpen, setMoreOpen] = useState(false);
+    64→  const [quickActionOpen, setQuickActionOpen] = useState(false);
+    65→  const [activeHabitTimer, setActiveHabitTimer] = useState<{ habitId: string; startedAt: number } | null>(null);
+    66→  const [timerNow, setTimerNow] = useState(() => Date.now());
+    67→  const {
+    68→    habits,
+    69→    transactions,
+    70→    budgets,
+    71→    syncStatus,
+    72→    updateHabits,
+    73→    updateTransactions,
+    74→    refreshWorkspace,
+    75→    isReady: workspaceReady,
+    76→  } = useWorkspace();
+    77→  const { modules, updateModule, ready: modulesReady } = useModules();
+    78→  const selectedTheme = modules.settings.theme;
+    79→  const themeLabel = selectedTheme === "system" ? "Sistem" : selectedTheme === "dark" ? "Gelap" : "Terang";
+    80→
+    81→  useEffect(() => {
+    82→    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    83→    const applyTheme = () => {
+    84→      const resolved = selectedTheme === "system" ? (media.matches ? "dark" : "light") : selectedTheme;
+    85→      document.documentElement.dataset.theme = resolved;
+    86→    };
+    87→    applyTheme();
+    88→    if (selectedTheme !== "system") return;
+    89→    media.addEventListener("change", applyTheme);
+    90→    return () => media.removeEventListener("change", applyTheme);
+    91→  }, [selectedTheme]);
+    92→
+    93→  useEffect(() => {
+    94→    let frame = 0;
+    95→    try {
+    96→      const saved = window.localStorage.getItem("rutina.v2.active-habit-timer");
+    97→      if (!saved) return;
+    98→      const timer = JSON.parse(saved) as { habitId?: unknown; startedAt?: unknown };
+    99→      if (typeof timer.habitId === "string" && typeof timer.startedAt === "number" && Date.now() - timer.startedAt >= 0 && Date.now() - timer.startedAt < 4 * 60 * 60 * 1000) {
+   100→        frame = window.requestAnimationFrame(() => setActiveHabitTimer({ habitId: timer.habitId as string, startedAt: timer.startedAt as number }));
+   101→      } else window.localStorage.removeItem("rutina.v2.active-habit-timer");
+   102→    } catch { window.localStorage.removeItem("rutina.v2.active-habit-timer"); }
+   103→    return () => { if (frame) window.cancelAnimationFrame(frame); };
+   104→  }, []);
+   105→
+   106→  useEffect(() => {
+   107→    if (!activeHabitTimer) return;
+   108→    const interval = window.setInterval(() => setTimerNow(Date.now()), 1000);
+   109→    return () => window.clearInterval(interval);
+   110→  }, [activeHabitTimer]);
+   111→
+   112→  useEffect(() => {
+   113→    if (!workspaceReady || !activeHabitTimer || habits.some((habit) => habit.id === activeHabitTimer.habitId)) return;
+   114→    const frame = window.requestAnimationFrame(() => setActiveHabitTimer(null));
+   115→    window.localStorage.removeItem("rutina.v2.active-habit-timer");
+   116→    return () => window.cancelAnimationFrame(frame);
+   117→  }, [workspaceReady, habits, activeHabitTimer]);
+   118→
+   119→  useEffect(() => {
+   120→    if (!toast) return;
+   121→    const timeout = window.setTimeout(() => setToast(""), 3200);
+   122→    return () => window.clearTimeout(timeout);
+   123→  }, [toast]);
+   124→
+   125→  useEffect(() => {
+   126→    function handleKeyboard(event: KeyboardEvent) {
+   127→      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+   128→        event.preventDefault();
+   129→        setSearchOpen(true);
+   130→      }
+   131→      if (event.key === "Escape") {
+   132→        setSearchOpen(false);
+   133→        setSearchQuery("");
+   134→        setMoreOpen(false);
+   135→        setQuickActionOpen(false);
+   136→      }
+   137→    }
+   138→
+   139→    window.addEventListener("keydown", handleKeyboard);
+   140→    return () => window.removeEventListener("keydown", handleKeyboard);
+   141→  }, []);
+   142→
+   143→  const todayKey = todayISO();
+   144→  const todayHabits = useMemo(() => habits.filter((habit) => isScheduledOn(habit.schedule, todayKey)), [habits, todayKey]);
+   145→  const currentMonth = todayKey.slice(0, 7);
+   146→  const monthTransactions = useMemo(
+   147→    () => transactions.filter((transaction) => transaction.date.slice(0, 7) === currentMonth),
+   148→    [transactions, currentMonth],
+   149→  );
+   150→  const { income, expense } = useMemo(
+   151→    () => summarizeTransactions(monthTransactions),
+   152→    [monthTransactions],
+   153→  );
+   154→
+   155→  const syncPresentation: Record<SyncStatus, { label: string; detail: string; className: string }> = {
+   156→    synced: { label: "Tersinkron", detail: "Perubahan tersimpan di Turso", className: "is-synced" },
+   157→    syncing: { label: "Menyinkronkan", detail: "Sedang menyimpan perubahan", className: "is-syncing" },
+   158→    error: { label: "Belum tersinkron", detail: "Tekan untuk mencoba sinkronisasi ulang", className: "is-error" },
+   159→    local: { label: "Mode lokal", detail: "Data sementara tersimpan di browser", className: "is-local" },
+   160→  };
+   161→  const sync = syncPresentation[syncStatus as SyncStatus];
+   162→  const pendingHabitCount = todayHabits.filter((habit) => !habit.completed).length;
+   163→
+   164→  function toggleHabit(id: string) {
+   165→    if (modules.settings.vacationMode) return;
+   166→    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
+   167→  }
+   168→
+   169→  function adjustHabit(id: string, delta: number) {
+   170→    if (modules.settings.vacationMode) return;
+   171→    updateHabits((current) => current.map((habit) => {
+   172→      if (habit.id !== id || habit.kind !== "amount") return habit;
+   173→      const currentAmount = Math.max(0, (habit.currentAmount ?? 0) + delta);
+   174→      return { ...habit, currentAmount, completed: currentAmount >= (habit.targetAmount ?? 1) };
+   175→    }));
+   176→  }
+   177→
+   178→  function toggleHabitTimer(id: string) {
+   179→    if (modules.settings.vacationMode) return;
+   180→    if (activeHabitTimer) {
+   181→      const elapsed = Math.max(0, Math.floor((Date.now() - activeHabitTimer.startedAt) / 1000));
+   182→      const minutes = Math.floor(elapsed / 60);
+   183→      if (minutes > 0) updateHabits((current) => current.map((habit) => habit.id === activeHabitTimer.habitId ? { ...habit, timeSpentMinutes: (habit.timeSpentMinutes ?? 0) + minutes } : habit));
+   184→      setActiveHabitTimer(null);
+   185→      window.localStorage.removeItem("rutina.v2.active-habit-timer");
+   186→      if (activeHabitTimer.habitId === id) return;
+   187→    }
+   188→    const next = { habitId: id, startedAt: Date.now() };
+   189→    setActiveHabitTimer(next);
+   190→    window.localStorage.setItem("rutina.v2.active-habit-timer", JSON.stringify(next));
+   191→  }
+   192→
+   193→  function submitHabit(event: FormEvent<HTMLFormElement>) {
+   194→    event.preventDefault();
+   195→    const data = new FormData(event.currentTarget);
+   196→    const title = String(data.get("title") ?? "").trim();
+   197→    if (!title) return;
+   198→
+   199→    const scheduleKind = String(data.get("scheduleKind") || "daily");
+   200→    let schedule: Habit["schedule"] = { kind: "daily" };
+   201→    if (scheduleKind === "weekly") {
+   202→      const days = parseNumberList(String(data.get("scheduleDays") || ""), 0, 6);
+   203→      if (!days.length) { setToast("Pilih minimal satu hari untuk jadwal mingguan."); return; }
+   204→      schedule = { kind: "weekly", days };
+   205→    } else if (scheduleKind === "monthly") {
+   206→      const dates = parseNumberList(String(data.get("scheduleDates") || ""), 1, 31);
+   207→      if (!dates.length) { setToast("Pilih minimal satu tanggal untuk jadwal bulanan."); return; }
+   208→      schedule = { kind: "monthly", dates };
+   209→    }
+   210→
+   211→    const category = String(data.get("category") ?? "Personal") as Habit["category"];
+   212→    const habit: Habit = {
+   213→      id: crypto.randomUUID(),
+   214→      title,
+   215→      category,
+   216→      time: String(data.get("time") ?? "07:00"),
+   217→      duration: Math.max(1, Number(data.get("duration")) || 15),
+   218→      completed: false,
+   219→      icon: category === "Health" ? "movement" : category === "Learning" ? "book" : category === "Mindfulness" ? "mind" : "write",
+   220→      streak: 0,
+   221→      kind: String(data.get("kind") || "normal") as Habit["kind"],
+   222→      targetAmount: Math.max(1, Number(data.get("targetAmount")) || 8),
+   223→      currentAmount: 0,
+   224→      unit: String(data.get("unit") || "unit").trim().slice(0, 30),
+   225→      priority: String(data.get("priority") || "medium") as Habit["priority"],
+   226→      difficulty: String(data.get("difficulty") || "easy") as Habit["difficulty"],
+   227→      groupName: String(data.get("groupName") || "").trim().slice(0, 60),
+   228→      timeSpentMinutes: 0,
+   229→      schedule,
+   230→    };
+   231→
+   232→    updateHabits((current) => [...current, habit]);
+   233→    setModal(null);
+   234→    setToast("Kebiasaan baru berhasil ditambahkan.");
+   235→  }
+   236→
+   237→  function submitTransaction(event: FormEvent<HTMLFormElement>) {
+   238→    event.preventDefault();
+   239→    const data = new FormData(event.currentTarget);
+   240→    const amount = Math.round(Number(data.get("amount")));
+   241→    const title = String(data.get("title") ?? "").trim();
+   242→    if (!title || !Number.isFinite(amount) || amount <= 0) return;
+   243→
+   244→    const transaction: Transaction = {
+   245→      id: crypto.randomUUID(),
+   246→      title,
+   247→      type: String(data.get("type")) as TransactionType,
+   248→      category: (modules.finance.categoryRules.find((rule) => title.toLocaleLowerCase("id-ID").includes(rule.keyword.toLocaleLowerCase("id-ID")))?.category ?? String(data.get("category"))) as TransactionCategory,
+   249→      amount,
+   250→      date: String(data.get("date") || todayISO()),
+   251→      ...(String(data.get("walletId") || "") ? { walletId: String(data.get("walletId")) } : {}),
+   252→      ...(String(data.get("tags") || "").trim() ? { tags: String(data.get("tags")).split(",").map((tag) => tag.trim().slice(0, 40)).filter(Boolean).slice(0, 20) } : {}),
+   253→    };
+   254→
+   255→    updateTransactions((current) => [transaction, ...current]);
+   256→    setModal(null);
+   257→    setToast("Transaksi berhasil dicatat.");
+   258→  }
+   259→
+   260→  if (!workspaceReady || !modulesReady) {
+   261→    return (
+   262→      <main className="workspace-loading" role="status" aria-live="polite">
+   263→        <div className="workspace-loading-brand"><span className="brand-mark"><RutinaMark size={25} /></span><strong>Rutina<span>.</span></strong></div>
+   264→        <span className="workspace-loading-spinner" aria-hidden="true" />
+   265→        <p>Menyiapkan ruang pribadimu…</p>
+   266→        <small>Menghubungkan data dan memuat aktivitas</small>
+   267→      </main>
+   268→    );
+   269→  }
+   270→
+   271→  return (
+   272→    <div className="app-shell" data-active-tab={activeTab}>
+   273→      <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
+   274→        <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); setMoreOpen(false); }} aria-label="Rutina, kembali ke beranda">
+   275→          <span className="brand-mark"><RutinaMark size={27} /></span>
+   276→          <span className="brand-copy"><span className="brand-name">Rutina</span><span className="brand-sub">grow at your pace</span></span>
+   277→        </a>
+   278→
+   279→        <nav className="desktop-expanded-nav" aria-label="Navigasi utama">
+   280→          {desktopNavigationGroups.map(({ label, ids }) => (
+   281→            <section className="desktop-nav-group" key={label}>
+   282→              <div className="desktop-nav-label">{label}</div>
+   283→              {ids.map((id) => {
+   284→                const item = navigation.find((entry) => entry.id === id);
+   285→                if (!item) return null;
+   286→                return (
+   287→                  <button
+   288→                    key={item.id}
+   289→                    type="button"
+   290→                    className={`desktop-nav-link ${activeTab === item.id ? "active" : ""}`}
+   291→                    aria-current={activeTab === item.id ? "page" : undefined}
+   292→                    onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}
+   293→                  >
+   294→                    <AppIcon name={item.icon} size={18} />
+   295→                    <span>{item.label}</span>
+   296→                  </button>
+   297→                );
+   298→              })}
+   299→            </section>
+   300→          ))}
+   301→        </nav>
+   302→
+   303→        <nav className="rail-primary-nav" aria-label="Akses cepat">
+   304→          {mobilePrimary.map(({ id, label, icon }) => (
+   305→            <button
+   306→              key={id}
+   307→              type="button"
+   308→              className={`rail-link ${activeTab === id ? "active" : ""}`}
+   309→              aria-label={label}
+   310→              aria-current={activeTab === id ? "page" : undefined}
+   311→              title={label}
+   312→              onClick={() => { setActiveTab(id); setMoreOpen(false); }}
+   313→            >
+   314→              <AppIcon name={icon} size={21} />
+   315→              <span className="rail-tooltip">{label}</span>
+   316→            </button>
+   317→          ))}
+   318→        </nav>
+   319→
+   320→        <div className="rail-spacer" />
+   321→        <button
+   322→          type="button"
+   323→          className={`rail-menu-toggle ${moreOpen ? "active" : ""}`}
+   324→          aria-expanded={moreOpen}
+   325→          aria-controls="workspace-menu"
+   326→          aria-label={moreOpen ? "Tutup menu navigasi" : "Buka semua menu"}
+   327→          onClick={() => setMoreOpen((value) => !value)}
+   328→        >
+   329→          {moreOpen ? <X size={20} /> : <Grid2X2 size={20} />}
+   330→          <span>Menu</span>
+   331→        </button>
+   332→        <button
+   333→          type="button"
+   334→          className={`rail-sync-button ${sync.className}`}
+   335→          onClick={() => void refreshWorkspace()}
+   336→          aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+   337→          title={sync.detail}
+   338→        >
+   339→          {syncStatus === "syncing" ? <LoaderCircle size={18} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={18} /> : <Cloud size={18} />}
+   340→          <span className="rail-sync-indicator" />
+   341→        </button>
+   342→
+   343→        <div id="workspace-menu" className={`workspace-menu-panel ${moreOpen ? "is-open" : ""}`} aria-hidden={!moreOpen}>
+   344→          <div className="menu-panel-header">
+   345→            <div>
+   346→              <span className="menu-panel-kicker">YOUR SPACE</span>
+   347→              <strong>Workspace</strong>
+   348→              <small>Semua area Rutina, satu tempat.</small>
+   349→            </div>
+   350→            <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
+   351→          </div>
+   352→          <div className="menu-panel-content">
+   353→            {navigationGroups.map(({ label: groupLabel, ids }) => (
+   354→              <section className="menu-group" key={groupLabel}>
+   355→                <div className="menu-group-label">{groupLabel}</div>
+   356→                <div className="menu-group-list">
+   357→                  {ids.map((id) => {
+   358→                    const item = navigation.find((entry) => entry.id === id);
+   359→                    if (!item) return null;
+   360→                    return (
+   361→                      <button
+   362→                        key={item.id}
+   363→                        type="button"
+   364→                        className={`menu-item ${activeTab === item.id ? "active" : ""}`}
+   365→                        data-module={item.id}
+   366→                        aria-current={activeTab === item.id ? "page" : undefined}
+   367→                        onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}
+   368→                      >
+   369→                        <span className="menu-item-icon"><AppIcon name={item.icon} size={18} /></span>
+   370→                        <span className="menu-item-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+   371→                        {activeTab === item.id && <span className="menu-item-current" />}
+   372→                        <ChevronRight size={14} className="menu-item-arrow" />
+   373→                      </button>
+   374→                    );
+   375→                  })}
+   376→                </div>
+   377→              </section>
+   378→            ))}
+   379→          </div>
+   380→          <div className="menu-panel-footer">
+   381→            <div className="sidebar-growth">
+   382→              <span className="sidebar-growth-icon"><AppIcon name="growth" size={16} /></span>
+   383→              <p>Hal besar tumbuh dari langkah kecil.</p>
+   384→              <span>ONE DAY AT A TIME</span>
+   385→            </div>
+   386→            <button
+   387→              type="button"
+   388→              className={`sync-card ${sync.className}`}
+   389→              onClick={() => void refreshWorkspace()}
+   390→              aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+   391→              title={sync.detail}
+   392→            >
+   393→              <span className="sync-card-icon">
+   394→                {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
+   395→              </span>
+   396→              <span className="sync-card-copy"><strong>{sync.label}</strong><small>{sync.detail}</small></span>
+   397→              <RefreshCw size={14} className="sync-refresh" />
+   398→            </button>
+   399→            <div className="profile-row">
+   400→              <div className="avatar">
+   401→                {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px */}
+   402→                <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+   403→              </div>
+   404→              <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+   405→            </div>
+   406→          </div>
+   407→        </div>
+   408→        <div className="desktop-sidebar-footer">
+   409→          <div className="desktop-sidebar-note">
+   410→            <span className="desktop-sidebar-note-icon"><AppIcon name="growth" size={17} /></span>
+   411→            <p>Langkah kecil hari ini, membawa perubahan besar esok.</p>
+   412→          </div>
+   413→          <button
+   414→            type="button"
+   415→            className={`sync-card ${sync.className}`}
+   416→            onClick={() => void refreshWorkspace()}
+   417→            aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+   418→            title={sync.detail}
+   419→          >
+   420→            <span className="sync-card-icon">
+   421→              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
+   422→            </span>
+   423→            <span className="sync-card-copy"><strong>{sync.label}</strong><small>{sync.detail}</small></span>
+   424→            <RefreshCw size={14} className="sync-refresh" />
+   425→          </button>
+   426→          <div className="profile-row">
+   427→            <div className="avatar">
+   428→              {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px */}
+   429→              <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+   430→            </div>
+   431→            <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+   432→          </div>
+   433→        </div>
+   434→      </aside>
+   435→      {moreOpen && <button type="button" className="workspace-menu-scrim" aria-label="Tutup menu navigasi" onClick={() => setMoreOpen(false)} />}
+   436→
+   437→      <main className="main-shell">
+   438→        <header className="topbar">
+   439→          <div className="mobile-brand">
+   440→            <span className="brand-mark"><RutinaMark size={22} /></span>
+   441→            <span>Rutina</span>
+   442→          </div>
+   443→          <div className="topbar-context">
+   444→            <span className="topbar-context-dot" />
+   445→            <span>Ruang pribadi</span>
+   446→            <span className="topbar-context-divider">/</span>
+   447→            <strong>{navigation.find((item) => item.id === activeTab)?.label}</strong>
+   448→          </div>
+   449→          <div className="topbar-actions">
+   450→            <button className="search-trigger" type="button" onClick={() => setSearchOpen(true)} aria-label="Cari di Rutina">
+   451→              <Search size={16} /><span>Cari sesuatu…</span><kbd>Ctrl / ⌘ K</kbd>
+   452→            </button>
+   453→            <button
+   454→              type="button"
+   455→              className={`mobile-sync-button ${sync.className}`}
+   456→              onClick={() => void refreshWorkspace()}
+   457→              title={sync.detail}
+   458→              aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
+   459→            >
+   460→              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
+   461→            </button>
+   462→            <button type="button" className="theme-toggle" onClick={() => updateModule("settings", (current) => ({ ...current, theme: current.theme === "light" ? "dark" : current.theme === "dark" ? "system" : "light" }))} aria-label={`Tema: ${themeLabel}. Ganti tema.`} title={`Tema: ${themeLabel}`}>
+   463→              {selectedTheme === "system" ? <Monitor size={16} /> : selectedTheme === "dark" ? <Moon size={16} /> : <Sun size={16} />}
+   464→              <span>{themeLabel}</span>
+   465→            </button>
+   466→            <PwaInstallButton />
+   467→            <button
+   468→              type="button"
+   469→              className="topbar-bell"
+   470→              onClick={() => { setActiveTab("habits"); setMoreOpen(false); setQuickActionOpen(false); }}
+   471→              aria-label={pendingHabitCount > 0 ? `${pendingHabitCount} kebiasaan belum selesai hari ini. Buka halaman kebiasaan.` : "Semua kebiasaan hari ini sudah selesai. Buka halaman kebiasaan."}
+   472→              title={pendingHabitCount > 0 ? `${pendingHabitCount} kebiasaan menunggu` : "Tidak ada kebiasaan tertunda"}
+   473→            >
+   474→              <Bell size={17} />
+   475→              {pendingHabitCount > 0 && <span className="topbar-bell-badge" aria-hidden="true">{pendingHabitCount > 9 ? "9+" : pendingHabitCount}</span>}
+   476→            </button>
+   477→            <div className="avatar topbar-avatar" aria-label="Workspace pribadi">
+   478→              {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px; next/image tidak memberi keuntungan untuk aset sekecil ini */}
+   479→              <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+   480→            </div>
+   481→          </div>
+   482→        </header>
+   483→
+   484→        <div className="content-wrap page-transition" key={activeTab}>
+   485→          {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} onAddTransaction={() => setModal("transaction")} onOpenFeatures={() => { setQuickActionOpen(false); setMoreOpen(true); }} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
+   486→          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
+   487→          {activeTab === "finance" && <><FinanceView transactions={monthTransactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
+   488→          {activeTab === "calendar" && <CalendarView habits={habits} />}
+   489→          {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} checkins={modules.checkins} />}
+   490→          {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree" || activeTab === "settings") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
+   491→        </div>
+   492→      </main>
+   493→
+   494→      <nav className="bottom-nav" aria-label="Navigasi utama mobile">
+   495→        {mobilePrimary.slice(0, 2).map(({ id, label, icon }) => (
+   496→          <button
+   497→            key={id}
+   498→            type="button"
+   499→            className={activeTab === id ? "active" : ""}
+   500→            aria-current={activeTab === id ? "page" : undefined}
+   501→            onClick={() => { setActiveTab(id); setMoreOpen(false); setQuickActionOpen(false); }}
+   502→          >
+   503→            <AppIcon name={icon} size={19} />
+   504→            <span>{label}</span>
+   505→          </button>
+   506→        ))}
+   507→
+   508→        <div className={`bottom-nav-action-wrap ${quickActionOpen ? "is-open" : ""}`}>
+   509→          <div id="mobile-quick-actions" className="mobile-quick-actions" role="group" aria-label="Aksi cepat" hidden={!quickActionOpen}>
+   510→            <div className="mobile-quick-actions-heading">MULAI SESUATU</div>
+   511→            <button
+   512→              type="button"
+   513→              className="mobile-quick-action"
+   514→              onClick={() => { setQuickActionOpen(false); setModal("habit"); }}
+   515→            >
+   516→              <span className="mobile-quick-action-icon habit"><AppIcon name="habits" size={18} /></span>
+   517→              <span className="mobile-quick-action-copy"><strong>Tambah kebiasaan</strong><small>Buat rutinitas baru</small></span>
+   518→              <ChevronRight size={16} />
+   519→            </button>
+   520→            <button
+   521→              type="button"
+   522→              className="mobile-quick-action"
+   523→              onClick={() => { setQuickActionOpen(false); setModal("transaction"); }}
+   524→            >
+   525→              <span className="mobile-quick-action-icon finance"><AppIcon name="finance" size={18} /></span>
+   526→              <span className="mobile-quick-action-copy"><strong>Catat transaksi</strong><small>Tambah pemasukan atau pengeluaran</small></span>
+   527→              <ChevronRight size={16} />
+   528→            </button>
+   529→            <button
+   530→              type="button"
+   531→              className="mobile-quick-action"
+   532→              onClick={() => { setQuickActionOpen(false); setMoreOpen(true); }}
+   533→            >
+   534→              <span className="mobile-quick-action-icon browse"><Grid2X2 size={18} /></span>
+   535→              <span className="mobile-quick-action-copy"><strong>Semua fitur</strong><small>Jelajahi seluruh ruang Rutina</small></span>
+   536→              <ChevronRight size={16} />
+   537→            </button>
+   538→          </div>
+   539→          <button
+   540→            type="button"
+   541→            className={`bottom-nav-action ${quickActionOpen ? "active" : ""}`}
+   542→            aria-label={quickActionOpen ? "Tutup aksi cepat" : "Buka aksi cepat"}
+   543→            aria-expanded={quickActionOpen}
+   544→            aria-controls="mobile-quick-actions"
+   545→            onClick={() => { setMoreOpen(false); setQuickActionOpen((value) => !value); }}
+   546→          >
+   547→            <Plus size={24} strokeWidth={2.5} />
+   548→          </button>
+   549→          <span className="bottom-nav-action-label">{quickActionOpen ? "Tutup" : "Tambah"}</span>
+   550→        </div>
+   551→
+   552→        {mobilePrimary.slice(2).map(({ id, label, icon }) => (
+   553→          <button
+   554→            key={id}
+   555→            type="button"
+   556→            className={activeTab === id ? "active" : ""}
+   557→            aria-current={activeTab === id ? "page" : undefined}
+   558→            onClick={() => { setActiveTab(id); setMoreOpen(false); setQuickActionOpen(false); }}
+   559→          >
+   560→            <AppIcon name={icon} size={19} />
+   561→            <span>{label}</span>
+   562→          </button>
+   563→        ))}
+   564→      </nav>
+   565→      {moreOpen && <div id="mobile-workspace-menu" className="mobile-more-menu workspace-menu-sheet" role="dialog" aria-modal="true" aria-label="Semua menu Rutina">
+   566→        <div className="menu-panel-header">
+   567→          <div><span className="menu-panel-kicker">YOUR SPACE</span><strong>Jelajahi Rutina</strong><small>Pilih area yang ingin kamu buka.</small></div>
+   568→          <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
+   569→        </div>
+   570→        <div className="menu-panel-content">
+   571→          {navigationGroups.map(({ label: groupLabel, ids }) => (
+   572→            <section className="menu-group" key={groupLabel}>
+   573→              <div className="menu-group-label">{groupLabel}</div>
+   574→              <div className="menu-group-list">
+   575→                {ids.map((id) => {
+   576→                  const item = navigation.find((entry) => entry.id === id);
+   577→                  if (!item) return null;
+   578→                  return <button key={item.id} type="button" role="menuitem" className={`menu-item ${activeTab === item.id ? "active" : ""}`} data-module={item.id} aria-current={activeTab === item.id ? "page" : undefined} onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}>
+   579→                    <span className="menu-item-icon"><AppIcon name={item.icon} size={18} /></span>
+   580→                    <span className="menu-item-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+   581→                    {activeTab === item.id && <span className="menu-item-current" />}
+   582→                    <ChevronRight size={14} className="menu-item-arrow" />
+   583→                  </button>;
+   584→                })}
+   585→              </div>
+   586→            </section>
+   587→          ))}
+   588→        </div>
+   589→      </div>}
+   590→
+   591→      {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
+   592→      <SearchDialog
+   593→        open={searchOpen}
+   594→        query={searchQuery}
+   595→        onQueryChange={setSearchQuery}
+   596→        habits={habits}
+   597→        transactions={transactions}
+   598→        onClose={() => { setSearchOpen(false); setSearchQuery(""); }}
+   599→        onNavigate={(tab) => setActiveTab(tab)}
+   600→      />
+   601→      {toast && <div role="status" aria-live="polite" className="toast"><span className="toast-dot" />{toast}</div>}
+   602→    </div>
+   603→  );
+   604→}
+   605→

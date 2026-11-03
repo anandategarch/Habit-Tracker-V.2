@@ -1,0 +1,824 @@
+     1→import "server-only";
+     2→
+     3→import { db, dbBatch, type BatchStatement } from "@/lib/db";
+     4→import { readWorkspace, writeWorkspace } from "@/lib/server/workspace-repository";
+     5→import type { Budget, Habit, Transaction } from "@/lib/types";
+     6→import {
+     7→  normalizeModules,
+     8→  EMPTY_MODULES,
+     9→  type WorkspaceModules,
+    10→  type DailyCheckin,
+    11→  type WorkNote,
+    12→  type WorkRoutine,
+    13→  type WorkTask,
+    14→  type WellnessEntry,
+    15→  type HabitGroup,
+    16→  type Wallet,
+    17→  type WeeklyBudget,
+    18→} from "@/lib/module-types";
+    19→
+    20→// ============================================================================
+    21→// Legacy (V1) backup shape — sumber: rutina-backup-2026-11-03.json
+    22→// Format V1 TIDAK memiliki envelope `format`/`version` dan menyatukan semua
+    23→// data di bawah `data.*` dengan nama tabel yang berbeda dari V2.
+    24→// ============================================================================
+    25→
+    26→type LegacyHabitCategory = "Fitness" | "General" | "Health" | "Learning" | "Olahraga" | "Productivity" | "Mindfulness" | string;
+    27→type LegacyPriority = "High" | "Medium" | "Sedang" | "Low" | string;
+    28→type LegacyDifficulty = "Expert" | "Hard" | "Medium" | "Sedang" | "Sulit" | "Easy" | string;
+    29→
+    30→interface LegacyHabit {
+    31→  id: string;
+    32→  name: string;
+    33→  emoji?: string | null;
+    34→  category: LegacyHabitCategory;
+    35→  priority?: LegacyPriority | null;
+    36→  difficulty?: LegacyDifficulty | null;
+    37→  habitType?: string | null;
+    38→  target?: number | null;
+    39→  unit?: string | null;
+    40→  targetType?: string | null;
+    41→  targetDays?: number[] | null;
+    42→  graduatedAt?: string | null;
+    43→  scheduleJson?: string | null;
+    44→  reminder?: string | null;
+    45→  notes?: string | null;
+    46→  trackTime?: boolean | null;
+    47→  groupId?: string | null;
+    48→  goalId?: string | null;
+    49→  sortOrder?: number | null;
+    50→  isActive?: boolean | null;
+    51→  isArchived?: boolean | null;
+    52→  startDate?: string | null;
+    53→  createdAt?: string | null;
+    54→  updatedAt?: string | null;
+    55→}
+    56→
+    57→interface LegacyHabitLog {
+    58→  id: string;
+    59→  habitId: string;
+    60→  date: string;
+    61→  completed: boolean;
+    62→  value?: number | null;
+    63→  completedAt?: string | null;
+    64→  notes?: string | null;
+    65→  createdAt?: string | null;
+    66→  updatedAt?: string | null;
+    67→}
+    68→
+    69→interface LegacyDailyLog {
+    70→  id: string;
+    71→  date: string;
+    72→  mood?: number | null;
+    73→  energy?: number | null;
+    74→  sleep?: number | null;
+    75→  notes?: string | null;
+    76→  waterGlasses?: number | null;
+    77→  proteinGram?: number | null;
+    78→  weightKg?: number | null;
+    79→  createdAt?: string | null;
+    80→  updatedAt?: string | null;
+    81→}
+    82→
+    83→interface LegacyTransaction {
+    84→  id: string;
+    85→  type: "income" | "expense" | "transfer" | string;
+    86→  amount: number;
+    87→  category: string;
+    88→  sourceId?: string | null;
+    89→  description?: string | null;
+    90→  notes?: string | null;
+    91→  tags?: string | null;
+    92→  date: string;
+    93→  groupId?: string | null;
+    94→  transferPairId?: string | null;
+    95→  createdAt?: string | null;
+    96→  updatedAt?: string | null;
+    97→}
+    98→
+    99→interface LegacyFundSource {
+   100→  id: string;
+   101→  name: string;
+   102→  emoji?: string | null;
+   103→  type: "cash" | "bank" | "ewallet" | "e-wallet" | "other" | string;
+   104→  initialBalance?: number | null;
+   105→  isArchived?: boolean | null;
+   106→  sortOrder?: number | null;
+   107→  createdAt?: string | null;
+   108→}
+   109→
+   110→interface LegacyWeeklyBudget {
+   111→  id: string;
+   112→  category: string;
+   113→  month?: string | null;
+   114→  amount: number;
+   115→  createdAt?: string | null;
+   116→  updatedAt?: string | null;
+   117→}
+   118→
+   119→interface LegacyHabitGroup {
+   120→  id: string;
+   121→  name: string;
+   122→  color: string;
+   123→  sortOrder?: number | null;
+   124→}
+   125→
+   126→interface LegacyWorkRoutine {
+   127→  id: string;
+   128→  title: string;
+   129→  timeOfDay?: string | null;
+   130→  active?: boolean | null;
+   131→  sortOrder?: number | null;
+   132→  createdAt?: string | null;
+   133→  updatedAt?: string | null;
+   134→}
+   135→
+   136→interface LegacyWorkRoutineLog {
+   137→  id: string;
+   138→  routineId: string;
+   139→  dayKey: string;
+   140→  done: boolean;
+   141→  doneAt?: string | null;
+   142→  createdAt?: string | null;
+   143→}
+   144→
+   145→interface LegacyWorkTask {
+   146→  id: string;
+   147→  title: string;
+   148→  notes?: string | null;
+   149→  status?: string | null;
+   150→  dayKey?: string | null;
+   151→  dueAt?: string | null;
+   152→  completedAt?: string | null;
+   153→  createdAt?: string | null;
+   154→  updatedAt?: string | null;
+   155→}
+   156→
+   157→interface LegacyWorkNote {
+   158→  id: string;
+   159→  content: string;
+   160→  tag?: string | null;
+   161→  pinned?: boolean | null;
+   162→  createdAt?: string | null;
+   163→  updatedAt?: string | null;
+   164→}
+   165→
+   166→interface LegacyAppSettings {
+   167→  id?: string;
+   168→  userName?: string | null;
+   169→  theme?: string | null;
+   170→  themeColor?: string | null;
+   171→  weekStart?: number | null;
+   172→  language?: string | null;
+   173→  targetCompletion?: number | null;
+   174→  appLockHash?: string | null;
+   175→  updatedAt?: string | null;
+   176→}
+   177→
+   178→export interface LegacyBackup {
+   179→  data: {
+   180→    habits?: LegacyHabit[];
+   181→    habitLogs?: LegacyHabitLog[];
+   182→    dailyLogs?: LegacyDailyLog[];
+   183→    transactions?: LegacyTransaction[];
+   184→    fundSources?: LegacyFundSource[];
+   185→    financeCategories?: Array<{ id: string; name: string; emoji?: string; color?: string; type?: string }>;
+   186→    weeklyBudgets?: LegacyWeeklyBudget[];
+   187→    savingsGoals?: Array<Record<string, unknown>>;
+   188→    recurringTransactions?: Array<Record<string, unknown>>;
+   189→    transactionRules?: Array<Record<string, unknown>>;
+   190→    goals?: Array<Record<string, unknown>>;
+   191→    habitOptions?: Array<{ id: string; type: string; label: string; color?: string; sortOrder?: number }>;
+   192→    habitGroups?: LegacyHabitGroup[];
+   193→    workRoutines?: LegacyWorkRoutine[];
+   194→    workRoutineLogs?: LegacyWorkRoutineLog[];
+   195→    workTasks?: LegacyWorkTask[];
+   196→    workNotes?: LegacyWorkNote[];
+   197→    workDayFlags?: Array<Record<string, unknown>>;
+   198→    appSettings?: LegacyAppSettings | Record<string, unknown>;
+   199→  };
+   200→}
+   201→
+   202→// ============================================================================
+   203→// Mapping tables
+   204→// ============================================================================
+   205→
+   206→const HABIT_CATEGORY_MAP: Record<string, Habit["category"]> = {
+   207→  Health: "Health",
+   208→  Fitness: "Health",
+   209→  Olahraga: "Health",
+   210→  Learning: "Learning",
+   211→  Mindfulness: "Mindfulness",
+   212→  Productivity: "Personal",
+   213→  General: "Personal",
+   214→  Social: "Personal",
+   215→  Creative: "Personal",
+   216→};
+   217→
+   218→const PRIORITY_MAP: Record<string, NonNullable<Habit["priority"]>> = {
+   219→  high: "high",
+   220→  medium: "medium",
+   221→  sedang: "medium",
+   222→  low: "low",
+   223→};
+   224→
+   225→const DIFFICULTY_MAP: Record<string, NonNullable<Habit["difficulty"]>> = {
+   226→  easy: "easy",
+   227→  medium: "medium",
+   228→  sedang: "medium",
+   229→  hard: "hard",
+   230→  sulit: "hard",
+   231→  expert: "hard",
+   232→};
+   233→
+   234→// Emoji → ikon bawaan V2 (hanya 5 pilihan: book/water/movement/mind/write)
+   235→const EMOJI_ICON_MAP: Record<string, Habit["icon"]> = {
+   236→  "📚": "book",
+   237→  "📖": "book",
+   238→  "🧘": "mind",
+   239→  "🧠": "mind",
+   240→  "💧": "water",
+   241→  "🏃": "movement",
+   242→  "🏋️": "movement",
+   243→  "🏸": "movement",
+   244→  "🤸": "movement",
+   245→  "🦵": "movement",
+   246→  "🦾": "movement",
+   247→  "💪": "movement",
+   248→  "👞": "movement",
+   249→  "👟": "movement",
+   250→};
+   251→
+   252→const TRANSACTION_CATEGORY_MAP: Record<string, Transaction["category"]> = {
+   253→  Gaji: "Gaji",
+   254→  "Lainnya (Pemasukan)": "Freelance",
+   255→  Investasi: "Freelance",
+   256→  "Transfer Masuk": "Freelance",
+   257→  "Makanan Berat": "Makanan",
+   258→  Kopi: "Makanan",
+   259→  Jajan: "Makanan",
+   260→  Belanja: "Makanan",
+   261→  Bensin: "Transportasi",
+   262→  Parkir: "Transportasi",
+   263→  "Pajak Motor": "Transportasi",
+   264→  "Servis Motor": "Transportasi",
+   265→  "Tagihan Listrik": "Tagihan",
+   266→  "Tagihan Air": "Tagihan",
+   267→  "Pulsa & Paket Data": "Tagihan",
+   268→  "Tagihan & Utilitas": "Tagihan",
+   269→  Badminton: "Kesehatan",
+   270→  Kesehatan: "Kesehatan",
+   271→  "Potong Rambut": "Kesehatan",
+   272→  Dating: "Lifestyle",
+   273→  Hiburan: "Lifestyle",
+   274→  "Skin Care": "Lifestyle",
+   275→  Hutang: "Lainnya",
+   276→  Loundry: "Lainnya",
+   277→  Lainnya: "Lainnya",
+   278→  "Tak Terduga": "Lainnya",
+   279→  "Penyesuaian Saldo": "Lainnya",
+   280→  "Transfer Keluar": "Lainnya",
+   281→  Pendidikan: "Lainnya",
+   282→  "Iuran Kas": "Lainnya",
+   283→};
+   284→
+   285→const NEW_TRANSACTION_CATEGORIES: Transaction["category"][] = [
+   286→  "Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya",
+   287→];
+   288→
+   289→// ============================================================================
+   290→// Helpers
+   291→// ============================================================================
+   292→
+   293→function asArray<T>(value: unknown): T[] {
+   294→  return Array.isArray(value) ? value : [];
+   295→}
+   296→
+   297→function toISODate(value: string | null | undefined): string {
+   298→  if (!value) return "";
+   299→  // Sudah YYYY-MM-DD?
+   300→  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+   301→  // ISO datetime? Ambil 10 karakter pertama.
+   302→  const match = /^(\d{4}-\d{2}-\d{2})/.exec(value);
+   303→  return match ? match[1] : "";
+   304→}
+   305→
+   306→function mapHabitCategory(raw: string | undefined): Habit["category"] {
+   307→  if (!raw) return "Personal";
+   308→  return HABIT_CATEGORY_MAP[raw] ?? "Personal";
+   309→}
+   310→
+   311→function mapPriority(raw: string | null | undefined): NonNullable<Habit["priority"]> {
+   312→  if (!raw) return "medium";
+   313→  return PRIORITY_MAP[raw.toLowerCase()] ?? "medium";
+   314→}
+   315→
+   316→function mapDifficulty(raw: string | null | undefined): NonNullable<Habit["difficulty"]> {
+   317→  if (!raw) return "easy";
+   318→  return DIFFICULTY_MAP[raw.toLowerCase()] ?? "easy";
+   319→}
+   320→
+   321→function mapEmojiToIcon(emoji: string | null | undefined, category: string): Habit["icon"] {
+   322→  if (emoji && EMOJI_ICON_MAP[emoji]) return EMOJI_ICON_MAP[emoji];
+   323→  // Fallback berdasarkan kategori
+   324→  if (category === "Health" || category === "Fitness" || category === "Olahraga") return "movement";
+   325→  if (category === "Learning") return "book";
+   326→  if (category === "Mindfulness") return "mind";
+   327→  return "write";
+   328→}
+   329→
+   330→function parseReminderToTime(reminder: string | null | undefined): string {
+   331→  if (!reminder) return "07:00";
+   332→  // Contoh format V1: "05.00 AM", "07.30 PM"
+   333→  const match = /^(\d{1,2})[.:](\d{2})\s*(AM|PM)?$/i.exec(reminder.trim());
+   334→  if (!match) return "07:00";
+   335→  let hour = Number.parseInt(match[1], 10);
+   336→  const minute = match[2];
+   337→  const meridiem = match[3]?.toUpperCase();
+   338→  if (meridiem === "PM" && hour < 12) hour += 12;
+   339→  if (meridiem === "AM" && hour === 12) hour = 0;
+   340→  return `${String(hour).padStart(2, "0")}:${minute}`;
+   341→}
+   342→
+   343→function mapTransactionCategory(raw: string | undefined): Transaction["category"] {
+   344→  if (!raw) return "Lainnya";
+   345→  return TRANSACTION_CATEGORY_MAP[raw] ?? "Lainnya";
+   346→}
+   347→
+   348→// ============================================================================
+   349→// Migration report (dipakai UI/API untuk memberi transparansi ke user)
+   350→// ============================================================================
+   351→
+   352→export interface MigrationReport {
+   353→  sourceFormat: string;
+   354→  sourceKeys: string[];
+   355→  habits: { total: number; migrated: number; skippedArchived: number };
+   356→  habitCheckins: { total: number; inserted: number };
+   357→  dailyLogs: { total: number; toCheckins: number; toWellness: number };
+   358→  transactions: { total: number; migrated: number; skippedTransfer: number; skippedInvalid: number };
+   359→  fundSources: { total: number; migrated: number };
+   360→  weeklyBudgets: { total: number; migrated: number };
+   361→  habitGroups: { total: number; migrated: number };
+   362→  workRoutines: { total: number; migrated: number };
+   363→  workTasks: { total: number; migrated: number };
+   364→  workNotes: { total: number; migrated: number };
+   365→  goals: { total: number; migrated: number };
+   366→  savingsGoals: { total: number; migrated: number };
+   367→  recurring: { total: number; migrated: number };
+   368→  categoryRules: { total: number; migrated: number };
+   369→  settings: { migrated: boolean; userName?: string; theme?: string };
+   370→  unmappedCategories: string[];
+   371→  notes: string[];
+   372→}
+   373→
+   374→// ============================================================================
+   375→// Transformer utama
+   376→// ============================================================================
+   377→
+   378→export interface MigrationResult {
+   379→  workspace: { habits: Habit[]; transactions: Transaction[]; budgets: Budget[] };
+   380→  modules: WorkspaceModules;
+   381→  habitCheckins: Array<{ habitId: string; completedOn: string }>;
+   382→  report: MigrationReport;
+   383→}
+   384→
+   385→const NEW_TRANSACTION_TYPE = new Set(["income", "expense"]);
+   386→
+   387→export function isLegacyBackup(value: unknown): value is LegacyBackup {
+   388→  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+   389→  const record = value as Record<string, unknown>;
+   390→  // V2 backup punya `format` === "rutina-v2-backup"; V1 tidak punya `format` sama sekali.
+   391→  if (record.format === "rutina-v2-backup") return false;
+   392→  const data = record.data;
+   393→  if (!data || typeof data !== "object" || Array.isArray(data)) return false;
+   394→  const dataRecord = data as Record<string, unknown>;
+   395→  // Harus punya setidaknya salah satu kunci khas V1.
+   396→  const knownKeys = ["habits", "habitLogs", "dailyLogs", "transactions", "fundSources", "habitGroups", "workRoutines"];
+   397→  return knownKeys.some((k) => Array.isArray(dataRecord[k]));
+   398→}
+   399→
+   400→export function migrateLegacyBackup(input: unknown, todayISO: string): MigrationResult {
+   401→  if (!isLegacyBackup(input)) {
+   402→    throw new Error("File bukan backup legacy V1 Rutina. Pastikan file dari aplikasi Rutina lama.");
+   403→  }
+   404→  const data = input.data;
+   405→  const report: MigrationReport = {
+   406→    sourceFormat: "rutina-v1-legacy",
+   407→    sourceKeys: Object.keys(data),
+   408→    habits: { total: 0, migrated: 0, skippedArchived: 0 },
+   409→    habitCheckins: { total: 0, inserted: 0 },
+   410→    dailyLogs: { total: 0, toCheckins: 0, toWellness: 0 },
+   411→    transactions: { total: 0, migrated: 0, skippedTransfer: 0, skippedInvalid: 0 },
+   412→    fundSources: { total: 0, migrated: 0 },
+   413→    weeklyBudgets: { total: 0, migrated: 0 },
+   414→    habitGroups: { total: 0, migrated: 0 },
+   415→    workRoutines: { total: 0, migrated: 0 },
+   416→    workTasks: { total: 0, migrated: 0 },
+   417→    workNotes: { total: 0, migrated: 0 },
+   418→    goals: { total: 0, migrated: 0 },
+   419→    savingsGoals: { total: 0, migrated: 0 },
+   420→    recurring: { total: 0, migrated: 0 },
+   421→    categoryRules: { total: 0, migrated: 0 },
+   422→    settings: { migrated: false },
+   423→    unmappedCategories: [],
+   424→    notes: [],
+   425→  };
+   426→
+   427→  // --- Habit groups (butuh lookup untuk groupName) ---
+   428→  const groupMap = new Map<string, HabitGroup>();
+   429→  const habitGroups: HabitGroup[] = asArray(data.habitGroups)
+   430→    .filter((g): g is LegacyHabitGroup => Boolean(g && typeof g.id === "string" && typeof g.name === "string"))
+   431→    .map((g) => {
+   432→      const mapped: HabitGroup = { id: g.id, name: g.name, color: g.color || "#64748b" };
+   433→      groupMap.set(g.id, mapped);
+   434→      return mapped;
+   435→    });
+   436→  report.habitGroups.total = asArray(data.habitGroups).length;
+   437→  report.habitGroups.migrated = habitGroups.length;
+   438→
+   439→  // --- Habit logs → check-in history + today's completed flag ---
+   440→  const allLogs = asArray(data.habitLogs);
+   441→  report.habitCheckins.total = allLogs.length;
+   442→  const habitCheckins: Array<{ habitId: string; completedOn: string }> = [];
+   443→  const todayLogs = new Set<string>(); // habitId yang completed hari ini
+   444→  for (const log of allLogs) {
+   445→    if (!log || typeof log.habitId !== "string") continue;
+   446→    const date = toISODate(log.date);
+   447→    if (!date) continue;
+   448→    if (log.completed) {
+   449→      habitCheckins.push({ habitId: log.habitId, completedOn: date });
+   450→      if (date === todayISO) todayLogs.add(log.habitId);
+   451→    }
+   452→  }
+   453→  report.habitCheckins.inserted = habitCheckins.length;
+   454→
+   455→  // --- Habits ---
+   456→  const legacyHabits = asArray<LegacyHabit>(data.habits);
+   457→  report.habits.total = legacyHabits.length;
+   458→  const habits: Habit[] = [];
+   459→  for (const h of legacyHabits) {
+   460→    if (!h || typeof h.id !== "string" || typeof h.name !== "string") continue;
+   461→    if (h.isArchived) { report.habits.skippedArchived++; continue; }
+   462→    const category = mapHabitCategory(h.category);
+   463→    const habit: Habit = {
+   464→      id: h.id,
+   465→      title: h.name.trim(),
+   466→      category,
+   467→      time: parseReminderToTime(h.reminder),
+   468→      duration: 15,
+   469→      completed: todayLogs.has(h.id),
+   470→      icon: mapEmojiToIcon(h.emoji, h.category ?? ""),
+   471→      streak: 0, // dihitung ulang oleh writeWorkspace dari habit_checkins
+   472→    };
+   473→    if (h.habitType === "avoid") habit.kind = "avoid";
+   474→    else if (h.habitType === "amount") habit.kind = "amount";
+   475→    else habit.kind = "normal";
+   476→    if (typeof h.target === "number" && h.target > 0) habit.targetAmount = h.target;
+   477→    habit.currentAmount = 0;
+   478→    if (typeof h.unit === "string" && h.unit) habit.unit = h.unit;
+   479→    habit.priority = mapPriority(h.priority);
+   480→    habit.difficulty = mapDifficulty(h.difficulty);
+   481→    if (h.groupId && groupMap.has(h.groupId)) habit.groupName = groupMap.get(h.groupId)!.name;
+   482→    habit.timeSpentMinutes = 0;
+   483→    habit.schedule = { kind: "daily" }; // semua habit V1 di backup ini daily
+   484→    habits.push(habit);
+   485→  }
+   486→  report.habits.migrated = habits.length;
+   487→
+   488→  // --- Transactions ---
+   489→  const legacyTxns = asArray<LegacyTransaction>(data.transactions);
+   490→  report.transactions.total = legacyTxns.length;
+   491→  const transactions: Transaction[] = [];
+   492→  for (const t of legacyTxns) {
+   493→    if (!t || typeof t.id !== "string") { report.transactions.skippedInvalid++; continue; }
+   494→    if (t.type === "transfer") { report.transactions.skippedTransfer++; continue; }
+   495→    if (!NEW_TRANSACTION_TYPE.has(t.type)) { report.transactions.skippedInvalid++; continue; }
+   496→    const date = toISODate(t.date);
+   497→    if (!date) { report.transactions.skippedInvalid++; continue; }
+   498→    const amount = typeof t.amount === "number" && Number.isFinite(t.amount) ? t.amount : 0;
+   499→    if (amount <= 0) { report.transactions.skippedInvalid++; continue; }
+   500→    const rawCategory = t.category;
+   501→    const category = mapTransactionCategory(rawCategory);
+   502→    if (rawCategory && !TRANSACTION_CATEGORY_MAP[rawCategory] && !NEW_TRANSACTION_CATEGORIES.includes(rawCategory as Transaction["category"])) {
+   503→      if (!report.unmappedCategories.includes(rawCategory)) report.unmappedCategories.push(rawCategory);
+   504→    }
+   505→    const txn: Transaction = {
+   506→      id: t.id,
+   507→      title: (t.description || t.notes || "Tanpa judul").trim().slice(0, 120) || "Tanpa judul",
+   508→      category,
+   509→      type: t.type as Transaction["type"],
+   510→      amount,
+   511→      date,
+   512→    };
+   513→    if (t.sourceId) txn.walletId = t.sourceId;
+   514→    if (t.tags && typeof t.tags === "string" && t.tags.trim()) {
+   515→      const tags = t.tags.split(",").map((s) => s.trim()).filter(Boolean);
+   516→      if (tags.length) txn.tags = tags;
+   517→    }
+   518→    if (t.groupId) txn.splitGroupId = t.groupId;
+   519→    transactions.push(txn);
+   520→  }
+   521→  report.transactions.migrated = transactions.length;
+   522→  if (report.transactions.skippedTransfer > 0) {
+   523→    report.notes.push(`${report.transactions.skippedTransfer} transaksi bertipe "transfer" dilewati (tidak ada skema transfer antar-dompet di V2 — gunakan modul finance.transfers secara terpisah).`);
+   524→  }
+   525→
+   526→  // --- Fund sources → wallets ---
+   527→  const legacyWallets = asArray<LegacyFundSource>(data.fundSources);
+   528→  report.fundSources.total = legacyWallets.length;
+   529→  const wallets: Wallet[] = legacyWallets
+   530→    .filter((w): w is LegacyFundSource => Boolean(w && typeof w.id === "string" && typeof w.name === "string"))
+   531→    .map((w) => ({
+   532→      id: w.id,
+   533→      name: w.name,
+   534→      type: (w.type === "ewallet" ? "e-wallet" : (w.type || "other")) as Wallet["type"],
+   535→      openingBalance: typeof w.initialBalance === "number" ? w.initialBalance : 0,
+   536→    }));
+   537→  report.fundSources.migrated = wallets.length;
+   538→
+   539→  // --- Weekly budgets ---
+   540→  const legacyWeekly = asArray(data.weeklyBudgets);
+   541→  report.weeklyBudgets.total = legacyWeekly.length;
+   542→  const weeklyBudgets: WeeklyBudget[] = legacyWeekly
+   543→    .filter((w): w is LegacyWeeklyBudget => Boolean(w && typeof w.category === "string" && typeof w.amount === "number"))
+   544→    .map((w) => ({ category: mapTransactionCategory(w.category), limit: w.amount }));
+   545→  report.weeklyBudgets.migrated = weeklyBudgets.length;
+   546→
+   547→  // V2 juga punya `budgets` (workspace) untuk limit bulanan. V1 hanya punya
+   548→  // weeklyBudgets (dengan field `month`) yang dipetakan ke finance.weeklyBudgets.
+   549→  // Backup V1 tidak punya data budget bulanan, jadi workspace.budgets dibiarkan
+   550→  // kosong — user bisa menambahkannya sendiri lewat UI.
+   551→  const budgets: Budget[] = [];
+   552→
+   553→  // --- Daily logs → checkins + wellness ---
+   554→  const legacyDaily = asArray(data.dailyLogs);
+   555→  report.dailyLogs.total = legacyDaily.length;
+   556→  const checkins: DailyCheckin[] = [];
+   557→  const wellness: WellnessEntry[] = [];
+   558→  for (const log of legacyDaily) {
+   559→    if (!log || typeof log.date !== "string") continue;
+   560→    const date = toISODate(log.date);
+   561→    if (!date) continue;
+   562→    checkins.push({
+   563→      date,
+   564→      mood: typeof log.mood === "number" ? log.mood : 3,
+   565→      energy: typeof log.energy === "number" ? log.energy : 3,
+   566→      sleepHours: typeof log.sleep === "number" ? log.sleep : 0,
+   567→      notes: log.notes || "",
+   568→    });
+   569→    if (log.waterGlasses != null || log.proteinGram != null || log.weightKg != null) {
+   570→      wellness.push({
+   571→        date,
+   572→        waterMl: typeof log.waterGlasses === "number" ? log.waterGlasses * 250 : 0,
+   573→        proteinGrams: typeof log.proteinGram === "number" ? log.proteinGram : 0,
+   574→        weightKg: typeof log.weightKg === "number" ? log.weightKg : null,
+   575→        note: log.notes || "",
+   576→      });
+   577→    }
+   578→  }
+   579→  report.dailyLogs.toCheckins = checkins.length;
+   580→  report.dailyLogs.toWellness = wellness.length;
+   581→
+   582→  // --- Work routines ---
+   583→  const legacyRoutines = asArray(data.workRoutines);
+   584→  report.workRoutines.total = legacyRoutines.length;
+   585→  const routineLogMap = new Map<string, string>(); // routineId → lastDone (ISO date)
+   586→  for (const log of asArray(data.workRoutineLogs)) {
+   587→    if (!log || typeof log.routineId !== "string") continue;
+   588→    if (!log.done) continue;
+   589→    const dayKey = typeof log.dayKey === "string" ? toISODate(log.dayKey) : "";
+   590→    if (!dayKey) continue;
+   591→    const existing = routineLogMap.get(log.routineId);
+   592→    if (!existing || dayKey > existing) routineLogMap.set(log.routineId, dayKey);
+   593→  }
+   594→  const routines: WorkRoutine[] = legacyRoutines
+   595→    .filter((r): r is LegacyWorkRoutine => Boolean(r && typeof r.id === "string" && typeof r.title === "string"))
+   596→    .map((r) => ({
+   597→      id: r.id,
+   598→      title: r.title,
+   599→      description: r.timeOfDay ? `Waktu: ${r.timeOfDay}` : "",
+   600→      frequency: r.timeOfDay || "daily",
+   601→      lastDone: routineLogMap.get(r.id) || "",
+   602→    }));
+   603→  report.workRoutines.migrated = routines.length;
+   604→
+   605→  // --- Work tasks ---
+   606→  const legacyTasks = asArray(data.workTasks);
+   607→  report.workTasks.total = legacyTasks.length;
+   608→  const tasks: WorkTask[] = legacyTasks
+   609→    .filter((t): t is LegacyWorkTask => Boolean(t && typeof t.id === "string" && typeof t.title === "string"))
+   610→    .map((t) => {
+   611→      const rawStatus = (t.status || "").toLowerCase();
+   612→      let status: WorkTask["status"] = "todo";
+   613→      if (rawStatus === "selesai" || rawStatus === "done" || t.completedAt) status = "done";
+   614→      else if (rawStatus === "doing" || rawStatus === "proses" || rawStatus === "in-progress") status = "doing";
+   615→      return {
+   616→        id: t.id,
+   617→        title: t.title,
+   618→        description: t.notes || "",
+   619→        priority: "medium",
+   620→        status,
+   621→        dueDate: t.dueAt ? toISODate(t.dueAt) : (t.dayKey ? toISODate(t.dayKey) : ""),
+   622→        createdAt: t.createdAt ? toISODate(t.createdAt) : "",
+   623→      };
+   624→    });
+   625→  report.workTasks.migrated = tasks.length;
+   626→
+   627→  // --- Work notes ---
+   628→  const legacyNotes = asArray(data.workNotes);
+   629→  report.workNotes.total = legacyNotes.length;
+   630→  const notes: WorkNote[] = legacyNotes
+   631→    .filter((n): n is LegacyWorkNote => Boolean(n && typeof n.id === "string" && typeof n.content === "string"))
+   632→    .map((n) => {
+   633→      const content = n.content || "";
+   634→      // Pisahkan baris pertama sebagai title, sisanya sebagai body.
+   635→      const lines = content.split("\n");
+   636→      const title = lines[0]?.trim().slice(0, 80) || "Catatan";
+   637→      const body = content;
+   638→      const tags: string[] = [];
+   639→      if (n.tag) tags.push(n.tag);
+   640→      return {
+   641→        id: n.id,
+   642→        title,
+   643→        body,
+   644→        tags,
+   645→        updatedAt: n.updatedAt ? toISODate(n.updatedAt) : "",
+   646→      };
+   647→    });
+   648→  report.workNotes.migrated = notes.length;
+   649→
+   650→  // --- Goals (V1 kosong di backup ini) ---
+   651→  report.goals.total = asArray(data.goals).length;
+   652→  report.goals.migrated = 0;
+   653→
+   654→  // --- Savings goals / recurring / category rules (V1 kosong) ---
+   655→  report.savingsGoals.total = asArray(data.savingsGoals).length;
+   656→  report.recurring.total = asArray(data.recurringTransactions).length;
+   657→  report.categoryRules.total = asArray(data.transactionRules).length;
+   658→
+   659→  // --- Settings ---
+   660→  const legacySettings = data.appSettings as LegacyAppSettings | undefined;
+   661→  const settings = {
+   662→    vacationMode: false,
+   663→    theme: (legacySettings && legacySettings.theme === "dark") ? "dark" as const
+   664→      : (legacySettings && legacySettings.theme === "light") ? "light" as const
+   665→      : "system" as const,
+   666→  };
+   667→  report.settings.migrated = true;
+   668→  if (legacySettings?.userName) report.settings.userName = legacySettings.userName;
+   669→  if (legacySettings?.theme) report.settings.theme = legacySettings.theme;
+   670→  if (legacySettings?.userName && legacySettings.userName !== "Ananda Tegar C.S") {
+   671→    // noop — hanya catatan, tidak ada field di V2
+   672→  }
+   673→
+   674→  const modules: WorkspaceModules = {
+   675→    ...EMPTY_MODULES,
+   676→    goals: [],
+   677→    checkins,
+   678→    tasks,
+   679→    notes,
+   680→    routines,
+   681→    wellness,
+   682→    workouts: [],
+   683→    programs: [],
+   684→    progressPhotos: [],
+   685→    habitGroups,
+   686→    settings,
+   687→    finance: {
+   688→      wallets,
+   689→      transfers: [],
+   690→      recurring: [],
+   691→      savingsGoals: [],
+   692→      categoryRules: [],
+   693→      weeklyBudgets,
+   694→    },
+   695→  };
+   696→  // Pastikan bentuk modules tetap valid walau ada field aneh dari V1.
+   697→  const normalizedModules = normalizeModules(modules);
+   698→
+   699→  return {
+   700→    workspace: { habits, transactions, budgets },
+   701→    modules: normalizedModules,
+   702→    habitCheckins,
+   703→    report,
+   704→  };
+   705→}
+   706→
+   707→// ============================================================================
+   708→// Shared DB write logic — dipakai /api/migrate-legacy DAN /api/backup (auto-route)
+   709→// ============================================================================
+   710→
+   711→function mergeByKey<T>(current: T[], incoming: T[], keyOf: (item: T) => string): T[] {
+   712→  const values = new Map<string, T>();
+   713→  for (const item of current) values.set(keyOf(item), item);
+   714→  for (const item of incoming) values.set(keyOf(item), item);
+   715→  return [...values.values()];
+   716→}
+   717→
+   718→async function readModules(): Promise<WorkspaceModules> {
+   719→  const rows = await db.$queryRaw<Array<{ module_key: string; payload: string }>>`SELECT module_key, payload FROM workspace_modules`;
+   720→  const value: Record<string, unknown> = { ...EMPTY_MODULES };
+   721→  for (const row of rows) {
+   722→    try { value[String(row.module_key)] = JSON.parse(String(row.payload)); } catch { /* ignore one malformed module */ }
+   723→  }
+   724→  return normalizeModules(value);
+   725→}
+   726→
+   727→function mergeModules(current: WorkspaceModules, incoming: WorkspaceModules): WorkspaceModules {
+   728→  return {
+   729→    goals: mergeByKey(current.goals, incoming.goals, (item) => item.id),
+   730→    checkins: mergeByKey(current.checkins, incoming.checkins, (item) => item.date),
+   731→    tasks: mergeByKey(current.tasks, incoming.tasks, (item) => item.id),
+   732→    notes: mergeByKey(current.notes, incoming.notes, (item) => item.id),
+   733→    routines: mergeByKey(current.routines, incoming.routines, (item) => item.id),
+   734→    wellness: mergeByKey(current.wellness, incoming.wellness, (item) => item.date),
+   735→    workouts: mergeByKey(current.workouts, incoming.workouts, (item) => item.id),
+   736→    programs: mergeByKey(current.programs, incoming.programs, (item) => item.id),
+   737→    progressPhotos: mergeByKey(current.progressPhotos, incoming.progressPhotos, (item) => item.id).slice(0, 5),
+   738→    habitGroups: mergeByKey(current.habitGroups, incoming.habitGroups, (item) => item.id),
+   739→    settings: incoming.settings ?? current.settings,
+   740→    finance: {
+   741→      wallets: mergeByKey(current.finance.wallets, incoming.finance.wallets, (item) => item.id),
+   742→      transfers: mergeByKey(current.finance.transfers, incoming.finance.transfers, (item) => item.id),
+   743→      recurring: mergeByKey(current.finance.recurring, incoming.finance.recurring, (item) => item.id),
+   744→      savingsGoals: mergeByKey(current.finance.savingsGoals, incoming.finance.savingsGoals, (item) => item.id),
+   745→      categoryRules: mergeByKey(current.finance.categoryRules, incoming.finance.categoryRules, (item) => item.id),
+   746→      weeklyBudgets: mergeByKey(current.finance.weeklyBudgets, incoming.finance.weeklyBudgets, (item) => item.category),
+   747→    },
+   748→  };
+   749→}
+   750→
+   751→export interface ApplyMigrationResult {
+   752→  ok: true;
+   753→  mode: "legacy-migration";
+   754→  report: MigrationReport;
+   755→  restored: Record<string, number>;
+   756→}
+   757→
+   758→/**
+   759→ * Jalankan migrasi V1 → V2: insert check-in historis, gabungkan workspace,
+   760→ * gabungkan & simpan modul. Dipakai bersama oleh endpoint /api/migrate-legacy
+   761→ * dan /api/backup (auto-route file V1).
+   762→ *
+   763→ * Fungsi ini TIDAK membungkus error — pemanggil bertanggung jawab try/catch.
+   764→ */
+   765→export async function applyLegacyMigration(body: unknown, todayISO: string): Promise<ApplyMigrationResult> {
+   766→  const migration = migrateLegacyBackup(body, todayISO);
+   767→  const { workspace, modules: incomingModules, habitCheckins, report } = migration;
+   768→
+   769→  // 1. Insert historical habit check-ins SEBELUM writeWorkspace.
+   770→  //    writeWorkspace akan menghapus check-in HARI INI lalu menyisipkan ulang
+   771→  //    berdasarkan flag `completed` pada habit — check-in tanggal lain tidak
+   772→  //    tersentuh, jadi riwayat streak tetap utuh. Dikirim via batch (satu
+   773→  //    round-trip) supaya migrasi ke Turso remote cepat.
+   774→  if (habitCheckins.length > 0) {
+   775→    await dbBatch(habitCheckins.map((checkin) => ({
+   776→      sql: "INSERT OR IGNORE INTO habit_checkins (habit_id, completed_on) VALUES (?, ?)",
+   777→      args: [checkin.habitId, checkin.completedOn],
+   778→    })));
+   779→  }
+   780→
+   781→  // 2. Gabungkan workspace (habits/transactions/budgets) dengan data yang ada.
+   782→  const currentWorkspace = await readWorkspace(todayISO);
+   783→  const mergedWorkspace = {
+   784→    habits: mergeByKey(currentWorkspace.habits, workspace.habits, (item) => item.id),
+   785→    transactions: mergeByKey(currentWorkspace.transactions, workspace.transactions, (item) => item.id),
+   786→    budgets: mergeByKey(currentWorkspace.budgets, workspace.budgets, (item) => item.category),
+   787→  };
+   788→  await writeWorkspace(mergedWorkspace, todayISO);
+   789→
+   790→  // 3. Gabungkan & simpan modul (goals/checkins/tasks/notes/routines/wellness/finance).
+   791→  //    Semua modul ditulis dalam satu batch (satu round-trip ke Turso).
+   792→  const currentModules = await readModules();
+   793→  const mergedModules = mergeModules(currentModules, incomingModules);
+   794→  const moduleStatements: BatchStatement[] = Object.entries(mergedModules).map(([key, value]) => ({
+   795→    sql: `INSERT INTO workspace_modules (module_key, payload, updated_at)
+   796→          VALUES (?, ?, CURRENT_TIMESTAMP)
+   797→          ON CONFLICT(module_key) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP`,
+   798→    args: [key, JSON.stringify(value)],
+   799→  }));
+   800→  if (moduleStatements.length > 0) await dbBatch(moduleStatements);
+   801→
+   802→  return {
+   803→    ok: true,
+   804→    mode: "legacy-migration",
+   805→    report,
+   806→    restored: {
+   807→      habits: workspace.habits.length,
+   808→      transactions: workspace.transactions.length,
+   809→      budgets: workspace.budgets.length,
+   810→      habitCheckins: habitCheckins.length,
+   811→      goals: incomingModules.goals.length,
+   812→      checkins: incomingModules.checkins.length,
+   813→      tasks: incomingModules.tasks.length,
+   814→      notes: incomingModules.notes.length,
+   815→      routines: incomingModules.routines.length,
+   816→      wellness: incomingModules.wellness.length,
+   817→      workouts: incomingModules.workouts.length,
+   818→      habitGroups: incomingModules.habitGroups.length,
+   819→      financeWallets: incomingModules.finance.wallets.length,
+   820→      financeWeeklyBudgets: incomingModules.finance.weeklyBudgets.length,
+   821→    },
+   822→  };
+   823→}
+   824→
