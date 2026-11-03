@@ -106,13 +106,15 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   const weeklyMax = Math.max(1, ...weekly.days.map((day) => day.completed));
   const dailyEncouragement = vacationMode
     ? "Hari ini kamu boleh mengambil jeda. Rutinitasmu tetap ada saat kamu siap kembali."
-    : habits.length === 0
+    : totalHabits === 0
       ? "Mulai dari satu hal sederhana yang ingin kamu rawat hari ini."
-      : completed === habits.length
-        ? "Semua langkah terjadwal sudah kamu rawat. Sisakan ruang untuk menikmati harimu."
-        : completed > 0
-          ? `${completed} langkah sudah kamu lakukan. Pilih satu hal kecil berikutnya, sesuai ritmemu.`
-          : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
+      : habits.length === 0
+        ? "Tidak ada kebiasaan terjadwal hari ini. Gunakan ruang ini untuk hal lain yang penting bagimu."
+        : completed === habits.length
+          ? "Semua langkah terjadwal sudah kamu rawat. Sisakan ruang untuk menikmati harimu."
+          : completed > 0
+            ? `${completed} langkah sudah kamu lakukan. Pilih satu hal kecil berikutnya, sesuai ritmemu.`
+            : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
 
   return (
     <div className="botanical-dashboard-page">
