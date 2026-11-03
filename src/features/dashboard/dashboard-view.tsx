@@ -70,9 +70,9 @@ function weekdayLabel(date: string) {
   return new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${date}T12:00:00+07:00`));
 }
 
-export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onOpenFeatures, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin }: {
+export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin }: {
   habits: Habit[]; totalHabits: number; income: number; expense: number; onNavigate: (tab: TabId) => void;
-  onToggle: (id: string) => void; onAddHabit: () => void; onOpenFeatures: () => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; activeTimerId?: string | null; timerElapsedSeconds?: number; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
+  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; activeTimerId?: string | null; timerElapsedSeconds?: number; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
 }) {
   const now = new Date();
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
@@ -227,7 +227,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
                 <span className={"weekly-comparison " + (weekly.change > 0 ? "positive" : weekly.change < 0 ? "negative" : "")}>
                   {weekly.change > 0 ? weekly.change + " penyelesaian lebih banyak dari 7 hari sebelumnya" : weekly.change < 0 ? Math.abs(weekly.change) + " penyelesaian lebih sedikit dari 7 hari sebelumnya" : "Sama dengan 7 hari sebelumnya"}
                 </span>
-                <button className="weekly-add-action" type="button" onClick={onOpenFeatures}><Plus size={14} /> Tambah Aktivitas</button>
+                <button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button>
               </div>
             </>
           ) : (
