@@ -2055,3 +2055,35 @@ html[data-theme="dark"] .tree-detail-cta { color: #fff; }
   .insight-period-tabs button { padding: 0 8px; }
   .insight-trend-chart { gap: 4px; }
 }
+
+
+/* Keep the Dashboard's primary message visible on compact phones.
+   The previous mobile override hid .hero-copy entirely, leaving the top
+   of the home screen visually empty above the progress card. */
+@media (max-width: 430px) {
+  .botanical-dashboard-page .botanical-hero .hero-copy {
+    display: block;
+    position: relative;
+    z-index: 2;
+    max-width: 64%;
+    padding-bottom: 0;
+  }
+
+  .botanical-dashboard-page .botanical-hero .hero-title {
+    margin: 8px 0 5px;
+    font-size: clamp(19px, 5.2vw, 22px);
+    line-height: 1.18;
+  }
+
+  .botanical-dashboard-page .botanical-hero .hero-description {
+    font-size: 9px;
+  }
+
+  .botanical-dashboard-page .botanical-hero::after {
+    right: -7%;
+    bottom: 52px;
+    width: 68%;
+    height: 72%;
+    opacity: .68;
+  }
+}
