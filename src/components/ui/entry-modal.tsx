@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import { Check, X } from "lucide-react";
-import type { TransactionCategory } from "@/lib/types";
+import { DEFAULT_TRANSACTION_CATEGORIES } from "@/lib/types";
 import type { Wallet, HabitGroup } from "@/lib/module-types";
 import { todayISO } from "@/lib/format";
 import { IconAction, PrimaryButton } from "@/components/ui/primitives";
 
-const categories: TransactionCategory[] = [
-  "Gaji", "Freelance", "Makanan", "Transportasi", "Tagihan", "Lifestyle", "Kesehatan", "Lainnya",
-];
+interface RemoteCategory {
+  id: string;
+  name: string;
+  emoji: string;
+  color: string;
+  type: "expense" | "income";
+  sortOrder: number;
+}
 
 export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] }: {
   mode: "habit" | "transaction";
@@ -22,6 +27,45 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
   const isHabit = mode === "habit";
   const dialogRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
+
+  // Kategori keuangan custom dari Turso (tabel finance_categories).
+  // Hanya di-fetch saat mode transaksi (tidak perlu untuk habit). Fallback ke
+  // 8 enum bawaan bila fetch gagal — dropdown tetap bisa dipakai.
+  const [remoteCategories, setRemoteCategories] = useState<RemoteCategory[]>([]);
+  const [txnType, setTxnType] = useState<"expense" | "income">("expense");
+
+  useEffect(() => {
+    if (isHabit) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/finance-categories", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { categories?: RemoteCategory[] };
+        if (!cancelled && Array.isArray(data.categories)) {
+          setRemoteCategories(data.categories);
+        }
+      } catch {
+        // fallback ke default categories (sudah jadi state awal kosong → di-merge di bawah)
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [isHabit]);
+
+  const categoryOptions = useMemo<{ value: string; label: string }[]>(() => {
+    if (remoteCategories.length === 0) {
+      return DEFAULT_TRANSACTION_CATEGORIES.map((name) => ({ value: name, label: name }));
+    }
+    return remoteCategories
+      .filter((cat) => cat.type === txnType)
+      .map((cat) => ({
+        value: cat.name,
+        label: cat.emoji ? `${cat.emoji} ${cat.name}` : cat.name,
+      }));
+  }, [remoteCategories, txnType]);
+
+  // Default value kategori: pilih opsi pertama yang valid untuk tipe aktif.
+  const defaultCategory = categoryOptions[0]?.value ?? "Makanan";
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -113,8 +157,8 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
               <div className="form-field">
                 <span className="form-label">Jenis transaksi</span>
                 <div className="transaction-type-control">
-                  <label><input type="radio" name="type" value="expense" defaultChecked /><span><X size={14} /> Pengeluaran</span></label>
-                  <label><input type="radio" name="type" value="income" /><span><Check size={14} /> Pemasukan</span></label>
+                  <label><input type="radio" name="type" value="expense" defaultChecked onChange={(e) => { if (e.target.checked) setTxnType("expense"); }} /><span><X size={14} /> Pengeluaran</span></label>
+                  <label><input type="radio" name="type" value="income" onChange={(e) => { if (e.target.checked) setTxnType("income"); }} /><span><Check size={14} /> Pemasukan</span></label>
                 </div>
               </div>
               <label className="form-field">
@@ -128,8 +172,8 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
               <div className="form-two-columns">
                 <label className="form-field">
                   <span className="form-label">Kategori</span>
-                  <select className="form-control" name="category" defaultValue="Makanan">
-                    {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+                  <select key={`${defaultCategory}-${txnType}`} className="form-control" name="category" defaultValue={defaultCategory}>
+                    {categoryOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                   </select>
                 </label>
                 <label className="form-field">
