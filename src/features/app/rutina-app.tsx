@@ -127,6 +127,20 @@ export function RutinaApp() {
     return () => window.removeEventListener("rutina:sync-failed", onSyncFailed);
   }, []);
 
+  // Kanal toast generik untuk tampilan modul (mis. konfirmasi check-in) —
+  // mengikuti pola rutina:sync-failed (audit v0.4.1: simpan check-in dulu
+  // tanpa umpan balik apa pun).
+  useEffect(() => {
+    const onAppToast = (event: Event) => {
+      const detail = (event as CustomEvent<{ message?: string; tone?: "info" | "error" }>).detail;
+      if (detail && typeof detail.message === "string" && detail.message) {
+        setToast({ message: detail.message, tone: detail.tone === "error" ? "error" : "info" });
+      }
+    };
+    window.addEventListener("rutina:toast", onAppToast);
+    return () => window.removeEventListener("rutina:toast", onAppToast);
+  }, []);
+
   // Deteksi online/offline — pengguna tidak perlu menebak dari badge kecil.
   useEffect(() => {
     const onOffline = () => setToast({ message: "Kamu sedang offline — perubahan disimpan di perangkat.", tone: "error" });

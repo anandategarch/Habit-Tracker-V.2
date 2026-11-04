@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState, type CSSProperties } from "react";
-import { ListChecks, ListFilter, Plus, RefreshCw, Search, Sparkles } from "lucide-react";
+import { useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { GripVertical, ListChecks, ListFilter, Plus, RefreshCw, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { HabitGroup } from "@/lib/module-types";
 import { summarizeHabits } from "@/lib/habits";
@@ -16,7 +16,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
   const [completionFilter, setCompletionFilter] = useState<CompletionFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
   const [query, setQuery] = useState("");
-  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragHint, setDragHint] = useState<{ id: string; from: number; to: number; height: number } | null>(null);
   const [showAllSchedules, setShowAllSchedules] = useState(false);
   const [groupFilter, setGroupFilter] = useState("all");
   const [groupNameInput, setGroupNameInput] = useState("");
@@ -49,18 +49,35 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
     setTimeAnalysisLoading(true);
     setTimeAnalysisError("");
     setTimeAnalysis(null);
+    // Timeout 10 detik + abort (pola use-modules/use-workspace): permintaan
+    // yang menggantung di jaringan lambat tidak boleh menyandera skeleton
+    // selamanya tanpa tombol batal yang bisa dicapai (audit v0.4.1).
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 10_000);
     try {
-      const response = await fetch(`/api/habits/${encodeURIComponent(habitId)}/time-analysis?days=${days}`, { cache: "no-store" });
+      const response = await fetch(`/api/habits/${encodeURIComponent(habitId)}/time-analysis?days=${days}`, { cache: "no-store", signal: controller.signal });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "Gagal memuat analisis waktu.");
       if (requestId === timeAnalysisRequestId.current) setTimeAnalysis(payload);
     } catch (error) {
       if (requestId === timeAnalysisRequestId.current) {
-        setTimeAnalysisError(error instanceof Error ? error.message : "Gagal memuat analisis waktu.");
+        const aborted = error instanceof DOMException && (error.name === "AbortError" || error.name === "TimeoutError");
+        setTimeAnalysisError(aborted
+          ? "Permintaan terlalu lama — periksa koneksi lalu coba lagi."
+          : error instanceof Error ? error.message : "Gagal memuat analisis waktu.");
       }
     } finally {
+      window.clearTimeout(timeoutId);
       if (requestId === timeAnalysisRequestId.current) setTimeAnalysisLoading(false);
     }
+  }
+
+  function cancelTimeAnalysis() {
+    // Batalkan permintaan berjalan: invalidasi id-nya agar respons terlambat diabaikan.
+    timeAnalysisRequestId.current += 1;
+    setTimeAnalysisLoading(false);
+    setTimeAnalysisError("");
+    setTimeAnalysisRequest(null);
   }
   const scheduledHabits = showAllSchedules ? habits : habits.filter((habit) => isScheduledOn(habit.schedule, today));
   const { completed, total, progress, longestStreak } = summarizeHabits(scheduledHabits);
@@ -73,6 +90,106 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
       .filter((habit) => groupFilter === "all" || habit.groupName === groupFilter)
       .filter((habit) => !normalizedQuery || `${habit.title} ${habit.category} ${habit.groupName ?? ""}`.toLocaleLowerCase("id-ID").includes(normalizedQuery));
   }, [scheduledHabits, completionFilter, categoryFilter, groupFilter, query]);
+
+  // ── Ubah urutan habit: seret lewat pegangan (grip) — berbasis Pointer
+  // Events agar bekerja di SENTUH (telepon) maupun mouse. HTML5 drag-and-drop
+  // lama tidak pernah menyala di iOS/Android (audit v0.4.1). ──
+  const rowRefs = useRef(new Map<string, HTMLDivElement>());
+  const dragState = useRef<{ id: string; pointerId: number; startY: number; from: number; to: number; rowHeight: number; lastY: number; raf: number } | null>(null);
+  const visibleIds = useMemo(() => filteredHabits.map((habit) => habit.id), [filteredHabits]);
+
+  function updateDragTarget(state: NonNullable<typeof dragState.current>) {
+    // Indeks penyisipan (0..n-1) pada daftar-tampak TANPA baris terseret:
+    // hitung baris lain yang titik tengahnya di atas jari/kursor.
+    let to = 0;
+    for (const [rowId, row] of rowRefs.current) {
+      if (rowId === state.id) continue;
+      const rect = row.getBoundingClientRect();
+      if (state.lastY > rect.top + rect.height / 2) to += 1;
+    }
+    const clamped = Math.max(0, Math.min(visibleIds.length - 1, to));
+    if (clamped !== state.to) {
+      state.to = clamped;
+      setDragHint({ id: state.id, from: state.from, to: clamped, height: state.rowHeight });
+    }
+  }
+
+  function beginHabitDrag(event: ReactPointerEvent<HTMLButtonElement>, id: string) {
+    if (!onReorder || event.button !== 0) return;
+    const from = visibleIds.indexOf(id);
+    if (from < 0) return;
+    const row = rowRefs.current.get(id);
+    const rowHeight = row?.getBoundingClientRect().height ?? 64;
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* pointer sudah dilepas */ }
+    dragState.current = { id, pointerId: event.pointerId, startY: event.clientY, from, to: from, rowHeight, lastY: event.clientY, raf: 0 };
+    setDragHint({ id, from, to: from, height: rowHeight });
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") navigator.vibrate(8);
+  }
+
+  function moveHabitDrag(event: ReactPointerEvent<HTMLButtonElement>) {
+    const state = dragState.current;
+    if (!state || state.pointerId !== event.pointerId) return;
+    state.lastY = event.clientY;
+    const row = rowRefs.current.get(state.id);
+    if (row) row.style.transform = `translateY(${Math.round(event.clientY - state.startY)}px)`;
+    // Gulir otomatis saat menyeret mendekati tepi layar (daftar panjang).
+    const edge = 76;
+    const nearEdge = event.clientY < edge || event.clientY > window.innerHeight - edge;
+    if (nearEdge && !state.raf) {
+      const step = () => {
+        const active = dragState.current;
+        if (!active || !active.raf) return;
+        window.scrollBy(0, active.lastY < edge ? -7 : 7);
+        updateDragTarget(active);
+        active.raf = window.requestAnimationFrame(step);
+      };
+      state.raf = window.requestAnimationFrame(step);
+    } else if (!nearEdge && state.raf) {
+      window.cancelAnimationFrame(state.raf);
+      state.raf = 0;
+    }
+    updateDragTarget(state);
+  }
+
+  function endHabitDrag(event: ReactPointerEvent<HTMLButtonElement>, commit: boolean) {
+    const state = dragState.current;
+    if (!state || state.pointerId !== event.pointerId) return;
+    if (state.raf) window.cancelAnimationFrame(state.raf);
+    // Posisi lepas jari bisa melompat dari pointermove terakhir — perbarui
+    // target sebelum memutuskan commit agar urutan mengikuti titik lepas.
+    state.lastY = event.clientY;
+    updateDragTarget(state);
+    dragState.current = null;
+    const row = rowRefs.current.get(state.id);
+    if (row) row.style.transform = "";
+    setDragHint(null);
+    if (!commit || !onReorder || state.to === state.from) return;
+    // Susun ulang daftar-tampak, lalu petakan kembali ke array habit penuh:
+    // urutan baru menempati "slot" posisi item-tampak (ascending) — habit
+    // yang tersembunyi oleh filter tetap menempel di posisinya.
+    const order = [...visibleIds];
+    order.splice(state.from, 1);
+    order.splice(state.to, 0, state.id);
+    const byId = new Map(habits.map((habit) => [habit.id, habit]));
+    const visibleSlots = visibleIds
+      .map((rowId) => habits.findIndex((habit) => habit.id === rowId))
+      .sort((a, b) => a - b);
+    if (visibleSlots.some((slot) => slot < 0) || visibleSlots.length !== order.length) return;
+    const next = [...habits];
+    order.forEach((rowId, index) => { next[visibleSlots[index]] = byId.get(rowId)!; });
+    onReorder(next);
+  }
+
+  function siblingShiftStyle(id: string): CSSProperties | undefined {
+    // Baris lain "membuat ruang": geser sejauh tinggi baris terseret.
+    if (!dragHint || dragHint.id === id) return undefined;
+    const j = visibleIds.indexOf(id);
+    if (j < 0) return undefined;
+    const i = j < dragHint.from ? j : j - 1;
+    if (dragHint.from <= i && i < dragHint.to) return { transform: `translateY(-${dragHint.height}px)` };
+    if (dragHint.to <= i && i < dragHint.from) return { transform: `translateY(${dragHint.height}px)` };
+    return undefined;
+  }
 
   return (
     <div className="habit-page">
@@ -148,10 +265,41 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
           ))}
         </div>
         {timeAnalysis && <section className="time-analysis-card"><div className="time-analysis-head"><div><strong>Analisis waktu · {timeAnalysis.habit.title}</strong><small>{timeAnalysis.summary.totalMinutes} menit · {timeAnalysis.summary.activeDays} hari aktif · rata-rata {timeAnalysis.summary.averageMinutes} menit/hari aktif</small></div><button type="button" onClick={() => setTimeAnalysis(null)} aria-label="Tutup analisis waktu">×</button></div><select className="group-filter-select" value={timeAnalysisDays} onChange={(event) => { const days = Number(event.target.value); setTimeAnalysisDays(days); void loadTimeAnalysis(timeAnalysis.habit.id, days); }} aria-label="Rentang analisis waktu"><option value={7}>7 hari</option><option value={30}>30 hari</option><option value={90}>90 hari</option></select><div className="time-analysis-chart">{timeAnalysis.byDay.map((day) => { const max = Math.max(1, ...timeAnalysis.byDay.map((item) => item.minutes)); return <div className="time-analysis-column" key={day.date} title={`${day.date}: ${day.minutes} menit`}><strong>{day.minutes ? `${day.minutes}m` : "—"}</strong><div><span style={{ height: `${day.minutes ? Math.max(4, day.minutes / max * 100) : 0}%` }} /></div><small>{day.date.slice(8, 10)}</small></div>; })}</div></section>}
-        {timeAnalysisLoading && <div className="time-analysis-loading" role="status" aria-live="polite" aria-busy="true"><span className="skeleton-shimmer time-analysis-skeleton-heading" /><div className="time-analysis-skeleton-bars" aria-hidden="true">{Array.from({ length: 7 }, (_, index) => <span className="skeleton-shimmer" key={index} />)}</div><span className="time-analysis-loading-label">Memuat analisis waktu…</span></div>}
+        {timeAnalysisLoading && <div className="time-analysis-loading" role="status" aria-live="polite" aria-busy="true"><span className="skeleton-shimmer time-analysis-skeleton-heading" /><div className="time-analysis-skeleton-bars" aria-hidden="true">{Array.from({ length: 7 }, (_, index) => <span className="skeleton-shimmer" key={index} />)}</div><span className="time-analysis-loading-label">Memuat analisis waktu…</span><button type="button" className="secondary-button time-analysis-cancel" onClick={cancelTimeAnalysis}>Batal</button></div>}
         {timeAnalysisError && <div className="time-analysis-error backup-message is-error" role="alert"><span>{timeAnalysisError}</span><button type="button" className="insight-retry-button" disabled={timeAnalysisLoading || !timeAnalysisRequest} onClick={() => { if (timeAnalysisRequest) void loadTimeAnalysis(timeAnalysisRequest.habitId, timeAnalysisRequest.days); }}><RefreshCw size={13} /> Coba lagi</button></div>}
         <div className="habit-list">
-          {filteredHabits.map((habit) => <div key={habit.id} className={`habit-draggable ${draggedId === habit.id ? "is-dragging" : ""}`} draggable onDragStart={() => setDraggedId(habit.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (!draggedId || draggedId === habit.id || !onReorder) return; const next = [...habits]; const from = next.findIndex((item) => item.id === draggedId); const to = next.findIndex((item) => item.id === habit.id); if (from < 0 || to < 0) return; const [moved] = next.splice(from, 1); next.splice(to, 0, moved); onReorder(next); setDraggedId(null); }}><HabitRow habit={habit} onToggle={onToggle} onAdjust={onAdjust} onTimerToggle={onTimerToggle} onViewTimeAnalysis={loadTimeAnalysis} timerActive={activeTimerId === habit.id} timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0} paused={vacationMode} /></div>)}
+          {filteredHabits.map((habit) => (
+            <div
+              key={habit.id}
+              ref={(element) => { if (element) rowRefs.current.set(habit.id, element); else rowRefs.current.delete(habit.id); }}
+              className={`habit-draggable${dragHint?.id === habit.id ? " is-pointer-dragging" : ""}`}
+              style={siblingShiftStyle(habit.id)}
+            >
+              <HabitRow
+                habit={habit}
+                onToggle={onToggle}
+                onAdjust={onAdjust}
+                onTimerToggle={onTimerToggle}
+                onViewTimeAnalysis={loadTimeAnalysis}
+                timerActive={activeTimerId === habit.id}
+                timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0}
+                paused={vacationMode}
+                dragHandle={onReorder ? (
+                  <button
+                    type="button"
+                    className="habit-drag-handle"
+                    aria-label={`Ubah urutan ${habit.title}`}
+                    onPointerDown={(event) => beginHabitDrag(event, habit.id)}
+                    onPointerMove={moveHabitDrag}
+                    onPointerUp={(event) => endHabitDrag(event, true)}
+                    onPointerCancel={(event) => endHabitDrag(event, false)}
+                  >
+                    <GripVertical size={16} />
+                  </button>
+                ) : undefined}
+              />
+            </div>
+          ))}
         </div>
         {filteredHabits.length === 0 && (
           <EmptyState

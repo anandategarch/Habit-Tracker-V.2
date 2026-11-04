@@ -21,7 +21,7 @@ export interface FinanceExtras {
   savingsGoals: SavingsGoal[]; categoryRules: CategoryRule[]; weeklyBudgets: WeeklyBudget[];
 }
 export interface HabitGroup { id: string; name: string; color: string }
-export interface WorkspaceSettings { vacationMode: boolean; theme: "system" | "light" | "dark" }
+export interface WorkspaceSettings { vacationMode: boolean; theme: "system" | "light" | "dark"; updatedAt?: number }
 
 export interface WorkspaceModules {
   goals: Goal[]; checkins: DailyCheckin[]; tasks: WorkTask[]; notes: WorkNote[];
@@ -55,7 +55,15 @@ export function normalizeModules(value: unknown): WorkspaceModules {
     programs: Array.isArray(record.programs) ? record.programs : [],
     progressPhotos: Array.isArray(record.progressPhotos) ? record.progressPhotos : [],
     habitGroups: Array.isArray(record.habitGroups) ? record.habitGroups.filter((item): item is HabitGroup => Boolean(item && typeof item === "object" && typeof (item as HabitGroup).id === "string" && typeof (item as HabitGroup).name === "string" && typeof (item as HabitGroup).color === "string")) : [],
-    settings: record.settings && typeof record.settings === "object" ? { vacationMode: Boolean((record.settings as Partial<WorkspaceSettings>).vacationMode), theme: ["system", "light", "dark"].includes(String((record.settings as Partial<WorkspaceSettings>).theme)) ? (record.settings as WorkspaceSettings).theme : "system" } : { vacationMode: false, theme: "system" },
+    settings: record.settings && typeof record.settings === "object"
+      ? {
+          vacationMode: Boolean((record.settings as Partial<WorkspaceSettings>).vacationMode),
+          theme: ["system", "light", "dark"].includes(String((record.settings as Partial<WorkspaceSettings>).theme)) ? (record.settings as WorkspaceSettings).theme : "system",
+          // Stempel waktu penulisan terakhir (last-write-wins saat merge).
+          // Data lama tanpa stempel dianggap lebih tua dari data bertstempel.
+          updatedAt: Number.isFinite((record.settings as Partial<WorkspaceSettings>).updatedAt) ? (record.settings as WorkspaceSettings).updatedAt : undefined,
+        }
+      : { vacationMode: false, theme: "system" },
     finance: {
       wallets: Array.isArray(finance.wallets) ? finance.wallets : [],
       transfers: Array.isArray(finance.transfers) ? finance.transfers : [],

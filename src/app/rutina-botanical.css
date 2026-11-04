@@ -634,7 +634,36 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
   background: #fffdf9;
 }
 .time-analysis-card { border-color: #e9e0f4; border-radius: 18px; background: #faf7ff; }
-.habit-draggable[draggable="true"] { border-radius: 16px; }
+
+/* --- Seret urutan habit via pegangan (pointer events → sentuh + mouse).
+     HTML5 drag-and-drop lama tidak pernah menyala di iOS/Android. --- */
+.habit-draggable { transition: transform .18s ease; }
+.habit-draggable.is-pointer-dragging { position: relative; z-index: 6; transition: none; }
+.habit-draggable.is-pointer-dragging .habit-row {
+  border-color: #bfcfc2;
+  background: #fff;
+  box-shadow: 0 14px 30px rgba(47, 74, 55, .16);
+}
+.habit-drag-handle {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  width: 20px;
+  flex: none;
+  margin-right: -6px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #b6c2b4;
+  background: transparent;
+  cursor: grab;
+  touch-action: none; /* jari di grip = seret, bukan gulir */
+  -webkit-user-select: none;
+  user-select: none;
+}
+.habit-drag-handle:hover { color: #417a57; background: #eef4ec; }
+.habit-drag-handle:active { color: #2f5e40; cursor: grabbing; }
+.time-analysis-cancel { min-height: 40px; margin-top: 4px; }
 
 .finance-overview { grid-template-columns: minmax(0,1.25fr) repeat(2,minmax(0,.85fr)); gap: 12px; }
 .finance-balance { position: relative; overflow: hidden; min-height: 145px; padding: 22px; }
@@ -3693,10 +3722,18 @@ html[data-theme="dark"] .goal-card-icon {
   box-shadow: 0 6px 14px rgba(47, 98, 69, .28);
 }
 /* 1s. Hero dashboard (tab home) gradient VIOLET → botanical.
-    Judul #394637 di atas violet hanya 1.36:1 di light mode. */
+    Judul #394637 di atas violet hanya 1.36:1 di light mode.
+    Audit v0.4.1: gradasi hijau muda (#8fae80) + teks hijau gelap hanya
+    1.49:1 (link) / 1.61:1 (kicker) → gelapkan gradasi (pola sama dengan
+    finance-balance v0.4.0) + teks putih penuh agar lulus AA. */
 .app-shell[data-active-tab="home"] .hero-card {
-  background: radial-gradient(circle at 88% 12%, rgba(217, 232, 198, .28), transparent 27%), linear-gradient(120deg, #417a57, #5d9271 65%, #8fae80);
+  background: radial-gradient(circle at 88% 12%, rgba(217, 232, 198, .28), transparent 27%), linear-gradient(120deg, #2f5e40, #417a57 65%, #5d9271);
 }
+.app-shell[data-active-tab="home"] .hero-card .hero-kicker { color: #e3f1d8; }
+.app-shell[data-active-tab="home"] .hero-card .hero-title { color: #ffffff; }
+.app-shell[data-active-tab="home"] .hero-card .hero-description { color: rgba(255, 255, 255, .92); }
+.app-shell[data-active-tab="home"] .hero-card .garden-journey-link { color: #ffffff; }
+.app-shell[data-active-tab="home"] .hero-card .garden-journey-link:hover { color: #eef7e6; }
 /* 1t. Sisa violet di dark mode: module-tabs, settings-theme, workspace-menu */
 html[data-theme="dark"] .module-tabs button.active {
   color: #eaf4ea;
@@ -4289,7 +4326,7 @@ html[data-theme="dark"] .module-photo-grid figcaption button { color: #e79b8a; }
 }
 ::-webkit-scrollbar-track { background: transparent; }
 html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3c4f3d; }
-/* 9c. State drag habit (sebelumnya tidak ada feedback visual) */
+/* 9c. State drag habit (feedback visual saat seret lewat grip) */
 .habit-row.is-dragging {
   opacity: .55;
   border-style: dashed;
@@ -4522,11 +4559,17 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
 .module-check-row { min-height: 44px; padding: 10px 0; }
 .module-check-row input[type="checkbox"] { width: 22px; height: 22px; }
 
-/* ── M. Scrim aksi cepat FAB + landscape: panel tidak meluber ke atas ── */
+/* ── M. Scrim aksi cepat FAB + landscape: panel tidak meluber ke atas ──
+   PENTING: z-index scrim HARUS di bawah .bottom-nav (z-index:70).
+   Panel aksi cepat & tombol FAB bersarang DI DALAM nav — nav membentuk
+   stacking context sendiri, sehingga z-index:90 panel hanya berlaku
+   lokal. Dengan scrim 89 (> 70) seluruh nav tertutup scrim: FAB terlihat
+   "cuma blur" dan panel tak bisa disentuh. 69 < 70 → nav+FAB+panel
+   tampil di atas scrim, tap di luar tetap menutup. ── */
 .quick-action-scrim {
   position: fixed;
   inset: 0;
-  z-index: 89;
+  z-index: 69;
   display: block;
   width: 100%;
   height: 100%;
@@ -4583,3 +4626,116 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
 .site-footer a { display: inline-flex; align-items: center; min-height: 40px; padding: 6px 8px; }
 .module-tabs button { color: #5d6e60; }
 .insight-trend-legend small { font-size: 10px; color: #5d6e60; }
+
+/* ════════════════════════════════════════════════════════════════════
+   AUDIT MOBILE v0.4.1 — perbaikan lanjutan (pasca-audit 4 agen paralel).
+   Sumber: laporan agen A/B/C/D1/D2, fokus mobile 375×667.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── A. Petunjuk keyboard desktop (ESC, Ctrl/⌘+K) tidak bermakna di
+   ponsel → sembunyikan di layar kecil (audit A #4). ── */
+@media (max-width: 760px) {
+  .search-field kbd,
+  .search-footer kbd,
+  .search-trigger kbd { display: none !important; }
+}
+
+/* ── B. Tap target teks-link 36px → 40px (audit A #7). ── */
+.text-button.list-more,
+.finance-mini-link { min-height: 40px; }
+
+/* ── C. Chip filter kategori: chip terakhir terpotong 15px tanpa
+   affordance gulir → mask fade tepi (pola §O) + tinggi 40px (audit B #4). ── */
+.category-filters {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 20px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 20px), transparent 100%);
+}
+.category-filters button { min-height: 40px; }
+
+/* ── D. Tipografi mikro di bawah lantai 9px (audit B #6, C #3, D1 #3).
+   Lantai 9px = batas keterbacaan aplikasi ini (§Q). ── */
+.habit-progress-ring span { font-size: 9px; }
+.mobile-quick-actions-heading { font-size: 9px; }
+.workspace-menu-sheet .menu-group-label { font-size: 9px; }
+@media (max-width: 560px) {
+  .wallet-history-column > strong { font-size: 10px; }
+}
+
+/* ── E. Tombol tutup modal 38px → 40px (audit B #8). ── */
+.entry-modal .modal-head .icon-button {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+}
+
+/* ── F. Modal form: kolom di bawah lipatan (Sumber dana, Tag) tak
+   terlihat → footer Batal/Simpan memakai gradasi tembus agar jelas
+   masih ada konten di bawahnya (audit C #1). ── */
+@media (max-width: 760px) {
+  .entry-modal .form-actions {
+    background: linear-gradient(to bottom, rgba(255, 253, 249, 0), #fffdf9 34%);
+    border-top: 0;
+    padding-top: 24px;
+  }
+}
+
+/* ── G. Kartu saldo amber: catatan putih .82 (≈2.5:1) gagal AA →
+   naikkan opasitas + 11px (audit C #2). ── */
+.finance-balance-note { color: rgba(255, 255, 255, .95); font-size: 11px; }
+.finance-balance .small-label { color: rgba(255, 255, 255, .9); }
+
+/* ── H. Budget hint 9px @3.1:1 → 10px dengan warna lebih gelap (audit C #6). ── */
+.finance-budget-panel .budget-hint { color: #6d6f62; font-size: 10px; }
+
+/* ── I. Label stat insight & metrik modul terpotong/overlap → wrap
+   2 baris (pola dashboard; audit D1 #1 + D2 #1). ── */
+.insights-stat-grid .stat-top .small-label,
+.module-metrics .stat-top .small-label {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: break-word;
+  line-height: 1.15;
+}
+
+/* ── J. Menu "Semua fitur": item aktif nyaris tak terbedakan dari
+   item biasa (aturan sheet globals.css:2134 menetralkan warna aktif) →
+   kembalikan tint aksen per modul (audit D1 #2). ── */
+.workspace-menu-sheet .menu-item.active {
+  color: color-mix(in srgb, var(--item-accent) 68%, #2c3e2c);
+  border-color: color-mix(in srgb, var(--item-accent) 24%, #eeedf4);
+  background: color-mix(in srgb, var(--item-accent) 10%, #fff);
+}
+.workspace-menu-sheet .menu-item.active .menu-item-copy strong { color: inherit; }
+.workspace-menu-sheet .menu-item.active .menu-item-icon {
+  color: #fff;
+  background: var(--item-accent);
+}
+
+/* ── K. Saldo dompet negatif → merah bata agar tertangkap mata
+   (audit C #5). ── */
+.module-inline-meta strong.is-negative { color: #b04a2e; }
+
+/* ── L. Handle seret di dalam habit-row ber-GRID (mobile): tanpa ini
+   handle menjadi anak grid liar — kolom nama habit tergencet 34px dan
+   judul terpotong satu kata (regresi ditemukan verifikasi v0.4.1). ── */
+@media (max-width: 760px) {
+  .habit-row { grid-template-columns: 22px 38px minmax(0, 1fr) auto; }
+  .habit-drag-handle {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    margin: 0;
+  }
+}
+@media (max-width: 430px) {
+  .habit-row { grid-template-columns: 20px 34px minmax(0, 1fr); }
+  .habit-drag-handle {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    align-self: center;
+    margin: 0;
+  }
+  .habit-row-actions { grid-column: 3 / -1; }
+}

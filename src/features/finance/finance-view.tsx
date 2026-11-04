@@ -163,9 +163,13 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     year: "numeric",
     timeZone: "Asia/Jakarta",
   }).format(new Date(periodEndKey + "T12:00:00+07:00"));
-  const cashflowMessage = net >= 0
+  // Tiga keadaan: net = 0 sebelumnya salah menyatakan "pemasukan lebih besar"
+  // padahal keduanya sama (audit v0.4.1).
+  const cashflowMessage = net > 0
     ? "Pemasukan pada periode ini masih lebih besar dari pengeluaran."
-    : "Pengeluaran pada periode ini lebih besar dari pemasukan.";
+    : net < 0
+      ? "Pengeluaran pada periode ini lebih besar dari pemasukan."
+      : "Pemasukan dan pengeluaran pada periode ini seimbang.";
 
   return (
     <>

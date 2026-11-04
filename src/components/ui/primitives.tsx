@@ -48,7 +48,7 @@ function HabitGlyph({ icon }: { icon: Habit["icon"] }) {
   return <Icon size={18} strokeWidth={1.8} />;
 }
 
-function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, onViewTimeAnalysis, timerActive = false, timerElapsedSeconds = 0, paused = false }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; onViewTimeAnalysis?: (id: string) => void; timerActive?: boolean; timerElapsedSeconds?: number; paused?: boolean }) {
+function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, onViewTimeAnalysis, timerActive = false, timerElapsedSeconds = 0, paused = false, dragHandle }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; onViewTimeAnalysis?: (id: string) => void; timerActive?: boolean; timerElapsedSeconds?: number; paused?: boolean; dragHandle?: ReactNode }) {
   const amountHabit = habit.kind === "amount";
   const current = habit.currentAmount ?? 0;
   const target = habit.targetAmount ?? 1;
@@ -56,6 +56,7 @@ function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, onViewTimeAnalysis
   const avoid = habit.kind === "avoid";
   return (
     <article className={`habit-row ${habit.completed ? "is-complete" : ""} ${amountHabit ? "is-amount-habit" : ""}`}>
+      {dragHandle}
       <div className="habit-icon"><HabitGlyph icon={habit.icon} /></div>
       <div className="habit-main">
         <div className="habit-name">{habit.title}</div>

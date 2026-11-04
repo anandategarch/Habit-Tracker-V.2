@@ -35,6 +35,18 @@ function mergeRecords<T>(local: T[], remote: T[], keyOf: (item: T) => string): T
 }
 
 function mergeModuleData(local: WorkspaceModules, remote: WorkspaceModules): WorkspaceModules {
+  // Setelan (mode libur): last-write-wins via stempel waktu updatedAt.
+  // Aturan lama `remote.vacationMode || local.vacationMode` membuat server
+  // basi (true) selalu mengalahkan tombol terbaru pengguna (false) setelah
+  // reload — mode libur "hidup kembali" sendiri (audit v0.4.1).
+  const localStamp = typeof local.settings.updatedAt === "number" ? local.settings.updatedAt : 0;
+  const remoteStamp = typeof remote.settings.updatedAt === "number" ? remote.settings.updatedAt : 0;
+  // Prioritas: yang bertstempel dan paling baru. Bila keduanya tanpa stempel
+  // (data lama), remote tetap diutamakan — perilaku lama terjaga (perangkat
+  // baru tanpa data lokal mengikuti snapshot server).
+  const useLocal = localStamp > 0 && localStamp >= remoteStamp;
+  const settingsSource = useLocal ? local.settings : remote.settings;
+  const settings: WorkspaceModules["settings"] = { ...settingsSource, updatedAt: Math.max(localStamp, remoteStamp) || undefined };
   return normalizeModules({
     goals: mergeRecords(local.goals, remote.goals, (item) => item.id),
     checkins: mergeRecords(local.checkins, remote.checkins, (item) => item.date),
@@ -46,10 +58,7 @@ function mergeModuleData(local: WorkspaceModules, remote: WorkspaceModules): Wor
     programs: mergeRecords(local.programs, remote.programs, (item) => item.id),
     progressPhotos: mergeRecords(local.progressPhotos, remote.progressPhotos, (item) => item.id).slice(-5),
     habitGroups: mergeRecords(local.habitGroups, remote.habitGroups, (item) => item.id),
-    settings: {
-      vacationMode: remote.settings.vacationMode || local.settings.vacationMode,
-      theme: remote.settings.theme !== "system" ? remote.settings.theme : local.settings.theme,
-    },
+    settings,
     finance: {
       wallets: mergeRecords(local.finance.wallets, remote.finance.wallets, (item) => item.id),
       transfers: mergeRecords(local.finance.transfers, remote.finance.transfers, (item) => item.id),
@@ -115,9 +124,14 @@ export function useModules() {
     update: WorkspaceModules[K] | ((current: WorkspaceModules[K]) => WorkspaceModules[K]),
   ) => {
     setModules((current) => {
-      const nextValue = typeof update === "function"
+      const rawValue = typeof update === "function"
         ? (update as (value: WorkspaceModules[K]) => WorkspaceModules[K])(current[key])
         : update;
+      // Stempel waktu pada setiap perubahan setelan → last-write-wins saat
+      // merge sinkronisasi (mode libur tidak lagi kembali diam-diam).
+      const nextValue = key === "settings" && rawValue && typeof rawValue === "object"
+        ? { ...(rawValue as WorkspaceModules["settings"]), updatedAt: Date.now() } as WorkspaceModules[K]
+        : rawValue;
       const next = { ...current, [key]: nextValue };
       persistLocal(next);
       if (remoteReady) {
@@ -128,7 +142,14 @@ export function useModules() {
             body: JSON.stringify({ modules: { [key]: nextValue } }),
           });
           if (!response.ok) throw new Error("Module sync failed");
-        }).catch(() => setRemoteReady(false));
+        }).catch(() => {
+          setRemoteReady(false);
+          // Jangan telan kegagalan diam-diam: beri tahu UI (pola sama dengan
+          // use-workspace) agar pengguna tahu perubahan belum tersinkron.
+          try {
+            window.dispatchEvent(new CustomEvent("rutina:sync-failed"));
+          } catch { /* lingkungan non-DOM */ }
+        });
       }
       return next;
     });
