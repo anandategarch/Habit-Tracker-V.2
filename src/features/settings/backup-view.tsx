@@ -104,7 +104,7 @@ export function BackupView({ settings, onUpdateSettings }: {
     </section>
 
     <nav className="settings-menu-card" aria-label="Navigasi pengaturan">
-      <a href="#settings-preferences"><span className="settings-menu-icon"><Settings2 size={17} /></span><span><strong>Preferensi aplikasi</strong><small>Tema dan ritme pribadi</small></span><ChevronRight size={17} /></a>
+      <a href="#settings-preferences"><span className="settings-menu-icon"><Settings2 size={17} /></span><span><strong>Preferensi aplikasi</strong><small>Mode libur dan ritme pribadi</small></span><ChevronRight size={17} /></a>
       <a href="#settings-notifications"><span className="settings-menu-icon"><Bell size={17} /></span><span><strong>Notifikasi</strong><small>Pengingat habit yang belum selesai</small></span><ChevronRight size={17} /></a>
       <a href="#settings-backup"><span className="settings-menu-icon"><Database size={17} /></span><span><strong>Data &amp; Backup</strong><small>Ekspor dan pulihkan workspace</small></span><ChevronRight size={17} /></a>
       <a href="#settings-about"><span className="settings-menu-icon"><Info size={17} /></span><span><strong>Tentang Rutina</strong><small>Identitas dan filosofi aplikasi</small></span><ChevronRight size={17} /></a>
@@ -112,14 +112,6 @@ export function BackupView({ settings, onUpdateSettings }: {
 
     <div className="settings-preferences-grid">
       <section className="card card-pad settings-preference-card" id="settings-preferences">
-        <SectionHeading title="Preferensi tampilan" caption="Pilih suasana yang paling nyaman untukmu." />
-        <div className="settings-theme-options" role="group" aria-label="Tema aplikasi">
-          <button type="button" className={settings.theme === "system" ? "active" : ""} aria-pressed={settings.theme === "system"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "system" }))}><span>◐</span><strong>Sistem</strong><small>Ikuti perangkat</small></button>
-          <button type="button" className={settings.theme === "light" ? "active" : ""} aria-pressed={settings.theme === "light"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "light" }))}><span>☀</span><strong>Terang</strong><small>Nuansa hangat</small></button>
-          <button type="button" className={settings.theme === "dark" ? "active" : ""} aria-pressed={settings.theme === "dark"} onClick={() => onUpdateSettings((current) => ({ ...current, theme: "dark" }))}><span>☾</span><strong>Gelap</strong><small>Lebih redup</small></button>
-        </div>
-      </section>
-      <section className="card card-pad settings-preference-card">
         <SectionHeading title="Ritme pribadi" caption="Beri ruang untuk beristirahat saat diperlukan." />
         <label className="settings-vacation-toggle">
           <span className="settings-vacation-icon"><Sprout size={18} /></span>

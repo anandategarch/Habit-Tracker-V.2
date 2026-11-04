@@ -26,48 +26,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fff7ef" },
-    { media: "(prefers-color-scheme: dark)", color: "#1d2821" },
-  ],
+  // Mode terang permanen — Rutina tidak lagi punya mode gelap.
+  themeColor: "#fff7ef",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
-/**
- * Skrip pre-paint tema: jalankan SEBELUM CSS render pertama supaya
- * pengguna mode gelap tidak melihat "flash" UI terang saat load.
- * Membaca snapshot localStorage modul (settings.theme) + prefers-color-scheme.
- *
- * Skrip ini sengaja HANYA memutasi atribut <html data-theme> — sebelum
- * hidrasi React. Karena itu <html> di bawah memakai suppressHydrationWarning
- * (pola yang sama dengan next-themes) supaya React tidak melaporkan
- * "attributes didn't match" saat hidrasi.
- *
- * Mutasi meta theme-color TIDAK dilakukan di sini: elemen <meta> hasil
- * metadata API berada di dalam tree React, mengubahnya sebelum hidrasi
- * memicu hydration error. Sinkronisasi meta (warna status bar PWA)
- * dilakukan PASCA hidrasi oleh rutina-app (applyTheme di useEffect).
- */
-const THEME_INIT_SCRIPT = `(function(){try{
-var t="light";try{var m=JSON.parse(localStorage.getItem("rutina.v2.extended-modules")||"{}");
-var s=m&&m.settings&&m.settings.theme;if(s==="dark"||s==="light")t=s;
-else t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}catch(e){
-t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}
-document.documentElement.dataset.theme=t;
-}catch(e){}})();`;
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  // suppressHydrationWarning: skrip tema pre-paint menyetel data-theme pada
-  // <html> sebelum hidrasi — perilaku disengaja (anti-FOUC), pola standar
-  // next-themes. Mismatch atribut <html> di-suppress satu level ini saja;
-  // warning pada children tetap aktif.
   return (
-    <html lang="id" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-      </head>
+    <html lang="id">
       <body>
         <PwaRegister />
         <TreeSplash />
