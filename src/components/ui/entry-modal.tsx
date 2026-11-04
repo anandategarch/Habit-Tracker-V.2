@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
-import { Check, X } from "lucide-react";
+import { Check, LoaderCircle, X } from "lucide-react";
 import { DEFAULT_TRANSACTION_CATEGORIES } from "@/lib/types";
 import type { Wallet, HabitGroup } from "@/lib/module-types";
 import { todayISO } from "@/lib/format";
@@ -27,6 +27,8 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
   const isHabit = mode === "habit";
   const dialogRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
+  const [fieldError, setFieldError] = useState<{ field: string; message: string } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // Kategori keuangan custom dari Turso (tabel finance_categories).
   // Hanya di-fetch saat mode transaksi (tidak perlu untuk habit). Fallback ke
@@ -107,6 +109,42 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
     }
   }
 
+  /**
+   * Validasi Indonesia + kirim. noValidate mematikan tooltip bahasa Inggris
+   * bawaan browser ("Please fill out this field") — kita periksa sendiri dan
+   * tampilkan pesan inline di bawah field yang bermasalah.
+   */
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (submitting) return;
+    const form = event.currentTarget;
+    const title = form.elements.namedItem("title") as (HTMLInputElement | null);
+    if (title && !title.value.trim()) {
+      setFieldError({ field: "title", message: "Nama wajib diisi." });
+      title.focus();
+      return;
+    }
+    if (!isHabit) {
+      const amount = form.elements.namedItem("amount") as (HTMLInputElement | null);
+      const amountValue = amount ? Number(amount.value) : 0;
+      if (!amount || !Number.isFinite(amountValue) || amountValue <= 0) {
+        setFieldError({ field: "amount", message: "Nominal harus lebih dari Rp0." });
+        amount?.focus();
+        return;
+      }
+    } else {
+      const time = form.elements.namedItem("time") as (HTMLInputElement | null);
+      if (time && !time.value) {
+        setFieldError({ field: "time", message: "Waktu wajib diisi." });
+        time.focus();
+        return;
+      }
+    }
+    setFieldError(null);
+    setSubmitting(true);
+    onSubmit(event);
+  }
+
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <section ref={dialogRef} className="modal-card entry-modal" role="dialog" aria-modal="true" aria-labelledby="entry-modal-title" onKeyDown={handleDialogKeyDown}>
@@ -118,12 +156,13 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
           </div>
           <IconAction label="Tutup dialog" onClick={onClose}><X size={17} /></IconAction>
         </div>
-        <form className="form-grid" onSubmit={onSubmit}>
+        <form className="form-grid" noValidate onSubmit={handleSubmit}>
           {isHabit ? (
             <>
               <label className="form-field">
                 <span className="form-label">Nama kebiasaan</span>
-                <input className="form-control" name="title" placeholder="Contoh: Membaca 10 halaman" required maxLength={60} autoFocus />
+                <input className="form-control" name="title" placeholder="Contoh: Membaca 10 halaman" required maxLength={60} autoFocus onChange={() => fieldError?.field === "title" && setFieldError(null)} />
+                {fieldError?.field === "title" && <span className="field-error" role="alert">{fieldError.message}</span>}
               </label>
               <label className="form-field">
                 <span className="form-label">Kategori</span>
@@ -135,20 +174,21 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
                 </select>
               </label>
               <label className="form-field"><span className="form-label">Jenis habit</span><select className="form-control" name="kind" defaultValue="normal"><option value="normal">Normal · checklist</option><option value="avoid">Avoid · hindari kebiasaan</option><option value="amount">Amount · target kuantitatif</option></select></label>
-              <div className="form-two-columns"><label className="form-field"><span className="form-label">Target jumlah</span><input className="form-control" type="number" name="targetAmount" min="1" defaultValue="8" /></label><label className="form-field"><span className="form-label">Satuan target</span><input className="form-control" name="unit" maxLength={30} placeholder="gelas, halaman, repetisi" defaultValue="unit" /></label></div>
+              <div className="form-two-columns"><label className="form-field"><span className="form-label">Target jumlah</span><input className="form-control" type="number" name="targetAmount" min="1" inputMode="numeric" defaultValue="8" /></label><label className="form-field"><span className="form-label">Satuan target</span><input className="form-control" name="unit" maxLength={30} placeholder="gelas, halaman, repetisi" defaultValue="unit" /></label></div>
               <div className="form-two-columns"><label className="form-field"><span className="form-label">Prioritas</span><select className="form-control" name="priority" defaultValue="medium"><option value="low">Rendah</option><option value="medium">Sedang</option><option value="high">Tinggi</option></select></label><label className="form-field"><span className="form-label">Kesulitan</span><select className="form-control" name="difficulty" defaultValue="easy"><option value="easy">Mudah</option><option value="medium">Sedang</option><option value="hard">Sulit</option></select></label></div>
               <label className="form-field"><span className="form-label">Grup kebiasaan (opsional)</span>{groups.length > 0 ? <select className="form-control" name="groupName" defaultValue=""><option value="">Tanpa grup</option>{groups.map((group) => <option value={group.name} key={group.id}>{group.name}</option>)}</select> : <input className="form-control" name="groupName" maxLength={60} placeholder="Buat grup dari halaman Kebiasaan" />}</label>
               <label className="form-field"><span className="form-label">Jadwal tampil</span><select className="form-control" name="scheduleKind" defaultValue="daily"><option value="daily">Setiap hari</option><option value="weekly">Hari tertentu setiap minggu</option><option value="monthly">Tanggal tertentu setiap bulan</option></select></label>
-              <label className="form-field"><span className="form-label">Hari aktif (untuk jadwal mingguan)</span><input className="form-control" name="scheduleDays" placeholder="1, 3, 5 · Senin, Rabu, Jumat" /><span className="form-hint">Nomor hari: 0 Minggu, 1 Senin, 2 Selasa, 3 Rabu, 4 Kamis, 5 Jumat, 6 Sabtu.</span></label>
-              <label className="form-field"><span className="form-label">Tanggal aktif (untuk jadwal bulanan)</span><input className="form-control" name="scheduleDates" placeholder="1, 15, 28" /><span className="form-hint">Tanggal 1 sampai 31. Tanggal yang tidak tersedia di suatu bulan dilewati.</span></label>
+              <label className="form-field"><span className="form-label">Hari aktif (untuk jadwal mingguan)</span><input className="form-control" name="scheduleDays" inputMode="numeric" pattern="[0-9,\s]*" placeholder="1, 3, 5 · Senin, Rabu, Jumat" onChange={() => fieldError?.field === "scheduleDays" && setFieldError(null)} /><span className="form-hint">Nomor hari: 0 Minggu, 1 Senin, 2 Selasa, 3 Rabu, 4 Kamis, 5 Jumat, 6 Sabtu.</span></label>
+              <label className="form-field"><span className="form-label">Tanggal aktif (untuk jadwal bulanan)</span><input className="form-control" name="scheduleDates" inputMode="numeric" pattern="[0-9,\s]*" placeholder="1, 15, 28" /><span className="form-hint">Tanggal 1 sampai 31. Tanggal yang tidak tersedia di suatu bulan dilewati.</span></label>
               <div className="form-two-columns">
                 <label className="form-field">
                   <span className="form-label">Waktu</span>
-                  <input className="form-control" type="time" name="time" defaultValue="07:00" required />
+                  <input className="form-control" type="time" name="time" defaultValue="07:00" required onChange={() => fieldError?.field === "time" && setFieldError(null)} />
+                  {fieldError?.field === "time" && <span className="field-error" role="alert">{fieldError.message}</span>}
                 </label>
                 <label className="form-field">
                   <span className="form-label">Durasi (menit)</span>
-                  <input className="form-control" type="number" name="duration" min="1" max="600" defaultValue="15" required />
+                  <input className="form-control" type="number" name="duration" min="1" max="600" inputMode="numeric" defaultValue="15" required />
                 </label>
               </div>
             </>
@@ -163,11 +203,13 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
               </div>
               <label className="form-field">
                 <span className="form-label">Nama transaksi</span>
-                <input className="form-control" name="title" placeholder="Contoh: Belanja bulanan" maxLength={60} required autoFocus />
+                <input className="form-control" name="title" placeholder="Contoh: Belanja bulanan" maxLength={60} required autoFocus onChange={() => fieldError?.field === "title" && setFieldError(null)} />
+                {fieldError?.field === "title" && <span className="field-error" role="alert">{fieldError.message}</span>}
               </label>
               <label className="form-field">
                 <span className="form-label">Nominal (Rupiah)</span>
-                <div className="amount-field"><span>Rp</span><input className="form-control" type="number" name="amount" min="1" step="1" inputMode="numeric" placeholder="150000" required /></div>
+                <div className="amount-field"><span>Rp</span><input className="form-control" type="number" name="amount" min="1" step="1" inputMode="numeric" placeholder="150000" required onChange={() => fieldError?.field === "amount" && setFieldError(null)} /></div>
+                {fieldError?.field === "amount" && <span className="field-error" role="alert">{fieldError.message}</span>}
               </label>
               <div className="form-two-columns">
                 <label className="form-field">
@@ -186,8 +228,8 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
             </>
           )}
           <div className="form-actions">
-            <button type="button" className="secondary-button" onClick={onClose}>Batal</button>
-            <PrimaryButton type="submit"><Check size={15} /> Simpan</PrimaryButton>
+            <button type="button" className="secondary-button" onClick={onClose} disabled={submitting}>Batal</button>
+            <PrimaryButton type="submit" disabled={submitting}>{submitting ? <LoaderCircle size={15} className="spin-icon" /> : <Check size={15} />} {submitting ? "Menyimpan…" : "Simpan"}</PrimaryButton>
           </div>
         </form>
       </section>

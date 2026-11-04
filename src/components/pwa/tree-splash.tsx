@@ -14,7 +14,7 @@ export function TreeSplash() {
     if (!isStandalone || prefersReducedMotion) return;
 
     const showTimeout = window.setTimeout(() => setVisible(true), 0);
-    const hideTimeout = window.setTimeout(() => setVisible(false), 3900);
+    const hideTimeout = window.setTimeout(() => setVisible(false), 2600);
     return () => {
       window.clearTimeout(showTimeout);
       window.clearTimeout(hideTimeout);

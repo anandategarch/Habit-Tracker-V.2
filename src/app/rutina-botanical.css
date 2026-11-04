@@ -1675,10 +1675,11 @@ html[data-theme="dark"] .weekly-trend-badge { color: var(--primary); background:
 }
 
 /* Header mobile mengikuti pedoman: bel notifikasi + avatar di kanan.
-   Pencarian & tema disembunyikan pada layar kecil (tema tetap bisa diganti di Settings,
-   pencarian & tema tetap tampil di topbar desktop); status sinkronisasi dan tombol
-   pasang PWA dipertahankan karena fungsional di perangkat mobile. */
-@media (max-width: 960px) {
+   Pencarian & tema disembunyikan HANYA pada ponsel (<=760px). Di pita tablet
+   761-960px keduanya tetap tampil sebagai tombol ikon 36px (aturan globals
+   icon-only) — audit v0.3.0: sembunyikan di 960px membuat tablet 900px
+   kehilangan pencarian & tema padahal ruang topbar cukup. */
+@media (max-width: 760px) {
   .topbar .search-trigger,
   .topbar .theme-toggle { display: none; }
   .topbar .topbar-avatar {
@@ -3516,3 +3517,892 @@ html[data-theme="dark"] .transaction-type-control input:checked + span {
   overflow: hidden;
 }
 .habit-amount-caption { overflow-wrap: anywhere; }
+
+/* ==========================================================================
+   AUDIT FULL UI/UX v0.3.0 (2026-11-03) — 4 agen paralel:
+   (A) tampilan modul Tujuan/Check-in/Pohon/Wellness/Latihan/Meja Kerja,
+   (B) desktop >=961px & tablet 761-960px, (C) mode gelap + kontras,
+   (D) state interaksi. Temuan utama: layer "Playful 2.0" menyisakan aksen
+   violet, teks tak terlihat di dark mode (kontras 1.0-2.5:1), kotak terang
+   di kanvas gelap, popup nav tablet tanpa style, teks 8px di desktop.
+   Blok ini ditempatkan paling akhir agar menang cascade.
+   ========================================================================== */
+
+/* --- 1. VIOLET SWEEP — layer lama menyisakan indigo/violet terlarang --- */
+/* 1a. Sidebar desktop: item nav aktif violet → botanical green */
+@media (min-width: 961px) {
+  .desktop-sidebar .desktop-nav-link.active {
+    color: #fff;
+    border-color: transparent;
+    background: linear-gradient(110deg, #417a57, #5d9271);
+    box-shadow: 0 7px 18px rgba(47, 98, 69, .22);
+  }
+  .desktop-sidebar .desktop-nav-link.active svg { color: #fff; }
+  /* Footer desktop tertutup sidebar fixed 236px → beri margin */
+  .site-footer { margin-left: 236px; }
+}
+@media (min-width: 961px) and (max-width: 1180px) {
+  .site-footer { margin-left: 218px; }
+}
+/* 1b. Tombol utama: border + glow violet → hijau; hover violet → hijau.
+   Modal (Simpan/Buat) render di luar .main-shell jadi tidak kena
+   --module-accent → paksa botanical green. */
+.primary-button {
+  border: 1px solid #2f5e40;
+  box-shadow: 0 6px 15px rgba(47, 98, 69, .22);
+}
+.primary-button:hover:not(:disabled) {
+  background: linear-gradient(115deg, #2f5e40, #1f4a33);
+}
+.modal-card .primary-button,
+.modal-backdrop .primary-button {
+  border: 1px solid #2f5e40;
+  background: linear-gradient(115deg, #417a57, #2f5e40);
+  box-shadow: 0 7px 17px rgba(47, 98, 69, .24);
+}
+.modal-card .primary-button:hover:not(:disabled) {
+  background: linear-gradient(115deg, #4c8a63, #356b4a);
+}
+/* 1c. Focus ring global violet → hijau (keyboard nav) */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(65, 122, 87, .35);
+  outline-offset: 3px;
+}
+.form-control:focus,
+.module-status-select:focus,
+.group-filter-select:focus {
+  border-color: #7fae8b;
+  outline: 3px solid rgba(65, 122, 87, .14);
+}
+/* 1d. CTA dashboard "Mulai timer habit" + weekly-add violet → hijau */
+.daily-intention-actions .next-step-action {
+  border: 1px solid #356448;
+  background: linear-gradient(135deg, #417a57, #2f5e40);
+  box-shadow: 0 6px 14px rgba(47, 98, 69, .2);
+}
+.daily-intention-actions .next-step-action:hover:not(:disabled) {
+  box-shadow: 0 9px 18px rgba(47, 98, 69, .26);
+}
+.weekly-add-action {
+  box-shadow: 0 7px 17px rgba(47, 98, 69, .22);
+}
+.weekly-add-action:hover:not(:disabled) {
+  background: linear-gradient(115deg, #4c8a63, #356b4a);
+}
+/* 1e. Panel "Growth Wrapped" lavender → botanical */
+.growth-wrapped-panel {
+  border-color: #e4eadb;
+  background: radial-gradient(circle at 96% 0%, rgba(222, 236, 205, .45) 0 18%, transparent 18.4%), linear-gradient(112deg, #f3f8e9, #fffaf2 85%);
+}
+.growth-wrapped-kicker { color: #5f7057; }
+.growth-wrapped-icon.mood { color: #c27e36; background: #fdf3e3; }
+html[data-theme="dark"] .growth-wrapped-panel {
+  border-color: #3c4f3d;
+  background: radial-gradient(circle at 96% 0%, rgba(146, 189, 145, .12) 0 18%, transparent 18.4%), linear-gradient(112deg, #26342a, #22301f 85%);
+}
+html[data-theme="dark"] .growth-wrapped-kicker { color: #a8c6b0; }
+html[data-theme="dark"] .growth-wrapped-icon.mood { color: #d9b27c; background: rgba(156, 116, 44, .18); }
+html[data-theme="dark"] .growth-wrapped-icon { background: var(--surface-soft); }
+html[data-theme="dark"] .growth-wrapped-metric { border-color: #3c4f3d; }
+/* 1f. Tab aktif completion-filters + insight-period-tabs violet → hijau */
+.completion-filters button.active,
+.insight-period-tabs button.active {
+  border-color: transparent;
+  color: #fff;
+  background: linear-gradient(110deg, #417a57, #5d9271);
+}
+/* 1g. Finance: border filter aktif + tombol expand violet → hijau */
+.finance-filters button.active { border-color: #2f5e40; }
+.finance-expand-button {
+  color: #356b4a;
+}
+.finance-expand-button:hover {
+  border-color: #cfe0c9;
+  background: #f3f8ef;
+  color: #2f6245;
+}
+/* 1h. text-button hover violet → hijau */
+.text-button:hover { color: #2f6245; }
+/* 1i. Avatar sidebar desktop violet → hijau */
+.desktop-sidebar-footer .avatar {
+  color: #2c563e;
+  background: #e0ece0;
+}
+/* 1j. Kartu time-analysis lavender → botanical */
+.time-analysis-card {
+  border-color: #e3ead9;
+  background: #f7faf2;
+}
+html[data-theme="dark"] .time-analysis-card {
+  border-color: #3c4f3d;
+  background: #26342a;
+}
+/* 1k. Calendar-summary lavender → botanical (light + dark) */
+.calendar-summary {
+  border-color: #e9e7dc;
+  background: linear-gradient(145deg, #f4f8ec, #fffaf4);
+}
+html[data-theme="dark"] .calendar-summary {
+  border-color: #3c4f3d;
+  background: linear-gradient(145deg, #26342a, #22301f);
+}
+/* 1l. insight-highlight tint violet → netral hangat */
+.insight-highlight {
+  background: #f8f4ea;
+}
+html[data-theme="dark"] .insight-highlight {
+  background: #2d3b30;
+  border-color: #3c4f3d;
+}
+/* 1m. Gradient end #faf8ff (lavender-white) → hijau pucat */
+.weekly-trend-card,
+.insight-trend-panel { background: linear-gradient(150deg, #fffefb, #f4f8ef); }
+html[data-theme="dark"] .weekly-trend-card,
+html[data-theme="dark"] .insight-trend-panel { background: linear-gradient(150deg, #26342a, #22301f); }
+.focus-card { background: linear-gradient(145deg, #fffefa, #f6f9f2); }
+/* 1n. Settings menu hover violet → hijau */
+.settings-menu-card a:hover strong { color: #2f6245; }
+/* 1o. Tree detail CTA hover violet → hijau + 40px */
+.tree-detail-cta {
+  min-height: 40px;
+  padding: 0 16px;
+  box-shadow: 0 6px 14px rgba(47, 98, 69, .22);
+}
+.tree-detail-cta:hover { background: linear-gradient(115deg, #2f5e40, #1f4a33); }
+/* 1p. Mood trend bars violet → amber botanical (agar 3 seri tetap terbedakan) */
+.insight-trend-day.mood span { background: linear-gradient(180deg, #d9a05e, #c27e36); }
+.insight-trend-legend .insight-trend-mood i,
+.insight-trend-legend i.mood { background: #c27e36; }
+/* 1q. Icon kartu tujuan violet → hijau */
+.goal-card-icon { color: #4e8b5e; }
+html[data-theme="dark"] .goal-card-icon {
+  color: #a8c99a;
+  background: #2f4134;
+}
+/* 1r. Badge LEVEL pohon violet → hijau */
+.tree-level-badge {
+  background: linear-gradient(120deg, #417a57, #2f5e40);
+  box-shadow: 0 5px 12px rgba(47, 98, 69, .25);
+}
+.tree-art-level-stamp {
+  background: linear-gradient(110deg, #417a57, #2f5e40);
+  box-shadow: 0 6px 14px rgba(47, 98, 69, .28);
+}
+/* 1s. Hero dashboard (tab home) gradient VIOLET → botanical.
+    Judul #394637 di atas violet hanya 1.36:1 di light mode. */
+.app-shell[data-active-tab="home"] .hero-card {
+  background: radial-gradient(circle at 88% 12%, rgba(217, 232, 198, .28), transparent 27%), linear-gradient(120deg, #417a57, #5d9271 65%, #8fae80);
+}
+/* 1t. Sisa violet di dark mode: module-tabs, settings-theme, workspace-menu */
+html[data-theme="dark"] .module-tabs button.active {
+  color: #eaf4ea;
+  background: linear-gradient(110deg, #417a57, #5d9271);
+}
+html[data-theme="dark"] .module-tabs { background: #22301f; }
+html[data-theme="dark"] .settings-theme-options button.active {
+  color: #eaf4ea;
+  background: linear-gradient(110deg, #417a57, #5d9271);
+  border-color: #417a57;
+}
+html[data-theme="dark"] .workspace-menu-sheet,
+html[data-theme="dark"] .workspace-menu-sheet .menu-panel-header,
+html[data-theme="dark"] .workspace-menu-sheet .menu-panel-footer {
+  background: #22301f;
+  border-color: #3c4f3d;
+}
+html[data-theme="dark"] .workspace-menu-sheet .menu-item { color: var(--ink); }
+html[data-theme="dark"] .quick-action.finance .quick-action-icon,
+html[data-theme="dark"] .mobile-quick-action-icon.finance {
+  color: #d8ad69;
+  background: rgba(156, 116, 44, .18);
+}
+.quick-action.finance .quick-action-icon,
+.mobile-quick-action-icon.finance {
+  color: #9c6a2a;
+  background: #f8eedd;
+}
+
+/* --- 2. DARK MODE: teks tak terlihat (kontras 1.0-2.5:1) → perbaiki --- */
+html[data-theme="dark"] .form-control:focus,
+html[data-theme="dark"] .module-status-select:focus,
+html[data-theme="dark"] .group-filter-select:focus {
+  background: var(--surface);
+  border-color: var(--sage);
+}
+html[data-theme="dark"] .search-field {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .search-field:focus-within {
+  background: var(--surface);
+  border-color: var(--sage);
+}
+html[data-theme="dark"] .search-field kbd,
+html[data-theme="dark"] .search-footer kbd,
+html[data-theme="dark"] .search-trigger kbd {
+  background: var(--surface-soft);
+  border-color: var(--line);
+  color: var(--muted);
+}
+html[data-theme="dark"] .search-result {
+  background: var(--surface);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .search-result:hover { background: var(--surface-soft); }
+html[data-theme="dark"] .search-result-icon.expense {
+  background: #3a2c28;
+  color: #d49880;
+}
+html[data-theme="dark"] .focus-ring-inner strong { color: var(--ink); }
+html[data-theme="dark"] .focus-ring-inner span { color: var(--muted); }
+html[data-theme="dark"] .focus-ring {
+  background: conic-gradient(var(--primary) var(--progress), #435345 0);
+}
+html[data-theme="dark"] .focus-ring::before { background: var(--surface-soft); }
+html[data-theme="dark"] .focus-icon {
+  background: var(--surface-soft);
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .modal-title { color: var(--ink); }
+html[data-theme="dark"] .modal-description { color: var(--ink-soft); }
+html[data-theme="dark"] .transaction-title { color: var(--ink); }
+html[data-theme="dark"] .transaction-amount.income { color: var(--primary-strong); }
+html[data-theme="dark"] .transaction-amount.expense { color: #e18c7d; }
+html[data-theme="dark"] .topbar-context { color: var(--muted); }
+html[data-theme="dark"] .topbar-context strong { color: var(--ink-soft); }
+html[data-theme="dark"] .text-button:hover { color: var(--primary-strong); }
+html[data-theme="dark"] .icon-button:hover {
+  color: var(--primary);
+  background: var(--surface-soft);
+}
+/* 2a. Kartu hero beraksen per-tab: gradient TERANG + teks terang → tak terbaca.
+    Perlu specificity (0,4,1) untuk mengalahkan aturan .app-shell[data-tab] (0,3,0). */
+html[data-theme="dark"] .app-shell[data-active-tab="calendar"] .calendar-summary {
+  background: linear-gradient(145deg, #23372a, #1f3025);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .app-shell[data-active-tab="tree"] .tree-season-card {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .app-shell[data-active-tab="home"] .hero-card {
+  background: radial-gradient(circle at 88% 12%, rgba(146, 189, 145, .18), transparent 27%), linear-gradient(120deg, #374333, #314536 65%, #3a4f3d);
+}
+/* 2b. Kalender: angka hari & teks dark-on-dark */
+html[data-theme="dark"] .calendar-day {
+  color: var(--ink);
+  background: var(--surface);
+}
+html[data-theme="dark"] .calendar-day:hover { background: var(--surface-soft); }
+html[data-theme="dark"] .calendar-day.today:not(.selected) {
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .calendar-month { color: var(--ink); }
+html[data-theme="dark"] .calendar-summary-top { color: var(--muted); }
+html[data-theme="dark"] .calendar-habit-line strong { color: var(--ink); }
+/* 2c. Insight / label form / caption dark */
+html[data-theme="dark"] .insight-category-top { color: var(--ink-soft); }
+html[data-theme="dark"] .insight-category-top strong { color: var(--ink); }
+html[data-theme="dark"] .quote-text { color: var(--ink-soft); }
+html[data-theme="dark"] .insight-empty strong { color: var(--ink); }
+html[data-theme="dark"] .form-label { color: var(--ink-soft); }
+html[data-theme="dark"] .section-caption { color: var(--ink-soft); }
+html[data-theme="dark"] .weekly-comparison.positive { color: var(--primary-strong); }
+html[data-theme="dark"] .weekly-comparison.negative { color: #e18c7d; }
+/* 2d. Grup / tujuan / settings dark */
+html[data-theme="dark"] .group-manager-heading { color: var(--ink); }
+html[data-theme="dark"] .goal-progress-heading strong { color: var(--primary-strong); }
+html[data-theme="dark"] .settings-profile-status { color: var(--ink-soft); }
+html[data-theme="dark"] .mobile-sync-button.is-error { color: #e18c7d; }
+/* 2e. Cashflow + recap dark */
+html[data-theme="dark"] .insight-cashflow-row strong { color: var(--ink); }
+html[data-theme="dark"] .insight-cashflow-icon.income {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .insight-cashflow-icon.expense {
+  background: #3a2c28;
+  color: #d49880;
+}
+html[data-theme="dark"] .finance-recap-grid strong.income { color: var(--primary-strong); }
+html[data-theme="dark"] .finance-recap-grid strong.expense { color: #e18c7d; }
+html[data-theme="dark"] .metric-positive { color: var(--primary-strong); }
+html[data-theme="dark"] .metric-negative { color: #e18c7d; }
+html[data-theme="dark"] .finance-day-detail-value.income strong { color: var(--primary-strong); }
+html[data-theme="dark"] .finance-day-detail-value.expense strong { color: #e18c7d; }
+html[data-theme="dark"] .amount-field > span { color: var(--muted); }
+/* 2f. Tree splash dark (PWA standalone launch — sebelumnya selalu terang) */
+html[data-theme="dark"] .tree-splash {
+  background: radial-gradient(ellipse at 50% 42%, rgba(105, 139, 93, .2), transparent 45%), #1d2821;
+}
+html[data-theme="dark"] .tree-splash-kicker { color: #b6cf9e; }
+html[data-theme="dark"] .tree-splash-copy h1 { color: #d6ead0; }
+html[data-theme="dark"] .tree-splash-copy h1 span { color: #92bd91; }
+html[data-theme="dark"] .tree-splash-copy p { color: var(--ink-soft); }
+html[data-theme="dark"] .tree-splash-skip {
+  border-color: var(--line);
+  color: var(--primary-strong);
+  background: rgba(38, 52, 42, .85);
+}
+
+/* --- 3. DARK MODE: kotak terang di kanvas gelap → var surface --- */
+html[data-theme="dark"] .toast {
+  border-color: var(--line);
+  background: #2c3f31;
+  color: #e9f2e6;
+}
+html[data-theme="dark"] .check-button {
+  background: var(--surface);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .check-button:hover {
+  background: var(--surface-soft);
+  border-color: var(--sage);
+}
+html[data-theme="dark"] .check-button.done {
+  color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+}
+html[data-theme="dark"] .habit-row.is-complete {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .habit-row.is-complete .habit-icon {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .habit-search {
+  background: var(--surface);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .habit-search input { color: var(--ink); }
+html[data-theme="dark"] .schedule-view-toggle,
+html[data-theme="dark"] .completion-filters,
+html[data-theme="dark"] .category-filters {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .group-filter-select {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .finance-metric-icon.income {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .finance-metric-icon.expense {
+  background: #3a2c28;
+  color: #d49880;
+}
+html[data-theme="dark"] .daily-checkin-icon {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .empty-state-icon {
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+html[data-theme="dark"] .desktop-sidebar-footer .sync-card {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink-soft);
+}
+html[data-theme="dark"] .bottom-nav > button.active {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .topbar-avatar {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .nav-link.active .nav-link-icon {
+  background: #263b2d;
+  color: var(--primary-strong);
+}
+html[data-theme="dark"] .goal-card-icon { background: #2f4134; }
+html[data-theme="dark"] .settings-vacation-icon,
+html[data-theme="dark"] .settings-info-icon {
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+html[data-theme="dark"] .settings-profile-mark {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+/* 3a. Hover dark: kilatan chip terang → surface gelap */
+html[data-theme="dark"] .secondary-button:hover {
+  background: #2f4134;
+  border-color: var(--line);
+}
+html[data-theme="dark"] .module-icon-action:hover { background: #2f4134; }
+html[data-theme="dark"] .module-tag {
+  background: #2f4134;
+  color: #b9d8bd;
+}
+/* 3b. Priority pills dark (chip terang di kartu gelap) */
+html[data-theme="dark"] .module-priority { background: #26342a; }
+html[data-theme="dark"] .module-priority.high { color: #e79b8a; background: rgba(184, 84, 66, .16); }
+html[data-theme="dark"] .module-priority.medium { color: #d9b27c; background: rgba(156, 116, 44, .18); }
+html[data-theme="dark"] .module-priority.low { color: #a8c99a; background: #2f4134; }
+/* 3c. Form actions sticky di desktop dark (sebelumnya hanya <=600px) */
+html[data-theme="dark"] .entry-modal .form-actions { background: var(--surface); }
+/* 3d. Aksen modul per-tab di dark (ikon 2.3-3:1 → angkat luminansi) */
+html[data-theme="dark"] .app-shell { --module-accent: #92bd91; }
+html[data-theme="dark"] .app-shell[data-active-tab="habits"] { --module-accent: #7fd0a6; }
+html[data-theme="dark"] .app-shell[data-active-tab="finance"] { --module-accent: #d8ad69; }
+html[data-theme="dark"] .app-shell[data-active-tab="calendar"] { --module-accent: #d9b27c; }
+html[data-theme="dark"] .app-shell[data-active-tab="insights"] { --module-accent: #e79b8a; }
+html[data-theme="dark"] .app-shell[data-active-tab="goals"] { --module-accent: #92bd91; }
+html[data-theme="dark"] .app-shell[data-active-tab="checkin"] { --module-accent: #92bd91; }
+html[data-theme="dark"] .app-shell[data-active-tab="tree"] { --module-accent: #92bd91; }
+html[data-theme="dark"] .app-shell[data-active-tab="wellness"] { --module-accent: #8fc7bf; }
+html[data-theme="dark"] .app-shell[data-active-tab="training"] { --module-accent: #d9b27c; }
+/* Light: aksen kontras rendah (finance 2.26:1, goals 2.53, wellness 2.68, tree 2.68) → gelapkan */
+.app-shell[data-active-tab="finance"] { --module-accent: #b87a25; }
+.app-shell[data-active-tab="goals"] { --module-accent: #3a7350; }
+.app-shell[data-active-tab="checkin"] { --module-accent: #417a57; }
+.app-shell[data-active-tab="tree"] { --module-accent: #3a7350; }
+.app-shell[data-active-tab="wellness"] { --module-accent: #1f7d72; }
+
+/* --- 4. LIGHT MODE: kontras teks muted (token + selector) --- */
+:root { --muted: #6b7568; }
+.module-muted,
+.module-inline-meta small,
+.tree-lifetime-stage small,
+.tree-lifetime-stage span,
+.tree-watering-count span,
+.tree-care-note p,
+.wellness-water-ring small,
+.module-photo-grid figcaption,
+.module-empty p,
+.tree-journey-copy > p { color: #5d6e60; }
+html[data-theme="dark"] .module-muted,
+html[data-theme="dark"] .module-inline-meta small,
+html[data-theme="dark"] .tree-lifetime-stage small,
+html[data-theme="dark"] .tree-lifetime-stage span,
+html[data-theme="dark"] .tree-watering-count span,
+html[data-theme="dark"] .tree-care-note p,
+html[data-theme="dark"] .wellness-water-ring small,
+html[data-theme="dark"] .module-photo-grid figcaption,
+html[data-theme="dark"] .module-empty p,
+html[data-theme="dark"] .tree-journey-copy > p { color: var(--ink-soft); }
+.page-subtitle { color: #5d6e60; }
+.eyebrow { color: #5d6e60; font-size: 9.5px; }
+.goal-card-copy p { color: #5d6e60; }
+.goal-progress-heading span { color: #5d6e60; font-size: 9.5px; }
+.goal-milestones-label { color: #5d6e60; font-size: 9.5px; letter-spacing: 1px; }
+.goal-no-milestones { color: #5d6e60; }
+.goal-progress-heading strong { color: #3a7350; }
+.topbar-context { color: #6d7566; }
+html:not([data-theme="dark"]) .finance-metric .stat-foot { color: #5d6e60; }
+.amount-field > span { color: #5d6e60; }
+/* 4a. habit-detail-tag light (2.95:1 → AA) */
+.habit-detail-tag { color: #5d6e60; }
+.habit-detail-tag.priority-high { color: #a04836; }
+.habit-detail-tag.priority-medium { color: #8a5c1f; }
+/* 4b. Budget status: aturan lama (0,3,0) mematikan fix v0.2.3 (0,2,0).
+    Gunakan specificity sama + letak akhir. Berlaku kedua tema. */
+.finance-budget-panel .budget-status { color: #4d6b4f; }
+.finance-budget-panel .budget-status.warning { color: #9c6a2a; }
+.finance-budget-panel .budget-status.over,
+.finance-budget-panel .budget-hint.over { color: #a04836; }
+.finance-budget-panel .budget-hint.warning { color: #9c6a2a; }
+html[data-theme="dark"] .finance-budget-panel .budget-status { color: var(--primary-strong); }
+html[data-theme="dark"] .finance-budget-panel .budget-status.warning { color: #d9b27c; }
+html[data-theme="dark"] .finance-budget-panel .budget-status.over,
+html[data-theme="dark"] .finance-budget-panel .budget-hint.over { color: #e79b8a; }
+html[data-theme="dark"] .finance-budget-panel .budget-hint.warning { color: #d9b27c; }
+/* 4c. Indikator non-teks light (WCAG 1.4.11 butuh 3:1) */
+.calendar-history-dot { background: #c07a3a; }
+.finance-chart-dot.income { background: #5f8f57; }
+.finance-chart-dot.expense { background: #c77e4f; }
+html[data-theme="dark"] .calendar-history-dot { background: #e5a46b; }
+html[data-theme="dark"] .finance-chart-dot.income { background: #82a96f; }
+html[data-theme="dark"] .finance-chart-dot.expense { background: #f0a477; }
+/* 4d. weekly-comparison light (3.4:1 → AA) */
+.weekly-comparison.positive { color: #3a7350; }
+.weekly-comparison.negative { color: #a04836; }
+/* 4e. Empty state: 10px 3.1:1 → 12px + AA */
+.empty-state strong { font-size: 13px; }
+.empty-state p {
+  font-size: 12px;
+  color: #5d6e60;
+  line-height: 1.5;
+}
+html[data-theme="dark"] .empty-state p { color: var(--ink-soft); }
+.search-empty span { font-size: 11px; color: #5d6e60; }
+html[data-theme="dark"] .search-empty span { color: var(--ink-soft); }
+
+/* --- 5. DESKTOP: teks 8px basis (fix v0.2.3 hanya di media query mobile) --- */
+.habit-week-day small { font-size: 10px; }
+.habit-week-day strong { font-size: 13px; }
+.daily-intention-meta span { font-size: 10px; }
+.botanical-stats-three .small-label,
+.botanical-stats-three .stat-label,
+.stat-card .stat-label { font-size: 10px; }
+.next-step-label { font-size: 9.5px; }
+.growth-wrapped-kicker { font-size: 9.5px; }
+@media (min-width: 601px) {
+  .transaction-amount { font-size: 12px; }
+  .transaction-meta { font-size: 10px; }
+  .finance-chart-totals strong { font-size: 12px; }
+}
+.finance-metric-label,
+.finance-balance .small-label,
+.finance-category-percent,
+.budget-hint { font-size: 10px; }
+.finance-filters button,
+.finance-expand-button { font-size: 10px; }
+.search-trigger kbd { font-size: 9px; }
+@media (min-width: 961px) { .desktop-nav-label { font-size: 10px; } }
+
+/* --- 6. RESPONSIVE: tablet 761-960, lebar konten, grid --- */
+/* 6a. Popup quick-actions "+" TANPA style di tablet 761-960 → nav rusak.
+    Duplikat aturan penting dari blok <=760 (globals.css:2439+). */
+@media (min-width: 761px) and (max-width: 960px) {
+  .bottom-nav {
+    /* BUG v0.3.0: globals.css:1221 (<=960) menerapkan left:50% +
+       translateX(-50%), tapi rule botanical (left:10px) mengganti left —
+       transform tetap aktif → nav bergeser -310px keluar layar di tablet.
+       Fix v0.2.2 (transform:none) hanya berlaku <=760px. */
+    transform: none;
+    animation: none;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: center;
+    gap: 2px;
+    min-height: 76px;
+    padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+    overflow: visible;
+    border-radius: 23px;
+  }
+  .bottom-nav > button {
+    min-width: 0;
+    min-height: 52px;
+    padding: 4px 1px;
+    gap: 4px;
+    border-radius: 14px;
+    font-size: 10px;
+  }
+  .bottom-nav-action-wrap {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    height: 67px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+    transform: translateY(-8px);
+  }
+  .bottom-nav .bottom-nav-action {
+    position: relative;
+    display: grid;
+    width: 54px;
+    min-width: 54px;
+    height: 54px;
+    min-height: 54px;
+    flex: none;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 19px;
+    color: #fff;
+    transform: translateY(-3px);
+  }
+  .bottom-nav .bottom-nav-action.active {
+    color: #fff;
+    background: linear-gradient(145deg, #417a57, #2f5e40);
+    transform: translateY(-3px) scale(.96);
+  }
+  .bottom-nav .bottom-nav-action.active svg {
+    transform: rotate(45deg);
+    animation: none;
+  }
+  .bottom-nav-action-label {
+    max-width: 100%;
+    color: var(--module-accent);
+    font-size: 10px;
+    font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .mobile-quick-actions[hidden] { display: none !important; }
+  .mobile-quick-actions {
+    position: absolute;
+    z-index: 90;
+    left: 50%;
+    bottom: calc(100% + 15px);
+    display: grid;
+    width: min(320px, calc(100vw - 32px));
+    gap: 5px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 19px;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--surface) 97%, transparent);
+    box-shadow: 0 20px 55px rgba(31, 29, 67, .22);
+    backdrop-filter: blur(22px) saturate(1.25);
+    transform: translateX(-50%);
+    transform-origin: 50% 100%;
+  }
+  .mobile-quick-actions-heading {
+    padding: 3px 8px 5px;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1.35px;
+  }
+}
+/* 6b. Finance overview: aturan 2-kol tablet (761-1080) mati oleh rule base */
+@media (min-width: 761px) and (max-width: 1080px) {
+  .finance-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .finance-overview .finance-balance { grid-column: 1 / -1; }
+}
+/* 6c. Grid tablet 761-960: jangan paksa 1 kolom */
+@media (min-width: 761px) and (max-width: 960px) {
+  .habit-overview-grid { grid-template-columns: minmax(0, 1.3fr) minmax(220px, .7fr); }
+  .module-two-col { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+}
+/* 6d. Lebar konten 1580px terlalu lebar untuk keterbacaan → 1320px */
+.content-wrap { width: min(100%, 1320px); }
+/* 6e. .form-three-columns TIDAK punya CSS sama sekali (Latihan) */
+.form-three-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 600px) {
+  .form-three-columns { grid-template-columns: 1fr; }
+}
+/* 6f. Topbar 961-1080: search menyusut, label tema disembunyikan */
+@media (min-width: 961px) and (max-width: 1080px) {
+  .search-trigger { min-width: 0; flex: 1 1 160px; max-width: 260px; }
+  .theme-toggle span { display: none; }
+}
+
+/* --- 7. TOUCH TARGETS + iOS ZOOM --- */
+.module-icon-action { width: 40px; height: 40px; border-radius: 12px; }
+.module-tabs.compact button { min-height: 38px; }
+.module-tabs button { min-height: 40px; }
+.module-tabs button span { font-size: 10px; min-width: 20px; }
+.module-photo-grid figcaption button {
+  width: 36px;
+  height: 36px;
+  margin: -7px -7px -7px 0;
+  border-radius: 10px;
+  place-items: center;
+}
+html[data-theme="dark"] .module-photo-grid figcaption button { color: #e79b8a; }
+@media (max-width: 640px) {
+  .module-status-select { font-size: 16px; min-height: 40px; }
+  .form-label { font-size: 11px; }
+  .secondary-button, .module-small-button { font-size: 10.5px; }
+}
+@media (max-width: 420px) {
+  .wellness-panel .module-button-row,
+  .module-two-col .module-button-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .module-button-row .secondary-button { width: 100%; justify-content: center; }
+}
+@media (max-width: 380px) {
+  .wellness-water-ring { width: 132px; height: 132px; border-width: 8px; }
+  .wellness-water-ring strong { font-size: 21px; }
+}
+
+/* --- 8. HOVER / ACTIVE FEEDBACK --- */
+@media (hover: hover) {
+  .check-button:not(.done):hover {
+    border-color: #417a57;
+    background: #eaf3e5;
+    transform: scale(1.05);
+  }
+  .topbar-actions .theme-toggle:hover {
+    border-color: #d6e3d0;
+    background: #fff;
+    color: var(--primary-strong);
+  }
+  .transaction-row:hover {
+    background: #f6faf3;
+    border-radius: 12px;
+  }
+  html[data-theme="dark"] .transaction-row:hover { background: var(--surface-soft); }
+  .habit-row-actions button:hover {
+    border-color: #cfe0c9;
+    background: #f3f8f1;
+    transform: translateY(-1px);
+  }
+  html[data-theme="dark"] .habit-row-actions button:hover {
+    border-color: var(--line);
+    background: var(--surface-soft);
+  }
+  .group-manager-item button:hover {
+    background: #fdf2ef;
+    color: #a04836;
+  }
+  html[data-theme="dark"] .group-manager-item button:hover {
+    background: rgba(184, 84, 66, .16);
+    color: #e79b8a;
+  }
+}
+@media (min-width: 961px) {
+  .desktop-sidebar-footer .sync-card:hover {
+    background: #f3f8ef;
+    border-color: #cfe0c9;
+  }
+}
+.calendar-day:active,
+.search-result:active,
+.search-hints button:active,
+.finance-month-step:active { transform: scale(.97); }
+.group-manager-item button:active { transform: scale(.96); }
+
+/* --- 9. TOAST + SCROLLBAR + MISC --- */
+/* 9a. Toast menutup FAB "+" di mobile → naikkan di atas nav + wrap teks */
+@media (max-width: 960px) {
+  .toast {
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    white-space: normal;
+    max-width: min(92vw, 420px);
+  }
+}
+/* 9b. Scrollbar botanical (Chromium/Windows) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: #d8e2d2;
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-track { background: transparent; }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3c4f3d; }
+/* 9c. State drag habit (sebelumnya tidak ada feedback visual) */
+.habit-row.is-dragging {
+  opacity: .55;
+  border-style: dashed;
+}
+/* 9d. Banner pembaruan PWA (PwaRegister) */
+.pwa-update-banner {
+  position: fixed;
+  z-index: 200;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 15px;
+  border: 1px solid #cfe0c9;
+  border-radius: 15px;
+  color: #2c3e2c;
+  background: color-mix(in srgb, var(--surface) 97%, transparent);
+  box-shadow: 0 16px 44px rgba(31, 29, 67, .18);
+  font-size: 12px;
+  font-weight: 600;
+  transform: translateX(-50%);
+  animation: rutina-quick-actions-in .28s var(--ease-spring) both;
+}
+.pwa-update-actions { display: inline-flex; align-items: center; gap: 6px; }
+.pwa-update-reload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  background: linear-gradient(115deg, #417a57, #2f5e40);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pwa-update-reload:hover { background: linear-gradient(115deg, #4c8a63, #356b4a); }
+.pwa-update-dismiss {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink-soft);
+  background: transparent;
+  cursor: pointer;
+}
+.pwa-update-dismiss:hover { border-color: #cfe0c9; background: #f3f8ef; }
+html[data-theme="dark"] .pwa-update-banner {
+  border-color: #3c4f3d;
+  color: var(--ink);
+  background: color-mix(in srgb, #22301f 97%, transparent);
+}
+html[data-theme="dark"] .pwa-update-dismiss:hover {
+  border-color: var(--line);
+  background: var(--surface-soft);
+}
+/* 9e. Skip link a11y — tersembunyi sampai fokus keyboard */
+.skip-link {
+  position: fixed;
+  z-index: 300;
+  top: 10px;
+  left: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: #fff;
+  background: #2f5e40;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform .18s ease;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid rgba(255, 255, 255, .5);
+  outline-offset: 2px;
+}
+/* 9f. Validasi form inline (entry-modal) */
+.field-error {
+  margin-top: 5px;
+  color: #a04836;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+html[data-theme="dark"] .field-error { color: #e79b8a; }
+/* 9g. Ikon spinner tombol submit */
+.spin-icon { animation: rutina-spin .8s linear infinite; }
+@keyframes rutina-spin { to { transform: rotate(360deg); } }
+/* 9h. Toast error tone + tombol tutup manual */
+.toast.is-error { border-color: #eac6bd; }
+.toast.is-error .toast-dot { background: #c2543f; }
+.pwa-help-heading-actions { display: inline-flex; align-items: center; gap: 8px; }
+.toast-dismiss {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-left: 4px;
+  margin-right: -6px;
+  border: 0;
+  border-radius: 8px;
+  color: inherit;
+  opacity: .7;
+  background: transparent;
+  cursor: pointer;
+  flex: none;
+}
+.toast-dismiss:hover { opacity: 1; background: rgba(0, 0, 0, .06); }
+html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .08); }
+.toast { display: flex; align-items: center; gap: 9px; }

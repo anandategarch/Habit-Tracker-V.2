@@ -72,7 +72,16 @@ export function useModules() {
 
     void (async () => {
       try {
-        const response = await fetch("/api/modules", { cache: "no-store" });
+        // Timeout 10 detik: jaringan menggantung tidak boleh menahan loader
+        // awal selamanya — lanjut dengan snapshot localStorage (offline-first).
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 10_000);
+        let response: Response;
+        try {
+          response = await fetch("/api/modules", { cache: "no-store", signal: controller.signal });
+        } finally {
+          window.clearTimeout(timeoutId);
+        }
         if (!response.ok) throw new Error("Remote modules unavailable");
         const payload = await response.json() as { modules?: unknown };
         if (cancelled) return;

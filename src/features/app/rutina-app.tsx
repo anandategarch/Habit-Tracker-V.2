@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus, Sun, Moon, Monitor,
 } from "lucide-react";
@@ -58,7 +58,7 @@ type SyncStatus = "local" | "syncing" | "synced" | "error";
 export function RutinaApp() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [modal, setModal] = useState<"habit" | "transaction" | null>(null);
-  const [toast, setToast] = useState("");
+  const [toast, setToast] = useState<{ message: string; tone: "info" | "error" }>({ message: "", tone: "info" });
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
@@ -84,6 +84,9 @@ export function RutinaApp() {
     const applyTheme = () => {
       const resolved = selectedTheme === "system" ? (media.matches ? "dark" : "light") : selectedTheme;
       document.documentElement.dataset.theme = resolved;
+      // Sinkronkan meta theme-color (status bar PWA) mengikuti tema aktif.
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", resolved === "dark" ? "#1d2821" : "#fff7ef");
     };
     applyTheme();
     if (selectedTheme !== "system") return;
@@ -118,10 +121,40 @@ export function RutinaApp() {
   }, [workspaceReady, habits, activeHabitTimer]);
 
   useEffect(() => {
-    if (!toast) return;
-    const timeout = window.setTimeout(() => setToast(""), 3200);
+    if (!toast.message) return;
+    const timeout = window.setTimeout(() => setToast({ message: "", tone: "info" }), 4200);
     return () => window.clearTimeout(timeout);
   }, [toast]);
+
+  /** Toast ringkas dengan tone; helper agar call-site tetap satu argumen. */
+  const showToast = useCallback((message: string, tone: "info" | "error" = "info") => {
+    setToast({ message, tone });
+  }, []);
+
+  // Sinkronisasi gagal setelah retry → beri tahu pengguna (data aman lokal).
+  // Dedupe: jika toast sync-gagal sudah tampil, jangan tumpuk.
+  useEffect(() => {
+    let lastSyncErrorAt = 0;
+    const onSyncFailed = () => {
+      if (Date.now() - lastSyncErrorAt < 8000) return;
+      lastSyncErrorAt = Date.now();
+      setToast({ message: "Perubahanmu tersimpan di perangkat, tapi belum tersinkron ke server.", tone: "error" });
+    };
+    window.addEventListener("rutina:sync-failed", onSyncFailed);
+    return () => window.removeEventListener("rutina:sync-failed", onSyncFailed);
+  }, []);
+
+  // Deteksi online/offline — pengguna tidak perlu menebak dari badge kecil.
+  useEffect(() => {
+    const onOffline = () => setToast({ message: "Kamu sedang offline — perubahan disimpan di perangkat.", tone: "error" });
+    const onOnline = () => setToast({ message: "Kembali online. Menyinkronkan perubahan…", tone: "info" });
+    window.addEventListener("offline", onOffline);
+    window.addEventListener("online", onOnline);
+    return () => {
+      window.removeEventListener("offline", onOffline);
+      window.removeEventListener("online", onOnline);
+    };
+  }, []);
 
   useEffect(() => {
     function handleKeyboard(event: KeyboardEvent) {
@@ -164,7 +197,16 @@ export function RutinaApp() {
 
   function toggleHabit(id: string) {
     if (modules.settings.vacationMode) return;
-    updateHabits((current) => current.map((habit) => habit.id === id ? { ...habit, completed: !habit.completed } : habit));
+    let nowCompleted = false;
+    updateHabits((current) => current.map((habit) => {
+      if (habit.id !== id) return habit;
+      nowCompleted = !habit.completed;
+      return { ...habit, completed: nowCompleted };
+    }));
+    // Haptic halus saat menyelesaikan habit (no-op di iOS/unsupported).
+    if (nowCompleted && typeof navigator !== "undefined" && "vibrate" in navigator) {
+      try { navigator.vibrate?.(8); } catch { /* diabaikan */ }
+    }
   }
 
   function adjustHabit(id: string, delta: number) {
@@ -201,11 +243,11 @@ export function RutinaApp() {
     let schedule: Habit["schedule"] = { kind: "daily" };
     if (scheduleKind === "weekly") {
       const days = parseNumberList(String(data.get("scheduleDays") || ""), 0, 6);
-      if (!days.length) { setToast("Pilih minimal satu hari untuk jadwal mingguan."); return; }
+      if (!days.length) { showToast("Pilih minimal satu hari untuk jadwal mingguan.", "error"); return; }
       schedule = { kind: "weekly", days };
     } else if (scheduleKind === "monthly") {
       const dates = parseNumberList(String(data.get("scheduleDates") || ""), 1, 31);
-      if (!dates.length) { setToast("Pilih minimal satu tanggal untuk jadwal bulanan."); return; }
+      if (!dates.length) { showToast("Pilih minimal satu tanggal untuk jadwal bulanan.", "error"); return; }
       schedule = { kind: "monthly", dates };
     }
 
@@ -232,7 +274,7 @@ export function RutinaApp() {
 
     updateHabits((current) => [...current, habit]);
     setModal(null);
-    setToast("Kebiasaan baru berhasil ditambahkan.");
+    showToast("Kebiasaan baru berhasil ditambahkan.");
   }
 
   function submitTransaction(event: FormEvent<HTMLFormElement>) {
@@ -255,7 +297,7 @@ export function RutinaApp() {
 
     updateTransactions((current) => [transaction, ...current]);
     setModal(null);
-    setToast("Transaksi berhasil dicatat.");
+    showToast("Transaksi berhasil dicatat.");
   }
 
   if (!workspaceReady || !modulesReady) {
@@ -282,6 +324,7 @@ export function RutinaApp() {
 
   return (
     <div className="app-shell" data-active-tab={activeTab}>
+      <a className="skip-link" href="#main-content">Langsung ke konten utama</a>
       <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
         <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); setMoreOpen(false); }} aria-label="Rutina, kembali ke beranda">
           <span className="brand-mark"><RutinaMark size={27} /></span>
@@ -446,7 +489,7 @@ export function RutinaApp() {
       </aside>
       {moreOpen && <button type="button" className="workspace-menu-scrim" aria-label="Tutup menu navigasi" onClick={() => setMoreOpen(false)} />}
 
-      <main className="main-shell">
+      <main className="main-shell" id="main-content" tabIndex={-1}>
         <header className="topbar">
           <div className="mobile-brand">
             <span className="brand-mark"><RutinaMark size={22} /></span>
@@ -610,7 +653,16 @@ export function RutinaApp() {
         onClose={() => { setSearchOpen(false); setSearchQuery(""); }}
         onNavigate={(tab) => setActiveTab(tab)}
       />
-      {toast && <div role="status" aria-live="polite" className="toast"><span className="toast-dot" />{toast}</div>}
+      {toast.message && (
+        <div
+          role={toast.tone === "error" ? "alert" : "status"}
+          aria-live={toast.tone === "error" ? "assertive" : "polite"}
+          className={`toast ${toast.tone === "error" ? "is-error" : ""}`}
+        >
+          <span className="toast-dot" />{toast.message}
+          <button type="button" className="toast-dismiss" aria-label="Tutup notifikasi" onClick={() => setToast({ message: "", tone: "info" })}><X size={13} /></button>
+        </div>
+      )}
       <footer className="site-footer" role="contentinfo">
         <div className="site-footer-brand">
           <span className="footer-mark" aria-hidden="true" />

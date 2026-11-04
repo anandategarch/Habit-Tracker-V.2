@@ -124,11 +124,21 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchWithRetry(input: string, init?: RequestInit): Promise<Response> {
+async function fetchWithRetry(input: string, init?: RequestInit, timeoutMs?: number): Promise<Response> {
   let lastResponse: Response | null = null;
   for (let attempt = 1; attempt <= SYNC_MAX_ATTEMPTS; attempt++) {
     try {
-      const response = await fetch(input, init);
+      // Timeout via AbortController: jaga agar jaringan menggantung (slow
+      // mobile/proxy stall) tidak membuat loader awal berputar selamanya.
+      // Timeout hanya dipakai untuk fetch awal (param timeoutMs terisi).
+      const controller = typeof timeoutMs === "number" ? new AbortController() : null;
+      const timeoutId = controller ? window.setTimeout(() => controller.abort(), timeoutMs) : null;
+      let response: Response;
+      try {
+        response = await fetch(input, controller ? { ...init, signal: controller.signal } : init);
+      } finally {
+        if (timeoutId) window.clearTimeout(timeoutId);
+      }
       if (response.status >= 500 && attempt < SYNC_MAX_ATTEMPTS) {
         lastResponse = response;
         await sleep(SYNC_BACKOFF_MS * attempt);
@@ -164,6 +174,11 @@ function enqueueRemoteWrite(snapshot: WorkspaceSnapshot): void {
     })
     .catch(() => {
       setSyncStatus("error");
+      // Beri tahu UI (rutina-app) — data aman di localStorage, tapi pengguna
+      // perlu tahu sinkronisasi tertunda, bukan hanya badge kecil berubah.
+      try {
+        window.dispatchEvent(new CustomEvent("rutina:sync-failed"));
+      } catch { /* lingkungan non-DOM (test) */ }
     });
 }
 
@@ -176,7 +191,7 @@ export async function refreshWorkspace(): Promise<boolean> {
     try {
       const response = await fetchWithRetry(`/api/workspace?today=${encodeURIComponent(todayISO())}`, {
         cache: "no-store",
-      });
+      }, 10_000);
 
       if (response.status === 401 || response.status === 503) {
         remoteReady = false;
