@@ -161,7 +161,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
                     <span><strong>{record.title}</strong><small><Clock3 size={11} /> {habit?.time ?? "Selesai"}</small></span>
                   </div>;
                 })}
-              </div> : <EmptyState title={selectedIsToday ? "Belum ada habit selesai" : "Belum ada catatan habit"} description={selectedIsToday ? "Habit yang selesai hari ini akan muncul di sini." : "Tidak ada penyelesaian habit yang tercatat pada tanggal ini."} />}
+              </div> : (selectedIsToday || selectedCheckin ? <EmptyState title={selectedIsToday ? "Belum ada habit selesai" : "Belum ada catatan habit"} description={selectedIsToday ? "Habit yang selesai hari ini akan muncul di sini." : "Tidak ada penyelesaian habit yang tercatat pada tanggal ini."} /> : null)}
               {selectedCheckin && <div className="calendar-checkin-card"><div className="calendar-checkin-title"><Heart size={14} /> Daily check-in</div><div className="calendar-checkin-mood"><strong>{moodEmoji(selectedCheckin.mood)} {moodLabel(selectedCheckin.mood)}</strong><span>Energi {selectedCheckin.energy}/5 · Tidur {selectedCheckin.sleepHours} jam</span></div>{selectedCheckin.notes && <p>{selectedCheckin.notes}</p>}</div>}
               {!selectedIsToday && !selectedRecords.length && !selectedCheckin && !loading && <div className="calendar-history-note"><span className="calendar-history-icon"><Clock3 size={18} /></span><strong>Belum ada aktivitas tercatat</strong><p>Tanggal ini belum memiliki penyelesaian habit atau daily check-in tersimpan.</p></div>}
             </>

@@ -2118,7 +2118,7 @@ body { background: var(--canvas); color: var(--ink); }
     padding:0; border:1px solid rgba(230,228,242,.98); border-radius:23px;
     color:#34334d; background:rgba(255,255,255,.985);
     box-shadow:0 26px 80px rgba(37,34,78,.24); backdrop-filter:blur(24px) saturate(1.2);
-    transform:translateX(-50%); animation:rutina-sheet-in .42s var(--ease-spring) both;
+    transform:translateX(-50%); animation:rutina-centered-sheet-in .42s var(--ease-spring) both;
   }
   .workspace-menu-sheet .menu-panel-header { flex:none; padding:17px 18px 14px; }
   .workspace-menu-sheet .menu-panel-header strong { color:#2c3e2c; font-size:18px; }
@@ -2188,7 +2188,12 @@ body { background: var(--canvas); color: var(--ink); }
   100% { transform:rotate(0) scale(1); }
 }
 @keyframes rutina-scrim-in { from {opacity:0} to {opacity:1} }
-@keyframes rutina-sheet-in {
+/* Versi "centered": untuk elemen ber-left:50% (toast, menu sheet).
+   PENTING: jangan pakai nama rutina-sheet-in — nama itu dipakai
+   .modal-card (definisi di atas); definisi ulang dengan nama sama
+   pernah membuat SEMUA modal bottom-sheet bergeser -50% keluar layar
+   di mobile (keyframes terakhir menang global). */
+@keyframes rutina-centered-sheet-in {
   0% { opacity:0; transform:translate(-50%,18px) scale(.965); }
   75% { opacity:1; transform:translate(-50%,-2px) scale(1.008); }
   100% { opacity:1; transform:translate(-50%,0) scale(1); }
@@ -2207,7 +2212,7 @@ body { background: var(--canvas); color: var(--ink); }
 .workspace-menu-sheet .menu-item:nth-child(3) { animation-delay:50ms; }
 .workspace-menu-sheet .menu-item:nth-child(4) { animation-delay:75ms; }
 .workspace-menu-sheet .menu-item:nth-child(5) { animation-delay:100ms; }
-.toast { animation:rutina-sheet-in .36s var(--ease-spring) both; }
+.toast { animation:rutina-centered-sheet-in .36s var(--ease-spring) both; }
 .main-shell .primary-button:active,.rail-link:active,.menu-item:active,.bottom-nav button:active { transform:scale(.97); }
 
 @media (min-width: 761px) and (max-width: 1080px) {

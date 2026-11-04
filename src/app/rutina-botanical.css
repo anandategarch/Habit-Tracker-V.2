@@ -4406,3 +4406,180 @@ html[data-theme="dark"] .field-error { color: #e79b8a; }
 .toast-dismiss:hover { opacity: 1; background: rgba(0, 0, 0, .06); }
 html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .08); }
 .toast { display: flex; align-items: center; gap: 9px; }
+
+/* ================================================================
+   AUDIT MOBILE v0.4.0 — blok perbaikan menyeluruh (4 agen paralel)
+   Diletakkan di AKHIR file agar menang cascade atas semua rule lama.
+   ================================================================ */
+
+/* ── A. P0 (fix di globals.css): kolisi @keyframes rutina-sheet-in ──
+   Definisi ulang translate(-50%) dinama ulang rutina-centered-sheet-in;
+   modal bottom-sheet (habit/transaksi/pencarian) kembali tepat tengah. */
+
+/* ── B. insight-grid: rule desktop (minmax 73px|260px) menang cascade
+   atas override mobile — paksa 1 kolom di ≤960px. ── */
+@media (max-width: 960px) {
+  .insight-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── C. Pencarian tersentuh lagi di mobile: tombol cari topbar kembali
+   tampil (ikon 40px; sebelumnya ikut display:none ≤760px). ── */
+@media (max-width: 760px) {
+  .topbar .search-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    gap: 0;
+    border-radius: 99px;
+  }
+  .topbar .search-trigger span,
+  .topbar .search-trigger kbd { display: none; }
+}
+
+/* ── D. Chip & input tap target 40px + anti-zoom 16px ── */
+.schedule-view-toggle button,
+.completion-filters button { min-height: 40px; }
+.habit-search input { height: 100%; min-height: 40px; font-size: 16px; }
+
+/* ── E. Timer habit: label terbaca (8px→11px) + warna aktif AA ── */
+.habit-time-track { font-size: 11px; min-height: 40px; }
+.habit-time-track.active { color: #a8483a; }
+@media (max-width: 640px) {
+  .habit-time-track, .habit-history-action { font-size: 11px; min-height: 40px; }
+}
+
+/* ── F. Chip aktif: putih di atas gradasi hijau (bukan aksen 3.1:1) ── */
+.main-shell .schedule-view-toggle button.active,
+.main-shell .completion-filters button.active,
+.main-shell .category-filters button.active {
+  color: #fff;
+  background: linear-gradient(110deg, #417a57, #5d9271);
+  border-color: transparent;
+}
+
+/* ── G. Kartu gradasi: teks putih penuh + gradasi digelapkan ── */
+.finance-mini {
+  background:
+    radial-gradient(circle at 95% 0%, rgba(255,255,255,.14), transparent 38%),
+    linear-gradient(135deg, #3a6350, #568a6c);
+}
+.finance-mini .small-label { color: #fff; }
+.finance-pair-item { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+.habit-progress-card { background: linear-gradient(125deg, #0f5e44, #1e7a5c); }
+.habit-progress-card .small-label,
+.habit-progress-card small { color: #fff; }
+.app-shell[data-active-tab="finance"] .finance-balance {
+  background: radial-gradient(circle at 100% 0, rgba(255,255,255,.14), transparent 36%), linear-gradient(125deg, #8a5a1f, #c9883e);
+}
+
+/* ── H. Kontras teks muted batch 1 (Beranda/Kebiasaan/Keuangan) ── */
+.small-label { color: #6d7364; }
+.garden-journey-link { font-size: 11px; color: #3c6a4c; }
+.next-step-label { font-size: 10px; color: #57654d; }
+.habit-week-day small { color: #6d7364; }
+.habit-meta { color: #6d7364; font-size: 10px; }
+.transaction-meta { color: #5d6e60; font-size: 10px; }
+.finance-transactions-panel .transaction-meta { color: #5d6e60; font-size: 10px; }
+.finance-category-percent { color: #5d6e60; font-size: 10.5px; }
+
+/* ── I. Kontras batch 2 (Kalender + day-detail keuangan) ── */
+.calendar-weekday { color: #5d6e60; font-size: 10px; }
+.calendar-summary-stats span { color: #5d6e60; font-size: 10px; }
+.calendar-day.selected { background: #96551f; }
+.calendar-habit-line strong { font-size: 12px; color: #405947; }
+.calendar-habit-line small { font-size: 10px; color: #5d6e60; }
+.finance-day-detail-value small { color: #5d6e60; font-size: 10px; }
+.finance-day-detail-value.income strong { color: #2f6b47; }
+.finance-day-detail-value.expense strong { color: #a04836; }
+@media (max-width: 640px) {
+  .finance-day-detail-value strong { font-size: 10px; }
+  .calendar-weekday { font-size: 9.5px; }
+}
+
+/* ── J. Kontras batch 3 (Pengaturan + profil) ── */
+.settings-menu-card a small { color: #5d6e60; font-size: 10px; }
+.settings-vacation-toggle small { color: #5d6e60; }
+.settings-profile-copy > span { color: #5d6e60; }
+.settings-about-tagline { color: #5d6e60; font-size: 10px; }
+.settings-profile-mark { width: 56px; height: 56px; }
+.settings-vacation-toggle { cursor: pointer; }
+.settings-vacation-toggle input { width: 22px; height: 22px; }
+
+/* ── K. Aksen modul terang gagal AA → gelapkan (work/training/insights).
+   Menyembuhkan juga label FAB & CTA putih-di-atas-aksen-muda. ── */
+.app-shell[data-active-tab="work"] { --module-accent: #5c7440; }
+.app-shell[data-active-tab="training"] { --module-accent: #bf4a2e; }
+.app-shell[data-active-tab="insights"] { --module-accent: #b04a44; }
+.primary-button.module-small-button { color: #fff; }
+.bottom-nav-action-label { color: #2e6340; }
+
+/* ── L. Tap target milestone tujuan (checkbox 19px → 22px, baris 44px) ── */
+.module-check-row { min-height: 44px; padding: 10px 0; }
+.module-check-row input[type="checkbox"] { width: 22px; height: 22px; }
+
+/* ── M. Scrim aksi cepat FAB + landscape: panel tidak meluber ke atas ── */
+.quick-action-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 89;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(23, 32, 26, .38);
+  backdrop-filter: blur(1.5px);
+  cursor: pointer;
+}
+.mobile-quick-actions { max-height: calc(100dvh - 190px); overflow-y: auto; }
+
+/* ── N. Sticky form-actions + input 16px juga di viewport pendek/lebar
+   (landscape 667×375 sebelumnya kehilangan keduanya). ── */
+@media (min-width: 601px) and (max-height: 500px) {
+  .entry-modal { display: flex; flex-direction: column; max-height: 92svh; }
+  .entry-modal .form-grid { overflow-y: auto; flex: 1 1 auto; }
+  .entry-modal .form-actions {
+    position: sticky;
+    bottom: 0;
+    margin: 0 -17px -18px;
+    padding: 13px 17px;
+    background: #fffdf9;
+    border-top: 1px solid var(--line);
+    z-index: 2;
+  }
+  .entry-modal .form-control,
+  .entry-modal input,
+  .entry-modal select,
+  .entry-modal textarea { font-size: 16px; }
+}
+
+/* ── O. Affordance gulir: fade tepi pada strip horizontal ── */
+.module-tabs,
+.finance-day-detail-grid {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 22px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 22px), transparent 100%);
+}
+
+/* ── P. Catatan panjang di-checkin: clamp 3 baris ── */
+.module-item > p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Q. Tipografi mikro: naikkan floor font terkecil ── */
+.stat-foot { font-size: 10px; }
+.eyebrow { font-size: 10px; }
+.insight-trend-value { font-size: 10px; }
+.insight-trend-day small { font-size: 10px; }
+.topbar-bell-badge { font-size: 9px; min-width: 18px; background: linear-gradient(140deg, #a8483a, #c96755); }
+.module-priority { font-size: 10px; }
+.site-footer a { display: inline-flex; align-items: center; min-height: 40px; padding: 6px 8px; }
+.module-tabs button { color: #5d6e60; }
+.insight-trend-legend small { font-size: 10px; color: #5d6e60; }

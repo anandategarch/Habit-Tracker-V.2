@@ -52,6 +52,20 @@ export function SearchDialog({
   }
 
   function handleDialogKeyDown(event: KeyboardEvent<HTMLElement>) {
+    // Navigasi hasil dengan panah: ↑/↓ berpindah antar hasil (dan kembali
+    // ke input dari hasil pertama). Enter pada tombol hasil = klik native.
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      const results = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(".search-result") ?? []);
+      if (results.length === 0) return;
+      event.preventDefault();
+      const current = results.indexOf(document.activeElement as HTMLElement);
+      if (current === -1) { results[0].focus(); return; }
+      if (event.key === "ArrowDown") {
+        if (current < results.length - 1) results[current + 1].focus();
+      } else if (current > 0) results[current - 1].focus();
+      else inputRef.current?.focus();
+      return;
+    }
     if (event.key !== "Tab" || !dialogRef.current) return;
     const elements = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(
       'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',

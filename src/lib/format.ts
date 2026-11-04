@@ -9,11 +9,16 @@ export function formatRupiah(value: number): string {
 }
 
 export function formatCompactRupiah(value: number): string {
-  if (Math.abs(value) >= 1_000_000) {
-    return `Rp ${(value / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} jt`;
+  // Pembulatan selalu ke BAWAH (floor) agar tidak pernah melebihkan nilai:
+  // 999.999 tampil "Rp 999 rb" (bukan "Rp 1.000 rb" yang menyesatkan).
+  const sign = value < 0 ? "-" : "";
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000) {
+    const millions = Math.floor(abs / 100_000) / 10;
+    return `${sign}Rp ${millions.toLocaleString("id-ID", { maximumFractionDigits: 1 })} jt`;
   }
-  if (Math.abs(value) >= 1_000) {
-    return `Rp ${(value / 1_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} rb`;
+  if (abs >= 1_000) {
+    return `${sign}Rp ${Math.floor(abs / 1_000).toLocaleString("id-ID")} rb`;
   }
   return formatRupiah(value);
 }

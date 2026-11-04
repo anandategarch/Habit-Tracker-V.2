@@ -525,6 +525,9 @@ export function RutinaApp() {
         </div>
       </main>
 
+      {/* Scrim aksi cepat: menutup menu saat tap di luar + mencegah
+          konten di belakangnya tetap interaktif (audit v0.4.0). */}
+      {quickActionOpen && <button type="button" className="quick-action-scrim" aria-label="Tutup aksi cepat" onClick={() => setQuickActionOpen(false)} />}
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
         {mobilePrimary.slice(0, 2).map(({ id, label, icon }) => (
           <button

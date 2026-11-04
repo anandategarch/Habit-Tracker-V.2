@@ -5,7 +5,7 @@
  * (footer, pengaturan, debug) dan yang dipakai logika runtime. Saat versi naik,
  * ubah `APP_VERSION` di bawah. `BUILD_DATE` diisi otomatis saat build.
  */
-export const APP_VERSION = "0.3.1";
+export const APP_VERSION = "0.4.0";
 
 export const APP_BUILD_DATE = (() => {
   // Format ISO pendek (YYYY-MM-DD). Tidak di-cache supaya selalu fresh
