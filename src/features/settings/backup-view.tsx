@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
-import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sprout } from "lucide-react";
+import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sprout, Trash2 } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
@@ -120,6 +120,9 @@ export function BackupView({ settings, onUpdateSettings }: {
       <a href="#settings-preferences"><span className="settings-menu-icon"><Settings2 size={17} /></span><span><strong>Preferensi aplikasi</strong><small>Mode libur dan ritme pribadi</small></span><ChevronRight size={17} /></a>
       <a href="#settings-notifications"><span className="settings-menu-icon"><Bell size={17} /></span><span><strong>Notifikasi</strong><small>Pengingat habit yang belum selesai</small></span><ChevronRight size={17} /></a>
       <a href="#settings-backup"><span className="settings-menu-icon"><Database size={17} /></span><span><strong>Data &amp; Backup</strong><small>Ekspor dan pulihkan workspace</small></span><ChevronRight size={17} /></a>
+      {/* v0.18: seluruh tombol hapus terpusat di sini — kategori manapun yang
+          ingin dihapus pengguna tinggal buka Pengaturan lalu bagian ini. */}
+      <a href="#settings-data"><span className="settings-menu-icon"><Trash2 size={17} /></span><span><strong>Kelola &amp; hapus data</strong><small>Kebiasaan, transaksi, dompet, dan lainnya</small></span><ChevronRight size={17} /></a>
       <a href="#settings-about"><span className="settings-menu-icon"><Info size={17} /></span><span><strong>Tentang Rutina</strong><small>Identitas dan filosofi aplikasi</small></span><ChevronRight size={17} /></a>
     </nav>
 

@@ -265,11 +265,18 @@ export function useConfirmRemove() {
     const kind = (match?.[1] ?? label).trim();
     const subject = match?.[2];
     // Catatan khusus per jenis item — jujur tentang apa yang tersisa.
+    // (v0.18: seluruh aksi hapus dipindahkan ke Pengaturan → data-manager-view;
+    // daftar jenis diperluas mengikuti kategori yang dikelola di sana.)
     const notes: Record<string, string> = {
       dompet: "Catatan transaksi dan riwayat transfer tidak ikut terhapus — hanya dompetnya yang keluar dari daftar.",
       grup: "Kebiasaan di dalam grup tetap aman, hanya label grupnya yang hilang.",
       kebiasaan: "Streak, progres jumlah, dan riwayat mingguan kebiasaan ini ikut terhapus.",
       transaksi: "Ringkasan bulanan dan insight akan dihitung ulang tanpa transaksi ini.",
+      tujuan: "Milestone dan progres tujuan ini ikut terhapus.",
+      "transaksi berulang": "Jadwal otomatis ini berhenti; transaksi yang sudah tercatat tetap aman.",
+      "target tabungan": "Progres tabungan yang sudah terkumpul untuk target ini ikut terhapus.",
+      "check-in": "Catatan mood, energi, tidur, dan jurnal untuk tanggal ini ikut hilang dari insight.",
+      "catatan wellness": "Data hidrasi, protein, berat badan, dan catatan hari ini ikut terhapus.",
     };
     confirm({
       tone: "danger",

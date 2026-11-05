@@ -2267,6 +2267,104 @@ html[data-theme="dark"] .tree-detail-cta { color: #fff; }
 .backup-message { margin: 13px 0 0; padding: 11px 13px; border: 1px solid #dce9d6; border-radius: 13px; color: #426e48; background: #f1f7ed; font-size: 10px; line-height: 1.5; }
 .backup-message.is-error { border-color: #f0d8d1; color: #a55347; background: #fff3ef; }
 .backup-message.is-success { border-color: #dce9d6; color: #426e48; background: #f1f7ed; }
+
+/* ===================================================================
+   v0.18 — KELOLA & HAPUS DATA (Pengaturan → data-manager-view)
+   Pusat seluruh aksi hapus: seksi lipat per kategori, tombol hapus
+   per item (target sentuh 40px, WCAG 2.5.5) + "Hapus semua" per seksi.
+   Menggantikan tombol hapus yang dulu tersebar di baris daftar tab.
+   =================================================================== */
+.data-manager { display: grid; gap: 10px; }
+.manage-lead { margin: 2px 2px 4px; color: #687260; font-size: 11px; line-height: 1.65; }
+.manage-summary { margin: 0 2px 2px; color: #96998b; font-size: 9.5px; font-weight: 750; letter-spacing: .2px; }
+.manage-group { display: grid; gap: 8px; }
+.manage-group-label { margin: 8px 2px 0; color: #96998b; font-size: 8.5px; font-weight: 850; letter-spacing: 1.4px; text-transform: uppercase; }
+.manage-group-sections { display: grid; gap: 8px; }
+.manage-section { padding: 0; overflow: hidden; }
+.manage-heading {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) auto 18px; gap: 12px;
+  align-items: center; width: 100%; min-height: 64px; padding: 11px 15px;
+  border: 0; background: none; cursor: pointer; text-align: left;
+  transition: background .16s ease;
+}
+.manage-heading:hover { background: #f5f8f1; }
+.manage-heading-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: #417a57; background: #EAF3E2; }
+.manage-heading-copy { display: grid; gap: 2px; min-width: 0; }
+.manage-heading-copy strong { overflow: hidden; color: #1F2A1F; font-size: 13px; font-weight: 830; text-overflow: ellipsis; white-space: nowrap; }
+.manage-heading-copy small { overflow: hidden; color: #8A8A80; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.manage-count { display: inline-grid; place-items: center; min-width: 26px; padding: 4px 9px; border-radius: 999px; color: #2F5E40; background: #EAF3E2; font-size: 10px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.manage-chevron { color: #96998b; transition: transform .18s cubic-bezier(.2,0,0,1); }
+.manage-chevron.is-open { transform: rotate(90deg); }
+.manage-body { border-top: 1px solid #F1EDE3; padding: 6px 15px 14px; }
+.manage-list { max-height: 320px; overflow-y: auto; display: grid; gap: 2px; padding: 2px 6px 2px 0; scrollbar-width: thin; scrollbar-color: #c6d8c5 transparent; }
+.manage-list::-webkit-scrollbar { width: 8px; }
+.manage-list::-webkit-scrollbar-thumb { background: #c6d8c5; border-radius: 999px; }
+.manage-list::-webkit-scrollbar-track { background: transparent; }
+.manage-row { display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 7px 0; border-bottom: 1px dashed #F1EDE3; }
+.manage-row:last-child { border-bottom: 0; }
+.manage-row-copy { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.manage-row-copy strong { overflow: hidden; color: #1F2A1F; font-size: 12.5px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.manage-row-copy small { overflow: hidden; color: #8A8A80; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.manage-photo { flex: none; width: 40px; height: 40px; border-radius: 11px; object-fit: cover; border: 1px solid #F1EDE3; }
+.manage-delete {
+  display: grid; place-items: center; width: 40px; height: 40px; flex: none;
+  padding: 0; border: 0; border-radius: 50%; color: #B04A2E; background: #FDF2EE;
+  transition: transform .16s ease, background .16s ease;
+}
+.manage-delete:hover { background: #FBE9E2; color: #A5432A; }
+.manage-delete:active { transform: scale(.92); background: #FBE9E2; }
+.manage-delete svg { transform-origin: center; transition: transform 160ms cubic-bezier(.2,0,0,1); }
+@media (hover: hover) and (pointer: fine) {
+  .manage-delete:hover svg { transform: rotate(7deg) scale(1.06); }
+}
+.manage-delete:focus-visible, .manage-heading:focus-visible { outline: 2px solid #417a57; outline-offset: 2px; }
+.manage-clear-all {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; min-height: 40px;
+  padding: 8px 14px; border: 1px solid #f0d8d1; border-radius: 12px;
+  color: #A55347; background: #fffdf8; font-size: 10px; font-weight: 800;
+  transition: background .16s ease, border-color .16s ease;
+}
+.manage-clear-all:hover { background: #fff3ef; border-color: #e5bfb4; }
+.manage-clear-all:active { transform: scale(.97); }
+.manage-empty { display: grid; justify-items: center; gap: 6px; padding: 26px 18px; text-align: center; }
+.manage-empty-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 15px; color: #417a57; background: #EAF3E2; }
+.manage-empty strong { color: #1F2A1F; font-size: 13px; font-weight: 830; }
+.manage-empty p { margin: 0; color: #8A8A80; font-size: 10.5px; line-height: 1.6; max-width: 300px; }
+
+html[data-theme="dark"] .manage-lead { color: #a9b8a4; }
+html[data-theme="dark"] .manage-summary { color: #8fa08d; }
+html[data-theme="dark"] .manage-group-label { color: #8fa08d; }
+html[data-theme="dark"] .manage-heading:hover { background: #26332a; }
+html[data-theme="dark"] .manage-heading-icon { background: #2e3f2c; color: #a8ceaa; }
+html[data-theme="dark"] .manage-heading-copy strong { color: #e8efe2; }
+html[data-theme="dark"] .manage-heading-copy small { color: #a9b8a4; }
+html[data-theme="dark"] .manage-count { color: #b7d8a8; background: #2e3f2c; }
+html[data-theme="dark"] .manage-chevron { color: #8fa08d; }
+html[data-theme="dark"] .manage-body { border-top-color: #33402f; }
+html[data-theme="dark"] .manage-list { scrollbar-color: #3c4f3d transparent; }
+html[data-theme="dark"] .manage-list::-webkit-scrollbar-thumb { background: #3c4f3d; }
+html[data-theme="dark"] .manage-row { border-bottom-color: #33402f; }
+html[data-theme="dark"] .manage-row-copy strong { color: #e8efe2; }
+html[data-theme="dark"] .manage-row-copy small { color: #a9b8a4; }
+html[data-theme="dark"] .manage-photo { border-color: #33402f; }
+html[data-theme="dark"] .manage-delete { color: #e2a088; background: #3d2f2a; }
+html[data-theme="dark"] .manage-delete:hover { background: #4a382f; color: #f0c4b4; }
+html[data-theme="dark"] .manage-delete:active { background: #4a382f; }
+html[data-theme="dark"] .manage-delete:focus-visible, html[data-theme="dark"] .manage-heading:focus-visible { outline-color: #a8ceaa; }
+html[data-theme="dark"] .manage-clear-all { color: #f0b8a9; border-color: #68423b; background: #2c2a26; }
+html[data-theme="dark"] .manage-clear-all:hover { background: #3d2c2a; border-color: #7d5248; }
+html[data-theme="dark"] .manage-empty-icon { background: #2e3f2c; color: #a8ceaa; }
+html[data-theme="dark"] .manage-empty strong { color: #e8efe2; }
+html[data-theme="dark"] .manage-empty p { color: #a9b8a4; }
+
+@media (max-width: 480px) {
+  .manage-heading { grid-template-columns: 36px minmax(0, 1fr) auto 16px; gap: 10px; padding: 10px 13px; }
+  .manage-heading-icon { width: 36px; height: 36px; border-radius: 11px; }
+  .manage-body { padding: 4px 13px 13px; }
+  .manage-list { max-height: 280px; }
+  .manage-row { gap: 10px; }
+}
+
 .empty-state-icon svg { animation: rutina-empty-leaf 3.8s ease-in-out infinite; transform-origin: 50% 75%; }
 @keyframes rutina-empty-leaf { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
 
@@ -2388,8 +2486,8 @@ body{background:radial-gradient(ellipse at 88% 2%,rgba(246,221,199,.32),transpar
 .primary-button:disabled{opacity:.55;cursor:not-allowed}
 .secondary-button,.module-small-button{min-height:39px;border:1px solid #e9e2d9;border-radius:13px;color:#687260;background:#fffdf8;font-size:10px;font-weight:800}
 .secondary-button:hover,.module-small-button:hover{border-color:#d7e4d1;background:#f5f8f1}
-.icon-button,.module-icon-action{color:#777c70;transition:background .18s ease,color .18s ease}
-.icon-button:hover,.module-icon-action:hover{color:var(--primary-strong);background:#edf4e8}
+.icon-button{color:#777c70;transition:background .18s ease,color .18s ease}
+.icon-button:hover{color:var(--primary-strong);background:#edf4e8}
 .botanical-hero{min-height:242px;padding:25px 29px 96px;border:1px solid #f0dfcf;border-radius:27px;background:radial-gradient(circle at 82% 22%,rgba(255,219,188,.54) 0 13%,transparent 13.3%),linear-gradient(112deg,#fff0e4,#fffaf3 48%,#eef5e7);box-shadow:0 11px 28px rgba(106,77,52,.075)}
 .botanical-hero::after{right:1.5%;width:46%;height:108%;opacity:.98}
 .botanical-hero .hero-copy{max-width:48%}
@@ -3326,7 +3424,6 @@ html[data-theme="dark"] .hero-ring-label small { color: var(--muted); }
 .habit-amount-stepper { gap: 6px; }
 
 .category-filters button { min-height: 36px; padding: 0 12px; font-size: 10px; }
-.group-manager-item button { min-height: 36px; padding: 6px 10px; border-radius: 9px; }
 .group-color-input { width: 40px; height: 40px; }
 .secondary-button, .module-small-button { min-height: 40px; }
 .next-step-action { min-height: 40px; }
@@ -3949,7 +4046,6 @@ html[data-theme="dark"] .secondary-button:hover {
   background: #2f4134;
   border-color: var(--line);
 }
-html[data-theme="dark"] .module-icon-action:hover { background: #2f4134; }
 html[data-theme="dark"] .module-tag {
   background: #2f4134;
   color: #b9d8bd;
@@ -4203,18 +4299,9 @@ html[data-theme="dark"] .search-empty span { color: var(--ink-soft); }
 }
 
 /* --- 7. TOUCH TARGETS + iOS ZOOM --- */
-.module-icon-action { width: 40px; height: 40px; border-radius: 12px; }
 .module-tabs.compact button { min-height: 40px; }
 .module-tabs button { min-height: 40px; }
 .module-tabs button span { font-size: 10px; min-width: 20px; }
-.module-photo-grid figcaption button {
-  width: 44px;
-  height: 44px;
-  margin: -7px -7px -7px 0;
-  border-radius: 10px;
-  place-items: center;
-}
-html[data-theme="dark"] .module-photo-grid figcaption button { color: #e79b8a; }
 @media (max-width: 640px) {
   .module-status-select { font-size: 16px; min-height: 40px; }
   .form-label { font-size: 11px; }
@@ -4259,14 +4346,6 @@ html[data-theme="dark"] .module-photo-grid figcaption button { color: #e79b8a; }
     border-color: var(--line);
     background: var(--surface-soft);
   }
-  .group-manager-item button:hover {
-    background: #fdf2ef;
-    color: #a04836;
-  }
-  html[data-theme="dark"] .group-manager-item button:hover {
-    background: rgba(184, 84, 66, .16);
-    color: #e79b8a;
-  }
 }
 @media (min-width: 961px) {
   .desktop-sidebar-footer .sync-card:hover {
@@ -4278,7 +4357,6 @@ html[data-theme="dark"] .module-photo-grid figcaption button { color: #e79b8a; }
 .search-result:active,
 .search-hints button:active,
 .finance-month-step:active { transform: scale(.97); }
-.group-manager-item button:active { transform: scale(.96); }
 
 /* --- 9. TOAST + SCROLLBAR + MISC --- */
 /* 9a. Toast menutup FAB "+" di mobile → naikkan di atas nav + wrap teks */
@@ -4919,8 +4997,7 @@ button:disabled:active {
   .calendar-day:hover,
   .quick-action:hover,
   .module-item:hover,
-  .habit-row-actions button:hover,
-  .group-manager-item button:hover {
+  .habit-row-actions button:hover {
     transform: none;
     filter: none;
   }
@@ -5047,7 +5124,6 @@ button:disabled:active {
 }
 
 .icon-action-feedback svg,
-.module-icon-action svg,
 .check-button svg,
 .habit-amount-stepper button svg,
 .calendar-actions svg,
@@ -5057,7 +5133,6 @@ button:disabled:active {
   transition: transform 180ms cubic-bezier(.2,0,0,1), color 180ms ease-out, opacity 180ms ease-out;
 }
 .icon-action-feedback,
-.module-icon-action,
 .check-button,
 .habit-amount-stepper button,
 .calendar-day,
@@ -5072,8 +5147,7 @@ button:disabled:active {
   transition: transform 180ms cubic-bezier(.2,0,0,1), background-color 180ms ease-out, color 180ms ease-out;
 }
 @media (hover: hover) and (pointer: fine) {
-  .icon-action-feedback:hover svg,
-  .module-icon-action:hover svg { transform: rotate(7deg) scale(1.06); }
+  .icon-action-feedback:hover svg { transform: rotate(7deg) scale(1.06); }
   .habit-row:hover .habit-icon { transform: translateY(-2px) rotate(-4deg); }
   .module-tabs button:not(.active):hover,
   .insight-period-tabs button:not(.active):hover { transform: translateY(-1px); }
@@ -5083,7 +5157,6 @@ button:disabled:active {
   }
 }
 .icon-action-feedback:active,
-.module-icon-action:active,
 .check-button:active,
 .habit-amount-stepper button:active,
 .calendar-day:active,
@@ -5127,7 +5200,6 @@ button:disabled:active {
   .botanical-illustration__leaf,
   .check-button.done svg { animation: none !important; }
   .icon-action-feedback svg,
-  .module-icon-action svg,
   .check-button svg,
   .habit-icon,
   .calendar-history-dot,
@@ -5741,28 +5813,6 @@ button:disabled:active {
 .finx-row-value { color: #1F2A1F; font-size: 13px; font-weight: 850; letter-spacing: -.3px; }
 .finx-row-value.is-negative { color: #B04A2E; }
 .finx-row-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.finx-delete {
-  display: grid; place-items: center; width: 40px; height: 40px; flex: none;
-  padding: 0; border: 0; border-radius: 50%; color: #B04A2E; background: #FDF2EE;
-  transition: transform .16s ease, background .16s ease;
-}
-.finx-delete:active { transform: scale(.92); background: #FBE9E2; }
-
-/* 5b. Tombol hapus di baris kebiasaan & transaksi (v0.17) — bahasa visual
-   .finx-delete pada daftar utama; target sentuh 40px (WCAG 2.5.5) agar
-   sejajar dengan .check-button 40px di baris yang sama. */
-.habit-delete,
-.transaction-delete {
-  display: grid; place-items: center; width: 40px; height: 40px; flex: none;
-  padding: 0; border: 0; border-radius: 50%; color: #B04A2E; background: #FDF2EE;
-  transition: transform .16s ease, background .16s ease;
-}
-.habit-delete:active,
-.transaction-delete:active { transform: scale(.92); background: #FBE9E2; }
-/* Hover khusus: aturan generik .habit-row-actions button:hover (globals lama)
-   memakai hijau muda — jangan sampai tombol destruktif menyala hijau. */
-.habit-row-actions .habit-delete:hover,
-.transaction-delete:hover { background: #FBE9E2; color: #A5432A; }
 
 /* 6. Badge status & bar progres */
 .finx-badge { display: inline-flex; align-items: center; padding: 4px 11px; border-radius: 999px; font-size: 9.5px; font-weight: 850; white-space: nowrap; }
@@ -6696,11 +6746,6 @@ html[data-theme="dark"] .finance-compare-insight { color: var(--ink-soft); }
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.finx-wallet-row .finx-delete {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-}
 @media (max-width: 480px) {
   .finx-wallet-list-card { padding: 14px; }
   .finx-wallet-row { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 8px; }
@@ -6864,15 +6909,6 @@ html[data-theme="dark"] .finx-row-copy small { color: #a9b8a4; }
 html[data-theme="dark"] .finx-row-copy small b { color: #b7c4b0; }
 html[data-theme="dark"] .finx-row-value { color: #e8efe2; }
 html[data-theme="dark"] .finx-row-value.is-negative { color: #e2a088; }
-
-html[data-theme="dark"] .finx-delete { color: #e2a088; background: #3d2f2a; }
-html[data-theme="dark"] .finx-delete:active { background: #4a382f; }
-html[data-theme="dark"] .habit-delete,
-html[data-theme="dark"] .transaction-delete { color: #e2a088; background: #3d2f2a; }
-html[data-theme="dark"] .habit-delete:active,
-html[data-theme="dark"] .transaction-delete:active { background: #4a382f; }
-html[data-theme="dark"] .habit-row-actions .habit-delete:hover,
-html[data-theme="dark"] .transaction-delete:hover { background: #4a382f; color: #f0c4b4; }
 
 html[data-theme="dark"] .finx-badge.up { color: #b7d8a8; background: #2e3f2c; }
 html[data-theme="dark"] .finx-badge.due { color: #dfab85; background: #48372c; }

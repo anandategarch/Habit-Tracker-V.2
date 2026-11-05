@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { BackupView } from "@/features/settings/backup-view";
-import { Activity, ArrowRight, ArrowRightLeft, Banknote, CalendarClock, Check, CircleDollarSign, Clock3, Drumstick, Droplets, Flag, Gauge, ImagePlus, Landmark, ListFilter, Milestone as MilestoneIcon, PiggyBank, Plus, Repeat, Scale, Sprout, Target, Trash2, TrendingDown, TrendingUp, Wallet as WalletGlyph, X } from "lucide-react";
+import { DataManagerView } from "@/features/settings/data-manager-view";
+import { Activity, ArrowRight, ArrowRightLeft, Banknote, CalendarClock, Check, CircleDollarSign, Clock3, Drumstick, Droplets, Flag, Gauge, ImagePlus, Landmark, ListFilter, Milestone as MilestoneIcon, PiggyBank, Plus, Repeat, Scale, Sprout, Target, TrendingDown, TrendingUp, Wallet as WalletGlyph } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
-import { useConfirm, useConfirmRemove } from "@/components/ui/confirm-dialog";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import { BotanicalIllustrationBackdrop, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
-import type { Transaction } from "@/lib/types";
+import type { Budget, Habit, Transaction } from "@/lib/types";
 import type {
   CategoryRule, DailyCheckin, FinanceExtras, Goal, Milestone, MoneyTransfer,
   ProgressPhoto, RecurringTransaction, SavingsGoal, TaskStatus, Wallet,
@@ -21,7 +22,6 @@ const today = () => todayISO();
 const id = () => crypto.randomUUID();
 const field = "form-control";
 const secondary = "secondary-button module-small-button";
-const remove = <T extends { id: string }>(items: T[], key: string) => items.filter((item) => item.id !== key);
 // Label jenis dompet dalam bahasa Indonesia (sebelumnya mentah: "cash",
 // "bank" — menempel tanpa pemisah pada nama dompet; audit v0.4.1).
 const WALLET_TYPE_LABELS: Record<string, string> = {
@@ -42,6 +42,8 @@ const ROUTINE_FREQUENCY_LABELS: Record<string, string> = {
 // useConfirmRemove() dari src/components/ui/confirm-dialog.tsx — dialog
 // tematik botanical menggantikan window.confirm bawaan browser yang tampil
 // polos dari domain deployment.
+// v0.18: aksi hapus itu sendiri dipindahkan ke Pengaturan (data-manager-view);
+// helper filter `remove` lama ikut pensiun bersama tombol-tombolnya.
 // Shift a YYYY-MM-DD string by N days using UTC arithmetic so date windows
 // (weekly budgets, etc.) always match the Asia/Jakarta-based todayISO().
 function shiftISODate(ymd: string, days: number): string {
@@ -77,9 +79,16 @@ function NoData({ children }: { children: string }) {
   return <div className="module-empty"><Sprout size={20} /><p>{children}</p></div>;
 }
 
-export function ModulesView({ tab, modules, updateModule }: {
+// v0.18: seluruh tombol hapus di tampilan modul dipindahkan ke Pengaturan
+// (data-manager-view). Props habits/transactions/budgets + updater-nya
+// diteruskan demi halaman Kelola & hapus data di tab settings.
+export function ModulesView({ tab, modules, updateModule, habits, transactions, budgets, updateHabits, updateTransactions, updateBudgets }: {
   tab: "goals" | "checkin" | "work" | "wellness" | "training" | "tree" | "settings";
   modules: WorkspaceModules; updateModule: UpdateWorkspaceModule;
+  habits: Habit[]; transactions: Transaction[]; budgets: Budget[];
+  updateHabits: (update: Habit[] | ((current: Habit[]) => Habit[])) => void;
+  updateTransactions: (update: Transaction[] | ((current: Transaction[]) => Transaction[])) => void;
+  updateBudgets: (update: Budget[] | ((current: Budget[]) => Budget[])) => void;
 }) {
   if (tab === "goals") return <GoalsView modules={modules} updateModule={updateModule} />;
   if (tab === "checkin") return <CheckinView modules={modules} updateModule={updateModule} />;
@@ -92,13 +101,24 @@ export function ModulesView({ tab, modules, updateModule }: {
     return <WellnessView key={wellnessToday?.date ?? "empty"} modules={modules} updateModule={updateModule} />;
   }
   if (tab === "training") return <TrainingView modules={modules} updateModule={updateModule} />;
-  if (tab === "settings") return <BackupView settings={modules.settings} onUpdateSettings={(update) => updateModule("settings", update)} />;
+  if (tab === "settings") return <>
+    <BackupView settings={modules.settings} onUpdateSettings={(update) => updateModule("settings", update)} />
+    <DataManagerView
+      habits={habits}
+      transactions={transactions}
+      budgets={budgets}
+      modules={modules}
+      updateModule={updateModule}
+      updateHabits={updateHabits}
+      updateTransactions={updateTransactions}
+      updateBudgets={updateBudgets}
+    />
+  </>;
   return <TreeView modules={modules} />;
 }
 
 function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
   const [createOpen, setCreateOpen] = useState(false);
-  const confirmRemove = useConfirmRemove();
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -144,7 +164,6 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
           <div className="module-item-top goal-card-top">
             <span className="goal-card-icon"><Target size={20} /></span>
             <div className="goal-card-copy"><span className="module-tag">{goal.category}</span><h3>{goal.title}</h3><p>{goal.description || "Tidak ada deskripsi."}</p></div>
-            <button className="module-icon-action danger" type="button" onClick={() => confirmRemove(`tujuan "${goal.title}"`, () => updateModule("goals", (items) => remove(items, goal.id)))} aria-label={"Hapus tujuan " + goal.title}><Trash2 size={15} /></button>
           </div>
           {goal.dueDate && <small className="module-muted goal-due-date">Tenggat {formatDate(goal.dueDate)}</small>}
           <div className="goal-progress-heading"><span>PROGRES TUJUAN</span><strong>{progress}%</strong></div>
@@ -195,7 +214,6 @@ function CheckinView({ modules, updateModule }: { modules: WorkspaceModules; upd
 function WorkView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
   const [section, setSection] = useState<"tasks" | "notes" | "routines">("tasks");
   const [status, setStatus] = useState<TaskStatus | "all">("all");
-  const confirmRemove = useConfirmRemove();
   function addTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); if (!title) return;
     const item: WorkTask = { id: id(), title, description: String(data.get("description") || ""), priority: String(data.get("priority") || "medium") as WorkTask["priority"], status: "todo", dueDate: String(data.get("dueDate") || ""), createdAt: today() };
@@ -217,10 +235,10 @@ function WorkView({ modules, updateModule }: { modules: WorkspaceModules; update
     <div className="module-tabs"><button className={section === "tasks" ? "active" : ""} onClick={() => setSection("tasks")}>Task board <span>{modules.tasks.length}</span></button><button className={section === "notes" ? "active" : ""} onClick={() => setSection("notes")}>Catatan <span>{modules.notes.length}</span></button><button className={section === "routines" ? "active" : ""} onClick={() => setSection("routines")}>Rutinitas <span>{modules.routines.length}</span></button></div>
     {section === "tasks" && <div className="module-two-col">
       <Panel title="Tugas baru" caption="Simpan tindakan yang jelas dan bisa diselesaikan" artwork="work"><form className="form-grid" noValidate onSubmit={addTask}><Field label="Nama tugas"><input className={field} name="title" required maxLength={120} placeholder="Apa yang perlu diselesaikan?" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={1000} /></Field><div className="form-two-columns"><Field label="Prioritas"><ThemedSelect className={field} name="priority"><option value="low">Rendah</option><option value="medium">Sedang</option><option value="high">Tinggi</option></ThemedSelect></Field><Field label="Tenggat"><input className={field} name="dueDate" type="date" min={today()} /></Field></div><PrimaryButton type="submit"><Plus size={15} /> Tambah tugas</PrimaryButton></form></Panel>
-      <Panel title="Task board" caption={`${modules.tasks.filter((task) => task.status === "done").length} dari ${modules.tasks.length} tugas selesai`}><div className="module-tabs compact">{(["all", "todo", "doing", "done"] as const).map((value) => <button key={value} className={status === value ? "active" : ""} onClick={() => setStatus(value)}>{value === "all" ? "Semua" : value === "todo" ? "To do" : value === "doing" ? "Berjalan" : "Selesai"}</button>)}</div>{taskList.length ? <div className="module-list">{taskList.map((task) => <article className="module-item" key={task.id}><div className="module-item-top"><div><span className={`module-priority ${task.priority}`}>{task.priority === "high" ? "Tinggi" : task.priority === "medium" ? "Sedang" : "Rendah"}</span><h3>{task.title}</h3>{task.description && <p>{task.description}</p>}</div><button className="module-icon-action danger" onClick={() => confirmRemove(`tugas "${task.title}"`, () => updateModule("tasks", (items) => remove(items, task.id)))} aria-label={`Hapus tugas ${task.title}`}><Trash2 size={15} /></button></div><div className="module-inline-meta"><small>{task.dueDate ? formatDate(task.dueDate) : "Tanpa tenggat"}</small><ThemedSelect className="module-status-select" value={task.status} onChange={(value) => updateModule("tasks", (items) => items.map((item) => item.id === task.id ? { ...item, status: value as TaskStatus } : item))}><option value="todo">To do</option><option value="doing">Berjalan</option><option value="done">Selesai</option></ThemedSelect></div></article>)}</div> : <NoData>Tidak ada tugas pada filter ini.</NoData>}</Panel>
+      <Panel title="Task board" caption={`${modules.tasks.filter((task) => task.status === "done").length} dari ${modules.tasks.length} tugas selesai`}><div className="module-tabs compact">{(["all", "todo", "doing", "done"] as const).map((value) => <button key={value} className={status === value ? "active" : ""} onClick={() => setStatus(value)}>{value === "all" ? "Semua" : value === "todo" ? "To do" : value === "doing" ? "Berjalan" : "Selesai"}</button>)}</div>{taskList.length ? <div className="module-list">{taskList.map((task) => <article className="module-item" key={task.id}><div className="module-item-top"><div><span className={`module-priority ${task.priority}`}>{task.priority === "high" ? "Tinggi" : task.priority === "medium" ? "Sedang" : "Rendah"}</span><h3>{task.title}</h3>{task.description && <p>{task.description}</p>}</div></div><div className="module-inline-meta"><small>{task.dueDate ? formatDate(task.dueDate) : "Tanpa tenggat"}</small><ThemedSelect className="module-status-select" value={task.status} onChange={(value) => updateModule("tasks", (items) => items.map((item) => item.id === task.id ? { ...item, status: value as TaskStatus } : item))}><option value="todo">To do</option><option value="doing">Berjalan</option><option value="done">Selesai</option></ThemedSelect></div></article>)}</div> : <NoData>Tidak ada tugas pada filter ini.</NoData>}</Panel>
     </div>}
-    {section === "notes" && <div className="module-two-col"><Panel title="Catatan baru" caption="Simpan ide, referensi, atau ringkasan" artwork="work"><form className="form-grid" noValidate onSubmit={addNote}><Field label="Judul"><input className={field} name="title" required maxLength={100} /></Field><Field label="Isi"><textarea className={field} name="body" rows={6} required maxLength={5000} /></Field><Field label="Tag (pisahkan dengan koma)"><input className={field} name="tags" maxLength={200} placeholder="kerja, ide, referensi" /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan catatan</PrimaryButton></form></Panel><Panel title="Catatan tersimpan" caption={`${modules.notes.length} catatan`}>{modules.notes.length ? <div className="module-list">{modules.notes.map((note) => <article className="module-item" key={note.id}><div className="module-item-top"><h3>{note.title}</h3><button className="module-icon-action danger" onClick={() => confirmRemove(`catatan "${note.title}"`, () => updateModule("notes", (items) => remove(items, note.id)))} aria-label={`Hapus catatan ${note.title}`}><Trash2 size={15} /></button></div><p>{note.body}</p><div className="module-chip-row">{note.tags.map((tag) => <span className="module-tag" key={tag}>{tag}</span>)}</div><small className="module-muted">Diperbarui {new Date(note.updatedAt).toLocaleDateString("id-ID")}</small></article>)}</div> : <NoData>Belum ada catatan.</NoData>}</Panel></div>}
-    {section === "routines" && <div className="module-two-col"><Panel title="Rutinitas baru" caption="Pekerjaan berulang yang ingin dijaga" artwork="work"><form className="form-grid" noValidate onSubmit={addRoutine}><Field label="Nama rutinitas"><input className={field} name="title" required maxLength={100} /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><Field label="Frekuensi"><ThemedSelect className={field} name="frequency"><option value="daily">Harian</option><option value="weekdays">Hari kerja</option><option value="weekly">Setiap minggu</option><option value="monthly">Setiap bulan</option></ThemedSelect></Field><PrimaryButton type="submit"><Plus size={15} /> Tambah rutinitas</PrimaryButton></form></Panel><Panel title="Rutinitas tersimpan">{modules.routines.length ? <div className="module-list">{modules.routines.map((item) => <article className="module-item" key={item.id}><div className="module-item-top"><div><h3>{item.title}</h3><p>{item.description}</p><small className="module-muted">{ROUTINE_FREQUENCY_LABELS[item.frequency] ?? item.frequency}</small></div><button className="module-icon-action danger" onClick={() => confirmRemove(`rutinitas "${item.title}"`, () => updateModule("routines", (items) => remove(items, item.id)))} aria-label={`Hapus rutinitas ${item.title}`}><Trash2 size={15} /></button></div><button className={secondary} onClick={() => updateModule("routines", (items) => items.map((routine) => routine.id === item.id ? { ...routine, lastDone: today() } : routine))}>Tandai dilakukan hari ini {item.lastDone === today() ? "✓" : ""}</button></article>)}</div> : <NoData>Belum ada rutinitas kerja.</NoData>}</Panel></div>}
+    {section === "notes" && <div className="module-two-col"><Panel title="Catatan baru" caption="Simpan ide, referensi, atau ringkasan" artwork="work"><form className="form-grid" noValidate onSubmit={addNote}><Field label="Judul"><input className={field} name="title" required maxLength={100} /></Field><Field label="Isi"><textarea className={field} name="body" rows={6} required maxLength={5000} /></Field><Field label="Tag (pisahkan dengan koma)"><input className={field} name="tags" maxLength={200} placeholder="kerja, ide, referensi" /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan catatan</PrimaryButton></form></Panel><Panel title="Catatan tersimpan" caption={`${modules.notes.length} catatan`}>{modules.notes.length ? <div className="module-list">{modules.notes.map((note) => <article className="module-item" key={note.id}><div className="module-item-top"><h3>{note.title}</h3></div><p>{note.body}</p><div className="module-chip-row">{note.tags.map((tag) => <span className="module-tag" key={tag}>{tag}</span>)}</div><small className="module-muted">Diperbarui {new Date(note.updatedAt).toLocaleDateString("id-ID")}</small></article>)}</div> : <NoData>Belum ada catatan.</NoData>}</Panel></div>}
+    {section === "routines" && <div className="module-two-col"><Panel title="Rutinitas baru" caption="Pekerjaan berulang yang ingin dijaga" artwork="work"><form className="form-grid" noValidate onSubmit={addRoutine}><Field label="Nama rutinitas"><input className={field} name="title" required maxLength={100} /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><Field label="Frekuensi"><ThemedSelect className={field} name="frequency"><option value="daily">Harian</option><option value="weekdays">Hari kerja</option><option value="weekly">Setiap minggu</option><option value="monthly">Setiap bulan</option></ThemedSelect></Field><PrimaryButton type="submit"><Plus size={15} /> Tambah rutinitas</PrimaryButton></form></Panel><Panel title="Rutinitas tersimpan">{modules.routines.length ? <div className="module-list">{modules.routines.map((item) => <article className="module-item" key={item.id}><div className="module-item-top"><div><h3>{item.title}</h3><p>{item.description}</p><small className="module-muted">{ROUTINE_FREQUENCY_LABELS[item.frequency] ?? item.frequency}</small></div></div><button className={secondary} onClick={() => updateModule("routines", (items) => items.map((routine) => routine.id === item.id ? { ...routine, lastDone: today() } : routine))}>Tandai dilakukan hari ini {item.lastDone === today() ? "✓" : ""}</button></article>)}</div> : <NoData>Belum ada rutinitas kerja.</NoData>}</Panel></div>}
   </>;
 }
 
@@ -243,7 +261,6 @@ function WellnessView({ modules, updateModule }: { modules: WorkspaceModules; up
 
 function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
   const [photoBusy, setPhotoBusy] = useState(false);
-  const confirmRemove = useConfirmRemove();
   const { confirm } = useConfirm();
 
   function addWorkout(event: FormEvent<HTMLFormElement>) {
@@ -289,9 +306,9 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
   return <>
     <Intro eyebrow="WORKOUT & TRAINING" title="Latihan dengan progres yang tercatat." subtitle="Simpan program, sesi latihan, kardio, dan foto progres. Fitur peta otot tidak disertakan." />
     <div className="module-metrics"><Metric label="SESI LATIHAN" value={String(modules.workouts.length)} foot="Seluruh riwayat" icon={Activity} tone="leaf" /><Metric label="TOTAL DURASI" value={`${totalMinutes} mnt`} foot="Latihan dan kardio" icon={Clock3} tone="amber" /><Metric label="KESIAPAN HARI INI" value={readiness ? `${Math.round((readiness.mood + readiness.energy) / 10 * 100)}%` : "—"} foot={readiness ? "Dari mood dan energi" : "Isi daily check-in dahulu"} icon={Gauge} tone="peach" /></div>
-    <div className="module-two-col"><Panel title="Catat sesi latihan" caption="Log gerakan, set, repetisi, beban, dan kardio" artwork="training"><form className="form-grid" noValidate onSubmit={addWorkout}><Field label="Nama sesi"><input className={field} name="title" defaultValue="Full body" maxLength={80} /></Field><div className="form-two-columns"><Field label="Tanggal"><input className={field} name="date" type="date" max={today()} defaultValue={today()} /></Field><Field label="Durasi latihan (menit)"><input className={field} name="duration" type="number" min="0" inputMode="numeric" defaultValue="45" /></Field></div><Field label="Nama gerakan"><input className={field} name="exercise" required maxLength={80} placeholder="Contoh: Push-up" /></Field><div className="form-three-columns"><Field label="Set"><input className={field} name="sets" type="number" min="1" inputMode="numeric" defaultValue="3" /></Field><Field label="Repetisi"><input className={field} name="reps" type="number" min="1" inputMode="numeric" defaultValue="10" /></Field><Field label="Beban (kg)"><input className={field} name="weight" type="number" min="0" step=".5" inputMode="decimal" defaultValue="0" /></Field></div><Field label="Kardio (menit)"><input className={field} name="cardio" type="number" min="0" inputMode="numeric" defaultValue="0" /></Field><Field label="Catatan"><textarea className={field} name="notes" rows={2} maxLength={1000} /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan latihan</PrimaryButton></form></Panel><Panel title="Program latihan" caption="Simpan split latihan mingguan"><form className="form-grid" noValidate onSubmit={addProgram}><Field label="Nama program"><input className={field} name="title" required maxLength={80} placeholder="Contoh: Strength 3 hari" /></Field><Field label="Hari latihan"><input className={field} name="days" maxLength={120} placeholder="Senin, Rabu, Jumat" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><PrimaryButton type="submit"><Plus size={15} /> Buat program</PrimaryButton></form>{modules.programs.map((program) => <article className="module-item" key={program.id}><div className="module-item-top"><div><h3>{program.title} {program.active && <span className="module-tag">Aktif</span>}</h3><p>{program.days} · {program.description}</p></div><button className="module-icon-action danger" onClick={() => confirmRemove(`program "${program.title}"`, () => updateModule("programs", (items) => remove(items, program.id)))} aria-label={`Hapus program ${program.title}`}><Trash2 size={14} /></button></div><button className={secondary} onClick={() => updateModule("programs", (items) => items.map((item) => ({ ...item, active: item.id === program.id })))}>Jadikan aktif</button></article>)}</Panel></div>
-    <Panel title="Riwayat latihan" caption="Setiap sesi yang kamu catat">{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div><button className="module-icon-action danger" onClick={() => confirmRemove("sesi latihan ini", () => updateModule("workouts", (items) => remove(items, session.id)))} aria-label="Hapus sesi"><Trash2 size={14} /></button></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData>Belum ada sesi latihan.</NoData>}</Panel>
-    <Panel title="Foto progres" caption="Foto dikompresi sebelum disimpan; maksimal 5 foto aktif"><label className="module-upload"><ImagePlus size={20} /><span>{photoBusy ? "Mengompresi foto…" : "Tambah foto progres"}</span><input type="file" accept="image/*" disabled={photoBusy} onChange={addPhoto} /></label>{modules.progressPhotos.length > 0 && <div className="module-photo-grid">{/* eslint-disable @next/next/no-img-element -- data URL JPEG hasil kompresi klien; optimasi next/image tidak berlaku untuk data URL */}{modules.progressPhotos.map((photo) => <figure key={photo.id}><img src={photo.imageData} alt={`Foto progres ${photo.date}`} /><figcaption>{formatDate(photo.date)}<button onClick={() => confirmRemove("foto progres ini", () => updateModule("progressPhotos", (items) => remove(items, photo.id)))} aria-label="Hapus foto"><X size={13} /></button></figcaption></figure>)}{/* eslint-enable @next/next/no-img-element */}</div>}</Panel>
+    <div className="module-two-col"><Panel title="Catat sesi latihan" caption="Log gerakan, set, repetisi, beban, dan kardio" artwork="training"><form className="form-grid" noValidate onSubmit={addWorkout}><Field label="Nama sesi"><input className={field} name="title" defaultValue="Full body" maxLength={80} /></Field><div className="form-two-columns"><Field label="Tanggal"><input className={field} name="date" type="date" max={today()} defaultValue={today()} /></Field><Field label="Durasi latihan (menit)"><input className={field} name="duration" type="number" min="0" inputMode="numeric" defaultValue="45" /></Field></div><Field label="Nama gerakan"><input className={field} name="exercise" required maxLength={80} placeholder="Contoh: Push-up" /></Field><div className="form-three-columns"><Field label="Set"><input className={field} name="sets" type="number" min="1" inputMode="numeric" defaultValue="3" /></Field><Field label="Repetisi"><input className={field} name="reps" type="number" min="1" inputMode="numeric" defaultValue="10" /></Field><Field label="Beban (kg)"><input className={field} name="weight" type="number" min="0" step=".5" inputMode="decimal" defaultValue="0" /></Field></div><Field label="Kardio (menit)"><input className={field} name="cardio" type="number" min="0" inputMode="numeric" defaultValue="0" /></Field><Field label="Catatan"><textarea className={field} name="notes" rows={2} maxLength={1000} /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan latihan</PrimaryButton></form></Panel><Panel title="Program latihan" caption="Simpan split latihan mingguan"><form className="form-grid" noValidate onSubmit={addProgram}><Field label="Nama program"><input className={field} name="title" required maxLength={80} placeholder="Contoh: Strength 3 hari" /></Field><Field label="Hari latihan"><input className={field} name="days" maxLength={120} placeholder="Senin, Rabu, Jumat" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><PrimaryButton type="submit"><Plus size={15} /> Buat program</PrimaryButton></form>{modules.programs.map((program) => <article className="module-item" key={program.id}><div className="module-item-top"><div><h3>{program.title} {program.active && <span className="module-tag">Aktif</span>}</h3><p>{program.days} · {program.description}</p></div></div><button className={secondary} onClick={() => updateModule("programs", (items) => items.map((item) => ({ ...item, active: item.id === program.id })))}>Jadikan aktif</button></article>)}</Panel></div>
+    <Panel title="Riwayat latihan" caption="Setiap sesi yang kamu catat">{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData>Belum ada sesi latihan.</NoData>}</Panel>
+    <Panel title="Foto progres" caption="Foto dikompresi sebelum disimpan; maksimal 5 foto aktif"><label className="module-upload"><ImagePlus size={20} /><span>{photoBusy ? "Mengompresi foto…" : "Tambah foto progres"}</span><input type="file" accept="image/*" disabled={photoBusy} onChange={addPhoto} /></label>{modules.progressPhotos.length > 0 && <div className="module-photo-grid">{/* eslint-disable @next/next/no-img-element -- data URL JPEG hasil kompresi klien; optimasi next/image tidak berlaku untuk data URL */}{modules.progressPhotos.map((photo) => <figure key={photo.id}><img src={photo.imageData} alt={`Foto progres ${photo.date}`} /><figcaption>{formatDate(photo.date)}</figcaption></figure>)}{/* eslint-enable @next/next/no-img-element */}</div>}</Panel>
   </>;
 }
 
@@ -435,7 +452,6 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
   onAddTransactions: (items: Transaction[]) => void;
 }) {
   const [tab, setTab] = useState<"wallets" | "transfers" | "recurring" | "savings" | "rules" | "split" | "weekly">("wallets");
-  const confirmRemove = useConfirmRemove();
   const { confirm } = useConfirm();
   const finance = modules.finance;
   const update = (fn: (current: FinanceExtras) => FinanceExtras) => updateModule("finance", fn);
@@ -585,7 +601,6 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
             <div className="finx-row-copy"><strong>{wallet.name}</strong><small>{WALLET_TYPE_LABELS[wallet.type] ?? wallet.type}</small></div>
             <div className="finx-row-side">
               <strong className={`finx-row-value ${balance < 0 ? "is-negative" : ""}`}>{formatCompactRupiah(balance)}</strong>
-              <button className="finx-delete" onClick={() => confirmRemove(`dompet "${wallet.name}"`, () => update((current) => ({ ...current, wallets: remove(current.wallets, wallet.id) })))} aria-label={`Hapus ${wallet.name}`}><Trash2 size={15} /></button>
             </div>
           </article>); })}</div> : <NoData>Tambahkan dompet untuk mencatat saldo dan transfer antar sumber dana.</NoData>}
       </div>
@@ -609,7 +624,6 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
             <div className="finx-row-copy"><strong>{finance.wallets.find((wallet) => wallet.id === item.fromWalletId)?.name || "Dompet dihapus"} → {finance.wallets.find((wallet) => wallet.id === item.toWalletId)?.name || "Dompet dihapus"}</strong><small>{formatDate(item.date)}{item.note ? ` · ${item.note}` : ""}</small></div>
             <div className="finx-row-side">
               <strong className="finx-row-value">{formatCompactRupiah(item.amount)}</strong>
-              <button className="finx-delete" onClick={() => confirmRemove("transfer ini", () => update((current) => ({ ...current, transfers: remove(current.transfers, item.id) })))} aria-label="Hapus transfer"><Trash2 size={15} /></button>
             </div>
           </article>))}</div> : <NoData>Belum ada transfer tersimpan.</NoData>}
       </div>
@@ -644,7 +658,6 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
                   update((current) => ({ ...current, recurring: current.recurring.map((entry) => entry.id === item.id ? { ...entry, nextDate } : entry) }));
                 }}>Catat transaksi</button>
                 <button className={secondary} onClick={() => update((current) => ({ ...current, recurring: current.recurring.map((entry) => entry.id === item.id ? { ...entry, active: !entry.active } : entry) }))}>{item.active ? "Jeda" : "Aktifkan"}</button>
-                <button className="finx-delete" onClick={() => confirmRemove(`transaksi berulang "${item.title}"`, () => update((current) => ({ ...current, recurring: remove(current.recurring, item.id) })))} aria-label={`Hapus ${item.title}`}><Trash2 size={15} /></button>
               </div>
             </div>
           </article>))}</div> : <NoData>Belum ada transaksi berulang tersimpan.</NoData>}
@@ -673,7 +686,6 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
               <span className="finx-badge up">{Math.round(progress)}%</span>
               <div className="finx-row-buttons">
                 <button className={secondary} onClick={() => confirm({ tone: "leaf", title: "Tambah dana", subject: goal.title, message: `Sudah terkumpul ${formatCompactRupiah(goal.savedAmount)} dari ${formatCompactRupiah(goal.targetAmount)}. Masukkan nominal yang ingin ditambahkan.`, confirmLabel: "Simpan", prompt: { label: "Nominal tambahan", placeholder: "50000", inputMode: "numeric", prefix: "Rp" }, validate: (value) => { const amount = Number((value || "").replace(/[^\d]/g, "")); return Number.isFinite(amount) && amount > 0 ? undefined : "Nominal harus berupa angka lebih dari Rp0."; }, onConfirm: (value) => { const amount = Number((value || "").replace(/[^\d]/g, "")); if (amount > 0) update((current) => ({ ...current, savingsGoals: current.savingsGoals.map((item) => item.id === goal.id ? { ...item, savedAmount: item.savedAmount + Math.round(amount) } : item) })); } })}>Tambah dana</button>
-                <button className="finx-delete" onClick={() => confirmRemove(`target tabungan "${goal.title}"`, () => update((current) => ({ ...current, savingsGoals: remove(current.savingsGoals, goal.id) })))} aria-label={`Hapus target ${goal.title}`}><Trash2 size={15} /></button>
               </div>
             </div>
           </article>); })}</div> : <NoData>Belum ada target tabungan tersimpan.</NoData>}
@@ -693,9 +705,6 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
           <article className="finx-row" key={rule.id}>
             <span className="finx-row-icon is-cream" aria-hidden="true"><ListFilter size={19} /></span>
             <div className="finx-row-copy"><strong>{rule.keyword}</strong><small>Setiap transaksi berisi kata ini → <b>{rule.category}</b></small></div>
-            <div className="finx-row-side">
-              <button className="finx-delete" onClick={() => confirmRemove(`aturan "${rule.keyword}"`, () => update((current) => ({ ...current, categoryRules: remove(current.categoryRules, rule.id) })))} aria-label={`Hapus aturan ${rule.keyword}`}><Trash2 size={15} /></button>
-            </div>
           </article>))}</div> : <NoData>Belum ada aturan kategori tersimpan.</NoData>}
       </div>
     </div>}
@@ -739,7 +748,6 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
             </div>
             <div className="finx-row-side">
               <span className={`finx-badge ${percent > 100 ? "due" : "up"}`}>{percent > 100 ? `Lewat ${percent - 100}%` : `${percent}%`}</span>
-              <button className="finx-delete" onClick={() => confirmRemove(`budget mingguan ${budget.category}`, () => update((current) => ({ ...current, weeklyBudgets: current.weeklyBudgets.filter((item) => item.category !== budget.category) })))} aria-label={`Hapus budget ${budget.category}`}><Trash2 size={15} /></button>
             </div>
           </article>); })}</div> : <NoData>Belum ada budget mingguan tersimpan.</NoData>}
       </div>

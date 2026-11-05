@@ -10,7 +10,6 @@ import { RichText } from "@/components/ui/rich-text";
 import { isScheduledOn } from "@/lib/habit-schedule";
 import { todayISO } from "@/lib/format";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
-import { useConfirmRemove } from "@/components/ui/confirm-dialog";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import { HabitWeekHistory } from "@/components/ui/weekly-history";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
@@ -18,7 +17,10 @@ import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustr
 type CompletionFilter = "all" | "pending" | "completed";
 const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
 
-export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, onDelete, vacationMode = false, onToggleVacation, groups = [], onCreateGroup, onDeleteGroup }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void; onAdjust?: (id: string, delta: number) => void; onReorder?: (items: Habit[]) => void; onDelete?: (id: string) => void; vacationMode?: boolean; onToggleVacation?: () => void; groups?: HabitGroup[]; onCreateGroup?: (name: string, color: string) => void; onDeleteGroup?: (id: string) => void }) {
+// v0.18: prop onDelete (kebiasaan) & onDeleteGroup (grup) dihapus — semua aksi
+// hapus dipindahkan ke Pengaturan → Kelola & hapus data (data-manager-view),
+// agar daftar tab tetap bersih dan tidak memenuhi UI.
+export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacationMode = false, onToggleVacation, groups = [], onCreateGroup }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void; onAdjust?: (id: string, delta: number) => void; onReorder?: (items: Habit[]) => void; vacationMode?: boolean; onToggleVacation?: () => void; groups?: HabitGroup[]; onCreateGroup?: (name: string, color: string) => void }) {
   const [completionFilter, setCompletionFilter] = useState<CompletionFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
   const [query, setQuery] = useState("");
@@ -28,12 +30,6 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, onDel
   const [groupNameInput, setGroupNameInput] = useState("");
   const [groupColor, setGroupColor] = useState("#6b9d82");
   const [groupsOpen, setGroupsOpen] = useState(false);
-  const confirmRemove = useConfirmRemove();
-  // Hapus kebiasaan individu: dialog tematik dulu, baru panggil handler induk.
-  const handleRowDelete = onDelete ? (id: string) => {
-    const habit = habits.find((item) => item.id === id);
-    if (habit) confirmRemove(`kebiasaan "${habit.title}"`, () => onDelete(id));
-  } : undefined;
   const today = todayISO();
   const todayParts = today.split("-").map(Number);
   const todayUtc = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2]));
@@ -203,7 +199,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, onDel
 
       <section className="card card-pad habit-groups-manager">
         <button type="button" className="group-manager-heading" aria-expanded={groupsOpen} onClick={() => setGroupsOpen((value) => !value)}><span><strong>Grup kebiasaan</strong><small>{groups.length} grup tersimpan · kelompokkan rutinitas berdasarkan konteks</small></span><span>{groupsOpen ? "Tutup" : "Kelola"}</span></button>
-        {groupsOpen && <div className="group-manager-body"><form className="group-create-form" onSubmit={(event) => { event.preventDefault(); const name = groupNameInput.trim(); if (!name || !onCreateGroup || groups.some((item) => item.name.toLocaleLowerCase("id-ID") === name.toLocaleLowerCase("id-ID"))) return; onCreateGroup(name, groupColor); setGroupNameInput(""); }}><input className="form-control" value={groupNameInput} onChange={(event) => setGroupNameInput(event.target.value)} placeholder="Nama grup baru, misalnya Rutinitas Pagi" maxLength={40} aria-label="Nama grup baru" /><input className="group-color-input" type="color" title="Pilih warna grup" value={groupColor} onChange={(event) => setGroupColor(event.target.value)} aria-label="Warna grup baru" /><button className="secondary-button module-small-button" type="submit" disabled={!groupNameInput.trim()}>Tambah grup</button></form>{groups.length > 0 && <div className="group-manager-list">{groups.map((group) => <div className="group-manager-item" key={group.id}><span className="group-color-dot" style={{ backgroundColor: group.color }} /><strong>{group.name}</strong><small>{habits.filter((habit) => habit.groupName === group.name).length} habit</small><button type="button" onClick={() => confirmRemove(`grup "${group.name}"`, () => onDeleteGroup?.(group.id))} aria-label={`Hapus grup ${group.name}`}>Hapus</button></div>)}</div>}</div>}
+        {groupsOpen && <div className="group-manager-body"><form className="group-create-form" onSubmit={(event) => { event.preventDefault(); const name = groupNameInput.trim(); if (!name || !onCreateGroup || groups.some((item) => item.name.toLocaleLowerCase("id-ID") === name.toLocaleLowerCase("id-ID"))) return; onCreateGroup(name, groupColor); setGroupNameInput(""); }}><input className="form-control" value={groupNameInput} onChange={(event) => setGroupNameInput(event.target.value)} placeholder="Nama grup baru, misalnya Rutinitas Pagi" maxLength={40} aria-label="Nama grup baru" /><input className="group-color-input" type="color" title="Pilih warna grup" value={groupColor} onChange={(event) => setGroupColor(event.target.value)} aria-label="Warna grup baru" /><button className="secondary-button module-small-button" type="submit" disabled={!groupNameInput.trim()}>Tambah grup</button></form>{groups.length > 0 && <div className="group-manager-list">{groups.map((group) => <div className="group-manager-item" key={group.id}><span className="group-color-dot" style={{ backgroundColor: group.color }} /><strong>{group.name}</strong><small>{habits.filter((habit) => habit.groupName === group.name).length} habit</small></div>)}</div>}</div>}
       </section>
 
       <section className="card card-pad habits-panel">
@@ -248,7 +244,6 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, onDel
                 variant="card"
                 onToggle={onToggle}
                 onAdjust={onAdjust}
-                onDelete={handleRowDelete}
                 paused={vacationMode}
                 dragHandle={onReorder ? (
                   <button

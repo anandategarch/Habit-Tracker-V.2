@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { BotanicalIllustration, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import { WeeklyHistorySlot } from "@/components/ui/weekly-history";
 import {
-  ArrowDownLeft, ArrowUpRight, Check, Clock3, Flame, Sprout, Target, Trash2,
+  ArrowDownLeft, ArrowUpRight, Check, Clock3, Flame, Sprout, Target,
 } from "lucide-react";
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
@@ -75,7 +75,9 @@ function HabitGlyph({ icon }: { icon: Habit["icon"] }) {
   return <HabitArtIcon icon={icon} size={19} />;
 }
 
-function HabitRow({ habit, onToggle, onAdjust, onDelete, paused = false, dragHandle, variant = "default" }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; onDelete?: (id: string) => void; paused?: boolean; dragHandle?: ReactNode; variant?: "default" | "card" }) {
+// v0.18: prop onDelete dihapus — seluruh aksi hapus kebiasaan kini terpusat di
+// Pengaturan (data-manager-view), bukan lagi di baris daftar tab.
+function HabitRow({ habit, onToggle, onAdjust, paused = false, dragHandle, variant = "default" }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; paused?: boolean; dragHandle?: ReactNode; variant?: "default" | "card" }) {
   const amountHabit = habit.kind === "amount";
   const current = habit.currentAmount ?? 0;
   const target = habit.targetAmount ?? 1;
@@ -131,7 +133,6 @@ function HabitRow({ habit, onToggle, onAdjust, onDelete, paused = false, dragHan
         {avoid && <small className="habit-kind-note">Streak dihitung pada hari berhasil menghindari kebiasaan ini.</small>}
       </div>
       <div className="habit-row-actions">
-        {onDelete && <button type="button" className="habit-delete" aria-label={`Hapus kebiasaan ${habit.title}`} title={`Hapus kebiasaan ${habit.title}`} onClick={() => onDelete(habit.id)}><Trash2 size={13} /></button>}
         {amountHabit ? (
           <div className="habit-amount-stepper">
             <button type="button" aria-label={`Kurangi ${habit.title}`} disabled={current <= 0 || paused} onClick={() => onAdjust?.(habit.id, -1)}>−</button>
@@ -159,7 +160,7 @@ function HabitRow({ habit, onToggle, onAdjust, onDelete, paused = false, dragHan
   );
 }
 
-function TransactionRow({ transaction, onDelete }: { transaction: Transaction; onDelete?: (id: string) => void }) {
+function TransactionRow({ transaction }: { transaction: Transaction }) {
   const income = transaction.type === "income";
   return (
     <article className="transaction-row">
@@ -171,7 +172,6 @@ function TransactionRow({ transaction, onDelete }: { transaction: Transaction; o
         <div className="transaction-meta">{transaction.category} <span>·</span> {formatDate(transaction.date)}</div>
       </div>
       <div className={`transaction-amount ${income ? "income" : "expense"}`}>{income ? "+" : "−"}{formatRupiah(transaction.amount)}</div>
-      {onDelete && <button type="button" className="transaction-delete" aria-label={`Hapus transaksi ${transaction.title}`} title={`Hapus transaksi ${transaction.title}`} onClick={() => onDelete(transaction.id)}><Trash2 size={13} /></button>}
     </article>
   );
 }
