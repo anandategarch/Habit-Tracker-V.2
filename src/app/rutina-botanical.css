@@ -5748,6 +5748,22 @@ button:disabled:active {
 }
 .finx-delete:active { transform: scale(.92); background: #FBE9E2; }
 
+/* 5b. Tombol hapus di baris kebiasaan & transaksi (v0.17) — bahasa visual
+   .finx-delete pada daftar utama; target sentuh 40px (WCAG 2.5.5) agar
+   sejajar dengan .check-button 40px di baris yang sama. */
+.habit-delete,
+.transaction-delete {
+  display: grid; place-items: center; width: 40px; height: 40px; flex: none;
+  padding: 0; border: 0; border-radius: 50%; color: #B04A2E; background: #FDF2EE;
+  transition: transform .16s ease, background .16s ease;
+}
+.habit-delete:active,
+.transaction-delete:active { transform: scale(.92); background: #FBE9E2; }
+/* Hover khusus: aturan generik .habit-row-actions button:hover (globals lama)
+   memakai hijau muda — jangan sampai tombol destruktif menyala hijau. */
+.habit-row-actions .habit-delete:hover,
+.transaction-delete:hover { background: #FBE9E2; color: #A5432A; }
+
 /* 6. Badge status & bar progres */
 .finx-badge { display: inline-flex; align-items: center; padding: 4px 11px; border-radius: 999px; font-size: 9.5px; font-weight: 850; white-space: nowrap; }
 .finx-badge.up { color: #2F5E40; background: #EAF3E2; }
@@ -6851,6 +6867,12 @@ html[data-theme="dark"] .finx-row-value.is-negative { color: #e2a088; }
 
 html[data-theme="dark"] .finx-delete { color: #e2a088; background: #3d2f2a; }
 html[data-theme="dark"] .finx-delete:active { background: #4a382f; }
+html[data-theme="dark"] .habit-delete,
+html[data-theme="dark"] .transaction-delete { color: #e2a088; background: #3d2f2a; }
+html[data-theme="dark"] .habit-delete:active,
+html[data-theme="dark"] .transaction-delete:active { background: #4a382f; }
+html[data-theme="dark"] .habit-row-actions .habit-delete:hover,
+html[data-theme="dark"] .transaction-delete:hover { background: #4a382f; color: #f0c4b4; }
 
 html[data-theme="dark"] .finx-badge.up { color: #b7d8a8; background: #2e3f2c; }
 html[data-theme="dark"] .finx-badge.due { color: #dfab85; background: #48372c; }

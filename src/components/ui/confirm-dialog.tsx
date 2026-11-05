@@ -268,6 +268,8 @@ export function useConfirmRemove() {
     const notes: Record<string, string> = {
       dompet: "Catatan transaksi dan riwayat transfer tidak ikut terhapus — hanya dompetnya yang keluar dari daftar.",
       grup: "Kebiasaan di dalam grup tetap aman, hanya label grupnya yang hilang.",
+      kebiasaan: "Streak, progres jumlah, dan riwayat mingguan kebiasaan ini ikut terhapus.",
+      transaksi: "Ringkasan bulanan dan insight akan dihitung ulang tanpa transaksi ini.",
     };
     confirm({
       tone: "danger",

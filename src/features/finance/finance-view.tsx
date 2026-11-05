@@ -24,20 +24,28 @@ import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import { FinanceCategoryIcon } from "@/components/ui/category-icons";
+import { useConfirmRemove } from "@/components/ui/confirm-dialog";
 
 const categoryPaletteLength = 8;
 type TransactionFilter = "all" | "income" | "expense";
 
-export function FinanceView({ transactions, budgets, income, expense, onAdd, onEditBudgets }: {
+export function FinanceView({ transactions, budgets, income, expense, onAdd, onEditBudgets, onDelete }: {
   transactions: Transaction[];
   budgets: Budget[];
   income: number;
   expense: number;
   onAdd: () => void;
   onEditBudgets: () => void;
+  onDelete?: (id: string) => void;
 }) {
   const [filter, setFilter] = useState<TransactionFilter>("all");
   const [showAllTransactions, setShowAllTransactions] = useState(false);
+  const confirmRemove = useConfirmRemove();
+  // Hapus transaksi dari daftar: dialog tematik dulu, baru panggil handler induk.
+  const handleRowDelete = onDelete ? (id: string) => {
+    const transaction = transactions.find((item) => item.id === id);
+    if (transaction) confirmRemove(`transaksi "${transaction.title}"`, () => onDelete(id));
+  } : undefined;
   const todayKey = todayISO();
   const currentMonthKey = todayKey.slice(0, 7);
   const [monthKey, setMonthKey] = useState(currentMonthKey);
@@ -476,7 +484,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
         </div>
         <div className="transaction-list" id="finance-transaction-list">
           {visibleTransactions.map((transaction) => (
-            <TransactionRow key={transaction.id} transaction={transaction} />
+            <TransactionRow key={transaction.id} transaction={transaction} onDelete={handleRowDelete} />
           ))}
         </div>
         {filteredTransactions.length === 0 && (

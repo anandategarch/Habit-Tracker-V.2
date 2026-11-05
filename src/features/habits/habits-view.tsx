@@ -18,7 +18,7 @@ import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustr
 type CompletionFilter = "all" | "pending" | "completed";
 const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
 
-export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacationMode = false, onToggleVacation, groups = [], onCreateGroup, onDeleteGroup }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void; onAdjust?: (id: string, delta: number) => void; onReorder?: (items: Habit[]) => void; vacationMode?: boolean; onToggleVacation?: () => void; groups?: HabitGroup[]; onCreateGroup?: (name: string, color: string) => void; onDeleteGroup?: (id: string) => void }) {
+export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, onDelete, vacationMode = false, onToggleVacation, groups = [], onCreateGroup, onDeleteGroup }: { habits: Habit[]; onToggle: (id: string) => void; onAdd: () => void; onAdjust?: (id: string, delta: number) => void; onReorder?: (items: Habit[]) => void; onDelete?: (id: string) => void; vacationMode?: boolean; onToggleVacation?: () => void; groups?: HabitGroup[]; onCreateGroup?: (name: string, color: string) => void; onDeleteGroup?: (id: string) => void }) {
   const [completionFilter, setCompletionFilter] = useState<CompletionFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
   const [query, setQuery] = useState("");
@@ -29,6 +29,11 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
   const [groupColor, setGroupColor] = useState("#6b9d82");
   const [groupsOpen, setGroupsOpen] = useState(false);
   const confirmRemove = useConfirmRemove();
+  // Hapus kebiasaan individu: dialog tematik dulu, baru panggil handler induk.
+  const handleRowDelete = onDelete ? (id: string) => {
+    const habit = habits.find((item) => item.id === id);
+    if (habit) confirmRemove(`kebiasaan "${habit.title}"`, () => onDelete(id));
+  } : undefined;
   const today = todayISO();
   const todayParts = today.split("-").map(Number);
   const todayUtc = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2]));
@@ -243,6 +248,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
                 variant="card"
                 onToggle={onToggle}
                 onAdjust={onAdjust}
+                onDelete={handleRowDelete}
                 paused={vacationMode}
                 dragHandle={onReorder ? (
                   <button
