@@ -5048,3 +5048,159 @@ button:disabled:active {
     filter: none !important;
   }
 }
+
+
+/* ==========================================================================
+   RUTINA v0.6 — contextual botanical illustrations + tactile icon feedback
+   ========================================================================== */
+.page-intro {
+  position: relative;
+  isolation: isolate;
+  min-height: 104px;
+}
+.page-intro-copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  max-width: min(72%, 760px);
+}
+.page-intro-action {
+  position: relative;
+  z-index: 2;
+}
+.page-intro-art {
+  position: absolute;
+  z-index: 0;
+  right: -4px;
+  bottom: -8px;
+  width: 126px;
+  height: 96px;
+  opacity: .88;
+  pointer-events: none;
+}
+.page-intro--has-action .page-intro-art {
+  right: 104px;
+  width: 100px;
+  height: 78px;
+  opacity: .56;
+}
+.botanical-illustration {
+  display: block;
+  flex: none;
+  line-height: 0;
+  pointer-events: none;
+}
+.botanical-illustration svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.botanical-illustration__leaf {
+  transform-box: fill-box;
+  transform-origin: 100% 100%;
+  animation: rutina-leaf-sway 5.2s ease-in-out infinite;
+}
+.botanical-illustration__leaf--second {
+  animation-delay: -2.4s;
+  transform-origin: 0% 100%;
+}
+@keyframes rutina-leaf-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2.5deg); }
+}
+.focus-heading-art {
+  width: 98px;
+  height: 72px;
+  margin: -8px -3px -8px 0;
+  opacity: .92;
+}
+
+.icon-action-feedback svg,
+.module-icon-action svg,
+.check-button svg,
+.habit-amount-stepper button svg,
+.calendar-actions svg,
+.bottom-nav > button svg,
+.desktop-nav-link svg {
+  transform-origin: center;
+  transition: transform 180ms cubic-bezier(.2,0,0,1), color 180ms ease-out, opacity 180ms ease-out;
+}
+.icon-action-feedback,
+.module-icon-action,
+.check-button,
+.habit-amount-stepper button,
+.calendar-day,
+.module-tabs button,
+.insight-period-tabs button {
+  transform-origin: center;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(.2,0,0,1);
+}
+.habit-icon {
+  transition: transform 180ms cubic-bezier(.2,0,0,1), background-color 180ms ease-out, color 180ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .icon-action-feedback:hover svg,
+  .module-icon-action:hover svg { transform: rotate(7deg) scale(1.06); }
+  .habit-row:hover .habit-icon { transform: translateY(-2px) rotate(-4deg); }
+  .module-tabs button:not(.active):hover,
+  .insight-period-tabs button:not(.active):hover { transform: translateY(-1px); }
+  .calendar-day.has-history:not(.selected):hover .calendar-history-dot {
+    transform: scale(1.35);
+    background: #6c9b69;
+  }
+}
+.icon-action-feedback:active,
+.module-icon-action:active,
+.check-button:active,
+.habit-amount-stepper button:active,
+.calendar-day:active,
+.module-tabs button:active,
+.insight-period-tabs button:active { transform: scale(.95); }
+.check-button.done svg { animation: rutina-check-arrive 260ms cubic-bezier(.2,0,0,1) both; }
+@keyframes rutina-check-arrive {
+  0% { opacity: 0; transform: scale(.45) rotate(-18deg); }
+  72% { opacity: 1; transform: scale(1.12) rotate(3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@media (max-width: 760px) {
+  .page-intro { min-height: 88px; }
+  .page-intro-copy { max-width: 100%; padding-right: 88px; }
+  .page-intro-art {
+    width: 92px;
+    height: 70px;
+    right: -6px;
+    bottom: -5px;
+    opacity: .68;
+  }
+  .page-intro--has-action .page-intro-art {
+    right: -4px;
+    width: 78px;
+    height: 60px;
+    opacity: .38;
+  }
+  .page-intro--has-action .page-intro-copy { padding-right: 70px; }
+  .page-intro--has-action .page-intro-action { max-width: 100%; }
+  .focus-heading-art { width: 82px; height: 62px; }
+}
+@media (max-width: 390px) {
+  .page-intro-copy { padding-right: 68px; }
+  .page-intro-art { width: 74px; height: 58px; opacity: .58; }
+  .page-intro--has-action .page-intro-copy { padding-right: 58px; }
+  .page-intro--has-action .page-intro-art { width: 64px; height: 50px; opacity: .32; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .botanical-illustration__leaf,
+  .check-button.done svg { animation: none !important; }
+  .icon-action-feedback svg,
+  .module-icon-action svg,
+  .check-button svg,
+  .habit-icon,
+  .calendar-history-dot,
+  .module-tabs button,
+  .insight-period-tabs button { transition: none !important; }
+}

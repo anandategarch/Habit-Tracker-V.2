@@ -1,7 +1,8 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { Pause, Play, RotateCcw, Timer } from "lucide-react";
+import { Pause, Play, RotateCcw } from "lucide-react";
+import { BotanicalIllustration } from "@/components/ui/botanical-illustration";
 
 export const FOCUS_SESSION_SECONDS = 25 * 60;
 
@@ -35,7 +36,7 @@ export function FocusTimer({
           <h2 className="section-title">Satu hal dalam satu waktu.</h2>
           <p className="section-caption">Fokus 25 menit. Beri ruang untuk hal yang penting.</p>
         </div>
-        <span className="focus-icon"><Timer size={18} /></span>
+        <BotanicalIllustration variant="focus" className="focus-heading-art" />
       </div>
       <div className="focus-timer-layout">
         <div className="focus-ring" style={{ "--progress": `${progress}%` } as CSSProperties} role="timer" aria-label={`Sisa waktu ${formatTime(remaining)}`}>

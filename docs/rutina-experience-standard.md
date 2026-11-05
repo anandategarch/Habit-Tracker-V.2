@@ -76,3 +76,15 @@ Keyframes tetap boleh untuk sequence satu kali seperti splash screen, skeleton s
 5. Hindari transition: all; sebut properti yang berubah.
 6. QA desktop dan mobile, termasuk keyboard, reduced-motion, touch hover, overlay scroll, timer, dan state empty/loading/error.
 7. Catat hal yang belum diverifikasi secara eksplisit; jangan mengklaim lulus browser test tanpa benar-benar menjalankannya.
+
+
+## Ilustrasi kontekstual dan ikon interaktif (v0.6)
+
+- Gunakan ilustrasi SVG botanical yang mengikuti konteks halaman: kebiasaan, kalender, insight, keuangan, tujuan, check-in, workspace, wellness, latihan, pohon, dan fokus.
+- Dashboard mempertahankan ilustrasi gardener yang sudah menjadi hero utama. Jangan menambahkan ilustrasi hero kedua yang membuat tampilan penuh dekorasi.
+- Pakai satu bahasa visual editorial flat, palet cream, sage, hijau daun, dan peach yang lembut. Hindari kumpulan gambar stok dan gaya ilustrasi yang campur aduk.
+- Ilustrasi di PageIntro bersifat dekoratif dan tidak boleh menggantikan judul, data, atau label kontrol yang bisa diakses.
+- Ikon interaktif harus tetap berada di dalam tombol yang memiliki nama aksesibel, fokus keyboard yang terlihat, serta feedback singkat yang dapat dibalik.
+- Efek hover hanya aktif untuk perangkat yang memiliki pointer hover. Interaksi sentuh tidak boleh meninggalkan state hover.
+- Hormati prefers-reduced-motion: nonaktifkan ayunan daun dan animasi sukses, sementara perubahan status tetap jelas melalui bentuk, warna, dan label.
+- Ilustrasi harus responsif, tidak menutupi judul/tombol, dan tidak menambah dependency runtime.

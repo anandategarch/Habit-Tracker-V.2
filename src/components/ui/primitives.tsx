@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BotanicalIllustration, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import {
   ArrowDownLeft, ArrowUpRight, BookOpen, Check, Clock3, Droplets,
   Dumbbell, Flame, Moon, PencilLine, Sprout, Target,
@@ -7,17 +8,36 @@ import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
 import { scheduleLabel } from "@/lib/habit-schedule";
 
-function PageIntro({ eyebrow, title, subtitle, action }: {
+function pageArtwork(eyebrow: string): BotanicalIllustrationVariant | null {
+  const label = eyebrow.toLocaleUpperCase("id-ID");
+  if (label.includes("KEBIASAAN")) return "habit";
+  if (label.includes("RIWAYAT") || label.includes("KALENDER")) return "calendar";
+  if (label.includes("REFLEKSI") || label.includes("INSIGHT")) return "insights";
+  if (label.includes("KEUANGAN")) return "finance";
+  if (label.includes("GOALS") || label.includes("TUJUAN")) return "goals";
+  if (label.includes("CHECK-IN") || label.includes("JOURNAL")) return "checkin";
+  if (label.includes("WORKSPACE") || label.includes("MEJA KERJA")) return "work";
+  if (label.includes("WELLNESS")) return "wellness";
+  if (label.includes("TRAINING") || label.includes("LATIHAN")) return "training";
+  if (label.includes("GROWTH JOURNEY") || label.includes("POHON")) return "tree";
+  if (label.includes("PENGATURAN") || label.includes("BACKUP")) return "settings";
+  return null;
+}
+
+function PageIntro({ eyebrow, title, subtitle, action, artwork }: {
   eyebrow: string; title: string; subtitle: string; action?: ReactNode;
+  artwork?: BotanicalIllustrationVariant | null;
 }) {
+  const illustration = artwork === undefined ? pageArtwork(eyebrow) : artwork;
   return (
-    <div className="page-intro">
+    <div className={`page-intro${illustration ? " page-intro--illustrated" : ""}${action ? " page-intro--has-action" : ""}`}>
       <div className="page-intro-copy">
         <div className="eyebrow">{eyebrow}</div>
         <h1 className="page-title">{title}</h1>
         <p className="page-subtitle">{subtitle}</p>
       </div>
       {action && <div className="page-intro-action">{action}</div>}
+      {illustration && <BotanicalIllustration variant={illustration} className="page-intro-art" />}
     </div>
   );
 }
@@ -31,7 +51,7 @@ function PrimaryButton({ children, onClick, type = "button", disabled = false }:
 function IconAction({ label, children, onClick, className = "" }: {
   label: string; children: ReactNode; onClick?: () => void; className?: string;
 }) {
-  return <button type="button" className={`icon-button ${className}`} aria-label={label} title={label} onClick={onClick}>{children}</button>;
+  return <button type="button" className={`icon-button icon-action-feedback ${className}`} aria-label={label} title={label} onClick={onClick}>{children}</button>;
 }
 
 function SectionHeading({ title, caption, action }: { title: string; caption?: string; action?: ReactNode }) {
