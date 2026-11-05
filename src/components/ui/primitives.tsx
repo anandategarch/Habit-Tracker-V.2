@@ -75,32 +75,84 @@ function HabitGlyph({ icon }: { icon: Habit["icon"] }) {
   return <HabitArtIcon icon={icon} size={19} />;
 }
 
-function HabitRow({ habit, onToggle, onAdjust, paused = false, dragHandle }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; paused?: boolean; dragHandle?: ReactNode }) {
+function HabitRow({ habit, onToggle, onAdjust, paused = false, dragHandle, variant = "default" }: { habit: Habit; onToggle: (id: string) => void; onAdjust?: (id: string, delta: number) => void; paused?: boolean; dragHandle?: ReactNode; variant?: "default" | "card" }) {
   const amountHabit = habit.kind === "amount";
   const current = habit.currentAmount ?? 0;
   const target = habit.targetAmount ?? 1;
   const percentage = Math.min(100, Math.round(current / target * 100));
   const avoid = habit.kind === "avoid";
+  const cardVariant = variant === "card";
+  const toggleLabel = habit.completed
+    ? (avoid ? `Catat pelanggaran ${habit.title}` : `Batalkan ${habit.title}`)
+    : (avoid ? `Tandai hari bersih ${habit.title}` : `Tandai ${habit.title} selesai`);
   return (
-    <article className={`habit-row ${habit.completed ? "is-complete" : ""} ${amountHabit ? "is-amount-habit" : ""}`}>
+    <article className={`habit-row ${cardVariant ? "habit-row-card" : ""} ${habit.completed ? "is-complete" : ""} ${amountHabit ? "is-amount-habit" : ""}`}>
       {dragHandle}
       <div className="habit-icon"><HabitGlyph icon={habit.icon} /></div>
-      <div className="habit-main">
-        <div className="habit-name">{habit.title}</div>
-        <div className="habit-meta">
-          <span><Clock3 size={11} /> {habit.time}</span>
-          <span>{habit.duration} menit target</span>
-          <span><Flame size={11} /> {habit.streak} hari</span>
-          {habit.priority && <span className={`habit-detail-tag priority-${habit.priority}`}>Prioritas {habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah"}</span>}
-          {habit.difficulty && <span className="habit-detail-tag">Kesulitan {habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah"}</span>}
-          {habit.groupName && <span className="habit-detail-tag">{habit.groupName}</span>}
-          {habit.schedule && habit.schedule.kind !== "daily" && <span className="habit-detail-tag">Jadwal {scheduleLabel(habit.schedule)}</span>}
-        </div>
+      <div className={`habit-main ${cardVariant ? "habit-card-main" : ""}`}>
+        {cardVariant ? (
+          <>
+            <div className="habit-row-heading">
+              <div className="habit-name">{habit.title}</div>
+              <span className="habit-streak-chip" title={`${habit.streak} hari berturut-turut`} aria-label={`Streak ${habit.streak} hari`}>
+                <Flame size={12} aria-hidden="true" />
+                <strong>{habit.streak}</strong>
+                <small>hari</small>
+              </span>
+            </div>
+            <div className="habit-meta">
+              <span><Clock3 size={11} /> {habit.time}</span>
+              <span>{habit.duration} menit target</span>
+            </div>
+            {(habit.priority || habit.difficulty || habit.groupName || (habit.schedule && habit.schedule.kind !== "daily")) && (
+              <div className="habit-context-tags">
+                {habit.priority && <span className={`habit-detail-tag priority-${habit.priority}`}>Prioritas {habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah"}</span>}
+                {habit.difficulty && <span className="habit-detail-tag">Kesulitan {habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah"}</span>}
+                {habit.groupName && <span className="habit-detail-tag">{habit.groupName}</span>}
+                {habit.schedule && habit.schedule.kind !== "daily" && <span className="habit-detail-tag">Jadwal {scheduleLabel(habit.schedule)}</span>}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="habit-name">{habit.title}</div>
+            <div className="habit-meta">
+              <span><Clock3 size={11} /> {habit.time}</span>
+              <span>{habit.duration} menit target</span>
+              <span><Flame size={11} /> {habit.streak} hari</span>
+              {habit.priority && <span className={`habit-detail-tag priority-${habit.priority}`}>Prioritas {habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah"}</span>}
+              {habit.difficulty && <span className="habit-detail-tag">Kesulitan {habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah"}</span>}
+              {habit.groupName && <span className="habit-detail-tag">{habit.groupName}</span>}
+              {habit.schedule && habit.schedule.kind !== "daily" && <span className="habit-detail-tag">Jadwal {scheduleLabel(habit.schedule)}</span>}
+            </div>
+          </>
+        )}
         {amountHabit && <div className="habit-amount-progress"><div className="habit-amount-caption"><strong>{current} / {target} {habit.unit || "unit"}</strong><span>{percentage}%</span></div><div className="module-progress-track"><span style={{ width: `${percentage}%` }} /></div></div>}
         {avoid && <small className="habit-kind-note">Streak dihitung pada hari berhasil menghindari kebiasaan ini.</small>}
       </div>
       <div className="habit-row-actions">
-        {amountHabit ? <div className="habit-amount-stepper"><button type="button" aria-label={`Kurangi ${habit.title}`} disabled={current <= 0 || paused} onClick={() => onAdjust?.(habit.id, -1)}>−</button><button type="button" aria-label={`Tambah ${habit.title}`} disabled={!onAdjust || paused} onClick={(event) => { if (!habit.completed && current + 1 >= target) burstLeaves(event.currentTarget); onAdjust?.(habit.id, 1); }}>+</button></div> : <button type="button" className={`check-button ${habit.completed ? "done" : ""}`} aria-label={habit.completed ? (avoid ? `Catat pelanggaran ${habit.title}` : `Batalkan ${habit.title}`) : (avoid ? `Tandai hari bersih ${habit.title}` : `Tandai ${habit.title} selesai`)} aria-pressed={habit.completed} disabled={paused} onClick={(event) => { if (!habit.completed) burstLeaves(event.currentTarget); onToggle(habit.id); }}>{habit.completed && <Check size={15} strokeWidth={2.8} />}</button>}
+        {amountHabit ? (
+          <div className="habit-amount-stepper">
+            <button type="button" aria-label={`Kurangi ${habit.title}`} disabled={current <= 0 || paused} onClick={() => onAdjust?.(habit.id, -1)}>−</button>
+            <button type="button" aria-label={`Tambah ${habit.title}`} disabled={!onAdjust || paused} onClick={(event) => { if (!habit.completed && current + 1 >= target) burstLeaves(event.currentTarget); onAdjust?.(habit.id, 1); }}>+</button>
+          </div>
+        ) : cardVariant ? (
+          <button
+            type="button"
+            className={`habit-check-action ${habit.completed ? "is-complete" : ""}`}
+            aria-label={toggleLabel}
+            aria-pressed={habit.completed}
+            disabled={paused}
+            onClick={(event) => { if (!habit.completed) burstLeaves(event.currentTarget); onToggle(habit.id); }}
+          >
+            <span className="habit-check-icon"><Check size={14} strokeWidth={2.8} /></span>
+            <span className="habit-check-label">{avoid ? "Hari bersih" : habit.completed ? "Selesai" : "Tandai selesai"}</span>
+          </button>
+        ) : (
+          <button type="button" className={`check-button ${habit.completed ? "done" : ""}`} aria-label={toggleLabel} aria-pressed={habit.completed} disabled={paused} onClick={(event) => { if (!habit.completed) burstLeaves(event.currentTarget); onToggle(habit.id); }}>
+            {habit.completed && <Check size={15} strokeWidth={2.8} />}
+          </button>
+        )}
       </div>
     </article>
   );
