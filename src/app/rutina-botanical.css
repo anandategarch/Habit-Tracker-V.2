@@ -7964,7 +7964,10 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
 
   /* B.7 Dashboard — theme picker, next-step, garden journey link, plus
      daily-intention-complete, weekly-add-action, story-card-open yang
-     muncul ketika user punya data (sebelumnya 38-42px). */
+     muncul ketika user punya data (sebelumnya 38-42px). Gunakan
+     selector +element (specificity 0,1,1) untuk menang rule lama
+     .daily-intention-actions button (line 5684) yang sebelumnya
+     min-height:42px. */
   .garden-theme-options button {
     min-height: 44px;
     padding-block: 11px;
@@ -7973,7 +7976,8 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
   .garden-journey-link,
   .daily-intention-complete,
   .weekly-add-action,
-  .story-card-open {
+  .story-card-open,
+  .daily-intention-actions button {
     min-height: 44px;
     padding-block: 11px;
     display: inline-flex;
