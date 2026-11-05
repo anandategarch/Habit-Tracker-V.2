@@ -4739,3 +4739,312 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
   }
   .habit-row-actions { grid-column: 3 / -1; }
 }
+
+
+/* ==========================================================================
+   RUTINA EXPERIENCE POLISH v0.5
+   Consolidated interaction + better-ui layer. Keep domain colours and density.
+   ========================================================================== */
+:root {
+  --rutina-ease-state: cubic-bezier(0.2, 0, 0, 1);
+  --rutina-duration-press: 150ms;
+  --rutina-duration-state: 200ms;
+  --rutina-duration-icon: 300ms;
+}
+
+/* High-frequency feedback is predictable and reversible. */
+button:not(:disabled) {
+  transition-property: color, background-color, border-color, opacity, transform, scale, box-shadow, filter;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+button:not(:disabled):active {
+  transform: none;
+  scale: 0.96;
+}
+button:disabled,
+button:disabled:active {
+  scale: 1;
+}
+
+/* Frequent state swaps use reversible transitions, not one-way keyframes. */
+.bottom-nav button.active svg,
+.rail-menu-toggle.active svg {
+  animation: none !important;
+  transition-property: opacity, scale, color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: var(--rutina-ease-state);
+}
+.calendar-day.selected {
+  animation: none !important;
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: var(--rutina-ease-state);
+}
+.menu-panel-close {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: var(--rutina-ease-state);
+}
+.menu-item-arrow {
+  transition-property: opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+.rail-menu-toggle,
+.rail-sync-button {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: var(--rutina-ease-state);
+}
+.menu-item-icon {
+  transition-property: color, background-color, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: var(--rutina-ease-state);
+}
+.menu-item:hover .menu-item-icon { transform: none; }
+
+/* Scroll stays inside sheets and dialogs. */
+.modal-card,
+.search-results,
+.workspace-menu-panel,
+.workspace-menu-sheet,
+.menu-panel-content,
+.mobile-quick-actions {
+  overscroll-behavior: contain;
+}
+
+/* Cross-fade both timer glyphs in place; the button width does not jump. */
+.focus-toggle-icons {
+  position: relative;
+  display: inline-grid;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  place-items: center;
+}
+.focus-toggle-icons svg {
+  position: absolute;
+  inset: 0;
+  scale: 1;
+  opacity: 1;
+  filter: blur(0);
+  transition-property: opacity, scale, filter;
+  transition-duration: 300ms;
+  transition-timing-function: var(--rutina-ease-state);
+}
+.focus-card[data-running="true"] .focus-play-icon,
+.focus-card[data-running="false"] .focus-pause-icon {
+  scale: 0.25;
+  opacity: 0;
+  filter: blur(4px);
+}
+
+/* A first check-in is an invitation, not an overdue warning. */
+.daily-checkin-prompt {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(221, 232, 213, .95);
+  border-radius: 17px;
+  color: var(--ink);
+  background: linear-gradient(110deg, #f1f7ec, #fff8ef);
+  text-align: left;
+  cursor: pointer;
+}
+.daily-checkin-prompt-copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+}
+.daily-checkin-prompt-copy strong {
+  color: #3d5f44;
+  font-size: 12px;
+  font-weight: 800;
+}
+.daily-checkin-prompt-copy small {
+  color: #687665;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.daily-checkin-prompt-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  color: #417a57;
+  font-size: 10px;
+  font-weight: 800;
+}
+.daily-checkin-prompt .daily-checkin-icon {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 12px;
+  color: #417a57;
+  background: rgba(255, 255, 255, .82);
+}
+
+/* Progressive disclosure: essentials first; optional habit metadata remains available. */
+.habit-advanced-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink-soft);
+  background: #fbfcf8;
+  text-align: left;
+}
+.habit-advanced-toggle-copy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: #52745a;
+}
+.habit-advanced-toggle-copy > span { display: grid; gap: 2px; }
+.habit-advanced-toggle-copy strong {
+  color: #435c45;
+  font-size: 11px;
+  font-weight: 800;
+}
+.habit-advanced-toggle-copy small {
+  color: #7b8577;
+  font-size: 9px;
+  line-height: 1.4;
+}
+.habit-advanced-toggle-state {
+  flex: none;
+  color: #598061;
+  font-size: 10px;
+  font-weight: 800;
+}
+.habit-advanced-fields {
+  display: grid;
+  gap: 13px;
+  padding: 14px;
+  border: 1px solid rgba(232, 225, 213, .82);
+  border-radius: 15px;
+  background: #fffaf4;
+}
+.habit-advanced-fields > * { min-width: 0; }
+
+/* Stagger only view entrances, not routine taps or checklist changes. */
+@keyframes rutina-polish-enter {
+  from { opacity: 0; filter: blur(4px); transform: translateY(12px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+.content-wrap.page-transition .page-intro {
+  animation: rutina-polish-enter 300ms ease-out both;
+}
+.content-wrap.page-transition .botanical-hero,
+.content-wrap.page-transition .habit-week-strip {
+  animation: rutina-polish-enter 300ms ease-out 100ms both;
+}
+.content-wrap.page-transition .botanical-stats,
+.content-wrap.page-transition .habit-overview-grid {
+  animation: rutina-polish-enter 300ms ease-out 200ms both;
+}
+.content-wrap.page-transition .dashboard-feature-grid,
+.content-wrap.page-transition .habits-panel {
+  animation: rutina-polish-enter 300ms ease-out 300ms both;
+}
+
+/* Touch devices must not keep decorative hover states latched after tapping. */
+@media (hover: none) {
+  .desktop-nav-link:hover,
+  .search-trigger:hover,
+  .topbar-bell:hover,
+  .habit-row:hover,
+  .calendar-day:hover,
+  .quick-action:hover,
+  .module-item:hover,
+  .habit-row-actions button:hover,
+  .group-manager-item button:hover {
+    transform: none;
+    filter: none;
+  }
+  .menu-item:hover .menu-item-icon { transform: none; }
+  .primary-button:hover,
+  .secondary-button:hover,
+  .icon-button:hover,
+  .search-trigger:hover {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Shadow-only focus rings keep a visible edge in forced-colours mode. */
+@media (forced-colors: active) {
+  .form-control:focus,
+  .search-field:focus-within,
+  .focus-ring:focus-visible,
+  .habit-advanced-toggle:focus-visible {
+    border: 1px solid transparent;
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+/* Reduced motion keeps a short opacity cue, never movement, scale or blur. */
+@keyframes rutina-reduced-crossfade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .content-wrap.page-transition,
+  .content-wrap.page-transition .page-intro,
+  .content-wrap.page-transition .botanical-hero,
+  .content-wrap.page-transition .habit-week-strip,
+  .content-wrap.page-transition .botanical-stats,
+  .content-wrap.page-transition .habit-overview-grid,
+  .content-wrap.page-transition .dashboard-feature-grid,
+  .content-wrap.page-transition .habits-panel,
+  .modal-backdrop,
+  .modal-card,
+  .search-card,
+  .toast,
+  .workspace-menu-sheet,
+  .mobile-quick-actions {
+    animation: rutina-reduced-crossfade 150ms ease-out both !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  button:not(:disabled),
+  .focus-toggle-icons svg {
+    transition-property: opacity !important;
+    transition-duration: 150ms !important;
+    transition-timing-function: ease-out !important;
+  }
+  button:not(:disabled):active {
+    transform: none !important;
+    scale: 1 !important;
+  }
+  .focus-toggle-icons svg {
+    filter: none !important;
+    scale: 1 !important;
+  }
+  .focus-card[data-running="true"] .focus-play-icon,
+  .focus-card[data-running="false"] .focus-pause-icon {
+    scale: 1 !important;
+    filter: none !important;
+  }
+  .content-wrap.page-transition > * {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
