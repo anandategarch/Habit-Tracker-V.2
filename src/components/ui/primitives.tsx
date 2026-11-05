@@ -21,7 +21,7 @@ function pageArtwork(eyebrow: string): BotanicalIllustrationVariant | null {
   if (label.includes("WELLNESS")) return "wellness";
   if (label.includes("TRAINING") || label.includes("LATIHAN")) return "training";
   if (label.includes("GROWTH JOURNEY") || label.includes("POHON")) return "tree";
-  if (label.includes("PENGATURAN") || label.includes("BACKUP")) return "settings";
+  if (label.includes("PENGATURAN") || label.includes("PREFERENSI") || label.includes("BACKUP")) return "settings";
   return null;
 }
 
