@@ -215,7 +215,7 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
       <div className="insights-stat-grid botanical-insight-stats">
         <StatCard label="Progres hari ini" value={`${progress}%`} foot={`${completed} dari ${total} habit selesai hari ini`} icon={Target} tone="green" />
         <StatCard label="Rekor konsistensi" value={`${longestStreak} hari`} foot="Satu capaian yang pernah kamu bangun" icon={Flame} tone="amber" />
-        <StatCard label="Arus kas bersih" value={formatCompactRupiah(totalNet)} foot="Bulan berjalan" icon={PiggyBank} />
+        <StatCard label="Arus kas bersih" value={formatCompactRupiah(totalNet)} foot="Bulan berjalan" icon={PiggyBank} tone="orange" />
       </div>
 
       <section className="card card-pad insight-trend-panel" aria-label="Ringkasan progres habit dan check-in selama tujuh hari terakhir">

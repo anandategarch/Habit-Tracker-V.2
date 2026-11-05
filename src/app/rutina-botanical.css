@@ -5902,3 +5902,364 @@ button:disabled:active {
   .finx-heat-cell { height: 22px; }
   .finx-form-card, .finx-list-card { padding: 15px; border-radius: 20px; }
 }
+
+/* ==========================================================================
+   RUTINA v0.9.1 — PENYELARASAN PEDOMAN UI DI SEMUA TAB
+   Sumber: PEDOMAN UI.zip (3 showcase) — kanvas krem hangat, kartu putih
+   radius besar tanpa border keras, tile ikon pastel 40px, pil tab gradasi
+   hijau, fokus hijau (bukan violet), saldo hijau gelap bergradasi.
+   ========================================================================== */
+
+/* ── A. Token kanvas: krem hangat pedoman (#F7F1E5/#F5EFE6) ── */
+:root {
+  --canvas: #f7f1e6;
+  --surface-soft: #faf5ea;
+  --line: #ece4d5;
+  --shadow-card: 0 10px 30px rgba(84, 68, 41, .08);
+}
+body {
+  background:
+    radial-gradient(ellipse at 92% 0%, rgba(226, 205, 176, .30), transparent 34rem),
+    radial-gradient(ellipse at 3% 88%, rgba(196, 219, 180, .20), transparent 29rem),
+    var(--canvas);
+}
+html[data-theme="dark"] { --canvas: #1f2a22; --line: #3a4a3c; }
+
+/* ── B. Sapuan violet terakhir (pedoman: aksen sekunder = amber/peach) ── */
+html[data-theme="dark"] .text-button { color: #9fd4ae; }
+.stat-icon { color: #2F5E40; background: #EAF3E2; }               /* dulu #745fd0 */
+.group-manager-heading > span:last-child { color: #3E7C50; }      /* "Kelola" dulu #7e68d5 */
+.finance-filters button.active { border-color: transparent; }      /* dulu border #8f7ae5 */
+.settings-theme-options button > span { color: #3E7C50; }          /* dulu #8f7ae5 (CSS sisa) */
+.settings-theme-options button.active { border-color: #BCD8C2; background: #EAF3E2; box-shadow: 0 4px 12px rgba(62, 124, 80, .12); }
+.form-control:focus, .module-status-select:focus, .group-filter-select:focus,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  border-color: #7FAE8B; outline: 3px solid rgba(65, 122, 87, .16); outline-offset: 1px;
+}
+.calendar-day.selected { border-color: transparent; }
+
+/* ── C. Kartu saldo: gradasi hijau gelap pedoman (dulu amber per-tab) ── */
+.app-shell[data-active-tab="finance"] .finance-balance,
+.finance-balance {
+  border: 0;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(255, 255, 255, .14), transparent 38%),
+    linear-gradient(128deg, #3E6B4A 0%, #2F5A3C 100%);
+  box-shadow: 0 14px 30px rgba(46, 90, 60, .22);
+}
+.finance-balance .metric-value { color: #fff; }
+.finance-balance-note, .finance-balance .small-label, .finance-balance-period { color: rgba(255, 255, 255, .92); }
+
+/* ── D. Kartu statistik: putih tanpa border + tile ikon pastel 40px ── */
+.stat-card {
+  border: 0;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(120, 100, 70, .08);
+}
+.stat-card .stat-icon,
+.finance-metric-icon,
+.insight-cashflow-icon {
+  width: 40px; height: 40px; flex: none;
+  display: grid; place-items: center;
+  border-radius: 15px;
+  color: #2F5E40; background: #EAF3E2;
+}
+.stat-card.tone-green .stat-icon { color: #2F5E40; background: #EAF3E2; }
+.stat-card.tone-amber .stat-icon { color: #9A6A32; background: #F8CBA6; }
+.stat-card.tone-orange .stat-icon { color: #C97E3F; background: #FFEDD5; }
+.stat-card.tone-peach .stat-icon { color: #B4713D; background: #FBE3D6; }
+html[data-theme="dark"] .stat-card.tone-orange .stat-icon { color: #E5B37E; background: #4A3B24; }
+/* Metric modul (Tujuan/Wellness/Latihan) tanpa .stat-top → pasang sel grid manual */
+.module-metric { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; column-gap: 11px; row-gap: 2px; }
+.module-metric .stat-icon { grid-column: 1; grid-row: 1 / 4; }
+.module-metric .small-label { grid-column: 2; grid-row: 1; align-self: end; }
+.module-metric .metric-value { grid-column: 2; grid-row: 2; font-size: 19px; }
+.module-metric .stat-foot { grid-column: 2; grid-row: 3; }
+.module-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
+.module-metrics .stat-card { min-width: 0; border: 0; background: #fff; }
+
+/* ── E. Pil tab: aktif = gradasi hijau + teks putih; track tanpa border ── */
+.module-tabs, .completion-filters, .category-filters, .schedule-view-toggle,
+.insight-period-tabs, .finance-filters {
+  border: 0;
+  background: #f2ecdf;
+}
+.module-tabs button, .completion-filters button, .category-filters button,
+.schedule-view-toggle button, .insight-period-tabs button, .finance-filters button {
+  border: 0;
+  color: #7d8276;
+}
+.module-tabs button.active, .completion-filters button.active, .category-filters button.active,
+.schedule-view-toggle button.active, .insight-period-tabs button.active, .finance-filters button.active {
+  color: #fff;
+  background: linear-gradient(110deg, #417a57, #5d9271);
+  box-shadow: 0 6px 14px rgba(47, 98, 69, .24);
+}
+html[data-theme="dark"] .module-tabs, html[data-theme="dark"] .completion-filters,
+html[data-theme="dark"] .category-filters, html[data-theme="dark"] .schedule-view-toggle,
+html[data-theme="dark"] .insight-period-tabs, html[data-theme="dark"] .finance-filters { background: #2c3a2e; border: 0; }
+html[data-theme="dark"] .module-tabs button, html[data-theme="dark"] .completion-filters button,
+html[data-theme="dark"] .category-filters button, html[data-theme="dark"] .schedule-view-toggle button,
+html[data-theme="dark"] .insight-period-tabs button, html[data-theme="dark"] .finance-filters button { border: 0; color: #c3cbbf; }
+
+/* ── F. Kontrol form: tint krem + fokus hijau (pola finx, dulu border abu) ── */
+.form-control, .module-status-select, .group-filter-select,
+input.form-control, select.form-control, textarea.form-control {
+  min-height: 42px;
+  border: 1px solid #EFEADD;
+  border-radius: 14px;
+  background: #FBF8F1;
+  color: #1F2A1F;
+  font-size: 12px;
+}
+.form-control::placeholder, textarea::placeholder { color: #A3A396; }
+.form-label, .form-field > span { color: #6D7466; font-weight: 800; }
+html[data-theme="dark"] .form-control, html[data-theme="dark"] .module-status-select,
+html[data-theme="dark"] .group-filter-select { background: #26332a; border-color: #3f5042; color: #e6ece3; }
+
+/* ── G. Tombol sekunder: lembut tanpa border keras ── */
+.secondary-button, .module-small-button {
+  border: 1px solid #EFEADD;
+  border-radius: 999px;
+  color: #3E7C50;
+  background: #FBF8F1;
+}
+.secondary-button:hover, .module-small-button:hover {
+  border-color: #BCD8C2;
+  background: #EAF3E2;
+  color: #2F5E40;
+}
+html[data-theme="dark"] .secondary-button, html[data-theme="dark"] .module-small-button { background: #26332a; border-color: #3f5042; color: #b7d4bd; }
+
+/* ── H. Keuangan: metrik, ikon transaksi, divider, legenda ── */
+.finance-metric { border: 0; background: #fff; box-shadow: 0 8px 24px rgba(120, 100, 70, .08); border-radius: 22px; }
+.finance-metric-icon.income { color: #2F5E40; background: #EAF3E2; }
+.finance-metric-icon.expense { color: #B4713D; background: #FBE3D6; }
+.finance-metric-label { color: #8A8A80; }
+.insight-cashflow-icon.income { color: #2F5E40; background: #EAF3E2; }
+.insight-cashflow-icon.expense { color: #B4713D; background: #FBE3D6; }
+.transaction-icon.expense { color: #B4713D; background: #FBE3D6; }
+.transaction-icon:not(.expense) { color: #2F5E40; background: #EAF3E2; }
+.transaction-amount.expense { color: #B4713D; }
+.transaction-row { border-bottom: 1px solid #F1EBDF; }
+.finance-day-detail { border: 0; border-radius: 14px; background: #FBF8F1; }
+.finance-day-detail-value.income strong { color: #2F5E40; }
+.finance-day-detail-value.expense strong { color: #B4713D; }
+.finance-category-swatch { border: 0; }
+.finxe-legend-row, .finx-legend-row { border-bottom: 1px solid #F1EBDF; }
+.finance-transactions-panel .transaction-row:last-child { border-bottom: 0; }
+
+/* ── I. Kalender: hari terpilih hijau (dulu coklat #96551f), banner peach ── */
+.calendar-day { border: 0; border-radius: 13px; background: #faf5ea; color: #45523f; }
+.calendar-day.selected { color: #fff; background: linear-gradient(135deg, #3E7C50, #56865C); box-shadow: 0 6px 14px rgba(62, 124, 80, .24); }
+.calendar-history-error {
+  border: 1px solid #F5E3D2;
+  border-radius: 14px;
+  color: #9A5B2E;
+  background: #FBEFE4;
+}
+.calendar-history-error .insight-retry-button { color: #9A5B2E; }
+.calendar-legend-outline { width: 10px; height: 10px; margin-left: 8px; border: 0; border-radius: 50%; background: #3E7C50; }
+.calendar-summary { border: 0; background: #fff; box-shadow: 0 8px 24px rgba(120, 100, 70, .08); border-radius: 22px; }
+html[data-theme="dark"] .calendar-day { background: #26332a; color: #c3cbbf; }
+html[data-theme="dark"] .calendar-history-error { border-color: #5a4630; color: #e5c9a5; background: #3a3226; }
+
+/* ── J. Insight: tombol coba-again jadi pil hijau, tren & cashflow ── */
+.insight-retry-button, .weekly-retry-action, .time-analysis-error .insight-retry-button {
+  border: 0;
+  color: #fff;
+  background: linear-gradient(110deg, #417a57, #5d9271);
+  box-shadow: 0 6px 14px rgba(47, 98, 69, .22);
+}
+.insight-retry-button:hover, .weekly-retry-action:hover { background: linear-gradient(110deg, #356844, #4E8A62); color: #fff; }
+html[data-theme="dark"] .insight-retry-button, html[data-theme="dark"] .weekly-retry-action { color: #fff; }
+
+/* ── K. Kebiasaan: chip streak amber pedoman + kartu progres ── */
+.habit-streak-summary .streak-summary-icon { color: #9A6A32; background: #F8CBA6; }
+.habit-streak-summary .streak-number { color: #9A6A32; }
+.habit-progress-card {
+  background: linear-gradient(125deg, #2F5A3C, #4E8A62);
+}
+.habit-progress-card .small-label, .habit-progress-card small { color: rgba(255, 255, 255, .9); }
+.habit-week-day.is-today { background: linear-gradient(135deg, #3E7C50, #56865C); box-shadow: 0 6px 14px rgba(62, 124, 80, .24); }
+.habit-row { border: 0; border-radius: 20px; background: #fff; box-shadow: 0 6px 18px rgba(120, 100, 70, .07); }
+.habit-row:hover { background: #fffdf8; }
+.habit-icon { color: #2F5E40; background: #EAF3E2; border-radius: 50%; }
+.vacation-banner { border: 1px solid #F5E3D2; border-radius: 16px; color: #9A5B2E; background: #FBEFE4; }
+html[data-theme="dark"] .habit-row { background: #26332a; border: 0; }
+html[data-theme="dark"] .habit-progress-card { background: linear-gradient(125deg, #24422f, #3c6b4e); }
+
+/* ── L. Modul bersama: track progres gradasi pedoman + empty state mint ── */
+.module-progress-track { height: 9px; border-radius: 999px; background: #EEE9DF; }
+.module-progress-track > span { border-radius: inherit; background: linear-gradient(90deg, #3E7C50, #8FCB8F); }
+.module-progress-track > span.is-over { background: linear-gradient(90deg, #E88A4A, #F5B37E); }
+.budget-fill { background: linear-gradient(90deg, #3E7C50, #8FCB8F); }
+.finance-budget-panel .budget-fill.warning { background: #E8A25E; }
+.finance-budget-panel .budget-fill.over { background: #D1816C; }
+.module-empty, .empty-state {
+  border: 1px dashed #DCE8DC;
+  border-radius: 18px;
+  background: #F4F8EF;
+}
+.module-empty svg, .empty-state-icon { color: #3E7C50; }
+.empty-state-icon { background: #EAF3E2; border-radius: 50%; }
+.module-empty p, .empty-state p { color: #6D7466; }
+.goal-card-icon { color: #2F5E40; background: #EAF3E2; }
+.module-item { border: 0; border-radius: 20px; background: #fff; box-shadow: 0 6px 18px rgba(120, 100, 70, .07); }
+.module-item:hover { background: #fffdf8; }
+html[data-theme="dark"] .module-empty, html[data-theme="dark"] .empty-state { background: #22302a; border-color: #3f5042; }
+html[data-theme="dark"] .module-item { background: #26332a; border: 0; }
+
+/* ── M. Wellness: ring hidrasi + tombol cepat ── */
+.wellness-water-ring { border: 9px solid #EAF3E2; }
+.wellness-water-ring strong { color: #2F5E40; }
+.module-button-row .secondary-button { color: #3E7C50; }
+
+/* ── N. Check-in: label muted + tombol simpan gradasi ── */
+.checkin-form .form-label, .form-grid .form-label { color: #6D7466; }
+.primary-button {
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(115deg, #417a57, #5d9271);
+  box-shadow: 0 8px 18px rgba(47, 98, 69, .22);
+}
+.primary-button:hover:not(:disabled) { background: linear-gradient(115deg, #356844, #4E8A62); }
+html[data-theme="dark"] .primary-button { background: linear-gradient(115deg, #356844, #4E8A62); }
+
+/* ── O. Pohon: bar XP gradasi pedoman (badge level sudah hijau, dipertahankan) ── */
+.tree-level-progress { background: #EEE9DF; box-shadow: none; }
+.tree-level-progress > span { background: linear-gradient(90deg, #3E7C50, #8FCB8F); }
+
+/* ── P. Beranda: pil metrik + pilihan tema + gelembung kutipan peach ── */
+.hero-progress-card { border: 0; }
+.garden-theme-options { border: 0; background: #f2ecdf; }
+.garden-theme-options button { border: 0; color: #7d8276; }
+.garden-theme-options button.active { color: #fff; background: linear-gradient(110deg, #417a57, #5d9271); }
+.next-step-card { border: 0; border-radius: 22px; }
+.hero-quote-bubble {
+  border: 1px solid #F5E3D2;
+  color: #42483c;
+  background: linear-gradient(150deg, #FBEFE4, #FFF8ED);
+}
+.hero-quote-bubble span { color: #9A5B2E; }
+html[data-theme="dark"] .hero-quote-bubble { border-color: #3f5042; background: #26332a; }
+
+/* ── Q. v0.9.1 lapisan koreksi: pil tab aktif hijau pedoman di SEMUA tab
+      (mengalahkan .main-shell per-tab accent lama yang putih + aksen) ── */
+.main-shell .module-tabs button.active,
+.main-shell .completion-filters button.active,
+.main-shell .schedule-view-toggle button.active,
+.main-shell .category-filters button.active,
+.app-shell .module-tabs button.active {
+  color: #fff;
+  background: linear-gradient(110deg, #417a57, #5d9271);
+  box-shadow: 0 6px 14px rgba(47, 98, 69, .24);
+  border: 0;
+}
+.main-shell .calendar-day.selected {
+  color: #fff;
+  background: linear-gradient(135deg, #3E7C50, #56865C);
+  box-shadow: 0 6px 14px rgba(62, 124, 80, .24);
+}
+.main-shell .habit-icon { border: 0; }
+
+/* Aksen per-tab keluar palet pedoman → masuk keluarga hijau/amber/peach:
+   work olive #5c7440, wellness teal #1f7d72, training rust #bf4a2e,
+   insights brick #b04a44 (semua terdeteksi audit VLM). */
+.app-shell[data-active-tab="work"] { --module-accent: #417a57; }
+.app-shell[data-active-tab="wellness"] { --module-accent: #3E7C50; }
+.app-shell[data-active-tab="training"] { --module-accent: #B4713D; }
+.app-shell[data-active-tab="insights"] { --module-accent: #C97E3F; }
+html[data-theme="dark"] .app-shell[data-active-tab="wellness"] { --module-accent: #9fd4ae; }
+html[data-theme="dark"] .app-shell[data-active-tab="training"] { --module-accent: #e0aa7c; }
+html[data-theme="dark"] .app-shell[data-active-tab="insights"] { --module-accent: #e5b37e; }
+html[data-theme="dark"] .app-shell[data-active-tab="work"] { --module-accent: #92bd91; }
+
+/* ── R. Ikon menu Pengaturan: violet #7b69d0 & teal #6b9b9c → palet pedoman ── */
+.settings-menu-card a:nth-child(3) .settings-menu-icon { color: #9A6A32; background: #F8CBA6; }
+.settings-menu-card a:nth-child(4) .settings-menu-icon { color: #2F5E40; background: #EAF3E2; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(3) .settings-menu-icon { color: #e0aa7c; background: #49392d; }
+html[data-theme="dark"] .settings-menu-card a:nth-child(4) .settings-menu-icon { color: #a8c99a; background: #354b38; }
+
+/* ── S. Kontrol native: checkbox accent, indikator tanggal, textarea ── */
+input[type="checkbox"], input[type="radio"] { accent-color: #417a57; }
+input[type="date"].form-control::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: .62;
+  filter: sepia(.9) saturate(2.2) hue-rotate(15deg);
+  cursor: pointer;
+}
+textarea.form-control { resize: none; }
+
+/* ── T. Tombol ikon header: tanpa border (pola pedoman) ── */
+.icon-button, .search-trigger, .theme-toggle, .mobile-sync-button, .mobile-theme-toggle, .mobile-bell {
+  border: 0;
+  box-shadow: 0 4px 14px rgba(120, 100, 70, .10);
+}
+.icon-button:hover, .search-trigger:hover, .mobile-sync-button:hover { border: 0; }
+
+/* ── U. Statistik modul di layar sempit: 1 kolom agar label tidak wrap 3 baris ── */
+@media (max-width: 620px) {
+  .module-metrics { grid-template-columns: 1fr; }
+  .module-metric .metric-value { font-size: 21px; }
+}
+@media (min-width: 621px) and (max-width: 960px) {
+  .module-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* ── V. Kontrol native bertema pedoman (tindak lanjut audit v0.9.1) ── */
+/* Ikon kalender input tanggal: SVG hijau (pengganti glyph hitam OS) */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="date"].form-control::-webkit-calendar-picker-indicator {
+  width: 17px; height: 17px;
+  opacity: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='none' stroke='%23417a57' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='4'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 17px;
+  cursor: pointer;
+}
+/* Select: chevron hijau menggantikan panah native */
+select.form-control, .module-status-select, .group-filter-select {
+  appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23417a57' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  background-size: 14px;
+}
+/* Checkbox: pil hijau pedoman menggantikan kotak native berborder hitam */
+input[type="checkbox"] {
+  appearance: none;
+  width: 20px; height: 20px; flex: none;
+  border: 2px solid #BCD8C2;
+  border-radius: 7px;
+  background: #fff;
+  transition: background-color .15s ease, border-color .15s ease;
+  cursor: pointer;
+}
+input[type="checkbox"]:hover { border-color: #417a57; }
+input[type="checkbox"]:checked {
+  border-color: #417a57;
+  background: #417a57;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;
+}
+input[type="checkbox"]:focus-visible { outline: 3px solid rgba(65, 122, 87, .2); outline-offset: 2px; }
+/* Radio tetap memakai accent-color (bentuk native bulat sudah sesuai) */
+input[type="radio"] { accent-color: #417a57; }
+
+/* ── W. v0.9.1 sapuan akhir: avatar sidebar violet → hijau + catatan sinkron wrap ── */
+.desktop-sidebar-footer .avatar { color: #2F5E40; background: #EAF3E2; }   /* dulu #6958bd/#eee9ff */
+.desktop-sidebar-note p { font-size: 10px; line-height: 1.55; overflow-wrap: anywhere; }
+
+/* ── X. v0.9.1 penutup: kartu "Suasana Tamanmu" hangat (bukan hijau dingin
+      yang terbaca lavender di beberapa layar) — audit VLM final. ── */
+.welcome-back-card, .weekly-reflection-card, .garden-personalize-row {
+  border: 0;
+  background: linear-gradient(115deg, #fffdf7, #f8f3e9);
+  box-shadow: 0 8px 24px rgba(120, 100, 70, .08);
+}
