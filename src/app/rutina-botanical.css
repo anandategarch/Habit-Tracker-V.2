@@ -5622,6 +5622,25 @@ button:disabled:active {
 .welcome-back-copy strong,.weekly-reflection-copy strong{color:#304c39;font-size:14px;font-weight:850}
 .welcome-back-copy p,.weekly-reflection-copy p{margin:0;color:#778273;font-size:11px;line-height:1.5}
 .welcome-back-close{position:absolute;top:8px;right:10px;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:10px;color:#7d8b79;background:transparent;font-size:20px;cursor:pointer}
+
+/* Cerita Minggu (Fase 3) — kartu pintasan rekap mingguan di dashboard. */
+.story-card{position:relative;display:flex;align-items:center;gap:13px;margin:0 0 15px;padding:13px 14px;border:1px solid #e3ebdc;border-radius:19px;background:linear-gradient(115deg,#fffdf7,#f3f7ed);animation:story-card-in .45s var(--ease-spring) both}
+@keyframes story-card-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.story-card-icon{position:relative;display:grid;flex:none;place-items:center;width:43px;height:43px;border-radius:15px;color:#477653;background:#e5efdf}
+.story-card-icon::after{content:"";position:absolute;inset:-3.5px;border-radius:18px;border:2px solid #9ec49a;opacity:.75}
+.story-card-copy{min-width:0;display:grid;gap:3px}
+.story-card-copy .small-label{color:#8a977f}
+.story-card-copy strong{color:#304c39;font-size:14px;font-weight:850}
+.story-card-copy p{margin:0;color:#778273;font-size:11px;line-height:1.5}
+.story-card-badge{position:absolute;top:-7px;right:14px;padding:3px 9px;border-radius:99px;color:#fff;background:#417a57;font-size:8.5px;font-weight:900;letter-spacing:1.1px;text-transform:uppercase;box-shadow:0 4px 10px rgba(65,122,87,.3)}
+.story-card-open{display:inline-flex;flex:none;align-items:center;gap:3px;min-height:38px;padding:8px 13px;margin-left:auto;border:0;border-radius:13px;color:#fff;background:#417a57;font:800 11px "Nunito Variable",sans-serif;cursor:pointer;transition:transform .18s var(--ease-spring),box-shadow .18s ease}
+.story-card-open:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(65,122,87,.26)}
+.story-card-open:focus-visible{outline:3px solid #a3c585;outline-offset:2px}
+@media (max-width:520px){
+  .story-card{flex-wrap:wrap;gap:10px;padding:12px}
+  .story-card-copy{flex:1 1 calc(100% - 56px)}
+  .story-card-open{margin-left:56px}
+}
 .garden-personalize-row{justify-content:space-between;margin:12px 0 16px;padding:10px 13px}
 .garden-personalize-row>div:first-child{display:grid;gap:3px}
 .garden-personalize-row strong{color:#4e694e;font-size:11px;font-weight:800}

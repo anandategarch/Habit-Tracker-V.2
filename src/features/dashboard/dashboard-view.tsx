@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, Leaf, Pause, Play, Plus, RefreshCw, Shield, Sprout, TrendingUp, WalletCards } from "lucide-react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
@@ -84,10 +84,10 @@ function weekdayLabel(date: string) {
   return new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${date}T12:00:00+07:00`));
 }
 
-export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin, focusTimerRemainingSeconds, focusTimerRunning, onFocusTimerToggle, onFocusTimerReset }: {
+export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin, focusTimerRemainingSeconds, focusTimerRunning, onFocusTimerToggle, onFocusTimerReset, storySlot }: {
   habits: Habit[]; totalHabits: number; income: number; expense: number; onNavigate: (tab: TabId) => void;
   onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; activeTimerId?: string | null; timerElapsedSeconds?: number; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
-  focusTimerRemainingSeconds: number; focusTimerRunning: boolean; onFocusTimerToggle: () => void; onFocusTimerReset: () => void;
+  focusTimerRemainingSeconds: number; focusTimerRunning: boolean; onFocusTimerToggle: () => void; onFocusTimerReset: () => void; storySlot?: ReactNode;
 }) {
   const now = new Date();
   const todayKey = todayISO();
@@ -253,6 +253,8 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           </div>
         </section>
       )}
+
+      {storySlot}
 
       <section className="hero-card botanical-hero" aria-label="Ringkasan perkembangan hari ini">
         <BotanicalIllustrationBackdrop variant="home" />

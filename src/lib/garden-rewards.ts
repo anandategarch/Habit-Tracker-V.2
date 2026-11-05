@@ -117,6 +117,11 @@ function bloomDays(): string[] {
   } catch { return []; }
 }
 
+/** Ledger hari berbunga (100% habit selesai) — dipakai Cerita Minggu (Fase 3). */
+export function getBloomDays(): string[] {
+  return bloomDays();
+}
+
 export function recordBloomDay(dateKey: string): void {
   if (typeof window === "undefined") return;
   try {

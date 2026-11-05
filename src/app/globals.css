@@ -2906,6 +2906,178 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
 .fx-bloom-close:hover { transform:translateY(-1px); box-shadow:0 10px 24px rgba(65,122,87,.28); }
 .fx-bloom-close:focus-visible { outline:3px solid #a3c585; outline-offset:2px; }
 
+/* --------------------------------------------------------------------------
+   Cerita Minggu (Fase 3) — pemutar rekap mingguan gaya "story" layar penuh.
+   Dipasang via portal ke <body> sehingga bebas stacking context halaman.
+   -------------------------------------------------------------------------- */
+.story-viewer {
+  position:fixed; inset:0; z-index:210; display:grid; place-items:center;
+  background:rgba(38,50,40,.5); backdrop-filter:blur(4px);
+  animation:rutina-backdrop-in .28s ease both;
+}
+.story-frame {
+  position:relative; display:flex; flex-direction:column; width:min(430px,100vw);
+  height:100dvh; max-height:100dvh; overflow:hidden;
+  background:
+    radial-gradient(120% 60% at 85% 0%, rgba(255,252,240,.9), transparent 60%),
+    linear-gradient(168deg,#f8f3e6 0%,#eef2e0 100%);
+  color:#2f4a38; font:inherit;
+}
+@media (min-width:480px) {
+  .story-frame { height:min(860px,calc(100dvh - 36px)); border-radius:26px; box-shadow:0 28px 70px rgba(24,42,30,.4); }
+}
+/* Aksen latar per bab — selalu keluarga krem–hijau/koral botani. */
+.story-frame[data-kind="bloom"] { background:radial-gradient(120% 60% at 85% 0%, rgba(253,240,235,.9), transparent 60%), linear-gradient(168deg,#faf1e8 0%,#f4e6e4 100%); }
+.story-frame[data-kind="finance"] { background:radial-gradient(120% 60% at 85% 0%, rgba(252,246,229,.95), transparent 60%), linear-gradient(168deg,#f9f3e2 0%,#f0e8d2 100%); }
+.story-frame[data-kind="checkin"] { background:radial-gradient(120% 60% at 85% 0%, rgba(247,248,238,.9), transparent 60%), linear-gradient(168deg,#f5f3ea 0%,#e9ecdc 100%); }
+.story-frame[data-kind="closing"] { background:radial-gradient(120% 60% at 85% 0%, rgba(251,253,243,.9), transparent 60%), linear-gradient(168deg,#f0f4e3 0%,#e0ecd3 100%); }
+
+.story-topbar {
+  position:relative; z-index:3; display:grid; gap:9px;
+  padding:calc(14px + env(safe-area-inset-top)) 16px 10px;
+}
+.story-progress { display:flex; gap:5px; }
+.story-seg {
+  flex:1; height:4px; border-radius:99px; overflow:hidden;
+  background:rgba(47,74,56,.16);
+}
+.story-seg i { display:block; height:100%; width:0; border-radius:99px; background:#417a57; }
+.story-seg.is-done i { width:100%; background:#417a57; }
+.story-seg.is-active { background:rgba(47,74,56,.22); }
+.story-topbar-row { display:flex; align-items:center; justify-content:space-between; }
+.story-chapter {
+  font-size:9px; font-weight:850; letter-spacing:1.4px; text-transform:uppercase;
+  color:rgba(47,74,56,.62);
+}
+.story-topbar-actions { display:flex; gap:7px; }
+.story-icon-button {
+  display:grid; place-items:center; width:34px; height:34px;
+  border:1px solid rgba(47,74,56,.18); border-radius:12px;
+  color:#33513e; background:rgba(255,253,247,.75); cursor:pointer;
+  transition:background .18s ease, transform .18s ease;
+}
+.story-icon-button:hover { background:#fffdf7; transform:translateY(-1px); }
+.story-icon-button:focus-visible { outline:3px solid #a3c585; outline-offset:2px; }
+.story-icon-button[aria-pressed="true"] { background:#417a57; color:#fff; border-color:#417a57; }
+
+.story-stage {
+  position:relative; z-index:2; flex:1; min-height:0; overflow-y:auto;
+  scrollbar-width:thin;
+}
+.story-view {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:11px; min-height:100%; padding:10px 26px calc(34px + env(safe-area-inset-bottom));
+  text-align:center; pointer-events:none;
+  animation:story-slide-in .5s var(--ease-spring) both;
+}
+.story-view button { pointer-events:auto; }
+.story-art { width:min(210px,58%); height:auto; flex:none; margin-bottom:4px; animation:story-float 4.6s ease-in-out infinite; }
+.story-kicker {
+  font-size:9px; font-weight:850; letter-spacing:1.8px; text-transform:uppercase;
+  color:#7d8a6f;
+}
+.story-title {
+  margin:0; color:#2f4a38; font-size:clamp(21px,5.4vw,26px); font-weight:900;
+  letter-spacing:-.4px; line-height:1.16;
+}
+.story-range {
+  margin:0; padding:6px 13px; border-radius:99px; border:1px dashed rgba(65,122,87,.35);
+  color:#4c6a52; background:rgba(255,253,247,.6); font-size:11px; font-weight:750;
+}
+.story-note { margin:0; max-width:310px; color:#5d6d59; font-size:12px; line-height:1.65; }
+.story-hero-number { display:grid; gap:2px; }
+.story-hero-number strong { color:#417a57; font-size:clamp(44px,12vw,58px); font-weight:900; letter-spacing:-2px; line-height:1; }
+.story-hero-number strong em { font-style:normal; font-size:.42em; color:#7d8a6f; font-weight:800; }
+.story-hero-number span { color:#7d8a6f; font-size:10.5px; font-weight:750; letter-spacing:.4px; }
+
+.story-week-bars {
+  display:flex; align-items:flex-end; gap:9px; width:min(240px,84%);
+  padding:12px 14px 9px; border-radius:16px;
+  border:1px solid rgba(65,122,87,.16); background:rgba(255,253,247,.55);
+}
+.story-week-bar { flex:1; display:grid; gap:5px; justify-items:center; }
+.story-week-bar-track {
+  display:flex; align-items:flex-end; height:64px; width:100%;
+  border-radius:8px; overflow:hidden;
+}
+.story-week-bar-track span {
+  width:100%; border-radius:8px; background:linear-gradient(180deg,#7fb069,#417a57);
+  transform-origin:bottom; animation:story-bar-grow .7s var(--ease-spring) both;
+}
+.story-week-bar small { color:#7d8a6f; font-size:9px; font-weight:800; }
+
+.story-chip {
+  display:inline-flex; align-items:center; gap:5px; padding:6px 12px;
+  border-radius:99px; border:1px solid rgba(65,122,87,.22);
+  background:rgba(232,240,222,.6); color:#3f6149; font-size:10.5px; font-weight:800;
+}
+.story-seeds { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; max-width:300px; }
+.story-seed {
+  padding:6px 12px; border-radius:99px; border:1px solid #dce8d4;
+  background:#fffdf7; color:#3f6149; font-size:10.5px; font-weight:800;
+  animation:story-pop-in .45s var(--ease-spring) both;
+}
+.story-seed[data-rarity="langka"] { border-color:#eedfc8; background:#fdf6e7; color:#8a6a33; }
+.story-seed[data-rarity="legendaris"] { border-color:#cdbf8f; background:linear-gradient(120deg,#fffdf8,#f7f1dd); color:#6e5c2e; }
+.story-seed.more { background:transparent; border-style:dashed; color:#7d8a6f; }
+
+.story-finance-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; width:min(320px,92%); }
+.story-finance-grid > div {
+  display:grid; gap:4px; padding:11px 8px; border-radius:14px;
+  border:1px solid rgba(65,122,87,.14); background:rgba(255,253,247,.62);
+}
+.story-finance-grid small { color:#7d8a6f; font-size:8.5px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; }
+.story-finance-grid strong { color:#2f4a38; font-size:13.5px; font-weight:900; letter-spacing:-.3px; overflow-wrap:anywhere; }
+.story-finance-grid strong.is-income { color:#417a57; }
+.story-finance-grid strong.is-expense { color:#b0713f; }
+
+.story-cta {
+  min-width:210px; min-height:46px; margin-top:4px; border:0; border-radius:15px;
+  background:#417a57; color:#fff; font:800 13px "Nunito Variable",sans-serif;
+  cursor:pointer; box-shadow:0 12px 26px rgba(65,122,87,.3);
+  transition:transform .18s var(--ease-spring), box-shadow .18s ease;
+}
+.story-cta:hover { transform:translateY(-1px); box-shadow:0 16px 30px rgba(65,122,87,.36); }
+.story-cta:focus-visible { outline:3px solid #a3c585; outline-offset:2px; }
+
+.story-tapzone {
+  position:absolute; top:88px; bottom:0; z-index:1; width:31%;
+  border:0; background:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent;
+}
+.story-tapzone:focus-visible { outline:none; }
+.story-tapzone.is-left { left:0; }
+.story-tapzone.is-right { right:0; }
+.story-nav-hint {
+  position:absolute; z-index:0; bottom:calc(10px + env(safe-area-inset-bottom)); left:50%;
+  transform:translateX(-50%); display:flex; align-items:center; gap:8px;
+  color:rgba(47,74,56,.4); font-size:9px; font-weight:750; letter-spacing:.4px;
+  pointer-events:none;
+}
+.story-nav-hint small:first-child, .story-nav-hint small:last-child { font-size:13px; }
+
+@keyframes story-slide-in {
+  from { opacity:0; transform:translateY(16px) scale(.985); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes story-float {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-7px); }
+}
+@keyframes story-bar-grow {
+  from { transform:scaleY(0); }
+  to { transform:scaleY(1); }
+}
+@keyframes story-pop-in {
+  from { opacity:0; transform:scale(.7); }
+  to { opacity:1; transform:scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-view { animation-duration:.01s; }
+  .story-art { animation:none; }
+  .story-week-bar-track span { animation-duration:.01s; }
+  .story-seed { animation-duration:.01s; }
+}
+
 /* Ritme kebun — kartu perisai / layu (loss aversion + perlindungan). */
 .garden-rhythm-card {
   display:flex; align-items:center; gap:13px;
