@@ -37,7 +37,7 @@ export function FeedbackOverlay({targetName}:{targetName:string}) {
   function submit(){
     if(!overall.trim())return;
     const body=["## Design Lab Feedback","","**Target:** "+targetName,"**Comments:** "+comments.length,
-      ...["A","B","C","D","E"].flatMap(variant=>{
+      ...Array.from(new Set(comments.map(item=>item.variant))).flatMap(variant=>{
         const items=comments.filter(item=>item.variant===variant);
         return items.length?["","### Variant "+variant,...items.map((item,index)=>(index+1)+". **"+item.element+"** ("+item.selector+")\n   \""+item.comment+"\"")]:[];
       }),"","### Overall Direction",overall.trim()].join("\n");
