@@ -25,6 +25,7 @@ import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 import { FOCUS_SESSION_SECONDS } from "@/features/focus/focus-timer";
 import { WorkspaceHistoryProvider, useWorkspaceActivityHistory } from "@/components/ui/weekly-history";
+import { ConfirmProvider } from "@/components/ui/confirm-dialog";
 import { FullBloomOverlay } from "@/features/app/full-bloom";
 import { WeeklyStorySection } from "@/features/app/weekly-story";
 import {
@@ -469,6 +470,7 @@ export function RutinaApp() {
   }
 
   return (
+    <ConfirmProvider>
     <div className="app-shell" data-active-tab={activeTab}>
       <a className="skip-link" href="#main-content">Langsung ke konten utama</a>
       <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
@@ -831,5 +833,6 @@ export function RutinaApp() {
         </div>
       </footer>
     </div>
+    </ConfirmProvider>
   );
 }

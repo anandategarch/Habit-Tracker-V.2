@@ -6998,3 +6998,246 @@ html[data-theme="dark"] .finx-history-column > div { background: #2c352b; }
 
 html[data-theme="dark"] .finx .section-title { color: #e8efe2; }
 html[data-theme="dark"] .finx .section-caption { color: #a9b8a4; }
+
+/* ===================================================================
+   DIALOG KONFIRMASI TEMATIK v0.14
+   Pengganti window.confirm() bawaan browser untuk semua aksi hapus
+   (dompet, tujuan, catatan, transfer, dst.) dan konfirmasi impor
+   backup. Memakai bahasa visual modal botanical: kartu krem membulat,
+   ubin ikon pastel, chip nama bergaris putus-putus, dan tombol koral
+   lembut untuk aksi destruktif. Tone mengikuti pedoman no-guilt —
+   jujur tentang konsekuensi tanpa menakut-nakuti.
+   =================================================================== */
+
+.confirm-modal {
+  width: min(100%, 400px);
+  text-align: left;
+}
+
+.confirm-icon-tile {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 14px;
+  border-radius: 16px;
+}
+.confirm-icon-tile.tone-danger {
+  color: #c96755;
+  background: #f9e3da;
+  box-shadow: inset 0 0 0 1px rgba(201, 103, 85, .14);
+}
+.confirm-icon-tile.tone-leaf {
+  color: #417a57;
+  background: #e7f1e0;
+  box-shadow: inset 0 0 0 1px rgba(65, 122, 87, .14);
+}
+.confirm-icon-tile.tone-amber {
+  color: #9a6d1e;
+  background: #faeeda;
+  box-shadow: inset 0 0 0 1px rgba(154, 109, 30, .14);
+}
+
+.confirm-eyebrow {
+  margin-bottom: 5px;
+  color: #98822f;
+}
+.confirm-modal .modal-title {
+  margin: 0;
+}
+
+/* Chip nama item: garis putus-putus menyampaikan "ditandai untuk
+   dihapus" dengan lembut, bukan kotak peringatan keras. */
+.confirm-subject {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  margin: 12px 0 2px;
+  padding: 8px 15px;
+  border: 1.6px dashed #e0b7a5;
+  border-radius: 999px;
+  background: #fdf3ed;
+  color: #8a5643;
+  font-size: 13px;
+  font-weight: 660;
+  letter-spacing: -.1px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.confirm-message {
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+/* Catatan kecil: konsekuensi penting tanpa nada menghakimi. */
+.confirm-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 11px 13px;
+  border: 1px solid #f0e3d0;
+  border-radius: 14px;
+  background: #fdf8ef;
+  color: #8a6a4b;
+}
+.confirm-note svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #c99a4b;
+}
+.confirm-note p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.confirm-cancel-button,
+.confirm-danger-button,
+.confirm-safe-button {
+  flex: 1;
+  justify-content: center;
+  min-height: 46px;
+  font-size: 12.5px;
+}
+.confirm-danger-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 20px;
+  border: 1px solid #b5563f;
+  border-radius: 999px;
+  background: linear-gradient(115deg, #d3765f, #c96755);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .1px;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(185, 86, 63, .22);
+  transition-property: transform, box-shadow, background, filter;
+  transition-duration: 160ms;
+  transition-timing-function: var(--rutina-ease-state, ease-out);
+}
+.confirm-danger-button:hover {
+  background: linear-gradient(115deg, #c96755, #b5563f);
+  box-shadow: 0 8px 19px rgba(185, 86, 63, .28);
+}
+.confirm-danger-button:active {
+  transform: scale(.97);
+}
+.confirm-modal .secondary-button {
+  padding: 12px 20px;
+}
+
+/* Field input prompt (pengganti window.prompt, mis. "Tambah dana"). */
+.confirm-prompt-field {
+  display: block;
+  margin-top: 16px;
+}
+.confirm-prompt-field .form-label {
+  display: block;
+  margin-bottom: 7px;
+}
+.confirm-prompt-field .amount-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  border: 1.5px solid #e5d9c8;
+  border-radius: 15px;
+  background: #fffdf9;
+}
+.confirm-prompt-field .amount-field span {
+  color: #97846a;
+  font-size: 13px;
+  font-weight: 700;
+}
+.confirm-prompt-field .form-control {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 13px 0;
+  min-height: 44px;
+}
+.confirm-prompt-field .form-control:focus {
+  outline: none;
+}
+.confirm-prompt-field .amount-field:focus-within {
+  border-color: #7fae8b;
+  box-shadow: 0 0 0 3px rgba(65, 122, 87, .14);
+}
+.confirm-prompt-field .field-error {
+  display: block;
+  margin-top: 7px;
+}
+/* Tombol satu-satunya (hideCancel) tetap sejajar penuh. */
+.confirm-actions.is-single {
+  flex-direction: column;
+}
+
+/* Layar kecil: ikut pola bottom-sheet .modal-card (globals.css),
+   cukup pastikan tombol tetap 46px dan muat berdampingan. */
+@media (max-width: 560px) {
+  .confirm-actions {
+    gap: 9px;
+    margin-top: 18px;
+  }
+  .confirm-cancel-button,
+  .confirm-danger-button,
+  .confirm-safe-button {
+    min-height: 48px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* ── Dark mode: dialog gelap senyap, koral tetap terbaca ── */
+html[data-theme="dark"] .confirm-eyebrow { color: #c9b06a; }
+html[data-theme="dark"] .confirm-icon-tile.tone-amber {
+  color: #d8ad69;
+  background: #453a2a;
+  box-shadow: inset 0 0 0 1px rgba(216, 173, 105, .16);
+}
+html[data-theme="dark"] .confirm-prompt-field .amount-field {
+  border-color: #455946;
+  background: #1b2719;
+}
+html[data-theme="dark"] .confirm-prompt-field .amount-field span { color: #a9b8a4; }
+html[data-theme="dark"] .confirm-prompt-field .form-control { color: #e8efe2; }
+html[data-theme="dark"] .confirm-icon-tile.tone-danger {
+  color: #e2a088;
+  background: #3d2f2a;
+  box-shadow: inset 0 0 0 1px rgba(226, 160, 136, .16);
+}
+html[data-theme="dark"] .confirm-icon-tile.tone-leaf {
+  color: #a9c58f;
+  background: #2e3f2c;
+  box-shadow: inset 0 0 0 1px rgba(169, 197, 143, .16);
+}
+html[data-theme="dark"] .confirm-subject {
+  border-color: #6b4a3d;
+  background: #38291f;
+  color: #e2a088;
+}
+html[data-theme="dark"] .confirm-message { color: var(--ink-soft); }
+html[data-theme="dark"] .confirm-note {
+  border-color: #45403a;
+  background: #2a2a22;
+  color: #c9b391;
+}
+html[data-theme="dark"] .confirm-note svg { color: #d8ad69; }
+html[data-theme="dark"] .confirm-danger-button {
+  border-color: #b0604d;
+  background: linear-gradient(115deg, #c96f5a, #b0604d);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .3);
+}
+html[data-theme="dark"] .confirm-danger-button:hover {
+  background: linear-gradient(115deg, #d3765f, #bd684f);
+}

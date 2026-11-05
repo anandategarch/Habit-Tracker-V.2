@@ -3,6 +3,7 @@
 import { useState, type ChangeEvent } from "react";
 import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sprout } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import type { WorkspaceSettings } from "@/lib/module-types";
 import { APP_VERSION_LABEL } from "@/lib/version";
@@ -22,6 +23,7 @@ export function BackupView({ settings, onUpdateSettings }: {
   const [importing, setImporting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
+  const { confirm } = useConfirm();
 
   async function exportBackup() {
     setExporting(true);
@@ -63,11 +65,21 @@ export function BackupView({ settings, onUpdateSettings }: {
       event.target.value = "";
       return;
     }
-    if (!window.confirm("Backup akan digabung dengan data V2 saat ini. Data yang sudah ada tidak dihapus. Record dengan ID/tanggal yang sama dapat diperbarui dari backup. Lanjutkan?")) {
-      event.target.value = "";
-      return;
-    }
+    // Reset input segera agar file yang sama bisa dipilih ulang setelah batal;
+    // referensi File tetap dipakai bila pengguna mengonfirmasi.
+    event.target.value = "";
+    confirm({
+      tone: "leaf",
+      title: "Gabungkan backup?",
+      subject: file.name,
+      message: "Data backup akan digabung dengan data yang ada sekarang. Data lama tidak dihapus.",
+      note: "Record dengan ID atau tanggal yang sama dapat diperbarui dari backup.",
+      confirmLabel: "Gabungkan",
+      onConfirm: () => { void performImport(file); },
+    });
+  }
 
+  async function performImport(file: File) {
     setImporting(true);
     try {
       const raw = await file.text();
@@ -89,7 +101,6 @@ export function BackupView({ settings, onUpdateSettings }: {
       setMessage(reason instanceof Error ? reason.message : "File backup tidak dapat diproses.");
     } finally {
       setImporting(false);
-      event.target.value = "";
     }
   }
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BackupView } from "@/features/settings/backup-view";
 import { Activity, ArrowRight, ArrowRightLeft, Banknote, CalendarClock, Check, CircleDollarSign, Drumstick, Droplets, Flag, Gauge, ImagePlus, Landmark, ListFilter, Milestone as MilestoneIcon, PiggyBank, Plus, Repeat, Scale, Sprout, Target, Timer, Trash2, TrendingDown, TrendingUp, Wallet as WalletGlyph, X } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { useConfirm, useConfirmRemove } from "@/components/ui/confirm-dialog";
 import { BotanicalIllustrationBackdrop, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
 import type { Transaction } from "@/lib/types";
@@ -28,14 +29,10 @@ const WALLET_TYPE_LABELS: Record<string, string> = {
   "e-wallet": "E-wallet",
   other: "Lainnya",
 };
-/**
- * Konfirmasi sebelum aksi destruktif (hapus tujuan/tugas/dompet/dll).
- * Sebelumnya 13 tombol hapus langsung menjalankan aksi tanpa konfirmasi —
- * satu salah sentuh ikon kecil = data hilang permanen.
- */
-function confirmRemove(label: string, action: () => void): void {
-  if (window.confirm(`Hapus ${label}? Tindakan ini tidak bisa dibatalkan.`)) action();
-}
+// Konfirmasi aksi destruktif (hapus tujuan/tugas/dompet/dll) kini memakai
+// useConfirmRemove() dari src/components/ui/confirm-dialog.tsx — dialog
+// tematik botanical menggantikan window.confirm bawaan browser yang tampil
+// polos dari domain deployment.
 // Shift a YYYY-MM-DD string by N days using UTC arithmetic so date windows
 // (weekly budgets, etc.) always match the Asia/Jakarta-based todayISO().
 function shiftISODate(ymd: string, days: number): string {
@@ -92,6 +89,7 @@ export function ModulesView({ tab, modules, updateModule }: {
 
 function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
   const [createOpen, setCreateOpen] = useState(false);
+  const confirmRemove = useConfirmRemove();
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -188,6 +186,7 @@ function CheckinView({ modules, updateModule }: { modules: WorkspaceModules; upd
 function WorkView({ modules, updateModule }: { modules: WorkspaceModules; updateModule: UpdateWorkspaceModule }) {
   const [section, setSection] = useState<"tasks" | "notes" | "routines">("tasks");
   const [status, setStatus] = useState<TaskStatus | "all">("all");
+  const confirmRemove = useConfirmRemove();
   function addTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); if (!title) return;
     const item: WorkTask = { id: id(), title, description: String(data.get("description") || ""), priority: String(data.get("priority") || "medium") as WorkTask["priority"], status: "todo", dueDate: String(data.get("dueDate") || ""), createdAt: today() };
@@ -238,6 +237,8 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
   const [remaining, setRemaining] = useState(90);
   const [running, setRunning] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
+  const confirmRemove = useConfirmRemove();
+  const { confirm } = useConfirm();
   useEffect(() => {
     if (!running) return;
     const timer = window.setInterval(() => setRemaining((value) => {
@@ -265,8 +266,16 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
   }
   async function addPhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]; if (!file) return;
-    if (!file.type.startsWith("image/")) { window.alert("Pilih file gambar."); return; }
-    if (file.size > 12 * 1024 * 1024) { window.alert("Ukuran foto maksimal 12 MB sebelum kompresi."); return; }
+    if (!file.type.startsWith("image/")) {
+      confirm({ tone: "amber", title: "Pilih file gambar", message: "File yang dipilih bukan gambar. Coba pilih foto dengan format JPG, PNG, atau WebP.", hideCancel: true, confirmLabel: "Mengerti", onConfirm: () => {} });
+      event.target.value = "";
+      return;
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      confirm({ tone: "amber", title: "Foto terlalu besar", message: "Ukuran foto maksimal 12 MB sebelum dikompresi. Perkecil dulu ukuran fotonya, ya.", hideCancel: true, confirmLabel: "Mengerti", onConfirm: () => {} });
+      event.target.value = "";
+      return;
+    }
     setPhotoBusy(true);
     try {
       const imageData = await compressPhoto(file);
@@ -274,7 +283,7 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
       const photo: ProgressPhoto = { id: id(), date: today(), label: "Foto progres", note: "", imageData };
       updateModule("progressPhotos", (items) => [photo, ...items].slice(0, 5));
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : "Gagal memproses foto.");
+      confirm({ tone: "amber", title: "Foto belum tersimpan", message: error instanceof Error ? error.message : "Gagal memproses foto.", hideCancel: true, confirmLabel: "Mengerti", onConfirm: () => {} });
     } finally { setPhotoBusy(false); event.target.value = ""; }
   }
   const totalMinutes = modules.workouts.reduce((sum, item) => sum + item.durationMinutes + item.cardioMinutes, 0);
@@ -428,6 +437,8 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
   onAddTransactions: (items: Transaction[]) => void;
 }) {
   const [tab, setTab] = useState<"wallets" | "transfers" | "recurring" | "savings" | "rules" | "split" | "weekly">("wallets");
+  const confirmRemove = useConfirmRemove();
+  const { confirm } = useConfirm();
   const finance = modules.finance;
   const update = (fn: (current: FinanceExtras) => FinanceExtras) => updateModule("finance", fn);
   const month = today().slice(0, 7);
@@ -450,7 +461,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
   function addSavings(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); const targetAmount = Math.round(Number(data.get("target"))); if (!title || targetAmount <= 0) return; const item: SavingsGoal = { id: id(), title, targetAmount, savedAmount: Math.max(0, Number(data.get("saved")) || 0), dueDate: String(data.get("dueDate") || "") }; update((current) => ({ ...current, savingsGoals: [item, ...current.savingsGoals] })); event.currentTarget.reset(); }
   function addRule(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const keyword = String(data.get("keyword") || "").trim(); if (!keyword) return; const item: CategoryRule = { id: id(), keyword, category: String(data.get("category") || "Lainnya") }; update((current) => ({ ...current, categoryRules: [item, ...current.categoryRules] })); event.currentTarget.reset(); }
   function addWeekly(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const category = String(data.get("category") || "Makanan"); const limit = Math.round(Number(data.get("limit"))); if (limit < 0) return; update((current) => ({ ...current, weeklyBudgets: [...current.weeklyBudgets.filter((item) => item.category !== category), { category, limit }] })); event.currentTarget.reset(); }
-  function splitTransaction(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); const total = Math.round(Number(data.get("total"))); const first = Math.round(Number(data.get("firstAmount"))); const second = Math.round(Number(data.get("secondAmount"))); if (!title || total <= 0 || first <= 0 || second <= 0 || first + second !== total) { window.alert("Nominal kedua bagian harus sama dengan total transaksi."); return; } const group = id(); const date = String(data.get("date") || today()); const items: Transaction[] = [{ id: id(), title: `${title} (1/2)`, category: String(data.get("firstCategory") || "Makanan") as Transaction["category"], type: "expense", amount: first, date, splitGroupId: group }, { id: id(), title: `${title} (2/2)`, category: String(data.get("secondCategory") || "Lainnya") as Transaction["category"], type: "expense", amount: second, date, splitGroupId: group }]; onAddTransactions(items); event.currentTarget.reset(); }
+  function splitTransaction(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const data = new FormData(event.currentTarget); const title = String(data.get("title") || "").trim(); const total = Math.round(Number(data.get("total"))); const first = Math.round(Number(data.get("firstAmount"))); const second = Math.round(Number(data.get("secondAmount"))); if (!title || total <= 0 || first <= 0 || second <= 0 || first + second !== total) { confirm({ tone: "amber", title: "Nominal belum seimbang", message: "Jumlah kedua bagian harus sama dengan total transaksi. Periksa lagi nominalnya, ya.", hideCancel: true, confirmLabel: "Mengerti", onConfirm: () => {} }); return; } const group = id(); const date = String(data.get("date") || today()); const items: Transaction[] = [{ id: id(), title: `${title} (1/2)`, category: String(data.get("firstCategory") || "Makanan") as Transaction["category"], type: "expense", amount: first, date, splitGroupId: group }, { id: id(), title: `${title} (2/2)`, category: String(data.get("secondCategory") || "Lainnya") as Transaction["category"], type: "expense", amount: second, date, splitGroupId: group }]; onAddTransactions(items); event.currentTarget.reset(); }
   const categorySpend = useMemo(() => {
     const result = new Map<string, number>();
     for (const item of transactions.filter((transaction) => transaction.type === "expense" && transaction.date.slice(0, 7) === month)) result.set(item.category, (result.get(item.category) ?? 0) + item.amount);
@@ -645,7 +656,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
             <div className="finx-row-side">
               <span className="finx-badge up">{Math.round(progress)}%</span>
               <div className="finx-row-buttons">
-                <button className={secondary} onClick={() => { const amount = Number(window.prompt("Nominal yang ditambahkan (Rp)")); if (amount > 0) update((current) => ({ ...current, savingsGoals: current.savingsGoals.map((item) => item.id === goal.id ? { ...item, savedAmount: item.savedAmount + Math.round(amount) } : item) })); }}>Tambah dana</button>
+                <button className={secondary} onClick={() => confirm({ tone: "leaf", title: "Tambah dana", subject: goal.title, message: `Sudah terkumpul ${formatCompactRupiah(goal.savedAmount)} dari ${formatCompactRupiah(goal.targetAmount)}. Masukkan nominal yang ingin ditambahkan.`, confirmLabel: "Simpan", prompt: { label: "Nominal tambahan", placeholder: "50000", inputMode: "numeric", prefix: "Rp" }, validate: (value) => { const amount = Number((value || "").replace(/[^\d]/g, "")); return Number.isFinite(amount) && amount > 0 ? undefined : "Nominal harus berupa angka lebih dari Rp0."; }, onConfirm: (value) => { const amount = Number((value || "").replace(/[^\d]/g, "")); if (amount > 0) update((current) => ({ ...current, savingsGoals: current.savingsGoals.map((item) => item.id === goal.id ? { ...item, savedAmount: item.savedAmount + Math.round(amount) } : item) })); } })}>Tambah dana</button>
                 <button className="finx-delete" onClick={() => confirmRemove(`target tabungan "${goal.title}"`, () => update((current) => ({ ...current, savingsGoals: remove(current.savingsGoals, goal.id) })))} aria-label={`Hapus target ${goal.title}`}><Trash2 size={15} /></button>
               </div>
             </div>
