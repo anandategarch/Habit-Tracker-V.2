@@ -5,6 +5,8 @@ import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { computeGardenRhythm, consumeShield, shieldAvailableThisWeek, summarizeSeedBank, type GardenRhythm } from "@/lib/garden-rewards";
+import { progressSentence, streakStory, todayStory } from "@/lib/storytelling";
+import { RichText } from "@/components/ui/rich-text";
 import { burstLeaves, useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
 import { FocusTimer } from "@/features/focus/focus-timer";
@@ -195,6 +197,8 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   ];
   const unlockedMilestones = weeklyMilestones.filter((item) => weekly.total >= item.target).length;
   const weeklyMax = Math.max(1, ...weekly.days.map((day) => day.completed));
+  // Subjudul PageIntro = sapaan emosional; hitungan mundur pindah ke hero
+  // cerita (v0.12) supaya satu pesan = satu tempat, tanpa duplikasi.
   const dailyEncouragement = vacationMode
     ? "Hari ini kamu boleh mengambil jeda. Rutinitasmu tetap ada saat kamu siap kembali."
     : totalHabits === 0
@@ -204,12 +208,10 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         : completed === habits.length
           ? "Semua langkah terjadwal sudah kamu rawat. Sisakan ruang untuk menikmati harimu."
           : completed > 0
-            ? habits.length - completed === 1
-              ? "Satu langkah lagi menuju taman berbunga penuh hari ini 🌸"
-              : habits.length - completed <= 4
-                ? `${habits.length - completed} langkah lagi menuju bloom hari ini — kamu hampir sampai ✨`
-                : `${habits.length - completed} langkah lagi menuju bloom hari ini. Pelan-pelan, sesuai ritmemu 🌱`
+            ? "Kamu sudah melangkah hari ini — kebunmu mulai merespons 🌿"
             : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
+  // Hero = cerita hari ini yang berubah mengikuti data (bukan tagline statis).
+  const heroStory = todayStory({ total: habits.length, completed, vacationMode });
 
   return (
     <div className={`botanical-dashboard-page garden-theme-${gardenTheme}`}>
@@ -259,14 +261,12 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
       <section className="hero-card botanical-hero" aria-label="Ringkasan perkembangan hari ini">
         <BotanicalIllustrationBackdrop variant="home" />
         <div className="hero-copy">
-          <div className="hero-kicker">{vacationMode ? "A MOMENT TO REST" : "YOUR LITTLE GARDEN"}</div>
-          <h2 className="hero-title">Tumbuh pelan,<br />tetap bertumbuh.</h2>
-          <p className="hero-description">Setiap langkah kecil ikut membentuk hidup yang kamu pilih.</p>
+          <div className="hero-kicker">{vacationMode ? "SAATNYA BERISTIRAHAT" : "KEBUN KECILMU"}</div>
+          <h2 className="hero-title" data-tone={heroStory.tone}>
+            <RichText text={heroStory.headline} />
+          </h2>
+          <p className="hero-description">{heroStory.note}</p>
           <button className="garden-journey-link" type="button" onClick={() => onNavigate("tree")}>Lihat perjalanan pohonmu <ArrowRight size={13} /></button>
-        </div>
-        <div className="hero-quote-bubble" aria-label="Pengingat Rutina">
-          <p>“Tidak ada taman yang tumbuh dalam satu malam. Kamu juga tidak harus.”</p>
-          <span>— Catatan kecil Rutina</span>
         </div>
         <div className="hero-progress-card">
           <div className="hero-ring" role="img" aria-label={`Progres habit hari ini ${progress} persen, ${completed} dari ${habits.length} kebiasaan selesai`}>
@@ -298,21 +298,55 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
             </div>
           </div>
           <div className="hero-progress-copy">
-            <div className="hero-progress-heading"><strong>Habit hari ini</strong><span>{completed} selesai</span></div>
-            <div className="hero-progress-count"><b>{completed} / {habits.length}</b> kebiasaan</div>
-            <div className="hero-progress-track" role="progressbar" aria-label="Progress habit hari ini" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
-              <span style={{ width: `${progress}%` } as CSSProperties} />
-            </div>
+            <div className="hero-progress-heading"><strong>Habit hari ini</strong></div>
+            <p className="hero-progress-sentence" data-tone={heroStory.tone}>
+              <RichText text={progressSentence(completed, habits.length)} />
+            </p>
           </div>
         </div>
       </section>
-      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div>{seedChip.total > 0 && <div className="garden-seed-chip" role="status" title="Koleksi benih dari perayaan bloom">🌱 <strong>{seedChip.total}</strong> benih{seedChip.langka > 0 ? ` · ${seedChip.langka} langka` : ""}{seedChip.legendaris > 0 ? ` · ${seedChip.legendaris} legendaris` : ""}</div>}<div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "lavender" ? "active" : ""} aria-pressed={gardenTheme === "lavender"} onClick={() => setGardenTheme("lavender")}><i className="lavender" />Lavender</button></div></section>
+      <section className="card next-step-card botanical-next-step" aria-label="Satu langkah kecil hari ini">
+        <div className="next-step-label"><span className="next-step-dot" /> SATU LANGKAH HARI INI</div>
+        {vacationMode ? (
+          <>
+            <h2>Hari ini, izinkan dirimu beristirahat.</h2>
+            <p>Mode libur aktif. Tidak ada target yang perlu dikejar hari ini.</p>
+          </>
+        ) : focusedHabit ? (
+          <>
+            <label className="daily-focus-picker">FOKUS HARI INI<select value={focusedHabit.id} onChange={(event) => setFocusHabitId(event.target.value)} aria-label="Pilih fokus kebiasaan">{habits.filter((habit) => !habit.completed).map((habit) => <option key={habit.id} value={habit.id}>{habit.title}</option>)}</select></label>
+            <div className="daily-intention-meta"><span>{focusedHabit.time}</span><span>{focusedHabit.duration} menit</span><span>{focusedHabit.category}</span></div>
+            <h2>{focusedHabit.title}</h2>
+            <p>Cukup fokus pada satu hal ini. Kamu tidak perlu memikirkan semuanya sekaligus.</p>
+            <div className="daily-intention-actions">
+              <button className="next-step-action" type="button" disabled={!onTimerToggle} onClick={() => onTimerToggle?.(focusedHabit.id)} aria-pressed={activeTimerId === focusedHabit.id}>
+                {activeTimerId === focusedHabit.id ? <Pause size={15} /> : <Play size={15} />}
+                {activeTimerId === focusedHabit.id ? "Hentikan timer habit" : "Mulai timer habit"}
+              </button>
+              <button className="daily-intention-complete" type="button" onClick={(event) => { if (!focusedHabit.completed) burstLeaves(event.currentTarget); onToggle(focusedHabit.id); }}>
+                <Check size={14} /> Tandai selesai
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2>{totalHabits === 0 ? "Mulai dari satu kebiasaan kecil." : habits.length === 0 ? "Hari ini tidak ada habit terjadwal." : "Semua ritual hari ini sudah kamu rawat."}</h2>
+            <p>{totalHabits === 0 ? "Pilih hal sederhana yang ingin kamu lakukan untuk dirimu sendiri." : habits.length === 0 ? "Kamu boleh menggunakan ruang ini untuk hal lain yang penting hari ini." : "Kamu sudah menyelesaikan semua kebiasaan terjadwal. Ambil jeda dan nikmati progresmu."}</p>
+            <button className="next-step-action" type="button" onClick={totalHabits === 0 ? onAddHabit : () => onNavigate("habits")}>
+              {totalHabits === 0 ? <Plus size={15} /> : <ArrowRight size={15} />}
+              {totalHabits === 0 ? "Buat kebiasaan pertama" : "Lihat kebiasaan"}
+            </button>
+          </>
+        )}
+      </section>
 
-            <div className="stats-grid botanical-stats botanical-stats-three">
-        <StatCard label="Rekor konsistensi" value={`${animatedStreak} hari`} foot="Satu capaian yang pernah kamu bangun" icon={Flame} tone="amber" />
+      <div className="stats-grid botanical-stats botanical-stats-three">
+        <StatCard label="Rekor konsistensi" value={`${animatedStreak} hari`} foot={streakStory(longestStreak)} icon={Flame} tone="amber" />
         <StatCard label="Kebiasaan aktif" value={String(totalHabits)} foot="Hal yang sedang kamu rawat" icon={Sprout} tone="green" />
         <StatCard label="Arus kas bersih" value={formatCompactRupiah(animatedNet)} foot="Bulan berjalan" icon={WalletCards} tone="orange" />
       </div>
+
+      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div>{seedChip.total > 0 && <div className="garden-seed-chip" role="status" title="Koleksi benih dari perayaan bloom">🌱 <strong>{seedChip.total}</strong> benih{seedChip.langka > 0 ? ` · ${seedChip.langka} langka` : ""}{seedChip.legendaris > 0 ? ` · ${seedChip.legendaris} legendaris` : ""}</div>}<div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "lavender" ? "active" : ""} aria-pressed={gardenTheme === "lavender"} onClick={() => setGardenTheme("lavender")}><i className="lavender" />Lavender</button></div></section>
 
       <div className="dashboard-feature-grid">
         <section className="card card-pad home-habits-card">
@@ -433,41 +467,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
             <div className="finance-pair-item expense"><span className="small-label">Pengeluaran</span><strong>{formatCompactRupiah(expense)}</strong></div>
           </div>
           <button className="text-button finance-mini-link" type="button" onClick={() => onNavigate("finance")}>Buka keuangan <ArrowRight size={13} /></button>
-        </section>
-
-        <section className="card next-step-card botanical-next-step" aria-label="Satu langkah kecil hari ini">
-          <div className="next-step-label"><span className="next-step-dot" /> ONE THING TODAY · SATU LANGKAH KECIL</div>
-          {vacationMode ? (
-            <>
-              <h2>Hari ini, izinkan dirimu beristirahat.</h2>
-              <p>Mode libur aktif. Tidak ada target yang perlu dikejar hari ini.</p>
-            </>
-          ) : focusedHabit ? (
-            <>
-              <label className="daily-focus-picker">FOKUS HARI INI<select value={focusedHabit.id} onChange={(event) => setFocusHabitId(event.target.value)} aria-label="Pilih fokus kebiasaan">{habits.filter((habit) => !habit.completed).map((habit) => <option key={habit.id} value={habit.id}>{habit.title}</option>)}</select></label>
-              <div className="daily-intention-meta"><span>{focusedHabit.time}</span><span>{focusedHabit.duration} menit</span><span>{focusedHabit.category}</span></div>
-              <h2>{focusedHabit.title}</h2>
-              <p>Cukup fokus pada satu hal ini. Kamu tidak perlu memikirkan semuanya sekaligus.</p>
-              <div className="daily-intention-actions">
-                <button className="next-step-action" type="button" disabled={!onTimerToggle} onClick={() => onTimerToggle?.(focusedHabit.id)} aria-pressed={activeTimerId === focusedHabit.id}>
-                  {activeTimerId === focusedHabit.id ? <Pause size={15} /> : <Play size={15} />}
-                  {activeTimerId === focusedHabit.id ? "Hentikan timer habit" : "Mulai timer habit"}
-                </button>
-                <button className="daily-intention-complete" type="button" onClick={(event) => { if (!focusedHabit.completed) burstLeaves(event.currentTarget); onToggle(focusedHabit.id); }}>
-                  <Check size={14} /> Tandai selesai
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <h2>{totalHabits === 0 ? "Mulai dari satu kebiasaan kecil." : habits.length === 0 ? "Hari ini tidak ada habit terjadwal." : "Semua ritual hari ini sudah kamu rawat."}</h2>
-              <p>{totalHabits === 0 ? "Pilih hal sederhana yang ingin kamu lakukan untuk dirimu sendiri." : habits.length === 0 ? "Kamu boleh menggunakan ruang ini untuk hal lain yang penting hari ini." : "Kamu sudah menyelesaikan semua kebiasaan terjadwal. Ambil jeda dan nikmati progresmu."}</p>
-              <button className="next-step-action" type="button" onClick={totalHabits === 0 ? onAddHabit : () => onNavigate("habits")}>
-                {totalHabits === 0 ? <Plus size={15} /> : <ArrowRight size={15} />}
-                {totalHabits === 0 ? "Buat kebiasaan pertama" : "Lihat kebiasaan"}
-              </button>
-            </>
-          )}
         </section>
 
         <section className="dashboard-support-bottom">

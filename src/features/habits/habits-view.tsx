@@ -5,6 +5,8 @@ import { GripVertical, ListChecks, ListFilter, Plus, RefreshCw, Search, Sparkles
 import type { Habit } from "@/lib/types";
 import type { HabitGroup } from "@/lib/module-types";
 import { summarizeHabits } from "@/lib/habits";
+import { progressSentence, streakStory } from "@/lib/storytelling";
+import { RichText } from "@/components/ui/rich-text";
 import { isScheduledOn } from "@/lib/habit-schedule";
 import { todayISO } from "@/lib/format";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
@@ -216,9 +218,9 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
         <section className="card habit-progress-card">
           <BotanicalIllustrationBackdrop variant="habit" />
           <div className="habit-progress-copy">
-            <div className="small-label">PROGRESS HARI INI</div>
+            <div className="small-label">PROGRES HARI INI</div>
             <div className="habit-progress-value">{progress}<span>%</span></div>
-            <p>{completed} dari {total} kebiasaan telah selesai.</p>
+            <p><RichText text={progressSentence(completed, total)} /></p>
           </div>
           <div className="habit-progress-ring" style={{ "--progress": `${progress}%` } as CSSProperties}>
             <strong>{completed}<small>/{total}</small></strong>
@@ -229,7 +231,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
           <span className="streak-summary-icon"><Sparkles size={18} /></span>
           <div className="small-label">REKOR KONSISTENSI</div>
           <div className="streak-number">{longestStreak}<span> hari</span></div>
-          <p>Pertahankan ritme yang sudah kamu bangun.</p>
+          <p><RichText text={streakStory(longestStreak)} /></p>
         </section>
       </div>
 

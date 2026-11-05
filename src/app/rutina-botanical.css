@@ -6437,3 +6437,142 @@ html[data-theme="dark"] .finance-balance .botanical-card-art--finance {
 @media (prefers-reduced-motion: reduce) {
   .botanical-card-art { animation: none !important; transition: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   v0.12 · STORYTELLING UI — banner cerita keuangan, kalimat hero,
+   takeaway kategori, narasi pertumbuhan. Palet botanical:
+   hijau #417a57 · amber #f5d9a8/#d9a28a · koral #f2a48c/#c97e5e.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Banner cerita keuangan — pesan utama tab Keuangan */
+.finance-story-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 12px 0 4px;
+  padding: 15px 16px;
+  border: 1px solid #dbe7d4;
+  border-left: 4px solid #417a57;
+  border-radius: 19px;
+  background: linear-gradient(115deg, #f4f8ee, #eef5e9);
+}
+.finance-story-banner .finance-story-emoji {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  font-size: 21px;
+  background: rgba(255, 255, 255, .78);
+  border: 1px solid rgba(65, 122, 87, .16);
+}
+.finance-story-banner .finance-story-copy { display: grid; gap: 4px; min-width: 0; }
+.finance-story-headline {
+  margin: 0;
+  color: #2e4636;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.25px;
+  line-height: 1.4;
+}
+.finance-story-headline strong { font-weight: 860; }
+.finance-story-note { margin: 0; color: #5d6b58; font-size: 12px; line-height: 1.5; }
+.finance-story-note strong { color: #38513f; font-weight: 780; }
+.finance-story-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+.finance-story-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .88);
+  border: 1px solid #d7e4cf;
+  color: #40513f;
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.finance-story-chip strong { font-weight: 800; color: #2e4636; }
+
+.finance-story-banner[data-tone="amber"] {
+  border-left-color: #d9a28a;
+  border-color: #ecd9c6;
+  background: linear-gradient(115deg, #fdf6ec, #fbf0e2);
+}
+.finance-story-banner[data-tone="rose"] {
+  border-left-color: #c97e5e;
+  border-color: #ecd0c6;
+  background: linear-gradient(115deg, #fdf1ec, #fae7df);
+}
+.finance-story-banner[data-tone="neutral"] {
+  border-left-color: #a8c98f;
+  background: linear-gradient(115deg, #fbfcf6, #f4f7ec);
+}
+
+/* Takeaway kategori: "☕ Kopi jadi pos terbesar — 32% …" */
+.finance-category-takeaway {
+  margin: 10px 2px 12px;
+  padding: 9px 12px;
+  border-radius: 13px;
+  background: #f4f8ee;
+  color: #55654f;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.finance-category-takeaway strong { color: #2e4636; font-weight: 800; }
+
+/* Kalimat progres hero Beranda (pengganti pecahan + bar yang redundan) */
+.hero-progress-sentence { margin: 2px 0 0; color: #4f5849; font-size: 11.5px; line-height: 1.55; }
+.hero-progress-sentence strong { color: #252d26; font-weight: 800; }
+
+/* Stat foot kini bisa memuat **bold** dari story engine */
+.stat-foot strong { font-weight: 800; }
+
+/* Kartu streak & progres Kebiasaan: kalimat goal-gradient */
+.habit-progress-copy p strong, .habit-streak-summary p strong { font-weight: 800; color: #2f4a3a; }
+
+/* Metrik kosong di panel pertumbuhan — "Belum ada" yang ramah */
+.growth-wrapped-metric strong.growth-metric-empty {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7d8a78;
+  letter-spacing: -.2px;
+}
+
+/* ── Dark mode ── */
+html[data-theme="dark"] .finance-story-banner {
+  background: linear-gradient(115deg, #26332a, #223026);
+  border-color: #3c5242;
+}
+html[data-theme="dark"] .finance-story-headline { color: #e8efe2; }
+html[data-theme="dark"] .finance-story-headline strong { color: #f3f7ee; }
+html[data-theme="dark"] .finance-story-note { color: #a9b8a4; }
+html[data-theme="dark"] .finance-story-note strong { color: #d9e4d3; }
+html[data-theme="dark"] .finance-story-chip {
+  background: rgba(255, 255, 255, .06);
+  border-color: #455946;
+  color: #cddac6;
+}
+html[data-theme="dark"] .finance-story-chip strong { color: #e8efe2; }
+html[data-theme="dark"] .finance-story-banner .finance-story-emoji {
+  background: rgba(255, 255, 255, .07);
+  border-color: rgba(255, 255, 255, .12);
+}
+html[data-theme="dark"] .finance-story-banner[data-tone="amber"] { border-left-color: #d9a28a; }
+html[data-theme="dark"] .finance-story-banner[data-tone="rose"] { border-left-color: #c97e5e; }
+html[data-theme="dark"] .finance-category-takeaway { background: #243227; color: #a9b8a4; }
+html[data-theme="dark"] .finance-category-takeaway strong { color: #e8efe2; }
+html[data-theme="dark"] .hero-progress-sentence { color: #a9b8a4; }
+html[data-theme="dark"] .hero-progress-sentence strong { color: var(--ink); }
+html[data-theme="dark"] .habit-progress-copy p strong,
+html[data-theme="dark"] .habit-streak-summary p strong { color: #d9e4d3; }
+html[data-theme="dark"] .growth-wrapped-metric strong.growth-metric-empty { color: #8fa089; }
+
+@media (max-width: 520px) {
+  .finance-story-banner { gap: 11px; padding: 13px 13px; border-radius: 17px; }
+  .finance-story-banner .finance-story-emoji { width: 38px; height: 38px; font-size: 19px; border-radius: 12px; }
+  .finance-story-headline { font-size: 13.5px; }
+  .finance-story-note { font-size: 11.5px; }
+  .finance-story-chip { font-size: 11px; padding: 4px 10px; }
+}

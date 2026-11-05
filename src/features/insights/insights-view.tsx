@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Activity, ArrowDownLeft, ArrowUpRight, BrainCircuit, Flame, HeartPulse, Moon, PiggyBank, RefreshCw, Sprout, Target, WalletCards } from "lucide-react";
+import { Activity, ArrowDownLeft, ArrowUpRight, BrainCircuit, Flame, HeartPulse, Moon, RefreshCw, Sprout, Target, WalletCards } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { DailyCheckin } from "@/lib/module-types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
+import { growthStory } from "@/lib/storytelling";
+import { RichText } from "@/components/ui/rich-text";
 import { PageIntro, SectionHeading, StatCard } from "@/components/ui/primitives";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
@@ -42,7 +44,7 @@ const insightIcon: Record<InsightType, typeof BrainCircuit> = {
 export function InsightsView({ habits, income, expense, checkins = [] }: {
   habits: Habit[]; income: number; expense: number; checkins?: DailyCheckin[];
 }) {
-  const { completed, total, progress, longestStreak } = summarizeHabits(habits);
+  const { completed, total } = summarizeHabits(habits);
   const categorySummary = habitCategories.map((category) => ({
     category,
     total: habits.filter((habit) => habit.category === category).length,
@@ -133,18 +135,17 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
   const moodAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.mood, 0) / recentCheckins.length : null;
   const energyAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.energy, 0) / recentCheckins.length : null;
   const sleepAverage = recentCheckins.length ? recentCheckins.reduce((sum, item) => sum + item.sleepHours, 0) / recentCheckins.length : null;
-  const growthHeadline = period === "week"
-    ? "Tujuh hari, banyak langkah kecil."
-    : period === "month"
-      ? "Satu bulan yang terus membentuk ceritamu."
-      : "Lihat perjalanan yang kamu bangun sepanjang tahun.";
-  const growthSummary = weeklyHistoryLoading
-    ? "Rutina sedang menyusun catatan perkembanganmu."
-    : weeklyHistoryError
-      ? "Riwayat belum dapat dimuat. Catatan yang sudah tersimpan tetap aman."
-      : trendTotal > 0
-        ? `Ada ${trendTotal} penyelesaian habit yang tercatat dalam ${periodCaption}. Setiap langkah kecil layak dihargai.`
-        : `Belum ada penyelesaian habit yang tercatat dalam ${periodCaption}. Kamu bisa mulai lagi kapan pun siap.`;
+  // Narasi pertumbuhan (v0.12): data periode → kalimat cerita, bukan tabel.
+  const activeDays = trendData.filter((item) => item.completed > 0).length;
+  const spanDays = period === "year" ? 12 : period === "month" ? 30 : 7;
+  const growth = growthStory({
+    loading: weeklyHistoryLoading,
+    error: weeklyHistoryError,
+    total: trendTotal,
+    activeDays,
+    spanDays,
+    periodLabel: periodCaption,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -198,25 +199,29 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
 
       <section className="growth-wrapped-panel" aria-label="Ringkasan perjalananmu">
         <div className="growth-wrapped-copy">
-          <span className="growth-wrapped-kicker">YOUR GROWTH STORY</span>
-          <h2>{growthHeadline}</h2>
-          <p>{growthSummary}</p>
+          <span className="growth-wrapped-kicker">CERITA PERTUMBUHANMU</span>
+          <h2><RichText text={growth.headline} /></h2>
+          <p>{growth.summary}</p>
         </div>
         <div className="growth-wrapped-metrics">
           <div className="growth-wrapped-metric">
             <span className="growth-wrapped-icon"><Sprout size={17} /></span>
-            <div><strong>{weeklyHistoryLoading || weeklyHistoryError ? "—" : trendTotal.toLocaleString("id-ID")}</strong><small>Habit selesai · {periodCaption}</small></div>
+            <div><strong>{weeklyHistoryLoading ? "…" : weeklyHistoryError ? "—" : trendTotal.toLocaleString("id-ID")}</strong><small>Habit selesai · {periodCaption}</small></div>
           </div>
           <div className="growth-wrapped-metric">
             <span className="growth-wrapped-icon mood"><HeartPulse size={17} /></span>
-            <div><strong>{moodAverage === null ? "—" : moodAverage.toFixed(1) + "/5"}</strong><small>Rata-rata mood · {recentCheckins.length} check-in terakhir</small></div>
+            {moodAverage === null ? (
+              <div><strong className="growth-metric-empty">Belum ada</strong><small>Catat check-in pertamamu 🌱</small></div>
+            ) : (
+              <div><strong>{moodAverage.toFixed(1)}/5</strong><small>Rata-rata mood · {recentCheckins.length} check-in terakhir</small></div>
+            )}
           </div>
         </div>
       </section>
       <div className="insights-stat-grid botanical-insight-stats">
-        <StatCard label="Progres hari ini" value={`${progress}%`} foot={`${completed} dari ${total} habit selesai hari ini`} icon={Target} tone="green" />
-        <StatCard label="Rekor konsistensi" value={`${longestStreak} hari`} foot="Satu capaian yang pernah kamu bangun" icon={Flame} tone="amber" />
-        <StatCard label="Arus kas bersih" value={formatCompactRupiah(totalNet)} foot="Bulan berjalan" icon={PiggyBank} tone="orange" />
+        <StatCard label="Langkah periode ini" value={weeklyHistoryLoading ? "…" : weeklyHistoryError ? "—" : trendTotal.toLocaleString("id-ID")} foot={`Setiap penyelesaian tercatat · ${periodCaption.toLowerCase()}`} icon={Target} tone="green" />
+        <StatCard label="Hari aktif" value={`${activeDays}/${spanDays} hari`} foot="Hari dengan minimal satu langkah" icon={Flame} tone="amber" />
+        <StatCard label="Mood rata-rata" value={moodAverage === null ? "—" : `${moodAverage.toFixed(1)}/5`} foot={moodAverage === null ? "Catat check-in pertamamu untuk mulai membaca polamu 🌱" : `Dari ${recentCheckins.length} check-in terakhir`} icon={HeartPulse} tone="orange" />
       </div>
 
       <section className="card card-pad insight-trend-panel" aria-label="Ringkasan progres habit dan check-in selama tujuh hari terakhir">

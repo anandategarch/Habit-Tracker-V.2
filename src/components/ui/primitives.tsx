@@ -9,6 +9,7 @@ import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
 import { scheduleLabel } from "@/lib/habit-schedule";
 import { burstLeaves } from "@/components/ui/celebrate";
+import { RichText } from "@/components/ui/rich-text";
 
 function pageArtwork(eyebrow: string): BotanicalIllustrationVariant | null {
   const label = eyebrow.toLocaleUpperCase("id-ID");
@@ -130,7 +131,7 @@ function StatCard({ label, value, foot, icon: Icon, tone = "default" }: {
     <div className={`stat-card tone-${tone}`}>
       <div className="stat-top"><span className="small-label">{label}</span><span className="stat-icon"><Icon size={15} /></span></div>
       <div className="metric-value">{value}</div>
-      <div className="stat-foot">{foot}</div>
+      <div className="stat-foot"><RichText text={foot} /></div>
     </div>
   );
 }

@@ -20,6 +20,8 @@ import {
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
+import { budgetNarrative, categoryEmoji, financeStory } from "@/lib/storytelling";
+import { RichText } from "@/components/ui/rich-text";
 import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
@@ -61,6 +63,16 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const displayedIncome = monthKey === currentMonthKey ? income : periodSummary.income;
   const displayedExpense = monthKey === currentMonthKey ? expense : periodSummary.expense;
   const net = displayedIncome - displayedExpense;
+
+  // Pengeluaran bulan sebelumnya — bahan kalimat tren ("turun 12% …").
+  const previousMonthExpense = useMemo(() => {
+    const [year, month] = monthKey.split("-").map(Number);
+    const previous = new Date(Date.UTC(year, month - 2, 1));
+    const previousKey = `${previous.getUTCFullYear()}-${String(previous.getUTCMonth() + 1).padStart(2, "0")}`;
+    return transactions
+      .filter((transaction) => transaction.type === "expense" && transaction.date.slice(0, 7) === previousKey)
+      .reduce((total, transaction) => total + transaction.amount, 0);
+  }, [transactions, monthKey]);
   // Angka roll-up (Fase 1): rupiah "menghitung naik" saat masuk tab keuangan.
   const animatedNet = useCountUp(net, 900, 160);
   const animatedIncome = useCountUp(displayedIncome, 860, 240);
@@ -177,6 +189,20 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
       ? "Pengeluaran pada periode ini lebih besar dari pemasukan."
       : "Pemasukan dan pengeluaran pada periode ini seimbang.";
 
+  // Banner cerita keuangan (v0.12): satu kalimat insight berkode warna + chip
+  // fakta cepat — menggantikan tumpukan angka sebagai pesan pertama layar.
+  const topCategoryShare = expenseCategories.length > 0 && categorySpendTotal > 0
+    ? { category: expenseCategories[0].category, share: expenseCategories[0].spent / categorySpendTotal * 100 }
+    : null;
+  const moneyStory = financeStory({
+    income: displayedIncome,
+    expense: displayedExpense,
+    prevExpense: previousMonthExpense,
+    budgets: spendByCategory.map((budget) => ({ category: budget.category, spent: budget.spent, limit: budget.limit })),
+    topCategory: topCategoryShare,
+    hasTransactions: monthTransactions.length > 0,
+  });
+
   return (
     <>
       <PageIntro
@@ -239,6 +265,21 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
           )}
         </div>
       </div>
+
+      <section className="finance-story-banner" data-tone={moneyStory.tone} role="status" aria-live="polite" aria-label="Ringkasan cerita keuangan bulan ini">
+        <span className="finance-story-emoji" aria-hidden="true">{moneyStory.emoji}</span>
+        <div className="finance-story-copy">
+          <h2 className="finance-story-headline"><RichText text={moneyStory.headline} /></h2>
+          <p className="finance-story-note"><RichText text={moneyStory.note} /></p>
+          {moneyStory.chips.length > 0 && (
+            <div className="finance-story-chips">
+              {moneyStory.chips.map((chip) => (
+                <span className="finance-story-chip" key={chip}><RichText text={chip} /></span>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       <section className="finance-overview" aria-label={`Ringkasan keuangan ${monthLabel}`}>
         <div className="card finance-balance">
@@ -353,7 +394,13 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             <small>{expenseCategories.length} kategori</small>
           </div>
           {visibleExpenseCategories.length > 0 ? (
-            <div className="finance-category-list">
+            <>
+              {topCategoryShare && (
+                <p className="finance-category-takeaway">
+                  <RichText text={`${categoryEmoji(topCategoryShare.category)} **${topCategoryShare.category}** jadi pos terbesar — ${Math.round(topCategoryShare.share)}% dari pengeluaranmu`} />
+                </p>
+              )}
+              <div className="finance-category-list">
               {visibleExpenseCategories.map((item, index) => {
                 const percentage = categorySpendTotal > 0
                   ? item.spent / categorySpendTotal * 100
@@ -382,7 +429,8 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            </>
           ) : (
             <div className="finance-panel-empty">
               <Sprout size={20} />
@@ -416,15 +464,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
                     : ratio >= 80
                       ? "warning"
                       : "";
-                const detail = !hasLimit
-                  ? "Batas anggaran belum ditentukan"
-                  : budget.spent > budget.limit
-                    ? `Melebihi batas ${formatCompactRupiah(budget.spent - budget.limit)}`
-                    : budget.spent === budget.limit
-                      ? "Batas anggaran tercapai"
-                      : budget.spent === 0
-                        ? `${formatCompactRupiah(budget.limit)} masih tersedia`
-                        : `Sisa ${formatCompactRupiah(budget.limit - budget.spent)}`;
+                const detail = budgetNarrative(budget.spent, hasLimit ? budget.limit : 0);
                 return (
                   <div className="budget-item" key={budget.category}>
                     <div className="budget-head">
@@ -448,7 +488,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
                     >
                       <div className={`budget-fill ${state}`} style={{ width: `${Math.min(displayRatio, 100)}%` }} />
                     </div>
-                    <div className={`budget-hint ${state}`}>{detail}</div>
+                    <div className={`budget-hint ${state}`}><RichText text={detail} /></div>
                   </div>
                 );
               })}
