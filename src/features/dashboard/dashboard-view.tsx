@@ -206,7 +206,9 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           : completed > 0
             ? habits.length - completed === 1
               ? "Satu langkah lagi menuju taman berbunga penuh hari ini 🌸"
-              : `${habits.length - completed} langkah lagi menuju bloom hari ini — pelan-pelan saja, kamu hampir sampai ✨`
+              : habits.length - completed <= 4
+                ? `${habits.length - completed} langkah lagi menuju bloom hari ini — kamu hampir sampai ✨`
+                : `${habits.length - completed} langkah lagi menuju bloom hari ini. Pelan-pelan, sesuai ritmemu 🌱`
             : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
 
   return (
