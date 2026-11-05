@@ -79,9 +79,10 @@ function weekdayLabel(date: string) {
   return new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${date}T12:00:00+07:00`));
 }
 
-export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin }: {
+export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin, focusTimerRemainingSeconds, focusTimerRunning, onFocusTimerToggle, onFocusTimerReset }: {
   habits: Habit[]; totalHabits: number; income: number; expense: number; onNavigate: (tab: TabId) => void;
   onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; activeTimerId?: string | null; timerElapsedSeconds?: number; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
+  focusTimerRemainingSeconds: number; focusTimerRunning: boolean; onFocusTimerToggle: () => void; onFocusTimerReset: () => void;
 }) {
   const now = new Date();
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
@@ -324,8 +325,19 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         </section>
 
         <section className="dashboard-support-bottom">
-          {dailyCheckin && <section className="daily-checkin-mini"><span className="daily-checkin-icon"><HeartPulse size={17} /></span><div><strong>Catatan dirimu hari ini</strong><span>Mood {dailyCheckin.mood}/5 · Tidur {dailyCheckin.sleepHours} jam</span></div></section>}
-          <FocusTimer />
+          {dailyCheckin ? (
+            <section className="daily-checkin-mini">
+              <span className="daily-checkin-icon"><HeartPulse size={17} /></span>
+              <div><strong>Catatan dirimu hari ini</strong><span>Mood {dailyCheckin.mood}/5 · Tidur {dailyCheckin.sleepHours} jam</span></div>
+            </section>
+          ) : (
+            <button className="daily-checkin-prompt" type="button" onClick={() => onNavigate("checkin")}>
+              <span className="daily-checkin-icon"><HeartPulse size={17} /></span>
+              <span className="daily-checkin-prompt-copy"><strong>Luangkan 30 detik untuk dirimu.</strong><small>Bagaimana mood, energi, dan istirahatmu hari ini?</small></span>
+              <span className="daily-checkin-prompt-action">Check-in <ArrowRight size={13} /></span>
+            </button>
+          )}
+          <FocusTimer remainingSeconds={focusTimerRemainingSeconds} running={focusTimerRunning} onToggle={onFocusTimerToggle} onReset={onFocusTimerReset} />
         </section>
       </div>
     </div>

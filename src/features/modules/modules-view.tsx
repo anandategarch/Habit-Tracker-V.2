@@ -313,11 +313,18 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
     return () => { cancelled = true; };
   }, []);
 
-  const lifetimeStage = growth
-    ? growth.level >= 7 ? "Pohon Dewasa" : growth.level >= 4 ? "Pohon Muda" : growth.level >= 2 ? "Tunas" : "Benih"
-    : "—";
+  const lifetimeStageConfig = growth
+    ? growth.level >= 7
+      ? { name: "Pohon Dewasa", artwork: "/tree/pohon-dewasa.svg", tagline: "Konsistensi telah berakar menjadi sistem yang bisa kamu andalkan." }
+      : growth.level >= 4
+        ? { name: "Pohon Muda", artwork: "/tree/pohon-muda.svg", tagline: "Rutinitasmu mulai berakar dan memberi bentuk pada hari-hari." }
+        : growth.level >= 2
+          ? { name: "Tunas", artwork: "/tree/tunas.svg", tagline: "Langkah kecilmu mulai terlihat sebagai pertumbuhan yang nyata." }
+          : { name: "Benih", artwork: "/tree/benih.svg", tagline: "Setiap perjalanan tumbuh dari satu keputusan sederhana." }
+    : null;
+  const lifetimeStage = lifetimeStageConfig?.name ?? "—";
   const goalsCount = modules.goals.filter((goal) => goal.completed).length;
-  const stageArt = growth?.artwork ?? "/tree/benih.svg";
+  const stageArt = lifetimeStageConfig?.artwork ?? "/tree/benih.svg";
 
   return (
     <div className="tree-page">
@@ -327,7 +334,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
           <div className="tree-journey-copy">
             <span className="tree-journey-kicker">YOUR LITTLE GROWTH STORY</span>
             <h2>Rawat pohonmu,<br />rayakan setiap<br />langkah kecil.</h2>
-            <p>{growth.stage.tagline}</p>
+            <p>{lifetimeStageConfig?.tagline ?? growth.stage.tagline}</p>
             <div className="tree-level-lockup">
               <span className="tree-level-badge">LEVEL {growth.level}</span>
               <span className="tree-level-name">Pohon Produktivitas</span>
@@ -342,11 +349,11 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
             <small className="tree-level-footnote">Progres seumur hidup · tidak pernah direset</small>
             <a className="tree-detail-cta" href="#tree-growth-details">Lihat Detail <ArrowRight size={13} /></a>
           </div>
-          <div className="tree-journey-art" role="img" aria-label={"Ilustrasi pohon tahap " + growth.stage.label}>
+          <div className="tree-journey-art" role="img" aria-label={"Ilustrasi pohon tahap " + lifetimeStage}>
             <span className="tree-art-orbit tree-art-orbit-one" />
             <span className="tree-art-orbit tree-art-orbit-two" />
-            <span className="tree-art-badge"><Sprout size={13} /> {growth.stage.label}</span>
-            <Image className="tree-main-art" src={stageArt} alt={"Pohon Rutina tahap " + growth.stage.label} width={480} height={480} priority />
+            <span className="tree-art-badge"><Sprout size={13} /> {lifetimeStage}</span>
+            <Image className="tree-main-art" src={stageArt} alt={"Pohon Rutina tahap " + lifetimeStage} width={480} height={480} priority />
             <span className="tree-art-ground" />
             <span className="tree-art-level-stamp">LV. {growth.level}</span>
           </div>
