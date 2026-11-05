@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import {
-  Activity,
   ArrowDownLeft,
   ArrowUpRight,
   CalendarDays,
@@ -11,8 +10,6 @@ import {
   ChevronRight,
   ChevronUp,
   CircleDollarSign,
-  Coffee,
-  Heart,
   Plus,
   Receipt,
   SlidersHorizontal,
@@ -26,13 +23,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
-
-const budgetIcons: Record<string, typeof Coffee> = {
-  Makanan: Coffee,
-  Transportasi: Activity,
-  Tagihan: CircleDollarSign,
-  Lifestyle: Heart,
-};
+import { FinanceCategoryIcon } from "@/components/ui/category-icons";
 
 const categoryPaletteLength = 8;
 type TransactionFilter = "all" | "income" | "expense";
@@ -409,7 +400,6 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
                 const hasLimit = budget.limit > 0;
                 const ratio = hasLimit ? budget.spent / budget.limit * 100 : 0;
                 const displayRatio = Math.round(ratio);
-                const Icon = budgetIcons[budget.category] ?? CircleDollarSign;
                 const state = !hasLimit
                   ? "no-limit"
                   : budget.spent > budget.limit
@@ -421,7 +411,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
                 return (
                   <div className="budget-item" key={budget.category}>
                     <div className="budget-head">
-                      <span className="budget-category"><Icon size={14} />{budget.category}</span>
+                      <span className="budget-category"><FinanceCategoryIcon category={budget.category} size={16} />{budget.category}</span>
                       <strong className={state ? `budget-status ${state}` : "budget-status"}>
                         {hasLimit ? `${displayRatio}%` : "—"}
                       </strong>

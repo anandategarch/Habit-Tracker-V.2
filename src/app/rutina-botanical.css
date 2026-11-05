@@ -377,7 +377,7 @@ button, input, select, textarea { font: inherit; }
 .habit-meta { color: #7a7d72; font-size: 11px; }
 .check-button { width: 31px; height: 31px; border-color: #d9e4d6; }
 .check-button.done { border-color: #3e9b5f; background: #3e9b5f; }
-.habit-time-track, .habit-history-action { border-radius: 99px; }
+
 .category-card { padding: 19px 21px; }
 .botanical-category-breakdown { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px 20px; }
 .category-breakdown-row { gap: 7px; }
@@ -441,7 +441,7 @@ button, input, select, textarea { font: inherit; }
 .calendar-day.today { border-color: #a6c194; }
 .insight-highlight { border: 1px solid #f2e5d8; border-radius: 22px; background: linear-gradient(135deg,#fff0df,#fff8ed); }
 .insight-category-row .budget-track, .module-progress-track { background: #eee9df; }
-.module-panel, .module-card, .focus-card, .focus-timer-card { border-color: #eee5dc; border-radius: 21px; background: rgba(255,253,249,.94); box-shadow: var(--shadow-card); }
+.module-panel, .module-card { border-color: #eee5dc; border-radius: 21px; background: rgba(255,253,249,.94); box-shadow: var(--shadow-card); }
 .empty-state { border-color: #eee5dc; border-radius: 18px; background: #fffaf4; }
 .modal-card { border-color: #f0e6dc; border-radius: 24px; background: #fffdf9; }
 .toast { border: 1px solid #e8efdf; border-radius: 15px; background: #fffdf9; color: #354734; box-shadow: var(--shadow-float); }
@@ -562,7 +562,6 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
   .botanical-hero::after, .hero-progress-track > span { animation: none !important; transition: none !important; }
 }
 
-
 /* Page fidelity pass — secondary pages share the same botanical visual rhythm. */
 /* Design tokens consolidated into the single :root block at the top. */
 
@@ -635,7 +634,6 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
   border-radius: 13px;
   background: #fffdf9;
 }
-.time-analysis-card { border-color: #e9e0f4; border-radius: 18px; background: #faf7ff; }
 
 /* --- Seret urutan habit via pegangan (pointer events → sentuh + mouse).
      HTML5 drag-and-drop lama tidak pernah menyala di iOS/Android. --- */
@@ -665,7 +663,6 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 }
 .habit-drag-handle:hover { color: #417a57; background: #eef4ec; }
 .habit-drag-handle:active { color: #2f5e40; cursor: grabbing; }
-.time-analysis-cancel { min-height: 40px; margin-top: 4px; }
 
 .finance-overview { grid-template-columns: minmax(0,1.25fr) repeat(2,minmax(0,.85fr)); gap: 12px; }
 .finance-balance { position: relative; overflow: hidden; min-height: 145px; padding: 22px; }
@@ -915,7 +912,6 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
   .insight-trend-bar, .finance-spend-donut, .habit-progress-ring { transition: none !important; }
 }
 
-
 /* Final brand and illustration alignment: warm botanical identity on every surface. */
 .rutina-mark { display: block; flex: none; color: var(--primary); }
 .desktop-sidebar .brand-mark,
@@ -944,7 +940,6 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 .tree-splash-skip { color: #477d57; border-color: #e2e9d9; background: rgba(255,253,248,.88); }
 @media (max-width: 600px) { .tree-artwork { border-radius: 17px; } }
 
-
 html[data-theme="dark"] .tree-artwork {
   border-color: var(--line);
   background: linear-gradient(145deg,#334536,#3c4f3d);
@@ -955,7 +950,6 @@ html[data-theme="dark"] .tree-lifetime-stage {
   border-color: var(--line);
   background: var(--surface-soft);
 }
-
 
 /* TECNO CAMON 50 PRO 5G mobile reference: compact 19.5:9 phone layout. */
 .hero-progress-number { display: none; }
@@ -1086,7 +1080,6 @@ html[data-theme="dark"] .tree-lifetime-stage {
 html[data-theme="dark"] .botanical-dashboard-page .hero-progress-icon::before {
   background: var(--surface);
 }
-
 
 /* ==========================================================
    Rutina Botanical Guideline — full-page visual alignment
@@ -1510,7 +1503,6 @@ html[data-theme="dark"] .tree-lifetime-stage { border-color: var(--line); backgr
 html[data-theme="dark"] .tree-lifetime-stage.current { background: #334a35; }
 html[data-theme="dark"] .insight-ai-panel { border-color: var(--line); background: var(--surface); }
 
-
 /* Finance chart: real daily net totals rendered inside the balance card. */
 .finance-balance { min-height: 215px; padding-bottom: 13px; }
 .finance-balance .metric-value { margin-top: 12px; }
@@ -1763,7 +1755,6 @@ html[data-theme="dark"] .weekly-trend-badge { color: var(--primary); background:
   .botanical-hero { padding-bottom: 108px; }
 }
 
-
 /* ===== Dashboard composition aligned to PEDOMAN UI Gambar 3 ===== */
 .hero-quote-bubble {
   position: absolute;
@@ -1928,7 +1919,6 @@ html[data-theme="dark"] .weekly-progress-ring small { color: var(--muted); }
   .weekly-add-action { transition: none !important; }
 }
 
-
 /* ===== Botanical page polish: Goals and Settings ===== */
 .goal-create-panel { margin: 14px 0; scroll-margin-top: 88px; }
 .goal-list-panel { margin-top: 15px; }
@@ -2065,7 +2055,6 @@ html[data-theme="dark"] .settings-menu-card a:nth-child(4) .settings-menu-icon {
   .settings-info-card { padding: 14px; }
 }
 
-
 /* Insights period selector and compact botanical chart rhythm. */
 .insight-period-tabs {
   display: inline-grid;
@@ -2125,7 +2114,6 @@ html[data-theme="dark"] .tree-detail-cta { color: #fff; }
   .insight-trend-chart { gap: 4px; }
 }
 
-
 /* Keep the Dashboard's primary message visible on compact phones.
    The previous mobile override hid .hero-copy entirely, leaving the top
    of the home screen visually empty above the progress card. */
@@ -2156,7 +2144,6 @@ html[data-theme="dark"] .tree-detail-cta { color: #fff; }
     opacity: .68;
   }
 }
-
 
 /* ==========================================================
    Rutina loading language — Seed to Sprout
@@ -2310,7 +2297,6 @@ html[data-theme="dark"] .backup-message.is-error { border-color: #68423b; color:
   }
 }
 
-
 /* Final quality pass: accessible feedback, legible mobile metadata, and consistent controls. */
 .calendar-loading { justify-content: flex-start; min-height: 25px; font-size: 11px; }
 .calendar-loading-skeleton { width: 34px; height: 7px; flex: none; }
@@ -2320,23 +2306,9 @@ html[data-theme="dark"] .backup-message.is-error { border-color: #68423b; color:
   border: 1px solid #f0d8d1; border-radius: 13px; color: #a55347; background: #fff3ef;
 }
 .calendar-history-error p { flex: 1 1 220px; margin: 0; font-size: 10px; line-height: 1.55; }
-.time-analysis-loading {
-  display: grid; gap: 11px; margin: 0 0 13px; padding: 14px;
-  border: 1px solid var(--line); border-radius: 15px; background: var(--surface-soft);
-}
-.time-analysis-skeleton-heading { width: 48%; height: 9px; }
-.time-analysis-skeleton-bars { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); align-items: end; gap: 8px; height: 62px; }
-.time-analysis-skeleton-bars span { height: 48%; border-radius: 6px 6px 2px 2px; }
-.time-analysis-skeleton-bars span:nth-child(2n) { height: 72%; }
-.time-analysis-skeleton-bars span:nth-child(3n) { height: 58%; }
-.time-analysis-skeleton-bars span:nth-child(5n) { height: 88%; }
-.time-analysis-loading-label { color: var(--muted); font-size: 10px; }
-.time-analysis-error { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-.time-analysis-error > span { flex: 1 1 220px; }
+
 html[data-theme="dark"] .calendar-history-error { border-color: #68423b; color: #f0b8a9; background: #3d2c2a; }
 html[data-theme="dark"] .calendar-history-error .insight-retry-button { border-color: var(--line); color: var(--ink); background: var(--surface); }
-html[data-theme="dark"] .time-analysis-loading { border-color: var(--line); background: var(--surface-soft); }
-html[data-theme="dark"] .time-analysis-skeleton-bars span { background: #39493a; }
 
 @media (max-width: 600px) {
   .topbar .topbar-avatar { display: grid; }
@@ -2364,8 +2336,6 @@ html[data-theme="dark"] .time-analysis-skeleton-bars span { background: #39493a;
 @media (prefers-reduced-motion: reduce) {
   .skeleton-shimmer::after { animation: none !important; }
 }
-
-
 
 /* RUTINA PLAYFUL BOTANICAL 2.0 — presentation-only refinement */
 :root {
@@ -2406,7 +2376,7 @@ body{background:radial-gradient(ellipse at 88% 2%,rgba(246,221,199,.32),transpar
 .eyebrow{color:#8a957f;font-size:9px;font-weight:850;letter-spacing:1.35px}
 .page-title{color:#302f2a;font-size:clamp(23px,2.3vw,29px);line-height:1.16;letter-spacing:-.85px;font-weight:850}
 .page-subtitle{max-width:650px;color:#898b80;font-size:12px;line-height:1.65}
-.card,.module-panel,.module-card,.focus-card,.focus-timer-card{border:1px solid rgba(235,225,214,.94);border-radius:21px;background:rgba(255,253,249,.96);box-shadow:var(--shadow-card)}
+.card, .module-panel, .module-card {border:1px solid rgba(235,225,214,.94);border-radius:21px;background:rgba(255,253,249,.96);box-shadow:var(--shadow-card)}
 .card-pad{padding:21px}
 .section-heading{gap:14px;margin-bottom:16px}
 .section-title{color:#34352f;font-size:14px;font-weight:850;letter-spacing:-.25px}
@@ -2481,7 +2451,7 @@ label,.field-label{color:#666b60}
  .page-intro-action{width:100%}
  .page-intro-action>*{max-width:100%}
  .card-pad{padding:16px}
- .card,.module-panel,.module-card,.focus-card,.focus-timer-card{border-radius:18px}
+ .card, .module-panel, .module-card {border-radius:18px}
  .section-heading{align-items:flex-start;gap:9px}
  .section-title{font-size:13px}
  .section-caption{font-size:9px}
@@ -2504,8 +2474,6 @@ label,.field-label{color:#666b60}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
-
-
 
 /* ============================================================
    RUTINA 3.0 — PLAYFUL PREMIUM / PERSONAL GROWTH EXPERIENCE
@@ -2658,7 +2626,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .growth-wrapped-metric small { color: #8c8d82; font-size: 8px; line-height: 1.4; }
 
 /* Make shared components feel like one product across all 12 destinations. */
-.card, .module-panel, .module-card, .focus-card, .focus-timer-card {
+.card, .module-panel, .module-card {
   border-color: rgba(235,225,214,.94);
   border-radius: 21px;
   box-shadow: var(--shadow-card);
@@ -2684,7 +2652,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .empty-state-icon { border-radius: 15px; background: #edf4e7; color: #638565; }
 .insight-trend-panel { border-radius: 22px; }
 .insight-ai-item { border-color: #eee6dd; border-radius: 16px; background: rgba(255,255,255,.7); }
-.focus-card { border-radius: 21px; background: linear-gradient(145deg,#fffefa,#faf8ff); }
+
 .calendar-summary { border-color: #ebe5f3; background: linear-gradient(135deg,#f3efff,#fffaf3); }
 .tree-journey-hero { border-radius: 26px; box-shadow: 0 12px 28px rgba(91,76,59,.07); }
 .tree-level-progress { border-radius: 999px; }
@@ -2729,7 +2697,7 @@ html[data-theme="dark"] .module-item, html[data-theme="dark"] .insight-ai-item {
 html[data-theme="dark"] .form-field input, html[data-theme="dark"] .form-field select, html[data-theme="dark"] .form-field textarea,
 html[data-theme="dark"] .form-control { border-color: var(--line); color: var(--ink); background: #26342a; }
 html[data-theme="dark"] .module-empty, html[data-theme="dark"] .empty-state { border-color: var(--line); background: #29382d; }
-html[data-theme="dark"] .focus-card { border-color: var(--line); background: #29382d; }
+
 html[data-theme="dark"] .calendar-summary { border-color: var(--line); background: #303348; }
 html[data-theme="dark"] .growth-wrapped-panel .growth-wrapped-metric strong { color: var(--ink); }
 
@@ -2780,7 +2748,6 @@ html[data-theme="dark"] .growth-wrapped-panel .growth-wrapped-metric strong { co
     transition-duration: .01ms !important;
   }
 }
-
 
 .garden-journey-link {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 0;
@@ -3135,7 +3102,7 @@ html[data-theme="dark"] .menu-panel-footer .sidebar-growth { border-color: #3c4f
 
 /* --- 4. Target sentuh minimum 40px (WCAG 2.5.5) --- */
 .check-button { width: 40px; height: 40px; border-width: 1.5px; }
-.habit-time-track { min-height: 40px; padding: 0 12px; }
+
 .menu-panel-close { width: 40px; height: 40px; border-radius: 12px; }
 .finance-month-step { width: 40px; height: 40px; }
 .finance-month-input-wrap { min-height: 40px; }
@@ -3165,13 +3132,13 @@ html[data-theme="dark"] .menu-panel-footer .sidebar-growth { border-color: #3c4f
 
 /* --- 7. Mode gelap (audit v0.2.2): teks tak terlihat & sisa violet ---
    .text-button memakai #b7a8ff (violet terlarang) di dark; daily-checkin-mini
-   dan focus-ring-inner berlatar terang dengan teks terang (tak terbaca);
+   berlatar terang dengan teks terang (tak terbaca);
    .habit-detail-tag.priority-* berlatar literal terang tanpa varian dark. --- */
 html[data-theme="dark"] .text-button { color: #a8c6b0; }
 html[data-theme="dark"] .daily-checkin-mini { background: var(--surface-soft); }
 html[data-theme="dark"] .daily-checkin-mini strong { color: var(--ink); }
 html[data-theme="dark"] .daily-checkin-mini span:not(.daily-checkin-icon) { color: var(--muted); }
-html[data-theme="dark"] .focus-ring-inner { background: var(--surface); }
+
 html[data-theme="dark"] .habit-detail-tag { color: var(--muted); background: color-mix(in srgb, var(--surface-soft) 88%, transparent); }
 html[data-theme="dark"] .habit-detail-tag.priority-high { color: #e79b8a; background: rgba(184, 84, 66, .16); }
 html[data-theme="dark"] .habit-detail-tag.priority-medium { color: #d9b27c; background: rgba(156, 116, 44, .18); }
@@ -3250,18 +3217,6 @@ html[data-theme="dark"] .hero-ring-label small { color: var(--muted); }
 /* --- F. Focus-ring: override global 105px → 88px di mobile ---
    globals.css:994 (global, 105px) menimpa globals.css:308 (<=680, 88px)
    karena urutan source. Ring terlalu besar di 375px. --- */
-@media (max-width: 680px) {
-  .focus-ring { width: 88px; height: 88px; }
-  .focus-ring::before { inset: 6px; }
-  .focus-ring-inner { width: 74px; height: 74px; }
-  .focus-ring-inner strong { font-size: 20px; }
-}
-@media (max-width: 600px) {
-  .focus-card { padding: 15px; }
-  .focus-actions .primary-button,
-  .focus-actions .secondary-button { min-height: 40px; font-size: 10.5px; }
-  .focus-timer-foot { font-size: 10.5px; line-height: 1.55; }
-}
 
 /* --- G. iOS auto-zoom: input < 16px memicu zoom halaman saat fokus ---
    .form-control 11px, .search-field input 11px → zoom 145% tak bisa di-zoom out. --- */
@@ -3362,22 +3317,14 @@ html[data-theme="dark"] .hero-ring-label small { color: var(--muted); }
 }
 
 /* --- L. Touch targets: naikkan ke >=40px (WCAG 2.5.5) ---
-   Habit-amount-stepper 29px, habit-history-action 30px, time-analysis close 25px,
-   category-filters 29px, group-manager delete tanpa padding, calendar-day 36px,
-   calendar-today-button 34px, calendar prev/next 38px, finance-filters 33px,
-   finance-expand-button 35px, search close 38px, settings checkbox 38×22,
-   primary-button 43px, secondary-button 39px, next-step-action 35px,
-   garden-journey-link tanpa padding. --- */
+   Habit-amount-stepper 29px, category-filters 29px, group-manager delete tanpa
+   padding, calendar-day 36px, calendar-today-button 34px, calendar prev/next
+   38px, finance-filters 33px, finance-expand-button 35px, search close 38px,
+   settings checkbox 38×22, primary-button 43px, secondary-button 39px,
+   next-step-action 35px, garden-journey-link tanpa padding. --- */
 .habit-amount-stepper button { width: 40px; height: 40px; }
 .habit-amount-stepper { gap: 6px; }
-.habit-history-action {
-  min-height: 40px;
-  padding: 0 12px;
-  font-size: 10px;
-  display: inline-flex;
-  align-items: center;
-}
-.time-analysis-head button { width: 40px; height: 40px; border-radius: 12px; }
+
 .category-filters button { min-height: 36px; padding: 0 12px; font-size: 10px; }
 .group-manager-item button { min-height: 36px; padding: 6px 10px; border-radius: 9px; }
 .group-color-input { width: 40px; height: 40px; }
@@ -3519,7 +3466,7 @@ html[data-theme="dark"] .settings-about-note p {
 @media (max-width: 430px) {
   .daily-intention-meta span { padding: 5px 9px; font-size: 9px; }
 }
-.focus-ring-inner span { font-size: 9px; letter-spacing: .65px; }
+
 .finance-balance-trend-heading span,
 .finance-balance-trend-heading small,
 .finance-balance-trend-days small { font-size: 10px; }
@@ -3702,15 +3649,6 @@ html[data-theme="dark"] .growth-wrapped-metric { border-color: #3c4f3d; }
   color: #2c563e;
   background: #e0ece0;
 }
-/* 1j. Kartu time-analysis lavender → botanical */
-.time-analysis-card {
-  border-color: #e3ead9;
-  background: #f7faf2;
-}
-html[data-theme="dark"] .time-analysis-card {
-  border-color: #3c4f3d;
-  background: #26342a;
-}
 /* 1k. Calendar-summary lavender → botanical (light + dark) */
 .calendar-summary {
   border-color: #e9e7dc;
@@ -3733,7 +3671,7 @@ html[data-theme="dark"] .insight-highlight {
 .insight-trend-panel { background: linear-gradient(150deg, #fffefb, #f4f8ef); }
 html[data-theme="dark"] .weekly-trend-card,
 html[data-theme="dark"] .insight-trend-panel { background: linear-gradient(150deg, #26342a, #22301f); }
-.focus-card { background: linear-gradient(145deg, #fffefa, #f6f9f2); }
+
 /* 1n. Settings menu hover violet → hijau */
 .settings-menu-card a:hover strong { color: #2f6245; }
 /* 1o. Tree detail CTA hover violet → hijau + 40px */
@@ -3835,16 +3773,7 @@ html[data-theme="dark"] .search-result-icon.expense {
   background: #3a2c28;
   color: #d49880;
 }
-html[data-theme="dark"] .focus-ring-inner strong { color: var(--ink); }
-html[data-theme="dark"] .focus-ring-inner span { color: var(--muted); }
-html[data-theme="dark"] .focus-ring {
-  background: conic-gradient(var(--primary) var(--progress), #435345 0);
-}
-html[data-theme="dark"] .focus-ring::before { background: var(--surface-soft); }
-html[data-theme="dark"] .focus-icon {
-  background: var(--surface-soft);
-  color: var(--primary-strong);
-}
+
 html[data-theme="dark"] .modal-title { color: var(--ink); }
 html[data-theme="dark"] .modal-description { color: var(--ink-soft); }
 html[data-theme="dark"] .transaction-title { color: var(--ink); }
@@ -4528,11 +4457,6 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
 .habit-search input { height: 100%; min-height: 40px; font-size: 16px; }
 
 /* ── E. Timer habit: label terbaca (8px→11px) + warna aktif AA ── */
-.habit-time-track { font-size: 11px; min-height: 40px; }
-.habit-time-track.active { color: #a8483a; }
-@media (max-width: 640px) {
-  .habit-time-track, .habit-history-action { font-size: 11px; min-height: 40px; }
-}
 
 /* ── F. Chip aktif: putih di atas gradasi hijau (bukan aksen 3.1:1) ── */
 .main-shell .schedule-view-toggle button.active,
@@ -4789,7 +4713,6 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
   .habit-row:has(.habit-drag-handle) .habit-row-actions { grid-column: 3 / -1; }
 }
 
-
 /* ==========================================================================
    RUTINA EXPERIENCE POLISH v0.5
    Consolidated interaction + better-ui layer. Keep domain colours and density.
@@ -4865,30 +4788,6 @@ button:disabled:active {
 }
 
 /* Cross-fade both timer glyphs in place; the button width does not jump. */
-.focus-toggle-icons {
-  position: relative;
-  display: inline-grid;
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
-  place-items: center;
-}
-.focus-toggle-icons svg {
-  position: absolute;
-  inset: 0;
-  scale: 1;
-  opacity: 1;
-  filter: blur(0);
-  transition-property: opacity, scale, filter;
-  transition-duration: 300ms;
-  transition-timing-function: var(--rutina-ease-state);
-}
-.focus-card[data-running="true"] .focus-play-icon,
-.focus-card[data-running="false"] .focus-pause-icon {
-  scale: 0.25;
-  opacity: 0;
-  filter: blur(4px);
-}
 
 /* A first check-in is an invitation, not an overdue warning. */
 .daily-checkin-prompt {
@@ -5037,10 +4936,7 @@ button:disabled:active {
 
 /* Shadow-only focus rings keep a visible edge in forced-colours mode. */
 @media (forced-colors: active) {
-  .form-control:focus,
-  .search-field:focus-within,
-  .focus-ring:focus-visible,
-  .habit-advanced-toggle:focus-visible {
+  .form-control:focus, .search-field:focus-within, .habit-advanced-toggle:focus-visible {
     border: 1px solid transparent;
     outline: 2px solid Highlight;
     outline-offset: 2px;
@@ -5072,8 +4968,7 @@ button:disabled:active {
     transform: none !important;
     filter: none !important;
   }
-  button:not(:disabled),
-  .focus-toggle-icons svg {
+  button:not(:disabled) {
     transition-property: opacity !important;
     transition-duration: 150ms !important;
     transition-timing-function: ease-out !important;
@@ -5082,22 +4977,14 @@ button:disabled:active {
     transform: none !important;
     scale: 1 !important;
   }
-  .focus-toggle-icons svg {
-    filter: none !important;
-    scale: 1 !important;
-  }
-  .focus-card[data-running="true"] .focus-play-icon,
-  .focus-card[data-running="false"] .focus-pause-icon {
-    scale: 1 !important;
-    filter: none !important;
-  }
+  
+  
   .content-wrap.page-transition > * {
     animation: none !important;
     transform: none !important;
     filter: none !important;
   }
 }
-
 
 /* ==========================================================================
    RUTINA v0.6 — contextual botanical illustrations + tactile icon feedback
@@ -5157,12 +5044,6 @@ button:disabled:active {
 @keyframes rutina-leaf-sway {
   0%, 100% { transform: rotate(0deg); }
   50% { transform: rotate(2.5deg); }
-}
-.focus-heading-art {
-  width: 98px;
-  height: 72px;
-  margin: -8px -3px -8px 0;
-  opacity: .92;
 }
 
 .icon-action-feedback svg,
@@ -5233,7 +5114,7 @@ button:disabled:active {
   }
   .page-intro--has-action .page-intro-copy { padding-right: 70px; }
   .page-intro--has-action .page-intro-action { max-width: 100%; }
-  .focus-heading-art { width: 82px; height: 62px; }
+  
 }
 @media (max-width: 390px) {
   .page-intro-copy { padding-right: 68px; }
@@ -5253,7 +5134,6 @@ button:disabled:active {
   .module-tabs button,
   .insight-period-tabs button { transition: none !important; }
 }
-
 
 /* ==========================================================================
    RUTINA v0.7 — seven-day activity history across every workspace tab
@@ -6124,7 +6004,7 @@ html[data-theme="dark"] .calendar-day { background: #26332a; color: #c3cbbf; }
 html[data-theme="dark"] .calendar-history-error { border-color: #5a4630; color: #e5c9a5; background: #3a3226; }
 
 /* ── J. Insight: tombol coba-again jadi pil hijau, tren & cashflow ── */
-.insight-retry-button, .weekly-retry-action, .time-analysis-error .insight-retry-button {
+.insight-retry-button, .weekly-retry-action {
   border: 0;
   color: #fff;
   background: linear-gradient(110deg, #417a57, #5d9271);
@@ -6322,7 +6202,6 @@ input[type="radio"] { accent-color: #417a57; }
   background: linear-gradient(115deg, #fffdf7, #f8f3e9);
   box-shadow: 0 8px 24px rgba(120, 100, 70, .08);
 }
-
 
 /* ==========================================================================
    BOTANICAL CARD BACKDROPS · ALL 12 TABS

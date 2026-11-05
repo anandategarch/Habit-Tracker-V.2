@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, Leaf, Pause, Play, Plus, RefreshCw, Shield, Sprout, TrendingUp, WalletCards } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, Leaf, Plus, RefreshCw, Shield, Sprout, TrendingUp, WalletCards } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
@@ -10,7 +10,6 @@ import { ThemedSelect } from "@/components/ui/themed-select";
 import { RichText } from "@/components/ui/rich-text";
 import { burstLeaves, useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
-import { FocusTimer } from "@/features/focus/focus-timer";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
@@ -87,10 +86,10 @@ function weekdayLabel(date: string) {
   return new Intl.DateTimeFormat("id-ID", { weekday: "short", timeZone: "Asia/Jakarta" }).format(new Date(`${date}T12:00:00+07:00`));
 }
 
-export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, onTimerToggle, activeTimerId, timerElapsedSeconds = 0, vacationMode = false, dailyCheckin, focusTimerRemainingSeconds, focusTimerRunning, onFocusTimerToggle, onFocusTimerReset, storySlot }: {
+export function DashboardView({ habits, totalHabits, income, expense, onNavigate, onToggle, onAddHabit, onAdjust, vacationMode = false, dailyCheckin, storySlot }: {
   habits: Habit[]; totalHabits: number; income: number; expense: number; onNavigate: (tab: TabId) => void;
-  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; onTimerToggle?: (id: string) => void; activeTimerId?: string | null; timerElapsedSeconds?: number; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
-  focusTimerRemainingSeconds: number; focusTimerRunning: boolean; onFocusTimerToggle: () => void; onFocusTimerReset: () => void; storySlot?: ReactNode;
+  onToggle: (id: string) => void; onAddHabit: () => void; onAdjust?: (id: string, delta: number) => void; vacationMode?: boolean; dailyCheckin?: { mood: number; sleepHours: number };
+  storySlot?: ReactNode;
 }) {
   const now = new Date();
   const todayKey = todayISO();
@@ -328,10 +327,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
             <h2>{focusedHabit.title}</h2>
             <p>Cukup fokus pada satu hal ini. Kamu tidak perlu memikirkan semuanya sekaligus.</p>
             <div className="daily-intention-actions">
-              <button className="next-step-action" type="button" disabled={!onTimerToggle} onClick={() => onTimerToggle?.(focusedHabit.id)} aria-pressed={activeTimerId === focusedHabit.id}>
-                {activeTimerId === focusedHabit.id ? <Pause size={15} /> : <Play size={15} />}
-                {activeTimerId === focusedHabit.id ? "Hentikan timer habit" : "Mulai timer habit"}
-              </button>
               <button className="daily-intention-complete" type="button" onClick={(event) => { if (!focusedHabit.completed) burstLeaves(event.currentTarget); onToggle(focusedHabit.id); }}>
                 <Check size={14} /> Tandai selesai
               </button>
@@ -373,9 +368,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
                     habit={habit}
                     onToggle={onToggle}
                     onAdjust={onAdjust}
-                    onTimerToggle={onTimerToggle}
-                    timerActive={activeTimerId === habit.id}
-                    timerElapsedSeconds={activeTimerId === habit.id ? timerElapsedSeconds : 0}
                     paused={vacationMode}
                   />
                 ))}
@@ -498,7 +490,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               <span className="daily-checkin-prompt-action">Check-in <ArrowRight size={13} /></span>
             </button>
           )}
-          <FocusTimer remainingSeconds={focusTimerRemainingSeconds} running={focusTimerRunning} onToggle={onFocusTimerToggle} onReset={onFocusTimerReset} />
         </section>
       </div>
     </div>

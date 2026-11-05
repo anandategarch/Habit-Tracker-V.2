@@ -22,7 +22,6 @@ import { SearchDialog } from "@/components/ui/search-dialog";
 import { useModules } from "@/lib/use-modules";
 import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
-import { FOCUS_SESSION_SECONDS } from "@/features/focus/focus-timer";
 import { WorkspaceHistoryProvider, useWorkspaceActivityHistory } from "@/components/ui/weekly-history";
 import { ConfirmProvider } from "@/components/ui/confirm-dialog";
 import { FullBloomOverlay } from "@/features/app/full-bloom";
@@ -62,8 +61,6 @@ const desktopNavigationGroups: { label: string; ids: TabId[] }[] = [
 ];
 
 type SyncStatus = "local" | "syncing" | "synced" | "error";
-type FocusTimerSnapshot = { remainingSeconds: number; running: boolean; endsAt: number | null };
-const FOCUS_TIMER_STORAGE_KEY = "rutina.v2.focus-timer";
 
 export function RutinaApp() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
@@ -75,16 +72,10 @@ export function RutinaApp() {
   const [searchQuery, setSearchQuery] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
   const [quickActionOpen, setQuickActionOpen] = useState(false);
-  const [activeHabitTimer, setActiveHabitTimer] = useState<{ habitId: string; startedAt: number } | null>(null);
   // Perayaan Full Bloom (100% habit selesai) — sekali per hari.
   const [bloom, setBloom] = useState<{ seed: GardenSeed; streak: number } | null>(null);
   // Indikator pill yang meluncur di bottom-nav (mobile).
   const [navPill, setNavPill] = useState<{ left: number; width: number } | null>(null);
-  const [focusTimer, setFocusTimer] = useState<FocusTimerSnapshot>({
-    remainingSeconds: FOCUS_SESSION_SECONDS, running: false, endsAt: null,
-  });
-  const [focusTimerReady, setFocusTimerReady] = useState(false);
-  const [timerNow, setTimerNow] = useState(() => Date.now());
   const {
     habits,
     transactions,
@@ -105,83 +96,6 @@ export function RutinaApp() {
     if (previousActiveTab.current !== activeTab) setHasPageTransitioned(true);
     previousActiveTab.current = activeTab;
   }, [activeTab]);
-
-  // Pulihkan sesi fokus dari deadline absolut agar akurat setelah tab browser
-  // berada di background atau aplikasi dibuka kembali.
-  useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(FOCUS_TIMER_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved) as Partial<FocusTimerSnapshot>;
-        const storedRemaining = typeof parsed.remainingSeconds === "number" && Number.isFinite(parsed.remainingSeconds)
-          ? Math.max(0, Math.min(FOCUS_SESSION_SECONDS, Math.floor(parsed.remainingSeconds)))
-          : FOCUS_SESSION_SECONDS;
-        const wasRunning = parsed.running === true && typeof parsed.endsAt === "number" && Number.isFinite(parsed.endsAt);
-        const remainingSeconds = wasRunning
-          ? Math.max(0, Math.ceil(((parsed.endsAt as number) - Date.now()) / 1000))
-          : storedRemaining;
-        const running = wasRunning && remainingSeconds > 0;
-        setFocusTimer({
-          remainingSeconds,
-          running,
-          endsAt: running ? parsed.endsAt as number : null,
-        });
-      }
-    } catch {
-      try { window.localStorage.removeItem(FOCUS_TIMER_STORAGE_KEY); } catch { /* storage tidak tersedia */ }
-    } finally {
-      setFocusTimerReady(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!focusTimerReady) return;
-    try {
-      window.localStorage.setItem(FOCUS_TIMER_STORAGE_KEY, JSON.stringify(focusTimer));
-    } catch {
-      // Timer tetap berjalan selama aplikasi terbuka meski storage tidak tersedia.
-    }
-  }, [focusTimer, focusTimerReady]);
-
-  useEffect(() => {
-    if (!focusTimer.running || !focusTimer.endsAt) return;
-    const interval = window.setInterval(() => {
-      setFocusTimer((current) => {
-        if (!current.running || !current.endsAt) return current;
-        const remainingSeconds = Math.max(0, Math.ceil((current.endsAt - Date.now()) / 1000));
-        if (remainingSeconds === current.remainingSeconds) return current;
-        const running = remainingSeconds > 0;
-        return { remainingSeconds, running, endsAt: running ? current.endsAt : null };
-      });
-    }, 1000);
-    return () => window.clearInterval(interval);
-  }, [focusTimer.running, focusTimer.endsAt]);
-
-  useEffect(() => {
-    let frame = 0;
-    try {
-      const saved = window.localStorage.getItem("rutina.v2.active-habit-timer");
-      if (!saved) return;
-      const timer = JSON.parse(saved) as { habitId?: unknown; startedAt?: unknown };
-      if (typeof timer.habitId === "string" && typeof timer.startedAt === "number" && Date.now() - timer.startedAt >= 0 && Date.now() - timer.startedAt < 4 * 60 * 60 * 1000) {
-        frame = window.requestAnimationFrame(() => setActiveHabitTimer({ habitId: timer.habitId as string, startedAt: timer.startedAt as number }));
-      } else window.localStorage.removeItem("rutina.v2.active-habit-timer");
-    } catch { window.localStorage.removeItem("rutina.v2.active-habit-timer"); }
-    return () => { if (frame) window.cancelAnimationFrame(frame); };
-  }, []);
-
-  useEffect(() => {
-    if (!activeHabitTimer) return;
-    const interval = window.setInterval(() => setTimerNow(Date.now()), 1000);
-    return () => window.clearInterval(interval);
-  }, [activeHabitTimer]);
-
-  useEffect(() => {
-    if (!workspaceReady || !activeHabitTimer || habits.some((habit) => habit.id === activeHabitTimer.habitId)) return;
-    const frame = window.requestAnimationFrame(() => setActiveHabitTimer(null));
-    window.localStorage.removeItem("rutina.v2.active-habit-timer");
-    return () => window.cancelAnimationFrame(frame);
-  }, [workspaceReady, habits, activeHabitTimer]);
 
   useEffect(() => {
     if (!toast.message) return;
@@ -313,25 +227,6 @@ export function RutinaApp() {
     return () => { window.clearTimeout(timer); window.removeEventListener("resize", onResize); };
   }, [activeTab]);
 
-  function toggleFocusTimer() {
-    setFocusTimer((current) => {
-      if (current.running && current.endsAt) {
-        const remainingSeconds = Math.max(0, Math.ceil((current.endsAt - Date.now()) / 1000));
-        return { remainingSeconds, running: false, endsAt: null };
-      }
-      if (current.remainingSeconds <= 0) return current;
-      return {
-        ...current,
-        running: true,
-        endsAt: Date.now() + current.remainingSeconds * 1000,
-      };
-    });
-  }
-
-  function resetFocusTimer() {
-    setFocusTimer({ remainingSeconds: FOCUS_SESSION_SECONDS, running: false, endsAt: null });
-  }
-
   function toggleHabit(id: string) {
     if (modules.settings.vacationMode) return;
     let nowCompleted = false;
@@ -354,21 +249,6 @@ export function RutinaApp() {
       const currentAmount = Math.max(0, (habit.currentAmount ?? 0) + delta);
       return { ...habit, currentAmount, completed: currentAmount >= (habit.targetAmount ?? 1) };
     }));
-  }
-
-  function toggleHabitTimer(id: string) {
-    if (modules.settings.vacationMode) return;
-    if (activeHabitTimer) {
-      const elapsed = Math.max(0, Math.floor((Date.now() - activeHabitTimer.startedAt) / 1000));
-      const minutes = Math.floor(elapsed / 60);
-      if (minutes > 0) updateHabits((current) => current.map((habit) => habit.id === activeHabitTimer.habitId ? { ...habit, timeSpentMinutes: (habit.timeSpentMinutes ?? 0) + minutes } : habit));
-      setActiveHabitTimer(null);
-      window.localStorage.removeItem("rutina.v2.active-habit-timer");
-      if (activeHabitTimer.habitId === id) return;
-    }
-    const next = { habitId: id, startedAt: Date.now() };
-    setActiveHabitTimer(next);
-    window.localStorage.setItem("rutina.v2.active-habit-timer", JSON.stringify(next));
   }
 
   function submitHabit(event: FormEvent<HTMLFormElement>) {
@@ -661,8 +541,8 @@ export function RutinaApp() {
 
         <div className={`content-wrap${hasPageTransitioned ? " page-transition" : ""}`} key={activeTab}>
           <WorkspaceHistoryProvider value={workspaceHistory}>
-          {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} focusTimerRemainingSeconds={focusTimer.remainingSeconds} focusTimerRunning={focusTimer.running} onFocusTimerToggle={toggleFocusTimer} onFocusTimerReset={resetFocusTimer} storySlot={<WeeklyStorySection transactions={transactions} checkins={modules.checkins} />} />}
-          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
+          {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} storySlot={<WeeklyStorySection transactions={transactions} checkins={modules.checkins} />} />}
+          {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
           {activeTab === "finance" && <><FinanceView transactions={transactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} onEditBudgets={() => setModal("budget")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} transactions={transactions} checkins={modules.checkins} />}

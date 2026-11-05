@@ -240,18 +240,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .form-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:8px; }
 .toast { position:fixed; z-index:80; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translateX(-50%); padding:12px 17px; border-radius:14px; color:#fff; background:#203f30; box-shadow:var(--shadow-float); font-size:12px; font-weight:650; white-space:nowrap; }
 
-.focus-card { padding:20px; }
-.focus-card-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-.focus-icon { display:grid; place-items:center; width:36px; height:36px; flex:none; border-radius:12px; color:var(--primary); background:var(--surface-green); }
-.focus-timer-layout { display:flex; align-items:center; gap:20px; margin-top:17px; }
-.focus-ring { position:relative; display:grid; place-items:center; width:102px; height:102px; flex:none; border-radius:50%; background:conic-gradient(var(--primary) var(--progress),#edf1eb 0); }
-.focus-ring::before { content:""; position:absolute; }
-.focus-ring-inner { display:grid; place-items:center; align-content:center; width:86px; height:86px; border-radius:50%; background:#fff; }
-.focus-ring-inner strong { font-size:23px; font-weight:800; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
-.focus-ring-inner span { margin-top:3px; color:var(--muted); font-size:8px; letter-spacing:.65px; font-weight:750; }
-.focus-actions { display:flex; flex-wrap:wrap; gap:8px; }
-.focus-actions .primary-button, .focus-actions .secondary-button { min-height:38px; padding:0 12px; font-size:10px; }
-.focus-actions .primary-button:disabled { opacity:.65; cursor:default; }
 .bottom-nav { display:none; }
 @media (max-width:1100px) {
   .desktop-sidebar { width:220px; }
@@ -306,11 +294,11 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   .finance-balance .metric-value { font-size:27px; }
   .finance-metric { padding:16px; }
   .finance-metric .metric-value { font-size:19px; }
-  .focus-timer-layout { gap:14px; }
-  .focus-ring { width:88px; height:88px; }
-  .focus-ring-inner { width:74px; height:74px; }
-  .focus-ring-inner strong { font-size:20px; }
-  .focus-actions { display:grid; align-content:center; }
+  
+  
+  
+  
+  
   .transaction-row { gap:9px; }
   .transaction-icon { width:36px; height:36px; }
   .transaction-title { font-size:11px; }
@@ -333,7 +321,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; }
 }
-
 
 /* --------------------------------------------------------------------------
    Rutina motion language — shared timing, entrance choreography, and feedback
@@ -478,7 +465,7 @@ button { transform-origin: center; }
 }
 .brand-mark svg { animation: rutina-brand-breathe 5s ease-in-out infinite; }
 .hero-card::after { animation: rutina-orbit 48s linear infinite; }
-.hero-ring, .focus-ring { transition: background 700ms var(--ease-rutina); }
+.hero-ring { transition: background 700ms var(--ease-rutina); }
 .check-button.done svg { animation: rutina-check-pop 330ms var(--ease-spring) both; }
 .check-button:active { transform: scale(.9); }
 .chart-bar { transform-origin: center bottom; }
@@ -574,7 +561,6 @@ button { transform-origin: center; }
   }
 }
 
-
 /* Fine-grained feedback for controls and data visualizations */
 body {
   background-image:
@@ -596,7 +582,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .brand-mark svg, .hero-card::after { animation: none !important; }
 }
-
 
 /* Initial cloud workspace load */
 .workspace-loading {
@@ -625,8 +610,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .workspace-loading-spinner { animation: none; }
 }
-
-
 
 /* Progressive Web App installation guidance */
 .pwa-install-trigger { color: var(--primary); }
@@ -730,7 +713,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .tree-splash, .tree-splash * { animation: none !important; transition: none !important; }
 }
-
 
 /* =========================================================
    RUTINA UI POLISH — visual system and responsive behaviour
@@ -988,18 +970,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .quote-caption { color: #849584; font-size: 8px; letter-spacing: 1px; }
 
 /* Focus timer */
-.focus-card { padding: 18px; border-radius: 19px; }
-.focus-card-heading { align-items: flex-start; gap: 12px; }
-.focus-card-heading .section-title { margin-top: 5px; }
-.focus-icon { width: 34px; height: 34px; border-radius: 11px; color: #426e4c; background: #edf4eb; }
-.focus-timer-layout { gap: 14px; }
-.focus-ring { width: 105px; height: 105px; background: conic-gradient(#3f7750 var(--progress), #edf2eb 0); }
-.focus-ring::before { inset: 7px; background: #fff; }
-.focus-ring-inner strong { color: #2a4733; font-size: 22px; }
-.focus-ring-inner span { color: #88958b; font-size: 8px; letter-spacing: .65px; }
-.focus-actions { gap: 7px; }
-.focus-actions .primary-button, .focus-actions .secondary-button { min-height: 36px; padding: 0 11px; font-size: 9px; }
-.focus-timer-foot { margin: 12px 0 0; color: #89968b; font-size: 9px; line-height: 1.6; }
 
 /* Habit page */
 .habit-overview-grid { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(250px,.8fr); gap: 14px; margin-bottom: 17px; }
@@ -1241,7 +1211,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 @media (max-width: 760px) {
   .dashboard-grid { grid-template-columns: minmax(0,1fr); }
   .right-stack { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; }
-  .right-stack > .focus-card, .right-stack > .quote-card { min-width: 0; }
+  .right-stack > .quote-card { min-width: 0; }
   .finance-content-grid { grid-template-columns: minmax(0,1fr); }
   .calendar-layout { grid-template-columns: minmax(0,1fr); }
   .insight-grid { grid-template-columns: minmax(0,1fr); }
@@ -1333,7 +1303,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .habit-row, .primary-button, .secondary-button, .nav-link { transition: none !important; }
 }
 
-
 /* Extended feature workspace — goals, check-in, work, wellness, training, tree. */
 .side-nav { max-height: calc(100dvh - 250px); overflow-y: auto; scrollbar-width: thin; }
 .mobile-more-menu {
@@ -1395,8 +1364,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .wellness-water-ring div { display: grid; text-align: center; }
 .wellness-water-ring strong { color: var(--primary); font-size: 25px; letter-spacing: -1px; }
 .wellness-water-ring small { color: var(--muted); font-size: 10px; }
-.rest-timer { display: grid; gap: 15px; justify-items: center; padding: 8px 0; }
-.rest-timer > strong { color: var(--primary); font-size: clamp(38px,6vw,54px); font-variant-numeric: tabular-nums; letter-spacing: -2px; }
+
 .tree-progress-card { display: flex; align-items: center; gap: 24px; padding: 25px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(120deg,#edf4eb,#fbfcf9); }
 .tree-illustration { display: grid; place-items: center; width: 100px; height: 100px; flex: none; border-radius: 28px; background: rgba(255,255,255,.78); font-size: 52px; }
 .tree-progress-card h2 { margin: 5px 0; color: var(--ink); font-size: 24px; }
@@ -1431,7 +1399,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .habit-amount-stepper { display:flex; align-items:center; gap:4px; }
 .habit-amount-stepper button { width:29px; height:29px; border:1px solid var(--line); border-radius:9px; color:var(--primary); background:var(--surface); font-size:18px; line-height:1; }
 .habit-amount-stepper button:disabled { opacity:.4; cursor:not-allowed; }
-.habit-time-track { border:1px solid var(--line); border-radius:8px; padding:5px 7px; color:var(--muted); background:var(--surface); font-size:9px; font-weight:750; }
+
 .habit-kind-note { display:block; margin-top:5px; color:var(--muted); font-size:10px; }
 /* Seret urutan habit: kursor grab hanya di pegangan (grip), bukan seluruh baris. */
 .finance-recap { margin-top:18px; padding-top:15px; border-top:1px solid var(--line); }
@@ -1569,9 +1537,6 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
  .wallet-history-column > div { height:78px; }
 }
 
-.habit-time-track.active { color:var(--danger); border-color:color-mix(in srgb,var(--danger) 35%,var(--line)); background:color-mix(in srgb,var(--danger) 10%,var(--surface)); font-variant-numeric:tabular-nums; }
-.habit-time-track:disabled { opacity:.42; cursor:not-allowed; }
-
 .tree-season-card { align-items:center; gap:22px; }
 .tree-artwork { display:grid; place-items:center; width:160px; min-width:160px; overflow:hidden; border-radius:20px; background:#071715; }
 .tree-artwork img { display:block; width:100%; height:auto; }
@@ -1652,24 +1617,6 @@ html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-
 .group-manager-item button { border:0; color:var(--danger); background:transparent; font-size:10px; font-weight:700; }
 .group-filter-select { min-width:110px; max-width:170px; padding:7px 9px; border:1px solid var(--line); border-radius:9px; color:var(--ink-soft); background:var(--surface); font-size:10px; }
 @media (max-width:560px) { .group-create-form { flex-wrap:wrap; } .group-create-form .form-control { flex-basis:100%; } .group-filter-select { flex:1; max-width:none; } }
-
-.habit-history-action { padding:5px 7px; border:1px solid var(--line); border-radius:8px; color:var(--primary); background:var(--surface); font-size:9px; font-weight:750; white-space:nowrap; }
-.time-analysis-card { display:grid; gap:10px; margin:0 0 13px; padding:13px; border:1px solid var(--line); border-radius:14px; background:var(--surface-soft); }
-.time-analysis-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
-.time-analysis-head > div { display:grid; gap:3px; }
-.time-analysis-head strong { color:var(--ink); font-size:11px; }
-.time-analysis-head small { color:var(--muted); font-size:9px; }
-.time-analysis-head button { width:25px; height:25px; flex:none; border:1px solid var(--line); border-radius:8px; color:var(--muted); background:var(--surface); }
-.time-analysis-chart { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(26px,1fr); gap:5px; align-items:end; min-height:112px; overflow-x:auto; padding:8px 0 2px; }
-.time-analysis-column { display:grid; grid-template-rows:auto 70px auto; align-items:end; justify-items:center; gap:4px; min-width:0; }
-.time-analysis-column > strong { color:var(--muted); font-size:8px; font-variant-numeric:tabular-nums; }
-.time-analysis-column > div { display:flex; align-items:end; width:100%; height:70px; border-radius:6px 6px 3px 3px; background:var(--surface); overflow:hidden; }
-.time-analysis-column > div > span { display:block; width:100%; min-height:0; border-radius:5px 5px 3px 3px; background:var(--primary); }
-.time-analysis-column > small { color:var(--muted); font-size:8px; }
-html[data-theme="dark"] .time-analysis-card { border-color:var(--line); background:var(--surface-soft); }
-
-
-
 
 /* =========================================================
    RUTINA DESIGN SYSTEM 2.0
@@ -2284,7 +2231,7 @@ body { background: var(--canvas); color: var(--ink); }
   .habit-row-actions { display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:5px; max-width:132px; }
   .habit-amount-stepper { gap:3px; }
   .habit-amount-stepper button { width:29px; height:29px; }
-  .habit-time-track,.habit-history-action { min-height:30px; padding:5px 7px; font-size:8px; }
+  
   .module-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
   .module-metrics .stat-card { padding:12px; }
   .module-metrics .metric-value { font-size:17px; }
@@ -2424,7 +2371,6 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   }
 }
 
-
 /* Splash, loading and install surfaces use the same Rutina brand palette */
 .workspace-loading-brand { color:var(--ink); }
 .workspace-loading-brand .brand-mark { color:#fff; background:linear-gradient(145deg,#417a57,#2f5e40); box-shadow:0 8px 20px rgba(47,98,69,.22); }
@@ -2440,7 +2386,6 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
 .tree-splash-skip { border-color:#e5ece2; color:#2f5e40; background:rgba(255,255,255,.84); }
 .pwa-install-trigger { color:var(--module-accent); }
 .pwa-help-card { border-color:var(--line); box-shadow:var(--shadow-float); }
-
 
 /* Mobile-only center action navigation (Rutina option D) */
 @media (max-width: 760px) {
@@ -2662,7 +2607,6 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   .bottom-nav .bottom-nav-action svg,
   .mobile-quick-action { transition: none !important; }
 }
-
 
 /* Finance period navigation and readable daily values */
 .finance-period-control {

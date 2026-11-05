@@ -121,7 +121,7 @@ export interface WeeklyStoryMetrics {
     topCategoryAmount: number;
   };
   checkin: { count: number; avgMood: number; avgSleep: number };
-  /** Total menit tercatat (timer habit) dalam rentang — 0 bila tak ada. */
+  /** Total menit tercatat (riwayat time_spent_minutes) dalam rentang — 0 bila tak ada. */
   timeMinutes: number;
   /** Jumlah hari yang punya durasi tercatat (> 0 menit). */
   timeDays: number;
