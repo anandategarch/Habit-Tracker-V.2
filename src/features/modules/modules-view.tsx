@@ -550,10 +550,10 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
         <Field label="Saldo awal (Rp)"><input className={field} name="balance" type="number" min="0" defaultValue="0" /></Field>
         <PrimaryButton type="submit"><Plus size={15} /> Tambah dompet</PrimaryButton>
       </form>
-      <div className="finx-list-card">
-        <div className="finx-card-title"><strong>Dompet kamu</strong><small>{finance.wallets.length} dompet tersimpan</small></div>
-        {finance.wallets.length ? <div className="finx-rows">{finance.wallets.map((wallet) => { const balance = walletBalance(wallet); return (
-          <article className="finx-row" key={wallet.id}>
+      <div className="finx-list-card finx-wallet-list-card">
+        <div className="finx-card-title"><strong>Dompet kamu</strong><small>{finance.wallets.length} dompet</small></div>
+        {finance.wallets.length ? <div className="finx-rows finx-wallet-rows">{finance.wallets.map((wallet) => { const balance = walletBalance(wallet); return (
+          <article className="finx-row finx-wallet-row" key={wallet.id}>
             <span className={`finx-row-icon ${walletTile(wallet.type)}`} aria-hidden="true">{walletIcon(wallet.type)}</span>
             <div className="finx-row-copy"><strong>{wallet.name}</strong><small>{WALLET_TYPE_LABELS[wallet.type] ?? wallet.type}</small></div>
             <div className="finx-row-side">
