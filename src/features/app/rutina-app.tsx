@@ -23,6 +23,7 @@ import { useModules } from "@/lib/use-modules";
 import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 import { FOCUS_SESSION_SECONDS } from "@/features/focus/focus-timer";
+import { WorkspaceHistoryProvider, useWorkspaceActivityHistory } from "@/components/ui/weekly-history";
 
 const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
   { id: "home", label: "Beranda", icon: "home", description: "Ringkasan hari ini" },
@@ -85,6 +86,7 @@ export function RutinaApp() {
     isReady: workspaceReady,
   } = useWorkspace();
   const { modules, updateModule, ready: modulesReady } = useModules();
+  const workspaceHistory = useWorkspaceActivityHistory(habits, transactions, modules);
 
   // Transisi halaman hanya aktif setelah pengguna berpindah tab; render awal
   // tetap statis agar tidak ada entrance animation yang tidak disengaja.
@@ -616,12 +618,14 @@ export function RutinaApp() {
         </header>
 
         <div className={`content-wrap${hasPageTransitioned ? " page-transition" : ""}`} key={activeTab}>
+          <WorkspaceHistoryProvider value={workspaceHistory}>
           {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} focusTimerRemainingSeconds={focusTimer.remainingSeconds} focusTimerRunning={focusTimer.running} onFocusTimerToggle={toggleFocusTimer} onFocusTimerReset={resetFocusTimer} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
           {activeTab === "finance" && <><FinanceView transactions={transactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} checkins={modules.checkins} />}
           {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree" || activeTab === "settings") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
+          </WorkspaceHistoryProvider>
         </div>
       </main>
 

@@ -8,6 +8,7 @@ import { summarizeHabits } from "@/lib/habits";
 import { isScheduledOn } from "@/lib/habit-schedule";
 import { todayISO } from "@/lib/format";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { HabitWeekHistory } from "@/components/ui/weekly-history";
 
 type CompletionFilter = "all" | "pending" | "completed";
 const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
@@ -298,6 +299,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
                   </button>
                 ) : undefined}
               />
+              <HabitWeekHistory habit={habit} />
             </div>
           ))}
         </div>

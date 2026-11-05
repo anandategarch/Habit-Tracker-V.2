@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { BotanicalIllustration, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
+import { WeeklyHistorySlot } from "@/components/ui/weekly-history";
 import {
   ArrowDownLeft, ArrowUpRight, BookOpen, Check, Clock3, Droplets,
   Dumbbell, Flame, Moon, PencilLine, Sprout, Target,
@@ -30,15 +31,18 @@ function PageIntro({ eyebrow, title, subtitle, action, artwork }: {
 }) {
   const illustration = artwork === undefined ? pageArtwork(eyebrow) : artwork;
   return (
-    <div className={`page-intro${illustration ? " page-intro--illustrated" : ""}${action ? " page-intro--has-action" : ""}`}>
-      <div className="page-intro-copy">
-        <div className="eyebrow">{eyebrow}</div>
-        <h1 className="page-title">{title}</h1>
-        <p className="page-subtitle">{subtitle}</p>
+    <>
+      <div className={`page-intro${illustration ? " page-intro--illustrated" : ""}${action ? " page-intro--has-action" : ""}`}>
+        <div className="page-intro-copy">
+          <div className="eyebrow">{eyebrow}</div>
+          <h1 className="page-title">{title}</h1>
+          <p className="page-subtitle">{subtitle}</p>
+        </div>
+        {action && <div className="page-intro-action">{action}</div>}
+        {illustration && <BotanicalIllustration variant={illustration} className="page-intro-art" />}
       </div>
-      {action && <div className="page-intro-action">{action}</div>}
-      {illustration && <BotanicalIllustration variant={illustration} className="page-intro-art" />}
-    </div>
+      <WeeklyHistorySlot />
+    </>
   );
 }
 

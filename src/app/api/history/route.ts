@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   try {
     await ensureSchema();
     const client = getTursoClient();
-    const [habitRows, checkinRows] = await Promise.all([
+    const [habitRows, checkinRows, progressRows] = await Promise.all([
       client.execute({
         sql: `SELECT c.habit_id AS habitId, h.title AS title, c.completed_on AS date
           FROM habit_checkins c
@@ -37,6 +37,15 @@ export async function GET(request: Request) {
       }),
       client.execute({
         sql: "SELECT payload FROM workspace_modules WHERE module_key = 'checkins' LIMIT 1",
+      }),
+      client.execute({
+        sql: `SELECT p.habit_id AS habitId, h.title AS title, p.activity_date AS date,
+            p.current_amount AS currentAmount, p.time_spent_minutes AS timeSpentMinutes
+          FROM habit_daily_progress p
+          INNER JOIN habits h ON h.id = p.habit_id
+          WHERE p.activity_date >= ? AND p.activity_date < ?
+          ORDER BY p.activity_date ASC, h.title ASC`,
+        args: [start, nextMonth],
       }),
     ]);
 
@@ -63,6 +72,13 @@ export async function GET(request: Request) {
         habitId: String(row.habitId),
         title: String(row.title),
         date: String(row.date),
+      })),
+      progress: progressRows.rows.map((row) => ({
+        habitId: String(row.habitId),
+        title: String(row.title),
+        date: String(row.date),
+        currentAmount: Math.max(0, Number(row.currentAmount) || 0),
+        timeSpentMinutes: Math.max(0, Number(row.timeSpentMinutes) || 0),
       })),
       checkins,
     }, { headers: { "Cache-Control": "no-store" } });

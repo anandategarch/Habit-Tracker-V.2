@@ -88,3 +88,14 @@ Keyframes tetap boleh untuk sequence satu kali seperti splash screen, skeleton s
 - Efek hover hanya aktif untuk perangkat yang memiliki pointer hover. Interaksi sentuh tidak boleh meninggalkan state hover.
 - Hormati prefers-reduced-motion: nonaktifkan ayunan daun dan animasi sukses, sementara perubahan status tetap jelas melalui bentuk, warna, dan label.
 - Ilustrasi harus responsif, tidak menutupi judul/tombol, dan tidak menambah dependency runtime.
+
+
+## Riwayat aktivitas tujuh hari lintas tab (v0.7)
+
+- Setiap halaman yang memakai PageIntro menampilkan panel riwayat workspace tujuh hari setelah judul halaman.
+- Panel menggabungkan catatan bertanggal yang benar-benar tersedia dari kebiasaan, transaksi, check-in, tujuan dibuat, tugas dibuat, catatan diperbarui, rutinitas terakhir dilakukan, wellness, latihan, dan foto progres.
+- Pilihan tanggal memperlihatkan rincian aktivitas hari tersebut. Hari tanpa catatan tetap netral dan tidak disebut sebagai hari gagal.
+- Tab Kebiasaan juga menampilkan indikator tujuh hari per habit. Hari tidak terjadwal, belum tercatat, progres parsial, dan selesai dibedakan.
+- Riwayat amount memakai tabel habit_daily_progress yang sudah ada; endpoint history menambahkan field progress tanpa mengubah schema.
+- Jangan menyimpulkan tanggal penyelesaian tujuan/tugas dari status saat ini jika timestamp penyelesaian memang tidak disimpan. Tampilkan hanya tanggal pembuatan atau catatan yang benar-benar ada.
+- Ketika API riwayat habit tidak tersedia, tampilkan peringatan non-blocking; aktivitas dari sumber workspace lokal tetap bisa dilihat.
