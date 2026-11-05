@@ -19,7 +19,6 @@ import { InsightsView } from "@/features/insights/insights-view";
 import { EntryModal } from "@/components/ui/entry-modal";
 import { BudgetModal } from "@/components/ui/budget-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
-import { PwaInstallButton } from "@/components/pwa/install-button";
 import { useModules } from "@/lib/use-modules";
 import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
@@ -532,16 +531,6 @@ export function RutinaApp() {
           {moreOpen ? <X size={20} /> : <Grid2X2 size={20} />}
           <span>Menu</span>
         </button>
-        <button
-          type="button"
-          className={`rail-sync-button ${sync.className}`}
-          onClick={() => void refreshWorkspace()}
-          aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
-          title={sync.detail}
-        >
-          {syncStatus === "syncing" ? <LoaderCircle size={18} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={18} /> : <Cloud size={18} />}
-          <span className="rail-sync-indicator" />
-        </button>
 
         <div id="workspace-menu" className={`workspace-menu-panel ${moreOpen ? "is-open" : ""}`} aria-hidden={!moreOpen}>
           <div className="menu-panel-header">
@@ -653,16 +642,6 @@ export function RutinaApp() {
             <button className="search-trigger" type="button" onClick={() => setSearchOpen(true)} aria-label="Cari di Rutina">
               <Search size={16} /><span>Cari sesuatu…</span><kbd>Ctrl / ⌘ K</kbd>
             </button>
-            <button
-              type="button"
-              className={`mobile-sync-button ${sync.className}`}
-              onClick={() => void refreshWorkspace()}
-              title={sync.detail}
-              aria-label={`Status sinkronisasi: ${sync.label}. Tekan untuk menyegarkan.`}
-            >
-              {syncStatus === "syncing" ? <LoaderCircle size={17} className="spin" /> : syncStatus === "error" || syncStatus === "local" ? <CloudOff size={17} /> : <Cloud size={17} />}
-            </button>
-            <PwaInstallButton />
             <button
               type="button"
               className="topbar-bell"

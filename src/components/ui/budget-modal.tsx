@@ -6,6 +6,7 @@ import { Check, LoaderCircle, Plus, Trash2, Wallet, X } from "lucide-react";
 import { DEFAULT_TRANSACTION_CATEGORIES } from "@/lib/types";
 import type { Budget } from "@/lib/types";
 import { IconAction, PrimaryButton } from "@/components/ui/primitives";
+import { ThemedSelect } from "@/components/ui/themed-select";
 
 const CUSTOM_CATEGORY_VALUE = "__custom__";
 
@@ -203,20 +204,20 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
                     <div className="budget-editor-fields">
                       <label className="form-field">
                         <span className="form-label">Kategori</span>
-                        <select
+                        <ThemedSelect
                           className="form-control"
                           value={row.category}
                           autoFocus={row.limit === "" && row.key === rows[rows.length - 1]?.key && rows.length > budgets.length}
-                          onChange={(event) => updateRow(row.key, {
-                            category: event.target.value,
-                            custom: event.target.value === CUSTOM_CATEGORY_VALUE,
+                          onChange={(value) => updateRow(row.key, {
+                            category: value,
+                            custom: value === CUSTOM_CATEGORY_VALUE,
                           })}
                         >
                           {options.map((category) => (
                             <option value={category} key={category}>{category}</option>
                           ))}
                           <option value={CUSTOM_CATEGORY_VALUE}>Kategori lain…</option>
-                        </select>
+                        </ThemedSelect>
                         {row.custom && (
                           <input
                             className="form-control"

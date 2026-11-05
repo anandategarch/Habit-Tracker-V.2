@@ -6,6 +6,7 @@ import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { computeGardenRhythm, consumeShield, shieldAvailableThisWeek, summarizeSeedBank, type GardenRhythm } from "@/lib/garden-rewards";
 import { progressSentence, streakStory, todayStory, weeklyStepsStory } from "@/lib/storytelling";
+import { ThemedSelect } from "@/components/ui/themed-select";
 import { RichText } from "@/components/ui/rich-text";
 import { burstLeaves, useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
@@ -314,7 +315,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           </>
         ) : focusedHabit ? (
           <>
-            <label className="daily-focus-picker">FOKUS HARI INI<select value={focusedHabit.id} onChange={(event) => setFocusHabitId(event.target.value)} aria-label="Pilih fokus kebiasaan">{habits.filter((habit) => !habit.completed).map((habit) => <option key={habit.id} value={habit.id}>{habit.title}</option>)}</select></label>
+            <label className="daily-focus-picker">FOKUS HARI INI<ThemedSelect value={focusedHabit.id} onChange={(value) => setFocusHabitId(value)} ariaLabel="Pilih fokus kebiasaan">{habits.filter((habit) => !habit.completed).map((habit) => <option key={habit.id} value={habit.id}>{habit.title}</option>)}</ThemedSelect></label>
             <div className="daily-intention-meta"><span>{focusedHabit.time}</span><span>{focusedHabit.duration} menit</span><span>{focusedHabit.category}</span></div>
             <h2>{focusedHabit.title}</h2>
             <p>Cukup fokus pada satu hal ini. Kamu tidak perlu memikirkan semuanya sekaligus.</p>
