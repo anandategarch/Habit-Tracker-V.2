@@ -1,0 +1,15 @@
+{
+  "scope":"page",
+  "isRedesign":true,
+  "targetPath":["src/features/app/rutina-app.tsx","src/features/dashboard/dashboard-view.tsx","src/features/finance/finance-view.tsx","src/features/modules/modules-view.tsx","src/app/globals.css","src/app/rutina-botanical.css"],
+  "targetName":"Rutina Experience",
+  "includedAreas":["App Shell desktop/mobile","Dashboard","Keuangan utama","Keuangan lanjutan"],
+  "painPoints":["Hierarki visual perlu diselaraskan antara dokumentasi dan implementasi","Lapisan CSS override berisiko menimbulkan inkonsistensi","Dashboard perlu lebih mudah dipindai","Tujuh subfitur Keuangan lanjutan perlu navigasi yang lebih jelas"],
+  "inspiration":{"visual":["Playful Botanical","Playful Premium","Calm Fintech"],"functional":["Progressive disclosure","Inline editing","Action-first workflows"]},
+  "brand":{"adjectives":["hangat","organik","dewasa","tenang","efisien"],"density":"comfortable","darkMode":false},
+  "persona":{"primary":"Pengguna personal","context":"mobile-first with desktop support","keyTasks":["Melihat satu tindakan kebiasaan yang relevan hari ini","Memahami arus kas pada periode terpilih","Mengelola dompet, transfer, recurring, tabungan, aturan kategori, split, dan budget mingguan"]},
+  "constraints":{"mustKeep":["Identitas Playful Botanical / Playful Premium","Semua navigasi dan fitur yang ada","Handler dan perilaku data","Turso, LocalStorage fallback, API, dan schema"],"technical":["Tanpa dependency baru","Next.js App Router di src/app","Bun","Design tokens","TypeScript strict","Presentation-first"]},
+  "framework":"nextjs-app-router",
+  "packageManager":"bun",
+  "stylingSystem":"Tailwind CSS v4 + CSS Variables + project CSS"
+}
