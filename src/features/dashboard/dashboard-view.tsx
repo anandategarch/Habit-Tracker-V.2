@@ -181,6 +181,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         eyebrow={dateLabel}
         title={`${greeting}, Ananda! 🌱`}
         subtitle={dailyEncouragement}
+        artwork="home"
       />
       {returning && !welcomeDismissed && !vacationMode && <section className="welcome-back-card" aria-label="Selamat datang kembali"><span className="welcome-back-art"><Sprout size={25} /></span><div className="welcome-back-copy"><span className="small-label">TAMANMU MENUNGGU</span><strong>Senang kamu kembali.</strong><p>Kita tidak perlu mengejar hari yang terlewat. Mulai lagi dari satu hal kecil yang terasa mudah.</p></div><button type="button" className="welcome-back-close" onClick={() => { setWelcomeDismissed(true); try { window.localStorage.setItem("rutina.v2.welcome-dismissed", todayISO()); window.localStorage.removeItem("rutina.v2.welcome-pending"); } catch { /* abaikan */ } }} aria-label="Tutup pesan selamat datang">×</button></section>}
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
