@@ -383,3 +383,16 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  GET /icons/icon-192 200 in 50ms
  GET /manifest.webmanifest 200 in 3ms (next.js: 0.7ms, application-code: 2ms)
  GET /icons/icon-192 200 in 34ms
+ GET / 200 in 28ms (next.js: 0.8ms, application-code: 27ms)
+ GET / 200 in 27ms (next.js: 0.9ms, application-code: 26ms)
+ GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
+ GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
+ GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2.0ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
