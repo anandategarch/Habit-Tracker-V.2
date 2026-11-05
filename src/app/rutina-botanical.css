@@ -37,7 +37,9 @@
   --rutina-sage: #a9c58e;
   --rutina-leaf: #568a5d;
   --rutina-leaf-dark: #356b4b;
-  --rutina-lavender: #8f7ae5;
+  /* Catatan: --rutina-lavender dihapus pada audit v0.13 — pedoman taman
+     botani melarang warna ungu. Tema “Lavender” digantikan oleh “Moss”
+     (#6b8a5a) untuk variasi hijau yang lebih dalam. */
   --rutina-line: #e5ece2;
 }
 
@@ -2370,7 +2372,6 @@ html[data-theme="dark"] .time-analysis-skeleton-bars span { background: #39493a;
   --canvas:#fff8f1; --surface:#fffdf9; --surface-soft:#fff4ea; --surface-green:#edf5e8;
   --ink:#302d2a; --ink-soft:#625e55; --muted:#8d9184; --line:#eee4d9;
   --primary:#417a57; --primary-strong:#2f6245; --primary-soft:#e7f1e3; --sage:#a9c58f;
-  --rutina-lavender:#8f7ae5; --rutina-lavender-soft:#edf5eb;
   --shadow-card:0 8px 24px rgba(85,65,46,.055),0 1px 2px rgba(85,65,46,.035);
   --shadow-float:0 18px 44px rgba(76,58,43,.13);
 }
@@ -2524,8 +2525,6 @@ label,.field-label{color:#666b60}
   --primary-strong: #356448;
   --primary-soft: #e8f1e3;
   --sage: #a9c58f;
-  --rutina-lavender: #8f7ae5;
-  --rutina-lavender-soft: #f1edff;
   --shadow-card: 0 8px 24px rgba(85,65,46,.052), 0 1px 2px rgba(85,65,46,.035);
   --shadow-float: 0 20px 48px rgba(76,58,43,.14);
 }
@@ -5689,10 +5688,10 @@ button:disabled:active {
 .garden-theme-options button{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:5px 8px;border:1px solid #e5e9df;border-radius:999px;color:#6f7d6b;background:#fffdf8;font:inherit;font-size:10px;cursor:pointer}
 .garden-theme-options button.active{border-color:#9db99b;color:#365d40;background:#edf4e9}
 .garden-theme-options i{width:9px;height:9px;border-radius:50%;background:#8eae86}
-.garden-theme-options i.peach{background:#d9a28a}.garden-theme-options i.lavender{background:#a99bc8}
+.garden-theme-options i.peach{background:#d9a28a}.garden-theme-options i.moss{background:#6b8a5a}
 .garden-theme-peach .botanical-hero{background:linear-gradient(120deg,#fff0e7,#fffaf3 58%,#f7eee5)}
-.garden-theme-lavender .botanical-hero{background:linear-gradient(120deg,#f0edf8,#fffdf8 58%,#edf1e8)}
-.garden-theme-peach .hero-ring-progress{stroke:#c98568}.garden-theme-lavender .hero-ring-progress{stroke:#8e82b5}
+.garden-theme-moss .botanical-hero{background:linear-gradient(120deg,#ebf2e2,#fbfdf7 58%,#e8f0e0)}
+.garden-theme-peach .hero-ring-progress{stroke:#c98568}.garden-theme-moss .hero-ring-progress{stroke:#5d8a4e}
 .weekly-reflection-card{position:relative;margin:0 0 15px;padding:12px 15px}
 .weekly-reflection-icon{width:38px;height:38px}.weekly-reflection-copy{flex:1}.weekly-reflection-mark{margin-left:auto;color:#b6c99f;font-size:23px}
 .daily-focus-picker{display:grid;gap:5px;max-width:100%;margin:0 0 9px;color:#8a947f;font-size:9px;font-weight:850;letter-spacing:.08em}

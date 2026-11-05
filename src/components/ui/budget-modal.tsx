@@ -7,6 +7,7 @@ import { DEFAULT_TRANSACTION_CATEGORIES } from "@/lib/types";
 import type { Budget } from "@/lib/types";
 import { IconAction, PrimaryButton } from "@/components/ui/primitives";
 import { ThemedSelect } from "@/components/ui/themed-select";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 
 const CUSTOM_CATEGORY_VALUE = "__custom__";
 
@@ -46,6 +47,7 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
 }) {
   const dialogRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
+  const { confirm } = useConfirm();
   const [rows, setRows] = useState<BudgetRowState[]>(() => budgets.map(toRowState));
   const [customText, setCustomText] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
@@ -148,7 +150,14 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
 
     for (const row of rows) {
       const category = categoryOfRow(row);
-      const limitValue = Number(row.limit);
+      // Tolak notasi ilmiah dan desimal pada batas — sebelumnya type="number"
+      // menerima 1e10 lalu disimpan sebagai 10 miliar rupiah (audit v0.13).
+      const limitRaw = String(row.limit).trim();
+      if (!/^\d+$/.test(limitRaw)) {
+        nextErrors[row.key] = "Batas harus berupa angka bulat, tanpa koma atau huruf.";
+        continue;
+      }
+      const limitValue = Number(limitRaw);
       if (!category) {
         nextErrors[row.key] = "Kategori wajib diisi.";
         continue;
@@ -171,8 +180,35 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
     }
 
     setErrors({});
+
+    // Konfirmasi destruktif saat semua baris dihapus (audit v0.13): sebelumnya
+    // “Simpan anggaran” dengan daftar kosong diam-diam menghapus seluruh batas
+    // bulanan tanpa peringatan bertema.
+    if (nextBudgets.length === 0 && budgets.length > 0) {
+      confirm({
+        tone: "danger",
+        title: "Hapus semua anggaran?",
+        message: "Tidak ada kategori yang tersisa. Semua batas bulanan akan dihapus dari pengaturanmu.",
+        note: "Tindakan ini tidak bisa dibatalkan.",
+        confirmLabel: "Ya, hapus semua",
+        onConfirm: () => {
+          setSubmitting(true);
+          try {
+            onSubmit(nextBudgets);
+          } catch {
+            setSubmitting(false);
+          }
+        },
+      });
+      return;
+    }
+
     setSubmitting(true);
-    onSubmit(nextBudgets);
+    try {
+      onSubmit(nextBudgets);
+    } catch {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -232,13 +268,13 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
                       <label className="form-field">
                         <span className="form-label">Batas bulanan</span>
                         <div className="amount-field">
-                          <span>Rp</span>
+                          <span aria-hidden="true">Rp</span>
                           <input
                             className="form-control"
-                            type="number"
-                            min="1"
-                            step="1"
+                            type="text"
                             inputMode="numeric"
+                            autoComplete="off"
+                            enterKeyHint="done"
                             placeholder="500000"
                             value={row.limit}
                             onChange={(event) => updateRow(row.key, { limit: event.target.value })}

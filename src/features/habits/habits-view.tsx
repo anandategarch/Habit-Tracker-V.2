@@ -248,8 +248,8 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
         <div className="habit-toolbar">
           <div className="schedule-view-toggle" role="group" aria-label="Tampilan jadwal"><button type="button" className={!showAllSchedules ? "active" : ""} aria-pressed={!showAllSchedules} onClick={() => setShowAllSchedules(false)}>Terjadwal hari ini</button><button type="button" className={showAllSchedules ? "active" : ""} aria-pressed={showAllSchedules} onClick={() => setShowAllSchedules(true)}>Semua jadwal</button></div>
           <label className="habit-search">
-            <Search size={16} />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari kebiasaan…" aria-label="Cari kebiasaan" />
+            <Search size={16} aria-hidden="true" />
+            <input type="search" enterKeyHint="search" autoComplete="off" spellCheck={false} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari kebiasaan…" aria-label="Cari kebiasaan" />
           </label>
           <ThemedSelect className="group-filter-select" ariaLabel="Filter grup habit" value={groupFilter} onChange={setGroupFilter}><option value="all">Semua grup</option>{groups.map((group) => <option value={group.name} key={group.id}>{group.name}</option>)}</ThemedSelect>
           <div className="completion-filters" role="group" aria-label="Filter status kebiasaan">

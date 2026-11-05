@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
-import { Check, LoaderCircle, SlidersHorizontal, X } from "lucide-react";
+import { Check, LoaderCircle, SlidersHorizontal, X, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { DEFAULT_TRANSACTION_CATEGORIES } from "@/lib/types";
 import type { Wallet, HabitGroup } from "@/lib/module-types";
 import { todayISO } from "@/lib/format";
@@ -129,8 +129,18 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
     }
     if (!isHabit) {
       const amount = form.elements.namedItem("amount") as (HTMLInputElement | null);
-      const amountValue = amount ? Number(amount.value) : 0;
-      if (!amount || !Number.isFinite(amountValue) || amountValue <= 0) {
+      const amountRaw = amount ? String(amount.value).trim() : "";
+      // Tolak notasi ilmiah (mis. 1e10) dan desimal — nominal wajib berupa
+      // digit murni. Sebelumnya type="number" menerima 1e10 lalu disimpan
+      // sebagai 10 miliar rupiah, merusak ringkasan keuangan (audit v0.13).
+      if (!/^\d+$/.test(amountRaw)) {
+        setFieldError({ field: "amount", message: "Nominal harus berupa angka bulat, tanpa koma atau huruf." });
+        amount?.focus();
+        amount?.select();
+        return;
+      }
+      const amountValue = Number(amountRaw);
+      if (!Number.isFinite(amountValue) || amountValue <= 0) {
         setFieldError({ field: "amount", message: "Nominal harus lebih dari Rp0." });
         amount?.focus();
         return;
@@ -145,7 +155,13 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
     }
     setFieldError(null);
     setSubmitting(true);
-    onSubmit(event);
+    try {
+      onSubmit(event);
+    } catch {
+      // Reset agar tombol Simpan tidak macet di state “Menyimpan…” bila
+      // handler induk melempar (audit v0.13).
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -212,14 +228,14 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
                   <div className="form-two-columns"><label className="form-field"><span className="form-label">Target jumlah</span><input className="form-control" type="number" name="targetAmount" min="1" inputMode="numeric" defaultValue="8" /></label><label className="form-field"><span className="form-label">Satuan target</span><input className="form-control" name="unit" maxLength={30} placeholder="gelas, halaman, repetisi" defaultValue="unit" /></label></div>
                   <div className="form-two-columns"><label className="form-field"><span className="form-label">Prioritas</span><ThemedSelect className="form-control" name="priority" defaultValue="medium"><option value="low">Rendah</option><option value="medium">Sedang</option><option value="high">Tinggi</option></ThemedSelect></label><label className="form-field"><span className="form-label">Kesulitan</span><ThemedSelect className="form-control" name="difficulty" defaultValue="easy"><option value="easy">Mudah</option><option value="medium">Sedang</option><option value="hard">Sulit</option></ThemedSelect></label></div>
                   <label className="form-field"><span className="form-label">Grup kebiasaan (opsional)</span>{groups.length > 0 ? <ThemedSelect className="form-control" name="groupName" defaultValue=""><option value="">Tanpa grup</option>{groups.map((group) => <option value={group.name} key={group.id}>{group.name}</option>)}</ThemedSelect> : <input className="form-control" name="groupName" maxLength={60} placeholder="Buat grup dari halaman Kebiasaan" />}</label>
-                  <label className="form-field"><span className="form-label">Hari aktif (untuk jadwal mingguan)</span><input className="form-control" name="scheduleDays" inputMode="numeric" pattern="[0-9,\\s]*" placeholder="1, 3, 5 · Senin, Rabu, Jumat" onChange={() => fieldError?.field === "scheduleDays" && setFieldError(null)} /><span className="form-hint">Nomor hari: 0 Minggu, 1 Senin, 2 Selasa, 3 Rabu, 4 Kamis, 5 Jumat, 6 Sabtu.</span></label>
-                  <label className="form-field"><span className="form-label">Tanggal aktif (untuk jadwal bulanan)</span><input className="form-control" name="scheduleDates" inputMode="numeric" pattern="[0-9,\\s]*" placeholder="1, 15, 28" /><span className="form-hint">Tanggal 1 sampai 31. Tanggal yang tidak tersedia di suatu bulan dilewati.</span></label>
+                  <label className="form-field"><span className="form-label">Hari aktif (untuk jadwal mingguan)</span><input className="form-control" name="scheduleDays" inputMode="numeric" placeholder="1, 3, 5 · Senin, Rabu, Jumat" onChange={() => fieldError?.field === "scheduleDays" && setFieldError(null)} /><span className="form-hint">Nomor hari: 0 Minggu, 1 Senin, 2 Selasa, 3 Rabu, 4 Kamis, 5 Jumat, 6 Sabtu.</span></label>
+                  <label className="form-field"><span className="form-label">Tanggal aktif (untuk jadwal bulanan)</span><input className="form-control" name="scheduleDates" inputMode="numeric" placeholder="1, 15, 28" onChange={() => fieldError?.field === "scheduleDates" && setFieldError(null)} /><span className="form-hint">Tanggal 1 sampai 31. Tanggal yang tidak tersedia di suatu bulan dilewati.</span></label>
                 </div>
               )}
               <div className="form-two-columns">
                 <label className="form-field">
                   <span className="form-label">Waktu</span>
-                  <input className="form-control" type="time" name="time" defaultValue="07:00" required onChange={() => fieldError?.field === "time" && setFieldError(null)} />
+                  <input className="form-control" type="time" name="time" defaultValue="07:00" step={60} required onChange={() => fieldError?.field === "time" && setFieldError(null)} />
                   {fieldError?.field === "time" && <span className="field-error" role="alert">{fieldError.message}</span>}
                 </label>
                 <label className="form-field">
@@ -233,8 +249,8 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
               <div className="form-field">
                 <span className="form-label">Jenis transaksi</span>
                 <div className="transaction-type-control">
-                  <label><input type="radio" name="type" value="expense" defaultChecked onChange={(e) => { if (e.target.checked) setTxnType("expense"); }} /><span><X size={14} /> Pengeluaran</span></label>
-                  <label><input type="radio" name="type" value="income" onChange={(e) => { if (e.target.checked) setTxnType("income"); }} /><span><Check size={14} /> Pemasukan</span></label>
+                  <label><input type="radio" name="type" value="expense" defaultChecked onChange={(e) => { if (e.target.checked) setTxnType("expense"); }} /><span><ArrowUpRight size={14} /> Pengeluaran</span></label>
+                  <label><input type="radio" name="type" value="income" onChange={(e) => { if (e.target.checked) setTxnType("income"); }} /><span><ArrowDownLeft size={14} /> Pemasukan</span></label>
                 </div>
               </div>
               <label className="form-field">
@@ -244,7 +260,7 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
               </label>
               <label className="form-field">
                 <span className="form-label">Nominal (Rupiah)</span>
-                <div className="amount-field"><span>Rp</span><input className="form-control" type="number" name="amount" min="1" step="1" inputMode="numeric" placeholder="150000" required onChange={() => fieldError?.field === "amount" && setFieldError(null)} /></div>
+                <div className="amount-field"><span aria-hidden="true">Rp</span><input className="form-control" type="text" name="amount" inputMode="numeric" autoComplete="off" enterKeyHint="done" placeholder="150000" required onChange={() => fieldError?.field === "amount" && setFieldError(null)} /></div>
                 {fieldError?.field === "amount" && <span className="field-error" role="alert">{fieldError.message}</span>}
               </label>
               <div className="form-two-columns">
@@ -256,7 +272,7 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
                 </label>
                 <label className="form-field">
                   <span className="form-label">Tanggal</span>
-                  <input className="form-control" type="date" name="date" defaultValue={todayISO()} required />
+                  <input className="form-control" type="date" name="date" defaultValue={todayISO()} max={todayISO()} required />
                 </label>
               </div>
               {wallets.length > 0 && <label className="form-field"><span className="form-label">Sumber dana</span><ThemedSelect className="form-control" name="walletId" defaultValue=""><option value="">Tidak ditentukan</option>{wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</ThemedSelect></label>}

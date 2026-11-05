@@ -52,6 +52,13 @@ export function SearchDialog({
   }
 
   function handleDialogKeyDown(event: KeyboardEvent<HTMLElement>) {
+    // ESC: tutup dialog sesuai petunjuk <kbd>ESC</kbd> yang ditampilkan.
+    // Sebelumnya petunjuk ada tapi tombolnya tidak bekerja (audit v0.13).
+    if (event.key === "Escape") {
+      event.preventDefault();
+      onClose();
+      return;
+    }
     // Navigasi hasil dengan panah: ↑/↓ berpindah antar hasil (dan kembali
     // ke input dari hasil pertama). Enter pada tombol hasil = klik native.
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
@@ -93,9 +100,13 @@ export function SearchDialog({
           <button type="button" className="icon-button" aria-label="Tutup pencarian" onClick={onClose}><X size={17} /></button>
         </div>
         <label className="search-field">
-          <Search size={17} />
+          <Search size={17} aria-hidden="true" />
           <input
             ref={inputRef}
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            spellCheck={false}
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="Cari kebiasaan atau transaksi…"

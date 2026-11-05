@@ -143,7 +143,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [focusHabitId, setFocusHabitId] = useState("");
-  const [gardenTheme, setGardenTheme] = useState<"sage" | "peach" | "lavender">("sage");
+  const [gardenTheme, setGardenTheme] = useState<"sage" | "peach" | "moss">("sage");
   useEffect(() => {
     try {
       const today = todayISO();
@@ -165,7 +165,15 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         }
       }
       const savedTheme = window.localStorage.getItem("rutina.v2.garden-theme");
-      if (savedTheme === "peach" || savedTheme === "lavender" || savedTheme === "sage") setGardenTheme(savedTheme);
+      // Migrasi nilai lawas "lavender" (dihapus pada audit v0.13 — bertentangan
+      // dengan pedoman taman botani yang melarang ungu) ke "moss" yang seinduk.
+      const migratedTheme = savedTheme === "lavender" ? "moss" : savedTheme;
+      if (migratedTheme === "moss") {
+        setGardenTheme("moss");
+        try { window.localStorage.setItem("rutina.v2.garden-theme", "moss"); } catch { /* abaikan */ }
+      } else if (migratedTheme === "peach" || migratedTheme === "sage") {
+        setGardenTheme(migratedTheme);
+      }
     } catch { /* Preferensi lokal bersifat opsional. */ }
     setPreferencesReady(true);
   }, []);
@@ -347,7 +355,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         <StatCard label="Arus kas bersih" value={formatCompactRupiah(animatedNet)} foot="Bulan berjalan" icon={WalletCards} tone="orange" />
       </div>
 
-      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div>{seedChip.total > 0 && <div className="garden-seed-chip" role="status" title="Koleksi benih dari perayaan bloom">🌱 <strong>{seedChip.total}</strong> benih{seedChip.langka > 0 ? ` · ${seedChip.langka} langka` : ""}{seedChip.legendaris > 0 ? ` · ${seedChip.legendaris} legendaris` : ""}</div>}<div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "lavender" ? "active" : ""} aria-pressed={gardenTheme === "lavender"} onClick={() => setGardenTheme("lavender")}><i className="lavender" />Lavender</button></div></section>
+      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div>{seedChip.total > 0 && <div className="garden-seed-chip" role="status" title="Koleksi benih dari perayaan bloom">🌱 <strong>{seedChip.total}</strong> benih{seedChip.langka > 0 ? ` · ${seedChip.langka} langka` : ""}{seedChip.legendaris > 0 ? ` · ${seedChip.legendaris} legendaris` : ""}</div>}<div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "moss" ? "active" : ""} aria-pressed={gardenTheme === "moss"} onClick={() => setGardenTheme("moss")}><i className="moss" />Moss</button></div></section>
 
       <div className="dashboard-feature-grid">
         <section className="card card-pad home-habits-card">

@@ -40,7 +40,7 @@ function readOptions(children: ReactNode): SelectOption[] {
   return list;
 }
 
-export function ThemedSelect({ name, value, defaultValue, onChange, className = "", ariaLabel, disabled = false, autoFocus = false, children }: {
+export function ThemedSelect({ name, value, defaultValue, onChange, className = "", ariaLabel, labelledby, id, disabled = false, autoFocus = false, children }: {
   /** Nama field untuk FormData (input tersembunyi). */
   name?: string;
   /** Mode terkendali: bila diberikan, komponen tidak menyimpan nilai sendiri. */
@@ -50,6 +50,10 @@ export function ThemedSelect({ name, value, defaultValue, onChange, className = 
   /** Kelas visual trigger, mis. "form-control" / "module-status-select". */
   className?: string;
   ariaLabel?: string;
+  /** Id elemen <label> yang menjadi label aksesibel untuk trigger. */
+  labelledby?: string;
+  /** Id trigger — pasangkan dengan <label htmlFor={id}> bila Field tidak membungkus. */
+  id?: string;
   disabled?: boolean;
   autoFocus?: boolean;
   children: ReactNode;
@@ -182,9 +186,10 @@ export function ThemedSelect({ name, value, defaultValue, onChange, className = 
   }
 
   return <>
-    <input ref={hiddenRef} type="hidden" name={name} value={selected} />
+    <input ref={hiddenRef} type="hidden" name={name} value={selected} aria-hidden="true" />
     <button
       ref={triggerRef}
+      id={id}
       type="button"
       className={`themed-select-trigger ${className}`.trim()}
       role="combobox"
@@ -192,6 +197,7 @@ export function ThemedSelect({ name, value, defaultValue, onChange, className = 
       aria-haspopup="listbox"
       aria-controls={open ? listboxId : undefined}
       aria-label={ariaLabel}
+      aria-labelledby={labelledby}
       aria-activedescendant={open ? `${listboxId}-option-${activeIndex}` : undefined}
       disabled={disabled}
       autoFocus={autoFocus}
@@ -202,7 +208,12 @@ export function ThemedSelect({ name, value, defaultValue, onChange, className = 
       <ChevronDown size={14} className={`themed-select-chevron${open ? " is-open" : ""}`} aria-hidden="true" />
     </button>
     {open && position && createPortal(<>
-      <div className="themed-select-backdrop" onMouseDown={() => setOpen(false)} />
+      <div className="themed-select-backdrop" onMouseDown={() => {
+        setOpen(false);
+        // Kembalikan fokus ke trigger seperti pola WAI-ARIA combobox:
+        // dismiss (click luar / Escape) selalu mengembalikan fokus.
+        triggerRef.current?.focus();
+      }} />
       <div ref={listRef} id={listboxId} className="themed-select-popover" role="listbox" aria-label={ariaLabel} style={position}>
         <span className="themed-select-grip" aria-hidden="true" />
         {options.map((option, index) => (

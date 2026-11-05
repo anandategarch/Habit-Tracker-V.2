@@ -14,7 +14,7 @@
  * menakut-nakuti.
  */
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 import { ShieldAlert, Trash2 } from "lucide-react";
 
 export type ConfirmTone = "danger" | "leaf" | "amber";
@@ -27,6 +27,8 @@ export interface ConfirmPromptConfig {
   inputMode?: "numeric" | "decimal" | "text";
   /** Awalan sebelum input, mis. "Rp". */
   prefix?: string;
+  /** Batas panjang karakter input (default 30). */
+  maxLength?: number;
 }
 
 export interface ConfirmRequest {
@@ -114,8 +116,11 @@ function ConfirmDialog({ request, onConfirm, onCancel }: {
   const cardRef = useRef<HTMLDivElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fieldId = useId();
+  const errorId = `${fieldId}-error`;
   const [value, setValue] = useState(request.prompt?.defaultValue ?? "");
   const [error, setError] = useState("");
+  const maxLength = request.prompt?.maxLength ?? 30;
   const tone: ConfirmTone = request.tone ?? "danger";
   const Icon = request.icon ?? (tone === "danger" ? Trash2 : ShieldAlert);
   const confirmLabel = request.confirmLabel ?? (tone === "danger" ? "Ya, hapus" : "Lanjutkan");
@@ -208,21 +213,24 @@ function ConfirmDialog({ request, onConfirm, onCancel }: {
         )}
         <form onSubmit={submit}>
           {request.prompt && (
-            <label className="confirm-prompt-field">
+            <label className="confirm-prompt-field" htmlFor={fieldId}>
               <span className="form-label">{request.prompt.label}</span>
               <div className="amount-field">
-                {request.prompt.prefix && <span>{request.prompt.prefix}</span>}
+                {request.prompt.prefix && <span aria-hidden="true">{request.prompt.prefix}</span>}
                 <input
                   ref={inputRef}
+                  id={fieldId}
                   className="form-control"
                   inputMode={request.prompt.inputMode ?? "text"}
                   placeholder={request.prompt.placeholder}
                   value={value}
+                  maxLength={maxLength}
                   onChange={(event) => { setValue(event.target.value); setError(""); }}
                   aria-invalid={error ? true : undefined}
+                  aria-describedby={error ? errorId : undefined}
                 />
               </div>
-              {error && <span className="field-error" role="alert">{error}</span>}
+              {error && <span id={errorId} className="field-error" role="alert">{error}</span>}
             </label>
           )}
           <div className={`confirm-actions${request.hideCancel ? " is-single" : ""}`}>
