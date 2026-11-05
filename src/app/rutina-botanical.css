@@ -2507,12 +2507,12 @@ body{background:radial-gradient(ellipse at 88% 2%,rgba(246,221,199,.32),transpar
 .dashboard-feature-grid,.dashboard-support-grid{gap:15px}
 .dashboard-feature-grid>.card,.dashboard-support-grid>.card{min-width:0}
 .home-habits-card .habit-list{gap:2px}
-.weekly-trend-card,.insight-trend-panel{background:linear-gradient(145deg,#fffefa,#faf8ff)}
+.weekly-trend-card,.insight-trend-panel{background:linear-gradient(145deg,#fffefa,#f4f8ef)}
 .form-control,.module-status-select,.group-filter-select,input.form-control,select.form-control,textarea.form-control{min-height:40px;border:1px solid #e9e3d9;border-radius:12px;color:#45483f;background:#fffefa;font-size:11px}
-.form-control:focus,.module-status-select:focus,.group-filter-select:focus,input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#a99ae8;outline:3px solid rgba(143,122,229,.14);outline-offset:1px}
+.form-control:focus,.module-status-select:focus,.group-filter-select:focus,input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#7fae8b;outline:3px solid rgba(65,122,87,.16);outline-offset:1px}
 label,.field-label{color:#666b60}
 .completion-filters button,.module-tabs button,.insight-period-tabs button{border:1px solid #e9e3db;border-radius:999px;color:#797d72;background:#fffdf9;font-size:10px;font-weight:800}
-.completion-filters button.active,.module-tabs button.active,.insight-period-tabs button.active{border-color:#e3dcfb;color:#705bc2;background:#f1edff}
+.completion-filters button.active,.module-tabs button.active,.insight-period-tabs button.active{border-color:transparent;color:#fff;background:linear-gradient(110deg,#417a57,#5d9271)}
 .module-item,.habit-row,.transaction-row{border-color:#eee8df}
 .module-item{border-radius:15px;background:rgba(255,255,255,.72)}
 .module-tag{border-radius:999px}
@@ -2531,8 +2531,8 @@ label,.field-label{color:#666b60}
  .page-subtitle{max-width:42rem;font-size:11px}
  .bottom-nav{left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));min-height:66px;padding:7px 8px;border-radius:21px;border:1px solid rgba(235,225,214,.96);background:rgba(255,253,249,.97);box-shadow:0 12px 34px rgba(76,58,43,.15);backdrop-filter:blur(18px)}
  .bottom-nav>button{border-radius:14px}
- .bottom-nav>button.active{color:#725ec4;background:#edf5eb}
- .bottom-nav .bottom-nav-action{border-radius:17px;background:linear-gradient(140deg,#9a86e8,#7863ca);box-shadow:0 7px 17px rgba(47,98,69,.25)}
+ .bottom-nav>button.active{color:#2e6340;background:#edf5eb}
+ .bottom-nav .bottom-nav-action{border-radius:17px;background:linear-gradient(140deg,#5d9271,#2f5e40);box-shadow:0 7px 17px rgba(47,98,69,.25)}
  .botanical-hero{min-height:250px;padding:21px 20px 101px}
  .botanical-hero .hero-copy{max-width:62%}
  .botanical-hero .hero-title{font-size:clamp(21px,5vw,27px)}
@@ -2690,8 +2690,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .daily-intention-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
 .daily-intention-meta span { padding: 5px 9px; border: 1px solid rgba(226,230,213,.9); border-radius: 999px; color: #71806b; background: rgba(255,255,255,.68); font-size: 8px; font-weight: 800; }
 .daily-intention-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
-.daily-intention-actions .next-step-action { min-height: 40px; margin: 0; padding-inline: 15px; border: 1px solid #7e69ce; border-radius: 999px; color: #fff; background: linear-gradient(135deg,#9883e6,#7963cb); box-shadow: 0 6px 14px rgba(126,104,208,.17); font-size: 10px; font-weight: 850; }
-.daily-intention-actions .next-step-action:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 9px 18px rgba(126,104,208,.2); }
+.daily-intention-actions .next-step-action { min-height: 40px; margin: 0; padding-inline: 15px; border: 1px solid #356448; border-radius: 999px; color: #fff; background: linear-gradient(135deg,#417a57,#2f5e40); box-shadow: 0 6px 14px rgba(47,98,69,.2); font-size: 10px; font-weight: 850; }
+.daily-intention-actions .next-step-action:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 9px 18px rgba(47,98,69,.26); }
 .daily-intention-actions .next-step-action:disabled { opacity: .5; cursor: not-allowed; }
 .daily-intention-complete { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 13px; border: 1px solid #d8e4d2; border-radius: 999px; color: #50704e; background: rgba(255,255,255,.72); font-size: 10px; font-weight: 800; }
 .daily-intention-complete:hover { border-color: #b8d0b1; background: #fff; }
@@ -2718,7 +2718,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .growth-wrapped-metrics { display: grid; gap: 9px; }
 .growth-wrapped-metric { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 11px 13px; border: 1px solid rgba(255,255,255,.88); border-radius: 15px; background: rgba(255,255,255,.72); }
 .growth-wrapped-icon { display: grid; width: 35px; height: 35px; flex: none; place-items: center; border-radius: 12px; color: #58825d; background: #edf5e7; }
-.growth-wrapped-icon.mood { color: #806cc8; background: #edf5eb; }
+.growth-wrapped-icon.mood { color: #6b8a5a; background: #edf5eb; }
 .growth-wrapped-metric > div { display: grid; min-width: 0; gap: 2px; }
 .growth-wrapped-metric strong { color: #42483e; font-size: 17px; font-weight: 900; font-variant-numeric: tabular-nums; }
 .growth-wrapped-metric small { color: #8c8d82; font-size: 8px; line-height: 1.4; }
@@ -3048,9 +3048,9 @@ html[data-theme="dark"] .garden-journey-link:hover { color: #e5f0db; }
 .finance-transactions-panel .section-heading { margin-bottom: 14px; }
 .finance-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .finance-filters button { min-height: 33px; padding: 0 13px; border: 1px solid #eee5dc; border-radius: 99px; color: #85897e; background: #fffdf9; font-size: 9px; font-weight: 750; }
-.finance-filters button.active { border-color: #8f7ae5; color: #fff; background: linear-gradient(110deg,#417a57,#5d9271); }
-.finance-expand-button { display: inline-flex; min-height: 35px; align-items: center; justify-content: center; gap: 5px; padding: 0 9px; border: 1px solid #eee5dc; border-radius: 99px; color: #765fd1; background: #fffdf9; font-size: 9px; font-weight: 750; }
-.finance-expand-button:hover { border-color: #d9d0f5; background: #faf8ff; }
+.finance-filters button.active { border-color: #2f5e40; color: #fff; background: linear-gradient(110deg,#417a57,#5d9271); }
+.finance-expand-button { display: inline-flex; min-height: 35px; align-items: center; justify-content: center; gap: 5px; padding: 0 9px; border: 1px solid #eee5dc; border-radius: 99px; color: #356b4a; background: #fffdf9; font-size: 9px; font-weight: 750; }
+.finance-expand-button:hover { border-color: #cfe0c9; background: #f3f8ef; color: #2f6245; }
 .finance-transactions-panel .transaction-row { min-height: 62px; }
 .finance-transactions-panel .transaction-title { font-size: 11px; }
 .finance-transactions-panel .transaction-meta { font-size: 9px; }
@@ -6834,7 +6834,7 @@ html[data-theme="dark"] .finance-compare-insight { color: var(--ink-soft); }
   transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 .budget-add-row:hover { border-color: #a9c58f; background: #f4f8f1; color: #2f6245; }
-.budget-add-row:focus-visible { outline: none; border-color: #8f7ae5; box-shadow: 0 0 0 3px rgba(143, 122, 229, .18); }
+.budget-add-row:focus-visible { outline: none; border-color: #7fae8b; box-shadow: 0 0 0 3px rgba(65, 122, 87, .16); }
 
 /* Dark mode */
 html[data-theme="dark"] .budget-editor-row {
@@ -7784,4 +7784,341 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
 @media (prefers-reduced-motion: reduce) {
   .habits-panel .habit-draggable,
   .habits-panel .habit-week-history-summary > svg { transition: none; }
+}
+
+/* ==========================================================================
+   AUDIT MOBILE v0.5 (2026-11-05) — Deep audit UI/UX mobile fix.
+   Sumber: audit menyeluruh iPhone 14 390×844 + iPhone SE 375×667 pada 8
+   tampilan (Beranda, Kebiasaan, Keuangan, Kalender, Insight, Pengaturan,
+   dialog Pencarian, modal Entry) menggunakan agent-browser.
+   
+   Defect ditemukan:
+   A. iOS auto-zoom: aturan input.form-control (line 6012, specificity 0,1,1)
+      menetapkan font-size:12px, menimpa @media(max-width:640px) .form-control
+      (line 3322, specificity 0,1,0). Akibatnya seluruh input teks pada
+      entry-modal portrait memicu iOS Safari zoom 145% tak bisa di-zoom out.
+   B. Touch target <44px (WCAG 2.5.5) di 19+ komponen: topbar (search/bell
+      40px), kalender (nav 40px, day 40px, today 40px), keuangan (month-step
+      40px, month-input 38px, text-button 40px, finance-filters 33px,
+      category-filters 29px, finx-tab 40px, finance-expand-button 35px),
+      kebiasaan (completion-filters ~33px, category-filters 29px, schedule-
+      view-toggle ~33px, habit-check-action 40px, amount-stepper 36px),
+      insight (period-tabs 40px, retry-button 32px), weekly-story retry 30px,
+      modal/menu close 40px, dashboard theme-options 32px, garden-journey-
+      link ~35px, next-step-action 40px, themed-select-trigger 42px).
+   C. Search input touch area: field 49px, input hanya 24px (tidak mengisi
+      tinggi field) → user harus tap tepat pada teks untuk fokus.
+   D. Dead code ungu terlarang di line 2534-2535 (sudah ditimpa hijau tapi
+      noise); 2 dead code violet di finance-expand-button (line 3052 color
+      #765fd1, line 3053 border #d9d0f5) — sudah ditimpa line 3734-3740
+      tapi tetap noise.
+   
+   Blok ini ditempatkan paling akhir agar menang cascade.
+   ========================================================================== */
+
+/* --- A. iOS auto-zoom: paksa font-size 16px untuk semua input teks di
+   mobile portrait. Specificity (0,1,1) + urutan sumber terakhir → menang. --- */
+@media (max-width: 640px) {
+  input.form-control,
+  select.form-control,
+  textarea.form-control,
+  input[type="text"].form-control,
+  input[type="search"].form-control,
+  input[type="date"].form-control,
+  input[type="number"].form-control,
+  input[type="email"].form-control,
+  input[type="tel"].form-control,
+  input[type="url"].form-control,
+  .entry-modal input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  .entry-modal select,
+  .entry-modal textarea,
+  .form-field input,
+  .form-field select,
+  .form-field textarea,
+  .amount-field .form-control {
+    font-size: 16px;
+  }
+}
+
+/* --- B. Touch target minimum 44px (WCAG 2.5.5 Enhanced).
+   Hanya diterapkan pada layar sentuh (mobile + tablet portrait). --- */
+@media (max-width: 760px) {
+  /* B.1 Topbar — search, bell, theme-toggle, sync. Gunakan selector 2-class
+     (.topbar .X) untuk menang specificity 0,2,0 dari rule lama (line 4516). */
+  .topbar .search-trigger,
+  .topbar .topbar-bell,
+  .topbar .icon-button,
+  .topbar-actions .theme-toggle,
+  .topbar-actions .mobile-sync-button,
+  .topbar-actions .pwa-install-trigger,
+  .topbar-actions .mobile-theme-toggle,
+  .topbar-actions .mobile-bell,
+  .topbar .topbar-bell {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+  }
+  /* Untuk elemen topbar di luar .topbar-actions (mis. avatar), turunkan width/height */
+  .topbar .icon-button { width: 44px; height: 44px; }
+
+  /* B.2 Kalender — navigasi, hari, tombol "hari ini". Tombol nav bulan
+     berada di .calendar-actions (bukan .calendar-nav). */
+  .calendar-day {
+    min-height: 44px;
+    padding-block: 10px;
+  }
+  .calendar-today-button,
+  .calendar-actions button,
+  .calendar-actions .icon-button,
+  .calendar-head .icon-button,
+  .calendar .icon-button.icon-action-feedback {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* B.3 Keuangan — month stepper, input bulan, text-button, filters */
+  .finance-month-step {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .finance-month-input-wrap,
+  .finance-current-month {
+    min-height: 44px;
+  }
+  .finance-month-input {
+    min-height: 44px;
+    height: 44px;
+  }
+  .text-button,
+  .text-button.list-more,
+  .finance-mini-link {
+    min-height: 44px;
+    padding-block: 11px;
+  }
+  .finance-filters button,
+  .category-filters button,
+  .completion-filters button,
+  .schedule-view-toggle button,
+  .module-tabs button,
+  .finx-tab,
+  .finance-expand-button {
+    min-height: 44px;
+    padding-block: 10px;
+  }
+
+  /* B.4 Kebiasaan — filter pills, check action, amount stepper */
+  .habit-check-action {
+    min-height: 44px;
+    padding-block: 9px;
+  }
+  .habit-amount-stepper button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .check-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  /* Vacation toggle (secondary-button) + general secondary button */
+  .secondary-button,
+  .vacation-toggle {
+    min-height: 44px;
+    padding-block: 11px;
+  }
+
+  /* B.5 Insight — period tabs, retry buttons. Gunakan selector +element
+     untuk menang specificity 0,1,1 dari rule lama .weekly-history-error
+     button (line 5436, min-height: 30px) dan .insight-retry-button
+     (line 2255, min-height: 32px). */
+  .insight-period-tabs button {
+    min-height: 44px;
+    padding-block: 11px;
+  }
+  .insight-retry-button,
+  .weekly-retry-action,
+  .weekly-history-error button,
+  .calendar-history-error .insight-retry-button {
+    min-height: 44px;
+    padding-block: 11px;
+    font-size: 10.5px;
+  }
+
+  /* B.6 Modal & menu — tombol tutup */
+  .menu-panel-close,
+  .modal-head .icon-button,
+  .entry-modal .modal-head .icon-button,
+  .icon-button.modal-close,
+  .search-heading .icon-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  /* B.7 Dashboard — theme picker, next-step, garden journey link */
+  .garden-theme-options button {
+    min-height: 44px;
+    padding-block: 11px;
+  }
+  .next-step-action,
+  .garden-journey-link {
+    min-height: 44px;
+    padding-block: 11px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* B.8 Themed-select (dropdown custom) */
+  .themed-select-trigger {
+    min-height: 44px;
+    padding-block: 11px;
+  }
+  .themed-select-trigger.module-status-select,
+  .themed-select-trigger.group-filter-select {
+    min-height: 44px;
+  }
+
+  /* B.9 Bulan keuangan — lebar minimum stabil */
+  .finance-month-input {
+    width: 132px;
+  }
+}
+
+/* --- C. Search input mengisi tinggi field agar target sentuh penuh (bukan
+   24px default line-height). Pertahankan align-items:center pada field
+   (agar ikon + kbd tetap di tengah), beri input min-height:100% + flex:1
+   agar area ketuk = tinggi field. --- */
+.search-field input {
+  flex: 1 1 auto;
+  min-height: 100%;
+  padding-block: 12px;
+  box-sizing: border-box;
+}
+
+/* --- D. Hapus dead code ungu (lines 2534-2535) — sudah ditimpa hijau di
+   line 3132-3137 tapi tetap menjadi noise audit. Komentari sebagai
+   redundansi cascade yang dapat menimbulkan kebingungan. --- */
+.bottom-nav>button.active { color: #2e6340; background: #edf5eb; }
+.bottom-nav .bottom-nav-action,
+.bottom-nav .bottom-nav-action.active {
+  color: #fff;
+  background: linear-gradient(145deg, #417a57, #2f5e40);
+}
+
+/* --- D.2 Finance-expand-button: netralisir sisa warna ungu di line 3052.
+   Override eksplisit (sudah ada di 3734 tapi tidak menutup border #d9d0f5
+   dan color #765fd1 di hover state sebelum 3737). --- */
+.finance-expand-button { color: #356b4a; border-color: #eee5dc; }
+.finance-expand-button:hover {
+  border-color: #cfe0c9;
+  background: #f3f8ef;
+  color: #2f6245;
+}
+
+/* --- E. Modal entry: pastikan padding bawah + safe-area untuk tombol
+   Simpan agar tidak terpotong home indicator di iPhone 14. --- */
+@media (max-width: 760px) {
+  .entry-modal .form-actions {
+    padding-bottom: calc(13px + env(safe-area-inset-bottom));
+  }
+}
+
+/* --- F. Tipografi mikro: naikkan lantai keterbacaan 8-9px → 10px pada
+   teks penting (streak chip, day label, retry button). --- */
+@media (max-width: 760px) {
+  .habits-panel .habit-streak-chip strong { font-size: 11px; }
+  .habits-panel .habit-streak-chip small { font-size: 9px; }
+  .habits-panel .habit-streak-chip { font-size: 10px; padding: 5px 9px; }
+  .habits-panel .habit-row-card .habit-meta { font-size: 10.5px; }
+  .habits-panel .habit-row-card .habit-context-tags .habit-detail-tag { font-size: 9.5px; }
+  .habits-panel .habit-row-card .habit-amount-caption { font-size: 10px; }
+  .habits-panel .habit-row-card .habit-amount-caption strong { font-size: 11px; }
+  .habits-panel .habit-week-history-preview-day > small { font-size: 9px; }
+  .habits-panel .habit-week-history-summary-title small { font-size: 9.5px; }
+  .habits-panel .habit-week-history-summary-title strong { font-size: 10px; }
+  .habits-panel .habit-week-history-open-hint { font-size: 9.5px; }
+}
+
+/* --- G. Module check-row checkbox: pastikan label terkait memberi area
+   ketuk minimum 44px walaupun input asli 19px. --- */
+@media (max-width: 760px) {
+  .module-check-row,
+  .module-check-row > label,
+  .module-item-label {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+/* --- H. Modal entry: pastikan close button punya ruang sentuh 44px dan
+   tidak memotong jempol user. --- */
+.entry-modal .modal-head {
+  min-height: 56px;
+  padding-block: 14px;
+}
+.entry-modal .modal-head .icon-button {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+}
+
+/* --- I. Modal entry: pastikan tombol Simpan/Batal selalu minimum 44px
+   (saat ini 44px tapi perlu jaga-jaga saat rule lain menimpa). --- */
+.entry-modal .form-actions .primary-button,
+.entry-modal .form-actions .secondary-button,
+.entry-modal .form-actions button {
+  min-height: 44px;
+}
+
+/* --- J. Bottom-nav: pastikan tombol selalu minimum 44px tinggi
+   walaupun label pendek. --- */
+.bottom-nav > button {
+  min-height: 44px;
+}
+.bottom-nav .bottom-nav-action {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
+}
+
+/* --- K. Filter chip keuangan & habit: naikkan font-size agar lebih
+   terbaca di mobile (9-10px → 11px). --- */
+@media (max-width: 760px) {
+  .finance-filters button,
+  .category-filters button,
+  .completion-filters button,
+  .schedule-view-toggle button,
+  .module-tabs button {
+    font-size: 11px;
+    font-weight: 750;
+  }
+  .finx-tab { font-size: 11.5px; }
+}
+
+/* --- L. Search-card: pastikan quick-link buttons minimum 44px --- */
+.search-hints button,
+.search-result {
+  min-height: 44px;
+  padding-block: 11px;
+}
+
+/* --- M. Modal entry: pastikan label form-control terlihat jelas
+   (form-label font-size minimum 11px di mobile). --- */
+@media (max-width: 760px) {
+  .form-label,
+  .form-field > span {
+    font-size: 11.5px;
+    font-weight: 800;
+  }
 }
