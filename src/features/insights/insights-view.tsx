@@ -3,10 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ArrowDownLeft, ArrowUpRight, BrainCircuit, Flame, HeartPulse, Moon, RefreshCw, Sprout, Target, WalletCards } from "lucide-react";
 import type { Habit } from "@/lib/types";
+import type { Transaction } from "@/lib/types";
 import type { DailyCheckin } from "@/lib/module-types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
-import { growthStory } from "@/lib/storytelling";
+import { growthStory, shortRupiah } from "@/lib/storytelling";
+import { crossoverStory, type CrossoverDay } from "@/lib/insight-patterns";
 import { RichText } from "@/components/ui/rich-text";
 import { PageIntro, SectionHeading, StatCard } from "@/components/ui/primitives";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
@@ -41,8 +43,8 @@ const insightIcon: Record<InsightType, typeof BrainCircuit> = {
   mood: HeartPulse, sleep: Moon, performance: Target, streak: Flame, finance: WalletCards,
 };
 
-export function InsightsView({ habits, income, expense, checkins = [] }: {
-  habits: Habit[]; income: number; expense: number; checkins?: DailyCheckin[];
+export function InsightsView({ habits, income, expense, transactions, checkins = [] }: {
+  habits: Habit[]; income: number; expense: number; transactions: Transaction[]; checkins?: DailyCheckin[];
 }) {
   const { completed, total } = summarizeHabits(habits);
   const categorySummary = habitCategories.map((category) => ({
@@ -188,6 +190,67 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
     return () => { cancelled = true; };
   }, [aiRetryVersion]);
 
+  // =========================================================================
+  // Pola menarik (v0.13) — crossover kebiasaan × pengeluaran, 30 hari terakhir.
+  // Riwayat habit diambil lewat snapshot terpisah (bebas dari tab periode),
+  // transaksi dari workspace. Hari ini memakai state client (live).
+  // =========================================================================
+  const [patternSnapshot, setPatternSnapshot] = useState<{
+    key: string;
+    records: HabitHistoryRecord[];
+    error: boolean;
+  } | null>(null);
+  const patternDates = useMemo(() => {
+    const anchor = new Date(todayKey + "T12:00:00+07:00");
+    return Array.from({ length: 30 }, (_, index) => {
+      const date = new Date(anchor);
+      date.setUTCDate(date.getUTCDate() - (29 - index));
+      return date.toISOString().slice(0, 10);
+    });
+  }, [todayKey]);
+  const patternMonths = useMemo(
+    () => [...new Set(patternDates.map((date) => date.slice(0, 7)))],
+    [patternDates],
+  );
+  const patternRequestKey = patternMonths.join(",") + ":" + historyRetryVersion;
+  const patternLoading = patternSnapshot?.key !== patternRequestKey;
+  const patternError = !patternLoading && Boolean(patternSnapshot?.error);
+
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all(patternMonths.map(async (month) => {
+      const response = await fetch("/api/history?month=" + encodeURIComponent(month), { cache: "no-store" });
+      if (!response.ok) throw new Error("Habit history unavailable");
+      const payload = await response.json() as { records?: HabitHistoryRecord[] };
+      return Array.isArray(payload.records) ? payload.records : [];
+    }))
+      .then((recordsByMonth) => {
+        if (!cancelled) setPatternSnapshot({ key: patternRequestKey, records: recordsByMonth.flat(), error: false });
+      })
+      .catch(() => {
+        if (!cancelled) setPatternSnapshot({ key: patternRequestKey, records: [], error: true });
+      });
+    return () => { cancelled = true; };
+  }, [patternRequestKey, patternMonths]);
+
+  const crossover = useMemo(() => {
+    if (patternLoading || patternError || !patternSnapshot) return null;
+    const stepsByDate = new Map<string, number>();
+    patternSnapshot.records.forEach((record) => stepsByDate.set(record.date, (stepsByDate.get(record.date) ?? 0) + 1));
+    // Hari ini: pakai maksimum (server vs state client) agar live-check-in terhitung.
+    stepsByDate.set(todayKey, Math.max(stepsByDate.get(todayKey) ?? 0, habits.filter((habit) => habit.completed).length));
+    const days: CrossoverDay[] = patternDates.map((date) => {
+      const dayTransactions = transactions.filter((transaction) => transaction.date === date);
+      return {
+        date,
+        steps: stepsByDate.get(date) ?? 0,
+        expense: dayTransactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0),
+        tracked: dayTransactions.length > 0,
+      };
+    });
+    return crossoverStory(days);
+  }, [patternLoading, patternError, patternSnapshot, patternDates, transactions, habits, todayKey]);
+
   return (
     <>
       <PageIntro eyebrow="REFLEKSI PERKEMBANGAN" title="Lihat yang sudah tumbuh." subtitle="Ringkasan dari aktivitas, check-in, dan transaksi yang benar-benar tercatat." />
@@ -324,12 +387,29 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
               <span className="sr-only">Rutina sedang menganalisis data.</span>
               {Array.from({ length: 3 }, (_, index) => <div className="insight-ai-skeleton-row" key={index}><span className="skeleton-shimmer" /><div><i className="skeleton-shimmer" /><i className="skeleton-shimmer" /></div></div>)}
             </div>
-          ) : insights.map((item) => {
+          ) : insights.map((item, index) => {
             const Icon = insightIcon[item.type] ?? BrainCircuit;
-            return <article className="insight-ai-item" key={item.id}><span><Icon size={16} /></span><div><strong>{item.title}</strong><p>{item.text}</p></div></article>;
+            // Kunci gabungan id+index: LLM kadang memakai id ganda dalam satu
+            // respons, yang sebelumnya memicu warning "unique key" di React.
+            return <article className="insight-ai-item" key={`${item.id}-${index}`}><span><Icon size={16} /></span><div><strong>{item.title}</strong><p>{item.text}</p></div></article>;
           })}
         </div>
       </section>
+
+      {crossover && (
+        <section className="card card-pad insight-pattern-panel" aria-label="Pola menarik antara habit dan pengeluaran">
+          <SectionHeading title="Pola menarik" caption="Pembacaan silang kebiasaan × pengeluaran · 30 hari terakhir" />
+          <div className="insight-pattern-copy">
+            <h3><RichText text={crossover.headline} /></h3>
+            <p><RichText text={crossover.note} /></p>
+            <div className="insight-pattern-stats">
+              <span><i className="dot active" aria-hidden="true" /><small>Hari aktif</small><strong>{crossover.stats.activeDays} hari · rata-rata Rp{shortRupiah(crossover.stats.activeAvg)}</strong></span>
+              <span><i className="dot quiet" aria-hidden="true" /><small>Hari tenang</small><strong>{crossover.stats.quietDays} hari · rata-rata Rp{shortRupiah(crossover.stats.quietAvg)}</strong></span>
+            </div>
+            <small className="insight-pattern-footnote">Korelasi bukan sebab-akibat — pola ini hanya membaca {crossover.stats.trackedDays} hari yang kamu catat.</small>
+          </div>
+        </section>
+      )}
     </>
   );
 }

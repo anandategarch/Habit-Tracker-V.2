@@ -5,7 +5,7 @@ import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { computeGardenRhythm, consumeShield, shieldAvailableThisWeek, summarizeSeedBank, type GardenRhythm } from "@/lib/garden-rewards";
-import { progressSentence, streakStory, todayStory } from "@/lib/storytelling";
+import { progressSentence, streakStory, todayStory, weeklyStepsStory } from "@/lib/storytelling";
 import { RichText } from "@/components/ui/rich-text";
 import { burstLeaves, useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
@@ -182,13 +182,13 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
     try { window.localStorage.setItem("rutina.v2.garden-theme", gardenTheme); } catch { /* Storage dinonaktifkan. */ }
   }, [gardenTheme, preferencesReady]);
   const focusedHabit = habits.find((habit) => habit.id === focusHabitId && !habit.completed) ?? upcomingHabit;
-  const weeklyMessage = weekly.total === 0
-    ? "Minggu ini masih terbuka. Pilih satu langkah kecil untuk memulainya."
-    : weekly.change > 0
-      ? `Ada ${weekly.change} langkah lebih banyak dibanding pekan sebelumnya. Progres kecilmu mulai terlihat.`
-      : weekly.change < 0
-        ? "Minggu ini berjalan lebih ringan. Kamu tetap boleh bangga sudah meluangkan waktu untuk diri sendiri."
-        : "Kamu sedang menjaga ritme yang sudah dibangun. Lanjutkan dengan cara yang terasa nyaman.";
+  // v0.13 — cerita langkah mingguan: chip tren (↑2) + kalimat insight ber-bold.
+  // Menggantikan pesan perbandingan polos yang datar.
+  const weeklyStory = weeklyStepsStory({
+    total: weekly.total,
+    previousTotal: weekly.previousTotal,
+    ready: weekly.ready,
+  });
   const gardenMilestone = longestStreak >= 30 ? "Akar yang kuat · 30 hari" : longestStreak >= 7 ? "Tunas konsisten · 7 hari" : completed > 0 ? "Tunas pertamamu mulai tumbuh" : "Setiap taman dimulai dari satu benih";
   const weeklyMilestones = [
     { title: "Benih pertama", target: 1, hint: "1 langkah tercatat" },
@@ -420,8 +420,15 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
                 </div>
               </div>
               <div className="weekly-trend-footer">
-                <span className={"weekly-comparison " + (weekly.change > 0 ? "positive" : weekly.change < 0 ? "negative" : "")}>
-                  {weeklyMessage}
+                <span
+                  className={"weekly-comparison " + (weeklyStory.trend?.direction === "up" ? "positive" : weeklyStory.trend?.direction === "down" ? "negative" : "")}
+                >
+                  {weeklyStory.trend && (
+                    <i className={"weekly-comparison-chip " + weeklyStory.trend.direction} aria-hidden="true">
+                      {weeklyStory.trend.label}
+                    </i>
+                  )}
+                  <RichText text={weeklyStory.message} />
                 </span>
                 <button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button>
               </div>

@@ -3076,6 +3076,79 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   .story-art { animation:none; }
   .story-week-bar-track span { animation-duration:.01s; }
   .story-seed { animation-duration:.01s; }
+  .story-archive-panel { animation-duration:.01s; }
+  .story-archive-scrim { animation-duration:.01s; }
+}
+
+/* --------------------------------------------------------------------------
+   Cerita Minggu v1.1 — chip delta (vs pekan sebelumnya), slide waktu,
+   dan arsip cerita (tautan + overlay daftar pekan).
+   -------------------------------------------------------------------------- */
+.story-chip-row { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; max-width:320px; }
+.story-chip.is-strong { border-color:#eedfc8; background:#fdf6e7; color:#8a6a33; }
+.story-chip.delta-up { border-color:rgba(65,122,87,.4); background:#e7f2e4; color:#2f6245; }
+.story-chip.delta-down { border-color:#e8c9b4; background:#fdeee4; color:#a55a32; }
+.story-chip.delta-flat { border-style:dashed; background:transparent; color:#7d8a6f; }
+.story-frame[data-kind="time"] { background:radial-gradient(120% 60% at 85% 0%, rgba(247,250,240,.9), transparent 60%), linear-gradient(168deg,#f4f7ec 0%,#e4efdb 100%); }
+
+/* Arsip cerita — tautan pembuka di bawah kartu cerita. */
+.story-archive-link {
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  width:100%; margin:-6px 0 15px; padding:11px 14px;
+  border:1px dashed rgba(65,122,87,.35); border-radius:16px;
+  background:rgba(255,253,247,.6); color:#4c6a52;
+  font:800 11.5px "Nunito Variable",sans-serif; cursor:pointer;
+  transition:background .18s ease, border-color .18s ease;
+}
+.story-archive-link:hover { background:#fffdf7; border-color:#417a57; }
+.story-archive-link:focus-visible { outline:3px solid #a3c585; outline-offset:2px; }
+
+/* Overlay arsip — dialog daftar pekan yang bisa ditonton ulang. */
+.story-archive { position:fixed; inset:0; z-index:205; display:grid; place-items:center; padding:18px; }
+.story-archive-scrim {
+  position:absolute; inset:0; border:0; padding:0;
+  background:rgba(38,50,40,.5); backdrop-filter:blur(4px);
+  cursor:pointer; animation:rutina-backdrop-in .28s ease both;
+}
+.story-archive-panel {
+  position:relative; z-index:1; width:min(430px,100%);
+  max-height:min(74dvh,640px); display:flex; flex-direction:column; overflow:hidden;
+  border-radius:22px; background:#fffdf7;
+  box-shadow:0 26px 60px rgba(24,42,30,.35);
+  animation:rutina-modal-in .32s var(--ease-spring) both;
+}
+.story-archive-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:16px 16px 6px; }
+.story-archive-kicker {
+  display:block; font-size:9px; font-weight:850; letter-spacing:1.6px;
+  text-transform:uppercase; color:#7d8a6f;
+}
+.story-archive-head strong { color:#2f4a38; font-size:16px; font-weight:900; }
+.story-archive-note { margin:2px 16px 10px; color:#778273; font-size:11px; line-height:1.5; }
+.story-archive-list {
+  overflow-y:auto; display:grid; gap:8px;
+  padding:2px 12px calc(14px + env(safe-area-inset-bottom));
+  scrollbar-width:thin;
+}
+.story-archive-row {
+  display:grid; grid-template-columns:1fr auto;
+  grid-template-areas:"date badge" "preview action";
+  align-items:center; column-gap:10px; text-align:left;
+  padding:12px 14px; border:1px solid #e3ebdc; border-radius:16px;
+  background:#fffdf7; cursor:pointer;
+  transition:transform .18s var(--ease-spring), background .18s ease, border-color .18s ease;
+}
+.story-archive-row:hover { background:#f4f8ef; border-color:#cfe3cc; transform:translateY(-1px); }
+.story-archive-row:focus-visible { outline:3px solid #a3c585; outline-offset:2px; }
+.story-archive-date { grid-area:date; color:#2f4a38; font-size:13px; font-weight:900; }
+.story-archive-preview { grid-area:preview; margin-top:3px; color:#778273; font-size:11px; line-height:1.5; }
+.story-archive-badge {
+  grid-area:badge; justify-self:end; padding:3px 9px; border-radius:99px;
+  background:#417a57; color:#fff; font-size:9px; font-weight:850;
+  letter-spacing:.6px; text-transform:uppercase;
+}
+.story-archive-action {
+  grid-area:action; justify-self:end; display:inline-flex; align-items:center; gap:3px;
+  margin-top:6px; color:#417a57; font-size:11px; font-weight:850;
 }
 
 /* Ritme kebun — kartu perisai / layu (loss aversion + perlindungan). */

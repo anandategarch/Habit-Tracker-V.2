@@ -825,6 +825,26 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 .insight-ai-panel { margin-top: 15px; }
 .insight-ai-item { border-color: #eee6dd; border-radius: 15px; background: #fffaf4; }
 
+/* v0.13 — panel Pola menarik: crossover kebiasaan × pengeluaran (30 hari). */
+.insight-pattern-panel { margin-top: 15px; border-color: #e3ebdc; }
+.insight-pattern-copy h3 {
+  margin:2px 0 6px; color:#304c39;
+  font-size:15.5px; font-weight:900; line-height:1.35;
+}
+.insight-pattern-copy p { margin:0 0 12px; color:#778273; font-size:12px; line-height:1.65; }
+.insight-pattern-stats { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.insight-pattern-stats > span {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 12px; border:1px solid #e3ebdc; border-radius:12px;
+  background:#fffdf7; font-size:11px; color:#778273;
+}
+.insight-pattern-stats small { color:#8b9185; font-weight:750; }
+.insight-pattern-stats strong { color:#2f4a38; font-weight:900; margin-left:2px; }
+.insight-pattern-stats .dot { flex:none; width:9px; height:9px; border-radius:99px; }
+.insight-pattern-stats .dot.active { background:#417a57; }
+.insight-pattern-stats .dot.quiet { background:#e0b98a; }
+.insight-pattern-footnote { display:block; color:#8b9185; font-size:10.5px; line-height:1.5; }
+
 .tree-progress-card {
   border: 1px solid #e4eadb;
   border-radius: 25px;
@@ -1820,9 +1840,19 @@ html[data-theme="dark"] .weekly-trend-badge { color: var(--primary); background:
   margin-top: auto;
   padding-top: 13px;
 }
-.weekly-comparison { color: #899181; font-size: 9px; line-height: 1.4; }
+.weekly-comparison { display:flex; align-items:flex-start; gap:8px; min-width:0; color: #899181; font-size: 9px; line-height: 1.4; }
 .weekly-comparison.positive { color: #4d8b60; font-weight: 750; }
 .weekly-comparison.negative { color: #bf7b63; font-weight: 750; }
+/* v0.13 — chip tren (↑2 / ↓1 / =) sebagai jangkar visual di depan kalimat insight. */
+.weekly-comparison-chip {
+  flex:none; display:inline-grid; place-items:center;
+  min-width:26px; margin-top:-1px; padding:3px 7px;
+  border-radius:9px; font-size:10.5px; font-weight:900;
+  font-variant-numeric:tabular-nums; font-style:normal; line-height:1;
+}
+.weekly-comparison-chip.up { background:#e7f2e4; color:#3a7350; }
+.weekly-comparison-chip.down { background:#fdeee4; color:#a04836; }
+.weekly-comparison-chip.flat { background:#f1efe7; color:#778273; }
 .weekly-add-action {
   display: inline-flex;
   align-items: center;
@@ -2889,6 +2919,17 @@ html[data-theme="dark"] .garden-journey-link:hover { color: #e5f0db; }
 .finance-chart-day { fill: #929488; font-family: inherit; font-size: 10px; font-weight: 650; text-transform: capitalize; }
 .finance-chart-empty { display: flex; align-items: center; gap: 9px; min-height: 96px; color: #8f9689; font-size: 10px; }
 .finance-chart-empty svg { color: #73966a; }
+/* v0.13 — insight hari tanpa catatan pengeluaran di bawah rincian harian. */
+.finance-chart-insight {
+  display:flex; align-items:flex-start; gap:8px;
+  margin:12px 0 0; padding:11px 14px;
+  border:1px solid #e3ebdc; border-radius:14px;
+  background:#f4f8ef; color:#4c6a52;
+  font-size:12px; line-height:1.6;
+}
+.finance-chart-insight::before {
+  content:"🌿"; flex:none; font-size:14px; line-height:1.4;
+}
 
 .finance-analysis-grid { display: grid; grid-template-columns: minmax(0,1.08fr) minmax(0,.92fr); align-items: start; gap: 15px; margin-bottom: 15px; }
 .finance-category-panel, .finance-budget-panel, .finance-transactions-panel { min-width: 0; }

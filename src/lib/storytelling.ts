@@ -1,5 +1,10 @@
 /**
- * Storytelling engine (v0.12) — mengubah data mentah menjadi kalimat insight.
+ * Storytelling engine (v0.13) — mengubah data mentah menjadi kalimat insight.
+ *
+ * v0.13 — lapisan “data storytelling” (insight > angka):
+ * - weeklyStepsStory: chip tren + kalimat insight untuk kartu mingguan.
+ * - financeAnomaly: pendeteksi kategori yang melonjak (naik ≥1,5×).
+ * - noSpendDaysStory: hari tanpa catatan pengeluaran.
  *
  * Prinsip "Sahabat taman, bukan spreadsheet": setiap fungsi mengembalikan
  * teks narasi bergaya obrolan (conversational), dengan penanda **bold** pada
@@ -112,6 +117,66 @@ export function progressSentence(completed: number, total: number): string {
   return `**${completed} dari ${total}** ritual selesai · ${total - completed} lagi menuju bloom.`;
 }
 
+// ---------------------------------------------------------------------------
+// Cerita langkah mingguan (Beranda — kartu "Cerita minggu ini" v2)
+// ---------------------------------------------------------------------------
+
+export interface WeeklyStepsStory {
+  message: string;
+  tone: StoryTone;
+  /** Jangkar visual yang bisa dipindai: ↑2 / ↓1 / =. null = tanpa perbandingan. */
+  trend: { direction: "up" | "down" | "flat"; label: string } | null;
+}
+
+/**
+ * Kalimat insight minggu berjalan vs pekan sebelumnya.
+ * `ready` = riwayat 14 hari berhasil dimuat (perbandingan hanya tampil bila
+ * kedua rentang benar-benar bisa diperiksa — lihat docs/design-system.md).
+ */
+export function weeklyStepsStory(input: {
+  total: number;
+  previousTotal: number;
+  ready: boolean;
+}): WeeklyStepsStory {
+  const { total, previousTotal, ready } = input;
+  if (total === 0) {
+    return {
+      message: "Minggu ini masih terbuka. Pilih **satu langkah kecil** untuk memulainya 🌱",
+      tone: "neutral",
+      trend: null,
+    };
+  }
+  if (!ready) {
+    return {
+      message: `**${total} langkah** sudah tertanam minggu ini — perbandingan pekan lalu menyusul begitu riwayat termuat 🌿`,
+      tone: "neutral",
+      trend: null,
+    };
+  }
+  const change = total - previousTotal;
+  if (change > 0) {
+    return {
+      message: previousTotal === 0
+        ? `Pekan lalu tercatat kosong — pekan ini kamu sudah menanam **${total} langkah**. Awal yang segar 🌿`
+        : `Ada **${change} langkah lebih banyak** dibanding pekan sebelumnya — progres kecilmu mulai terlihat 🌿`,
+      tone: "green",
+      trend: { direction: "up", label: `↑${change}` },
+    };
+  }
+  if (change < 0) {
+    return {
+      message: "Pekan ini berjalan **lebih ringan** — kamu tetap boleh bangga sudah meluangkan waktu untuk dirimu 🌿",
+      tone: "neutral",
+      trend: { direction: "down", label: `↓${-change}` },
+    };
+  }
+  return {
+    message: "Kamu sedang **menjaga ritme** yang sudah dibangun. Lanjutkan dengan cara yang terasa nyaman 🌿",
+    tone: "green",
+    trend: { direction: "flat", label: "=" },
+  };
+}
+
 /** Goal-gradient untuk kartu streak: "1 hari lagi menuju rekor 7 hari 🔥". */
 export function streakStory(streak: number): string {
   const badge = nextStreakBadge(streak);
@@ -160,8 +225,10 @@ export function financeStory(input: {
   budgets: Array<{ category: string; spent: number; limit: number }>;
   topCategory: { category: string; share: number } | null;
   hasTransactions: boolean;
+  /** Hasil financeAnomaly() — opsional; kartu “alarm” kategori melonjak. */
+  anomaly?: FinanceAnomaly | null;
 }): FinanceStory {
-  const { income, expense, prevExpense, budgets, topCategory, hasTransactions } = input;
+  const { income, expense, prevExpense, budgets, topCategory, hasTransactions, anomaly } = input;
 
   if (!hasTransactions) {
     return {
@@ -186,12 +253,17 @@ export function financeStory(input: {
   }
   const net = income - expense;
   if (net > 0) chips.push(`💚 Sisa arus kas **${shortRupiah(net)}** bulan ini`);
+  // Chip alarm anomali — dipasang setelah headline anomali sendiri (agar tidak
+  // menduplikasi kalimat yang sama dua kali di satu banner).
+  const anomalyChip = anomaly
+    ? `⚠️ **${anomaly.category}** naik ${anomaly.multiple}× dari bulan lalu`
+    : null;
 
   if (over) {
     return {
       headline: `Awas — anggaran **${over.category}** lewat batas ${shortRupiah(over.spent - over.limit)} 🔴`,
       note: "Bukan berarti gagal — cukup perlambat pos ini sisa bulan.",
-      chips,
+      chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "rose",
       emoji: "🚨",
     };
@@ -201,9 +273,18 @@ export function financeStory(input: {
     return {
       headline: `Anggaran **${warning.category}** terpakai ${Math.round(warning.spent / warning.limit * 100)}% — hati-hati ya ⚠️`,
       note: `Tersisa **${shortRupiah(remaining)}** untuk sisa bulan ini.`,
-      chips,
+      chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "amber",
       emoji: "⚠️",
+    };
+  }
+  if (anomaly && anomaly.rise >= 50) {
+    return {
+      headline: `Awas — **${anomaly.category}** naik **${anomaly.multiple}×** dari bulan lalu 👀`,
+      note: `Bukan untuk ditakuti — cukup cek apakah pos ini pola baru atau sekali saja.`,
+      chips,
+      tone: "amber",
+      emoji: "🍂",
     };
   }
   if (prevExpense > 0 && expense < prevExpense) {
@@ -211,7 +292,7 @@ export function financeStory(input: {
     return {
       headline: `Pengeluaranmu **turun ${drop}%** dibanding bulan lalu 🎉`,
       note: "Kebiasaan hematmu mulai berakar. Terus rawat.",
-      chips,
+      chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "green",
       emoji: "🌿",
     };
@@ -221,7 +302,7 @@ export function financeStory(input: {
     return {
       headline: `Pengeluaranmu **naik ${rise}%** dari bulan lalu 👀`,
       note: "Coba cek pos terbesar di bawah — mungkin ada yang bisa dirapikan.",
-      chips,
+      chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "amber",
       emoji: "🍂",
     };
@@ -230,7 +311,7 @@ export function financeStory(input: {
     return {
       headline: `Kamu menahan arus keluar dengan baik **bulan ini** 💚`,
       note: `Pemasukan masih lebih besar dari pengeluaran — sisa ${shortRupiah(net)} milikmu.`,
-      chips,
+      chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "green",
       emoji: "🌿",
     };
@@ -238,9 +319,69 @@ export function financeStory(input: {
   return {
     headline: "Pengeluaran **lebih besar** dari pemasukan bulan ini",
     note: "Tidak apa-apa — satu pos kecil dirapikan saja ceritanya berubah.",
-    chips,
+    chips: anomalyChip ? [...chips, anomalyChip] : chips,
     tone: "rose",
     emoji: "🍂",
+  };
+}
+
+/**
+ * Detektor anomali kategori: kategori yang melonjak vs periode sebelumnya.
+ * Syarat jujur (evidence-only): kategori tersebut juga tercatat belanja di
+ * periode sebelumnya (prev > 0), naik ≥ 1,5×, dan minimal Rp50rb — tiga pintu
+ * ini mencegah "naik 2×" dari Rp8rb → Rp16rb yang cuma noise.
+ */
+export interface CategorySpend { category: string; spent: number }
+export interface FinanceAnomaly {
+  category: string;
+  /** "2,1" — sudah diformat id-ID, siap dipakai sebagai "2,1×". */
+  multiple: string;
+  rise: number;
+  current: number;
+  previous: number;
+}
+
+const ANOMALY_MIN_RISE = 1.5;
+const ANOMALY_MIN_SPEND = 50_000;
+
+export function financeAnomaly(input: {
+  current: CategorySpend[];
+  previous: CategorySpend[];
+}): FinanceAnomaly | null {
+  const previousByCategory = new Map(input.previous.map((item) => [item.category, item.spent]));
+  let best: FinanceAnomaly | null = null;
+  for (const item of input.current) {
+    if (item.spent < ANOMALY_MIN_SPEND) continue;
+    const previous = previousByCategory.get(item.category) ?? 0;
+    if (previous <= 0 || item.spent / previous < ANOMALY_MIN_RISE) continue;
+    const candidate: FinanceAnomaly = {
+      category: item.category,
+      multiple: (item.spent / previous).toLocaleString("id-ID", { maximumFractionDigits: 1 }),
+      rise: Math.round((item.spent / previous - 1) * 100),
+      current: item.spent,
+      previous,
+    };
+    if (!best || candidate.rise > best.rise) best = candidate;
+  }
+  return best;
+}
+
+/**
+ * Hari tanpa catatan pengeluaran dalam jendela 7 hari.
+ * Hanya tampil bila jendela itu punya belanja tercatat (totalExpense > 0) dan
+ * jumlah harinya masuk akal (1–5) — 6–7 hari hening berarti data kurang,
+ * bukan dompet berhemat.
+ */
+export function noSpendDaysStory(input: {
+  days: Array<{ expense: number }>;
+  totalExpense: number;
+}): { message: string } | null {
+  const quietDays = input.days.filter((day) => day.expense === 0).length;
+  if (input.totalExpense <= 0 || quietDays < 1 || quietDays > 5) return null;
+  return {
+    message: quietDays === 1
+      ? "Ada **1 hari** tanpa catatan pengeluaran — dompetmu berterima kasih 🌿"
+      : `Ada **${quietDays} hari** tanpa catatan pengeluaran — dompetmu berterima kasih 🌿`,
   };
 }
 

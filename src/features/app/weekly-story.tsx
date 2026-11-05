@@ -7,14 +7,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { BookOpenText, ChevronRight, Pause, Play, X } from "lucide-react";
+import { BookOpenText, ChevronRight, History, Pause, Play, X } from "lucide-react";
 import type { DailyCheckin } from "@/lib/module-types";
 import type { Transaction } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { getBloomDays, getSeedBank } from "@/lib/garden-rewards";
+import { RichText } from "@/components/ui/rich-text";
 import {
-  buildStorySlides, buildWeeklyStoryMetrics, getLastWeekRange, isStorySeen, markStorySeen,
-  type StoryHabitRecord, type StorySlide, type StoryWeekRange,
+  buildStorySlides, buildWeeklyStoryMetrics, formatStoryRangeLabel, getStoryWeeks, isStorySeen, markStorySeen,
+  type StoryHabitRecord, type StoryProgressRecord, type StorySlide, type StoryWeekRange, type WeeklyStoryMetrics,
 } from "@/lib/weekly-story";
 
 const SLIDE_MS: Record<StorySlide["kind"], number> = {
@@ -23,6 +24,7 @@ const SLIDE_MS: Record<StorySlide["kind"], number> = {
   bloom: 7500,
   finance: 8500,
   checkin: 7500,
+  time: 7500,
   closing: 9000,
 };
 
@@ -32,6 +34,7 @@ const CHAPTER_LABEL: Record<StorySlide["kind"], string> = {
   bloom: "Kebun",
   finance: "Keuangan",
   checkin: "Dirimu",
+  time: "Waktu",
   closing: "Penutup",
 };
 
@@ -134,6 +137,25 @@ function StoryArt({ kind }: { kind: StorySlide["kind"] }) {
       </svg>
     );
   }
+  if (kind === "time") {
+    return (
+      <svg className="story-art" viewBox="0 0 200 130" aria-hidden="true">
+        <ellipse cx="100" cy="118" rx="58" ry="7" fill="#e3d9bd" opacity=".55" />
+        <path d="M100 84 C100 66 99 48 101 32" stroke="#5e8b5a" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+        <path d="M100 62 C80 62 68 50 71 34 C89 35 100 46 100 62Z" fill="#7fb069" />
+        <path d="M101 50 C102 30 116 20 133 24 C135 44 120 52 101 50Z" fill="#5c9a69" />
+        <path d="M100 84 L100 114" stroke="#5e8b5a" strokeWidth="3" strokeLinecap="round" />
+        <path d="M100 92 C88 96 80 104 78 112 Q92 108 100 100Z" fill="#8fbd77" />
+        <path d="M142 66 C142 44 128 28 108 24" stroke="#d9a28a" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeDasharray="2 7" />
+        <circle cx="108" cy="24" r="4.6" fill="#f5d9a8" stroke="#d9a28a" strokeWidth="1.5" />
+        <path d="M156 44 l2.2 4.6 5 .7 -3.6 3.4 .8 4.9 -4.4-2.4 -4.4 2.4 .8-4.9 -3.6-3.4 5-.7Z" fill="#f5d9a8" />
+        <g fill="#f2a48c">
+          <circle cx="44" cy="30" r="3" />
+          <circle cx="58" cy="18" r="2.2" />
+        </g>
+      </svg>
+    );
+  }
   // closing
   return (
     <svg className="story-art" viewBox="0 0 200 130" aria-hidden="true">
@@ -189,7 +211,13 @@ function StorySlideView({ slide, onCta }: { slide: StorySlide; onCta: () => void
             </div>
           ))}
         </div>
-        <span className="story-chip">{slide.activeDays}/7 hari aktif</span>
+        <div className="story-chip-row">
+          <span className="story-chip">{slide.activeDays}/7 hari aktif</span>
+          {slide.strongestLabel && <span className="story-chip is-strong">🌿 {slide.strongestLabel}</span>}
+          {slide.compare && (
+            <span className={`story-chip delta-${slide.compare.tone}`}><RichText text={slide.compare.label} /></span>
+          )}
+        </div>
         <p className="story-note">{slide.message}</p>
       </div>
     );
@@ -228,6 +256,9 @@ function StorySlideView({ slide, onCta }: { slide: StorySlide; onCta: () => void
         {slide.topCategory && (
           <span className="story-chip">Terbesar: {slide.topCategory} · {formatCompactRupiah(slide.topCategoryAmount)}</span>
         )}
+        {slide.compare && (
+          <span className={`story-chip delta-${slide.compare.tone}`}><RichText text={slide.compare.label} /></span>
+        )}
         <p className="story-note">{slide.message}</p>
       </div>
     );
@@ -243,7 +274,28 @@ function StorySlideView({ slide, onCta }: { slide: StorySlide; onCta: () => void
           <span>mood rata-rata · terasa {slide.moodWord}</span>
         </div>
         <span className="story-chip">Tidur rata-rata {slide.avgSleep.toLocaleString("id-ID", { maximumFractionDigits: 1 })} jam/hari</span>
+        {slide.compare && (
+          <span className={`story-chip delta-${slide.compare.tone}`}><RichText text={slide.compare.label} /></span>
+        )}
         <p className="story-note">{slide.message}</p>
+      </div>
+    );
+  }
+  if (slide.kind === "time") {
+    return (
+      <div className="story-view time">
+        <StoryArt kind="time" />
+        <span className="story-kicker">WAKTU UNTUK DIRMU</span>
+        <h2 className="story-title">{slide.headline}</h2>
+        <div className="story-hero-number">
+          <strong>{slide.minutes}</strong>
+          <span>menit tercatat pekan lalu</span>
+        </div>
+        <div className="story-chip-row">
+          {slide.hoursLabel && <span className="story-chip">{slide.hoursLabel}</span>}
+          <span className="story-chip">{slide.days} hari berdurasi</span>
+        </div>
+        <p className="story-note"><RichText text={slide.message} /></p>
       </div>
     );
   }
@@ -403,48 +455,68 @@ function StoryViewer({ slides, weekKey, onClose }: {
 }
 
 // ---------------------------------------------------------------------------
-// Kartu pintasan di dashboard + pengumpul data.
+// Kartu pintasan di dashboard + pengumpul data + arsip cerita.
 // ---------------------------------------------------------------------------
 
-type RecordsState = { records: StoryHabitRecord[]; ok: boolean } | null;
+const ARCHIVE_DEPTH = 4; // pekan lalu + 3 pekan arsip; pekan ke-5 hanya pembanding.
+
+type RecordsState = { records: StoryHabitRecord[]; progress: StoryProgressRecord[]; ok: boolean } | null;
+
+function isHabitRecord(item: unknown): item is StoryHabitRecord {
+  return Boolean(item && typeof item === "object" &&
+    typeof (item as StoryHabitRecord).habitId === "string" &&
+    typeof (item as StoryHabitRecord).title === "string" &&
+    typeof (item as StoryHabitRecord).date === "string");
+}
+
+function isProgressRecord(item: unknown): item is StoryProgressRecord {
+  return Boolean(item && typeof item === "object" &&
+    typeof (item as StoryProgressRecord).habitId === "string" &&
+    typeof (item as StoryProgressRecord).title === "string" &&
+    typeof (item as StoryProgressRecord).date === "string" &&
+    typeof (item as StoryProgressRecord).timeSpentMinutes === "number");
+}
 
 export function WeeklyStorySection({ transactions, checkins }: {
   transactions: Transaction[];
   checkins: DailyCheckin[];
 }) {
-  const [range] = useState<StoryWeekRange>(() => getLastWeekRange(todayISO()));
+  // 5 rentang: [pekan lalu, 3 pekan arsip, 1 pembanding arsip terakhir].
+  const [ranges] = useState<StoryWeekRange[]>(() => getStoryWeeks(todayISO(), ARCHIVE_DEPTH + 1));
   const [recordsState, setRecordsState] = useState<RecordsState>(null);
-  const [seen, setSeen] = useState(true);
-  const [open, setOpen] = useState(false);
+  const [seenKeys, setSeenKeys] = useState<Record<string, boolean>>({});
+  const [viewingKey, setViewingKey] = useState<string | null>(null);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   const [seedVersion, setSeedVersion] = useState(0);
 
-  // Riwayat habit minggu lalu dari server (bisa dua bulan kalender).
+  // Riwayat habit + durasi dari server — mencakup SEMUA rentang arsip
+  // (biasanya berbagi bulan kalender yang sama, jadi tetap hemat permintaan).
   useEffect(() => {
     let cancelled = false;
-    const months = [...new Set([range.start.slice(0, 7), range.end.slice(0, 7)])];
+    const months = [...new Set(ranges.flatMap((range) => [range.start.slice(0, 7), range.end.slice(0, 7)]))];
     void Promise.all(months.map(async (month) => {
       const response = await fetch(`/api/history?month=${encodeURIComponent(month)}`, { cache: "no-store" });
       if (!response.ok) throw new Error("history unavailable");
-      const payload = await response.json() as { records?: unknown };
-      return Array.isArray(payload.records)
-        ? payload.records.filter((item): item is StoryHabitRecord =>
-            Boolean(item && typeof item === "object" &&
-              typeof (item as StoryHabitRecord).habitId === "string" &&
-              typeof (item as StoryHabitRecord).title === "string" &&
-              typeof (item as StoryHabitRecord).date === "string"))
-        : [];
+      const payload = await response.json() as { records?: unknown; progress?: unknown };
+      return {
+        records: Array.isArray(payload.records) ? payload.records.filter(isHabitRecord) : [],
+        progress: Array.isArray(payload.progress) ? payload.progress.filter(isProgressRecord) : [],
+      };
     }))
       .then((byMonth) => {
         if (cancelled) return;
-        const within = byMonth.flat().filter((record) => record.date >= range.start && record.date <= range.end);
-        setRecordsState({ records: within, ok: true });
+        setRecordsState({
+          records: byMonth.flatMap((month) => month.records),
+          progress: byMonth.flatMap((month) => month.progress),
+          ok: true,
+        });
       })
       .catch(() => {
         if (cancelled) return;
-        setRecordsState({ records: [], ok: false });
+        setRecordsState({ records: [], progress: [], ok: false });
       });
     return () => { cancelled = true; };
-  }, [range]);
+  }, [ranges]);
 
   // Benih baru bisa masuk saat aplikasi terbuka — segarkan pratinjau kartu.
   useEffect(() => {
@@ -453,35 +525,65 @@ export function WeeklyStorySection({ transactions, checkins }: {
     return () => window.removeEventListener("rutina:seed-added", onSeedAdded);
   }, []);
 
-  const metrics = useMemo(() => {
+  const metricsByKey = useMemo(() => {
     if (!recordsState) return null;
-    return buildWeeklyStoryMetrics({
-      range,
-      habitRecords: recordsState.records,
-      historyAvailable: recordsState.ok,
-      transactions,
-      seeds: getSeedBank(),
-      bloomDays: getBloomDays(),
-      checkins,
+    const map = new Map<string, WeeklyStoryMetrics>();
+    ranges.forEach((range) => {
+      const inRange = (date: string) => date >= range.start && date <= range.end;
+      map.set(range.weekKey, buildWeeklyStoryMetrics({
+        range,
+        habitRecords: recordsState.records.filter((record) => inRange(record.date)),
+        historyAvailable: recordsState.ok,
+        transactions,
+        seeds: getSeedBank(),
+        bloomDays: getBloomDays(),
+        checkins,
+        progress: recordsState.progress.filter((record) => inRange(record.date)),
+      }));
     });
+    return map;
     // seedVersion memaksa pembacaan ulang seed bank (localStorage).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recordsState, transactions, checkins, range, seedVersion]);
+  }, [recordsState, transactions, checkins, ranges, seedVersion]);
 
   useEffect(() => {
-    if (metrics) setSeen(isStorySeen(metrics.range.weekKey));
-  }, [metrics]);
+    if (!metricsByKey) return;
+    const next: Record<string, boolean> = {};
+    metricsByKey.forEach((metrics, key) => { next[key] = isStorySeen(key); });
+    setSeenKeys(next);
+  }, [metricsByKey]);
 
-  const slides = useMemo(() => (metrics ? buildStorySlides(metrics) : []), [metrics]);
+  const primaryRange = ranges[0];
+  const archiveRanges = ranges.slice(1, ARCHIVE_DEPTH);
+  const primaryMetrics = metricsByKey?.get(primaryRange.weekKey) ?? null;
 
-  if (!metrics || !metrics.hasActivity) return null;
+  const slidesFor = (key: string): StorySlide[] => {
+    const metrics = metricsByKey?.get(key);
+    if (!metrics) return [];
+    const index = ranges.findIndex((range) => range.weekKey === key);
+    const previous = index >= 0 && index + 1 < ranges.length
+      ? metricsByKey?.get(ranges[index + 1].weekKey)
+      : undefined;
+    return buildStorySlides(metrics, previous);
+  };
+
+  const watch = (key: string) => {
+    markStorySeen(key);
+    setSeenKeys((current) => ({ ...current, [key]: true }));
+    setArchiveOpen(false);
+    setViewingKey(key);
+  };
+
+  if (!primaryMetrics || !primaryMetrics.hasActivity) return null;
 
   const previewBits = [
-    metrics.steps > 0 ? `${metrics.steps} langkah` : "",
-    metrics.seeds.length > 0 ? `${metrics.seeds.length} benih` : "",
-    metrics.finance.count > 0 ? `${metrics.finance.count} catatan uang` : "",
-    metrics.checkin.count > 0 ? `${metrics.checkin.count} check-in` : "",
+    primaryMetrics.steps > 0 ? `${primaryMetrics.steps} langkah` : "",
+    primaryMetrics.seeds.length > 0 ? `${primaryMetrics.seeds.length} benih` : "",
+    primaryMetrics.finance.count > 0 ? `${primaryMetrics.finance.count} catatan uang` : "",
+    primaryMetrics.checkin.count > 0 ? `${primaryMetrics.checkin.count} check-in` : "",
   ].filter(Boolean).join(" · ");
+
+  const archiveHasContent = archiveRanges.some((range) => metricsByKey?.get(range.weekKey)?.hasActivity);
 
   return (
     <>
@@ -489,25 +591,105 @@ export function WeeklyStorySection({ transactions, checkins }: {
         <span className="story-card-icon"><BookOpenText size={20} /></span>
         <div className="story-card-copy">
           <span className="small-label">CERITA MINGGU LALU</span>
-          <strong>{metrics.rangeLabel}</strong>
+          <strong>{primaryMetrics.rangeLabel}</strong>
           <p>{previewBits}. Tonton ringkasan singkat pekanmu.</p>
         </div>
-        {!seen && <span className="story-card-badge">Baru</span>}
+        {!seenKeys[primaryRange.weekKey] && <span className="story-card-badge">Baru</span>}
         <button
           type="button"
           className="story-card-open"
-          onClick={() => { markStorySeen(metrics.range.weekKey); setSeen(true); setOpen(true); }}
+          onClick={() => watch(primaryRange.weekKey)}
         >
           Tonton <ChevronRight size={14} />
         </button>
       </section>
-      {open && (
+      {archiveHasContent && (
+        <button type="button" className="story-archive-link" onClick={() => setArchiveOpen(true)}>
+          <History size={14} /> Arsip cerita · {archiveRanges.length} pekan sebelumnya
+        </button>
+      )}
+      {archiveOpen && metricsByKey && (
+        <StoryArchiveOverlay
+          ranges={archiveRanges}
+          metricsByKey={metricsByKey}
+          seenKeys={seenKeys}
+          onWatch={watch}
+          onClose={() => setArchiveOpen(false)}
+        />
+      )}
+      {viewingKey && (
         <StoryViewer
-          slides={slides}
-          weekKey={metrics.range.weekKey}
-          onClose={() => setOpen(false)}
+          slides={slidesFor(viewingKey)}
+          weekKey={viewingKey}
+          onClose={() => setViewingKey(null)}
         />
       )}
     </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Overlay arsip — daftar pekan-pekan sebelumnya yang bisa ditonton ulang.
+// ---------------------------------------------------------------------------
+
+function StoryArchiveOverlay({ ranges, metricsByKey, seenKeys, onWatch, onClose }: {
+  ranges: StoryWeekRange[];
+  metricsByKey: Map<string, WeeklyStoryMetrics>;
+  seenKeys: Record<string, boolean>;
+  onWatch: (weekKey: string) => void;
+  onClose: () => void;
+}) {
+  const [mounted, setMounted] = useState(false);
+  const closeRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    closeRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+  if (!mounted) return null;
+  return createPortal(
+    <div className="story-archive" role="dialog" aria-modal="true" aria-label="Arsip cerita minggu">
+      <button type="button" className="story-archive-scrim" aria-label="Tutup arsip" tabIndex={-1} onClick={onClose} />
+      <div className="story-archive-panel">
+        <header className="story-archive-head">
+          <div>
+            <span className="story-archive-kicker">ARSIP CERITAMU</span>
+            <strong>Tonton ulang pekan-pekanmu</strong>
+          </div>
+          <button type="button" className="story-icon-button" ref={closeRef} onClick={onClose} aria-label="Tutup arsip">
+            <X size={16} />
+          </button>
+        </header>
+        <p className="story-archive-note">Setiap pekan dirangkai ulang dari catatan aslimu — pekan sepi pun boleh ditonton.</p>
+        <div className="story-archive-list">
+          {ranges.map((range) => {
+            const metrics = metricsByKey.get(range.weekKey);
+            const preview = metrics
+              ? [
+                metrics.steps > 0 ? `${metrics.steps} langkah` : "",
+                metrics.finance.count > 0 ? `${metrics.finance.count} catatan uang` : "",
+                metrics.checkin.count > 0 ? `${metrics.checkin.count} check-in` : "",
+              ].filter(Boolean).join(" · ")
+              : "";
+            return (
+              <button type="button" className="story-archive-row" key={range.weekKey} onClick={() => onWatch(range.weekKey)}>
+                <span className="story-archive-date">{metrics?.rangeLabel ?? formatStoryRangeLabel(range)}</span>
+                {!seenKeys[range.weekKey] && <span className="story-archive-badge">Baru</span>}
+                <span className="story-archive-preview">{metrics?.hasActivity ? preview || "pekan dengan catatan minim" : "sepi — belum ada catatan"}</span>
+                <span className="story-archive-action">Tonton <ChevronRight size={13} /></span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }

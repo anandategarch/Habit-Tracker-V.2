@@ -20,7 +20,7 @@ import {
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
-import { budgetNarrative, categoryEmoji, financeStory } from "@/lib/storytelling";
+import { budgetNarrative, categoryEmoji, financeAnomaly, financeStory, noSpendDaysStory } from "@/lib/storytelling";
 import { RichText } from "@/components/ui/rich-text";
 import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
@@ -72,6 +72,18 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     return transactions
       .filter((transaction) => transaction.type === "expense" && transaction.date.slice(0, 7) === previousKey)
       .reduce((total, transaction) => total + transaction.amount, 0);
+  }, [transactions, monthKey]);
+  // Distribusi kategori bulan sebelumnya — bahan detektor anomali (financeAnomaly).
+  const previousMonthCategories = useMemo(() => {
+    const [year, month] = monthKey.split("-").map(Number);
+    const previous = new Date(Date.UTC(year, month - 2, 1));
+    const previousKey = `${previous.getUTCFullYear()}-${String(previous.getUTCMonth() + 1).padStart(2, "0")}`;
+    const totals = new Map<TransactionCategory, number>();
+    transactions.forEach((transaction) => {
+      if (transaction.type !== "expense" || transaction.date.slice(0, 7) !== previousKey) return;
+      totals.set(transaction.category, (totals.get(transaction.category) ?? 0) + transaction.amount);
+    });
+    return [...totals.entries()].map(([category, spent]) => ({ category, spent }));
   }, [transactions, monthKey]);
   // Angka roll-up (Fase 1): rupiah "menghitung naik" saat masuk tab keuangan.
   const animatedNet = useCountUp(net, 900, 160);
@@ -132,6 +144,8 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const weeklyScale = Math.max(1, ...cashflowWeek.flatMap((day) => [day.income, day.expense]));
   const weeklyIncome = cashflowWeek.reduce((sum, day) => sum + day.income, 0);
   const weeklyExpense = cashflowWeek.reduce((sum, day) => sum + day.expense, 0);
+  // Hari tanpa catatan pengeluaran dalam jendela 7 hari (insight hemat).
+  const noSpendMessage = noSpendDaysStory({ days: cashflowWeek, totalExpense: weeklyExpense });
   const spendByCategory = useMemo(
     () => summarizeBudgets(monthTransactions, budgets),
     [monthTransactions, budgets],
@@ -194,6 +208,11 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const topCategoryShare = expenseCategories.length > 0 && categorySpendTotal > 0
     ? { category: expenseCategories[0].category, share: expenseCategories[0].spent / categorySpendTotal * 100 }
     : null;
+  // Alarm anomali: kategori yang melonjak vs bulan sebelumnya (naik ≥1,5×).
+  const anomaly = useMemo(
+    () => financeAnomaly({ current: expenseCategories, previous: previousMonthCategories }),
+    [expenseCategories, previousMonthCategories],
+  );
   const moneyStory = financeStory({
     income: displayedIncome,
     expense: displayedExpense,
@@ -201,6 +220,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     budgets: spendByCategory.map((budget) => ({ category: budget.category, spent: budget.spent, limit: budget.limit })),
     topCategory: topCategoryShare,
     hasTransactions: monthTransactions.length > 0,
+    anomaly,
   });
 
   return (
@@ -379,6 +399,11 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
               </div>
             ))}
           </div>
+        )}
+        {noSpendMessage && (
+          <p className="finance-chart-insight" role="status">
+            <RichText text={noSpendMessage.message} />
+          </p>
         )}
       </section>
 

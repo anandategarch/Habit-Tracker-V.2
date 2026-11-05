@@ -3,1079 +3,174 @@ $ next dev
 - Local:         http://localhost:3000
 - Network:       http://21.0.9.95:3000
 - Environments: .env
-✓ Ready in 288ms
-✓ Running next.config.ts took 43ms
+✓ Ready in 268ms
+✓ Running next.config.ts took 35ms
 
 ○ Compiling / ...
- GET / 200 in 293ms (next.js: 130ms, application-code: 163ms)
- GET /manifest.webmanifest 200 in 80ms (next.js: 63ms, application-code: 17ms)
+ GET / 200 in 264ms (next.js: 101ms, application-code: 163ms)
+ GET /api/history?month=2026-10 200 in 101ms (next.js: 37ms, application-code: 64ms)
+ GET / 200 in 29ms (next.js: 1.0ms, application-code: 28ms)
+ GET / 200 in 27ms (next.js: 1.1ms, application-code: 26ms)
+ GET /manifest.webmanifest 200 in 55ms (next.js: 48ms, application-code: 7ms)
 ⚠ The Edge Runtime is deprecated. You can use the "nodejs" runtime instead. Learn more: https://nextjs.org/docs/messages/edge-runtime-deprecated
- GET /api/workspace?today=2026-11-05 503 in 90ms (next.js: 48ms, application-code: 42ms)
- GET /api/modules 503 in 22ms (next.js: 17ms, application-code: 4ms)
- GET /icons/icon-192 200 in 341ms
- GET /api/modules 503 in 4ms (next.js: 1.3ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 24ms (next.js: 18ms, application-code: 6ms)
- GET /api/history?month=2026-11 503 in 9ms (next.js: 0.8ms, application-code: 8ms)
- GET / 200 in 89ms (next.js: 0.8ms, application-code: 89ms)
- GET /manifest.webmanifest 200 in 8ms (next.js: 1.4ms, application-code: 7ms)
- GET /icons/icon-192 200 in 51ms
- GET /api/workspace?today=2026-11-05 503 in 37ms (next.js: 31ms, application-code: 6ms)
- GET / 200 in 35ms (next.js: 1.2ms, application-code: 33ms)
- GET /api/workspace?today=2026-11-05 503 in 7ms (next.js: 1.1ms, application-code: 6ms)
- GET /api/modules 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/modules 503 in 4ms (next.js: 1.2ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET / 200 in 28ms (next.js: 0.9ms, application-code: 27ms)
- GET / 200 in 27ms (next.js: 0.9ms, application-code: 27ms)
- GET /api/modules 503 in 8ms (next.js: 1.0ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/modules 503 in 7ms (next.js: 0.8ms, application-code: 6ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 1.2ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.4ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /icons/icon-192 200 in 345ms
+ GET /api/workspace?today=2026-11-05 200 in 39ms (next.js: 28ms, application-code: 12ms)
+ GET /api/modules 200 in 111ms (next.js: 103ms, application-code: 8ms)
+ GET /api/modules 200 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 8ms (next.js: 1.7ms, application-code: 6ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /manifest.webmanifest 200 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 24ms (next.js: 0.8ms, application-code: 24ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/history?month=2026-09 200 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 7ms (next.js: 0.6ms, application-code: 7ms)
+ GET /api/history?month=2026-11 200 in 11ms (next.js: 0.6ms, application-code: 11ms)
+ GET /api/history?month=2026-10 200 in 37ms (next.js: 0.8ms, application-code: 36ms)
+ GET /api/history?month=2026-11 200 in 18ms (next.js: 9ms, application-code: 9ms)
+ GET /api/history?month=2026-09 200 in 9ms (next.js: 0.9ms, application-code: 8ms)
+ GET /api/history?month=2026-10 200 in 8ms (next.js: 0.6ms, application-code: 7ms)
+ GET /api/history?month=2026-11 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /icons/icon-192 200 in 61ms
  GET / 200 in 32ms (next.js: 1.0ms, application-code: 31ms)
- GET /api/modules 503 in 4ms (next.js: 1.1ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 1.3ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 10ms (next.js: 1.0ms, application-code: 9ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET / 200 in 41ms (next.js: 1.1ms, application-code: 40ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.4ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET / 200 in 57ms (next.js: 1.0ms, application-code: 56ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 1.0ms, application-code: 5ms)
- GET /icons/icon-192 200 in 120ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /manifest.webmanifest 200 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/modules 503 in 4ms (next.js: 1.4ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 2ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 27ms (next.js: 22ms, application-code: 5ms)
- GET /icons/icon-192 200 in 17ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 0.9ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 16ms (next.js: 0.8ms, application-code: 15ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 2.0ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 23ms (next.js: 0.7ms, application-code: 22ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 0.6ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 11ms (next.js: 0.6ms, application-code: 10ms)
- GET /api/ai-insights 503 in 34ms (next.js: 24ms, application-code: 10ms)
- GET /api/ai-insights 503 in 8ms (next.js: 1.3ms, application-code: 7ms)
- GET /api/growth 503 in 62ms (next.js: 52ms, application-code: 10ms)
- GET /api/growth 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET / 200 in 36ms (next.js: 0.8ms, application-code: 35ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.9ms, application-code: 2ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/modules 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.4ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
-✓ Compiled in 846ms
-✓ Compiled in 709ms
-✓ Compiled in 287ms
-✓ Compiled in 465ms
-✓ Compiled in 344ms
-✓ Compiled in 298ms
-✓ Compiled in 620ms
-✓ Compiled in 879ms
-✓ Compiled in 240ms
- GET /api/history?month=2026-11 503 in 7ms (next.js: 1.0ms, application-code: 6ms)
- GET /api/history?month=2026-10 503 in 7ms (next.js: 0.8ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 27ms (next.js: 4ms, application-code: 23ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 1.1ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 0.8ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 9ms (next.js: 2ms, application-code: 7ms)
- GET / 200 in 80ms (next.js: 3ms, application-code: 77ms)
- GET / 200 in 95ms (next.js: 1.1ms, application-code: 94ms)
- GET /manifest.webmanifest 200 in 38ms (next.js: 0.9ms, application-code: 37ms)
- GET /icons/icon-192 200 in 72ms
- GET /api/workspace?today=2026-11-05 503 in 33ms (next.js: 1.4ms, application-code: 31ms)
- GET /api/modules 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/modules 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 0.7ms, application-code: 6ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 3ms, application-code: 3ms)
- GET /icons/icon-192 200 in 18ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 1.0ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 1.3ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET / 200 in 38ms (next.js: 0.9ms, application-code: 37ms)
- GET /manifest.webmanifest 200 in 7ms (next.js: 1.1ms, application-code: 5ms)
- GET /icons/icon-192 200 in 42ms
- GET /api/workspace?today=2026-11-05 503 in 7ms (next.js: 2ms, application-code: 5ms)
- GET /api/modules 503 in 5ms (next.js: 0.9ms, application-code: 5ms)
- GET /api/modules 503 in 10ms (next.js: 0.8ms, application-code: 9ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 11ms (next.js: 0.8ms, application-code: 10ms)
- GET /manifest.webmanifest 200 in 35ms (next.js: 0.9ms, application-code: 34ms)
- GET /icons/icon-192 200 in 18ms
- GET /api/workspace?today=2026-11-05 503 in 8ms (next.js: 1.7ms, application-code: 6ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.1ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 15ms (next.js: 1.1ms, application-code: 14ms)
- GET /api/history?month=2026-11 503 in 14ms (next.js: 1.9ms, application-code: 13ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 6ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 7ms (next.js: 1.3ms, application-code: 6ms)
- GET /api/history?month=2026-11 503 in 15ms (next.js: 1.3ms, application-code: 14ms)
- GET /api/history?month=2026-10 503 in 18ms (next.js: 0.9ms, application-code: 17ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 3ms, application-code: 5ms)
- GET /api/ai-insights 503 in 8ms (next.js: 0.7ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 0.6ms, application-code: 8ms)
- GET /api/ai-insights 503 in 8ms (next.js: 0.7ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.6ms, application-code: 8ms)
- GET /api/growth 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/growth 503 in 8ms (next.js: 1.6ms, application-code: 6ms)
-✓ Compiled in 503ms
- GET / 200 in 36ms (next.js: 1.2ms, application-code: 34ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 12ms (next.js: 0.9ms, application-code: 11ms)
- GET /api/modules 503 in 14ms (next.js: 1.8ms, application-code: 12ms)
- GET /api/modules 503 in 13ms (next.js: 1.1ms, application-code: 12ms)
- GET /api/history?month=2026-11 503 in 16ms (next.js: 1.0ms, application-code: 15ms)
- GET /api/history?month=2026-10 503 in 7ms (next.js: 0.9ms, application-code: 7ms)
- GET /manifest.webmanifest 200 in 8ms (next.js: 0.9ms, application-code: 7ms)
- GET /icons/icon-192 200 in 42ms
- GET /icons/icon-192 200 in 21ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
-✓ Compiled in 563ms
- GET / 200 in 50ms (next.js: 2ms, application-code: 48ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.9ms, application-code: 4ms)
- GET /icons/icon-192 200 in 19ms
- GET /api/workspace?today=2026-11-05 503 in 49ms (next.js: 16ms, application-code: 34ms)
- GET /api/modules 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/modules 503 in 3ms (next.js: 0.8ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /icons/icon-192 200 in 16ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 34ms (next.js: 0.7ms, application-code: 34ms)
- GET /api/history?month=2026-10 503 in 14ms (next.js: 1.4ms, application-code: 13ms)
- GET /api/history?month=2026-11 503 in 13ms (next.js: 1.5ms, application-code: 11ms)
- GET / 200 in 63ms (next.js: 1.5ms, application-code: 62ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /icons/icon-192 200 in 65ms
- GET /api/workspace?today=2026-11-05 503 in 10ms (next.js: 0.8ms, application-code: 9ms)
- GET /api/modules 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 12ms (next.js: 3ms, application-code: 10ms)
- GET /api/modules 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 32ms (next.js: 5ms, application-code: 27ms)
- GET /manifest.webmanifest 200 in 3ms (next.js: 0.9ms, application-code: 3ms)
- GET /icons/icon-192 200 in 29ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.6ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
-✓ Compiled in 438ms
- GET / 200 in 74ms (next.js: 0.8ms, application-code: 73ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 1.1ms, application-code: 4ms)
- GET /icons/icon-192 200 in 88ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/modules 503 in 6ms (next.js: 0.7ms, application-code: 5ms)
- GET /api/modules 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 1.2ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 1.9ms, application-code: 4ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 0.8ms, application-code: 5ms)
- GET /icons/icon-192 200 in 16ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 1.2ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.9ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 13ms (next.js: 7ms, application-code: 6ms)
- GET /api/history?month=2026-11 503 in 7ms (next.js: 0.7ms, application-code: 6ms)
- GET / 200 in 47ms (next.js: 0.8ms, application-code: 46ms)
- GET /manifest.webmanifest 200 in 33ms (next.js: 0.8ms, application-code: 32ms)
- GET /icons/icon-192 200 in 57ms
- GET /api/workspace?today=2026-11-05 503 in 7ms (next.js: 1.6ms, application-code: 5ms)
- GET /api/modules 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/modules 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 0.8ms, application-code: 5ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /icons/icon-192 200 in 15ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 0.8ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 11ms (next.js: 3ms, application-code: 8ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET / 200 in 45ms (next.js: 1.7ms, application-code: 43ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 0.7ms, application-code: 5ms)
- GET /icons/icon-192 200 in 20ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.7ms, application-code: 5ms)
- GET /api/modules 503 in 29ms (next.js: 0.9ms, application-code: 28ms)
- GET /api/history?month=2026-10 503 in 7ms (next.js: 3ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.5ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.6ms, application-code: 5ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /icons/icon-192 200 in 20ms
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 0.9ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 12ms (next.js: 1.3ms, application-code: 11ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 0.8ms, application-code: 5ms)
-✓ Compiled in 294ms
- GET / 200 in 36ms (next.js: 0.8ms, application-code: 35ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 1.3ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 9ms (next.js: 0.7ms, application-code: 9ms)
- GET /api/modules 503 in 12ms (next.js: 0.5ms, application-code: 11ms)
- GET /icons/icon-192 200 in 40ms
- GET /api/history?month=2026-10 503 in 8ms (next.js: 0.9ms, application-code: 7ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.8ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 3ms, application-code: 2ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /icons/icon-192 200 in 16ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.5ms, application-code: 3ms)
- GET / 200 in 30ms (next.js: 0.9ms, application-code: 30ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 1.6ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 2ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 7ms (next.js: 0.8ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 24ms (next.js: 2.0ms, application-code: 22ms)
- GET /api/history?month=2026-10 503 in 19ms (next.js: 3ms, application-code: 16ms)
- GET /api/history?month=2026-11 503 in 7ms (next.js: 1.0ms, application-code: 6ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET / 200 in 33ms (next.js: 0.9ms, application-code: 32ms)
- GET / 200 in 34ms (next.js: 1.1ms, application-code: 33ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 7ms (next.js: 3ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET / 200 in 30ms (next.js: 0.8ms, application-code: 29ms)
- GET / 200 in 37ms (next.js: 0.9ms, application-code: 37ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.5ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.8ms, application-code: 2ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
-⚠ Blocked cross-origin request to Next.js dev resource /__nextjs_font/geist-latin.woff2 from "preview-chat-dfe7fde7-bdb6-4fec-84da-bea5479f69fd.space-z.ai".
-Cross-origin access to Next.js dev resources is blocked by default for safety.
-
-To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
-
-// next.config.js
-module.exports = {
-  allowedDevOrigins: ['preview-chat-dfe7fde7-bdb6-4fec-84da-bea5479f69fd.space-z.ai'],
-}
-
-Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /design-lab 200 in 76ms (next.js: 19ms, application-code: 57ms)
- GET /manifest.webmanifest 200 in 12ms (next.js: 3ms, application-code: 9ms)
- GET /icons/icon-192 200 in 91ms
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /icons/icon-192 200 in 14ms
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET / 200 in 27ms (next.js: 0.8ms, application-code: 26ms)
- GET / 200 in 26ms (next.js: 0.8ms, application-code: 25ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/modules 503 in 2ms (next.js: 0.5ms, application-code: 1.9ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.5ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET / 200 in 33ms (next.js: 0.8ms, application-code: 32ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 7ms (next.js: 1.3ms, application-code: 6ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /design-lab 200 in 55ms (next.js: 1.2ms, application-code: 54ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 0.9ms, application-code: 5ms)
- GET /icons/icon-192 200 in 26ms
- GET /manifest.webmanifest 200 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /icons/icon-192 200 in 14ms
-✓ Compiled in 234ms
- GET /design-lab 200 in 54ms (next.js: 0.8ms, application-code: 53ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /icons/icon-192 200 in 50ms
- GET /manifest.webmanifest 200 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /icons/icon-192 200 in 34ms
- GET / 200 in 28ms (next.js: 0.8ms, application-code: 27ms)
- GET / 200 in 27ms (next.js: 0.9ms, application-code: 26ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2.0ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET / 200 in 26ms (next.js: 0.8ms, application-code: 25ms)
- GET / 200 in 27ms (next.js: 0.8ms, application-code: 26ms)
- GET /api/modules 503 in 5ms (next.js: 1.2ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET / 200 in 32ms (next.js: 1.0ms, application-code: 31ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 0.9ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 1.0ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
-✓ Compiled in 266ms
-✓ Compiled in 364ms
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
-✓ Compiled in 323ms
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/modules 503 in 2ms (next.js: 0.5ms, application-code: 2.0ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.5ms, application-code: 2ms)
-✓ Compiled in 8ms
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
-✓ Compiled in 374ms
- GET /api/history?month=2026-11 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
-✓ Compiled in 6ms
-✓ Compiled in 226ms
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.4ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
-✓ Compiled in 262ms
-⚠ Blocked cross-origin request to Next.js dev resource /__nextjs_original-stack-frames from "preview-chat-dfe7fde7-bdb6-4fec-84da-bea5479f69fd.space-z.ai".
-Cross-origin access to Next.js dev resources is blocked by default for safety.
-
-To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
-
-// next.config.js
-module.exports = {
-  allowedDevOrigins: ['preview-chat-dfe7fde7-bdb6-4fec-84da-bea5479f69fd.space-z.ai'],
-}
-
-Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
-⚠ Blocked cross-origin request to Next.js dev resource /__nextjs_font/geist-mono-latin.woff2 from "preview-chat-dfe7fde7-bdb6-4fec-84da-bea5479f69fd.space-z.ai".
-Cross-origin access to Next.js dev resources is blocked by default for safety.
-
-To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
-
-// next.config.js
-module.exports = {
-  allowedDevOrigins: ['preview-chat-dfe7fde7-bdb6-4fec-84da-bea5479f69fd.space-z.ai'],
-}
-
-Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET /api/modules 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/modules 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET / 200 in 92ms (next.js: 4ms, application-code: 88ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 6ms (next.js: 1.3ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
-✓ Compiled in 507ms
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 200 in 30ms (next.js: 1.2ms, application-code: 28ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-05 200 in 10ms (next.js: 1.5ms, application-code: 9ms)
+ GET /api/modules 200 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /api/modules 200 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 0.9ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 1.3ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 9ms (next.js: 0.9ms, application-code: 8ms)
+ GET /api/history?month=2026-09 200 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 30ms (next.js: 26ms, application-code: 4ms)
+ GET /api/history?month=2026-09 200 in 7ms (next.js: 0.7ms, application-code: 6ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 7ms (next.js: 0.9ms, application-code: 6ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.7ms, application-code: 5ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 0.6ms, application-code: 6ms)
+ GET /api/history?month=2026-11 200 in 19ms (next.js: 6ms, application-code: 13ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/ai-insights 200 in 5.6s (next.js: 20ms, application-code: 5.6s)
+ GET /api/ai-insights 200 in 5.8s (next.js: 0.7ms, application-code: 5.8s)
 ✓ Compiled in 331ms
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 200 in 25ms (next.js: 1.3ms, application-code: 24ms)
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET /api/modules 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.5ms, application-code: 2.0ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.3ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
-✓ Compiled in 726ms
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 200 in 22ms (next.js: 0.8ms, application-code: 21ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
-[browser] Uncaught ReferenceError: todayKey is not defined
-    at DashboardView (src/features/dashboard/dashboard-view.tsx:136:36)
-    at RutinaApp (src/features/app/rutina-app.tsx:661:36)
-    at HomePage (src/app/page.tsx:4:10)
-  134 |       setRhythm(plan);
-  135 |     }
-> 136 |   }, [weekly.ready, weekly.byDate, todayKey, completed]);
-      |                                    ^
-  137 |   const [returning, setReturning] = useState(false);
-  138 |   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
-  139 |   const [preferencesReady, setPreferencesReady] = useState(false);
-✓ Compiled in 777ms
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 200 in 30ms (next.js: 0.9ms, application-code: 29ms)
- GET /api/modules 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 1.4ms, application-code: 5ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
-[browser] Uncaught ReferenceError: todayKey is not defined
-    at DashboardView (src/features/dashboard/dashboard-view.tsx:136:36)
-    at RutinaApp (src/features/app/rutina-app.tsx:661:36)
-    at HomePage (src/app/page.tsx:4:10)
-  134 |       setRhythm(plan);
-  135 |     }
-> 136 |   }, [weekly.ready, weekly.byDate, todayKey, completed]);
-      |                                    ^
-  137 |   const [returning, setReturning] = useState(false);
-  138 |   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
-  139 |   const [preferencesReady, setPreferencesReady] = useState(false);
-✓ Compiled in 254ms
-⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 200 in 24ms (next.js: 1.2ms, application-code: 23ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
-✓ Compiled in 212ms
- GET /api/workspace?today=2026-11-05 500 in 209ms (next.js: 139ms, application-code: 69ms)
- GET /api/workspace?today=2026-11-05 500 in 9ms (next.js: 3ms, application-code: 6ms)
- GET /api/history?month=2026-11 500 in 35ms (next.js: 4ms, application-code: 31ms)
- GET /api/history?month=2026-10 500 in 47ms (next.js: 33ms, application-code: 14ms)
- GET /api/history?month=2026-10 500 in 15ms (next.js: 5ms, application-code: 11ms)
- GET /api/history?month=2026-11 500 in 14ms (next.js: 9ms, application-code: 5ms)
-✓ Compiled in 217ms
-[browser] ./src/features/dashboard/dashboard-view.tsx:93:9
-Error: the name `todayKey` is defined multiple times
-  91 |   const now = new Date();
-  92 |   const todayKey = todayISO();
-> 93 |   const todayKey = todayISO();
-     |         ^^^^^^^^
-  94 |   const dateLabel = new Intl.DateTimeFormat("id-ID", {
-  95 |     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakar...
-  96 |   }).format(now);
-
-Ecmascript file had an error
-
-Import traces:
-  Client Component Browser:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component] 
-[browser] ./src/features/dashboard/dashboard-view.tsx:93:9
-Error: the name `todayKey` is defined multiple times
-  91 |   const now = new Date();
-  92 |   const todayKey = todayISO();
-> 93 |   const todayKey = todayISO();
-     |         ^^^^^^^^
-  94 |   const dateLabel = new Intl.DateTimeFormat("id-ID", {
-  95 |     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakar...
-  96 |   }).format(now);
-
-Ecmascript file had an error
-
-Import traces:
-  Client Component Browser:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component] 
-[browser] ./src/features/dashboard/dashboard-view.tsx:93:9
-Error: the name `todayKey` is defined multiple times
-  91 |   const now = new Date();
-  92 |   const todayKey = todayISO();
-> 93 |   const todayKey = todayISO();
-     |         ^^^^^^^^
-  94 |   const dateLabel = new Intl.DateTimeFormat("id-ID", {
-  95 |     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakar...
-  96 |   }).format(now);
-
-Ecmascript file had an error
-
-Import traces:
-  Client Component Browser:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component] 
-[browser] ./src/features/dashboard/dashboard-view.tsx:93:9
-Error: the name `todayKey` is defined multiple times
-  91 |   const now = new Date();
-  92 |   const todayKey = todayISO();
-> 93 |   const todayKey = todayISO();
-     |         ^^^^^^^^
-  94 |   const dateLabel = new Intl.DateTimeFormat("id-ID", {
-  95 |     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakar...
-  96 |   }).format(now);
-
-Ecmascript file had an error
-
-Import traces:
-  Client Component Browser:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component] 
-[browser] ./src/features/dashboard/dashboard-view.tsx:93:9
-Error: the name `todayKey` is defined multiple times
-  91 |   const now = new Date();
-  92 |   const todayKey = todayISO();
-> 93 |   const todayKey = todayISO();
-     |         ^^^^^^^^
-  94 |   const dateLabel = new Intl.DateTimeFormat("id-ID", {
-  95 |     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakar...
-  96 |   }).format(now);
-
-Ecmascript file had an error
-
-Import traces:
-  Client Component Browser:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Client Component Browser]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./src/features/dashboard/dashboard-view.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Client Component SSR]
-    ./src/features/app/rutina-app.tsx [Server Component]
-    ./src/app/page.tsx [Server Component] 
-✓ Compiled in 0ms
-✓ Compiled in 612ms
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET / 200 in 28ms (next.js: 2ms, application-code: 26ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 4ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET / 200 in 27ms (next.js: 0.8ms, application-code: 27ms)
- GET / 200 in 27ms (next.js: 0.8ms, application-code: 26ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /icons/icon-192 200 in 55ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 5ms (next.js: 3ms, application-code: 2ms)
- GET /api/modules 503 in 3ms (next.js: 0.5ms, application-code: 2ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /icons/icon-192 200 in 38ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.7ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 0.9ms, application-code: 5ms)
- GET / 200 in 42ms (next.js: 0.9ms, application-code: 41ms)
- GET /manifest.webmanifest 200 in 9ms (next.js: 5ms, application-code: 4ms)
- GET /icons/icon-192 200 in 68ms
- GET /api/workspace?today=2026-11-05 503 in 7ms (next.js: 1.0ms, application-code: 6ms)
- GET /api/modules 503 in 5ms (next.js: 1.9ms, application-code: 4ms)
- GET /api/modules 503 in 7ms (next.js: 1.0ms, application-code: 6ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 1.1ms, application-code: 3ms)
- GET /icons/icon-192 200 in 18ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.8ms, application-code: 5ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 0.8ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.5ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 23ms (next.js: 0.6ms, application-code: 22ms)
- GET / 200 in 27ms (next.js: 0.8ms, application-code: 26ms)
- GET / 200 in 22ms (next.js: 0.7ms, application-code: 21ms)
- GET / 200 in 30ms (next.js: 0.9ms, application-code: 29ms)
-✓ Compiled in 419ms
- GET /api/history?month=2026-10 503 in 23ms (next.js: 1.1ms, application-code: 22ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
-✓ Compiled in 2ms
- GET /api/history?month=2026-10 503 in 9ms (next.js: 0.9ms, application-code: 8ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 1.7ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
- GET / 200 in 37ms (next.js: 3ms, application-code: 35ms)
- GET /manifest.webmanifest 200 in 31ms (next.js: 0.8ms, application-code: 30ms)
- GET /icons/icon-192 200 in 70ms
- GET /api/workspace?today=2026-11-05 503 in 12ms (next.js: 3ms, application-code: 9ms)
- GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/modules 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /icons/icon-192 200 in 15ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 14ms (next.js: 6ms, application-code: 8ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 1.2ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 16ms (next.js: 12ms, application-code: 4ms)
-✓ Compiled in 269ms
- GET /api/history?month=2026-11 503 in 11ms (next.js: 5ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 1.0ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 10ms (next.js: 1.5ms, application-code: 9ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.7ms, application-code: 8ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.5ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 4ms)
- GET / 200 in 34ms (next.js: 1.1ms, application-code: 33ms)
- GET /manifest.webmanifest 200 in 9ms (next.js: 1.3ms, application-code: 8ms)
- GET /api/workspace?today=2026-11-05 503 in 8ms (next.js: 4ms, application-code: 4ms)
- GET /api/modules 503 in 16ms (next.js: 7ms, application-code: 9ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 0.6ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 10ms (next.js: 0.7ms, application-code: 10ms)
- GET /api/modules 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /icons/icon-192 200 in 18ms
- GET /manifest.webmanifest 200 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /icons/icon-192 200 in 13ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 0.8ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 10ms (next.js: 2ms, application-code: 8ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 14ms (next.js: 1.1ms, application-code: 13ms)
-✓ Compiled in 546ms
- GET /api/modules 503 in 15ms (next.js: 0.8ms, application-code: 15ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 11ms (next.js: 7ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
-✓ Compiled in 6ms
- GET /api/history?month=2026-10 503 in 11ms (next.js: 0.8ms, application-code: 10ms)
- GET /api/history?month=2026-11 503 in 11ms (next.js: 0.8ms, application-code: 10ms)
- GET /api/history?month=2026-10 503 in 38ms (next.js: 1.0ms, application-code: 37ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.7ms, application-code: 8ms)
- GET /api/history?month=2026-10 503 in 11ms (next.js: 0.8ms, application-code: 10ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 1.1ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 40ms (next.js: 2ms, application-code: 38ms)
- GET /api/modules 503 in 7ms (next.js: 1.3ms, application-code: 6ms)
- GET /api/modules 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET / 200 in 44ms (next.js: 1.6ms, application-code: 42ms)
- GET /manifest.webmanifest 200 in 14ms (next.js: 0.8ms, application-code: 13ms)
- GET /api/workspace?today=2026-11-05 503 in 8ms (next.js: 0.9ms, application-code: 7ms)
- GET /api/modules 503 in 10ms (next.js: 0.7ms, application-code: 9ms)
- GET /api/history?month=2026-10 503 in 13ms (next.js: 0.7ms, application-code: 12ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 1.2ms, application-code: 6ms)
- GET /api/modules 503 in 6ms (next.js: 0.9ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.3ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /icons/icon-192 200 in 17ms
- GET /manifest.webmanifest 200 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /icons/icon-192 200 in 16ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.1ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 9ms (next.js: 2ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 66ms (next.js: 10ms, application-code: 56ms)
- GET /api/history?month=2026-10 503 in 28ms (next.js: 10ms, application-code: 18ms)
- GET /api/history?month=2026-11 503 in 20ms (next.js: 9ms, application-code: 11ms)
-✓ Compiled in 329ms
- GET /api/history?month=2026-10 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 0.9ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET / 200 in 36ms (next.js: 1.5ms, application-code: 34ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 1.1ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 24ms (next.js: 1.7ms, application-code: 22ms)
- GET /api/modules 503 in 14ms (next.js: 8ms, application-code: 7ms)
- GET /api/modules 503 in 40ms (next.js: 31ms, application-code: 9ms)
- GET /api/history?month=2026-10 503 in 9ms (next.js: 1.0ms, application-code: 8ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 0.8ms, application-code: 6ms)
- GET /icons/icon-192 200 in 19ms
- GET /manifest.webmanifest 200 in 11ms (next.js: 4ms, application-code: 7ms)
- GET /icons/icon-192 200 in 17ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 1.3ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.5ms, application-code: 5ms)
- GET / 200 in 33ms (next.js: 1.0ms, application-code: 32ms)
-✓ Compiled in 311ms
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 12ms (next.js: 0.6ms, application-code: 11ms)
- GET / 200 in 36ms (next.js: 1.3ms, application-code: 35ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 0.8ms, application-code: 5ms)
- GET /icons/icon-192 200 in 41ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.4ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.5ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /icons/icon-192 200 in 14ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.6ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
-✓ Compiled in 282ms
- GET /api/history?month=2026-11 503 in 6ms (next.js: 1.3ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
-✓ Compiled in 3ms
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 1.1ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 39ms (next.js: 0.6ms, application-code: 38ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET / 200 in 28ms (next.js: 1.1ms, application-code: 27ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 7ms (next.js: 0.6ms, application-code: 6ms)
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 0.6ms, application-code: 6ms)
- GET /api/modules 503 in 8ms (next.js: 0.6ms, application-code: 7ms)
- GET /api/modules 503 in 7ms (next.js: 1.6ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 1.1ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.5ms, application-code: 5ms)
- GET /icons/icon-192 200 in 16ms
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.5ms, application-code: 4ms)
- GET /icons/icon-192 200 in 33ms
- GET /api/workspace?today=2026-11-05 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 0.9ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.4ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 17ms (next.js: 0.6ms, application-code: 16ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 1.3ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 1.2ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 11ms (next.js: 4ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 16ms (next.js: 0.6ms, application-code: 15ms)
-✓ Compiled in 348ms
-✓ Compiled in 978ms
-✓ Compiled in 290ms
-✓ Compiled in 423ms
-✓ Compiled in 254ms
-✓ Compiled in 5ms
- GET / 200 in 42ms (next.js: 1.4ms, application-code: 40ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /icons/icon-192 200 in 27ms
- GET /api/workspace?today=2026-11-05 503 in 10ms (next.js: 0.8ms, application-code: 10ms)
- GET /api/modules 503 in 8ms (next.js: 0.7ms, application-code: 7ms)
- GET /api/modules 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 29ms (next.js: 24ms, application-code: 4ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 2ms, application-code: 3ms)
- GET /icons/icon-192 200 in 22ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.1ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 9ms (next.js: 0.9ms, application-code: 8ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 2ms, application-code: 6ms)
- GET /api/history?month=2026-10 503 in 20ms (next.js: 12ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 11ms (next.js: 0.8ms, application-code: 10ms)
- GET / 200 in 70ms (next.js: 1.5ms, application-code: 69ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /icons/icon-192 200 in 72ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.2ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.8ms, application-code: 2ms)
- GET /api/modules 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /icons/icon-192 200 in 14ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 14ms (next.js: 0.8ms, application-code: 13ms)
- GET /api/history?month=2026-11 503 in 17ms (next.js: 1.1ms, application-code: 16ms)
- GET /api/history?month=2026-10 503 in 7ms (next.js: 0.7ms, application-code: 6ms)
- GET /api/history?month=2026-11 503 in 10ms (next.js: 0.6ms, application-code: 10ms)
- GET / 200 in 39ms (next.js: 1.6ms, application-code: 37ms)
- GET /manifest.webmanifest 200 in 7ms (next.js: 0.7ms, application-code: 6ms)
- GET /icons/icon-192 200 in 35ms
- GET /api/workspace?today=2026-11-05 503 in 7ms (next.js: 4ms, application-code: 3ms)
- GET /api/modules 503 in 9ms (next.js: 0.6ms, application-code: 8ms)
- GET /api/history?month=2026-10 503 in 26ms (next.js: 0.6ms, application-code: 26ms)
- GET /api/modules 503 in 6ms (next.js: 0.6ms, application-code: 6ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.5ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 19ms (next.js: 8ms, application-code: 12ms)
- GET /icons/icon-192 200 in 39ms
- GET /api/workspace?today=2026-11-05 503 in 6ms (next.js: 1.4ms, application-code: 5ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 14ms (next.js: 0.7ms, application-code: 13ms)
- GET /api/history?month=2026-10 503 in 13ms (next.js: 1.2ms, application-code: 12ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
-✓ Compiled in 268ms
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 7ms (next.js: 0.7ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 32ms (next.js: 0.6ms, application-code: 31ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.5ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 5ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 5ms)
- GET /api/history?month=2026-11 503 in 10ms (next.js: 0.6ms, application-code: 9ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 9ms (next.js: 1.0ms, application-code: 8ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 0.7ms, application-code: 6ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 12ms (next.js: 0.7ms, application-code: 11ms)
- GET /api/history?month=2026-11 503 in 10ms (next.js: 0.7ms, application-code: 10ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 3ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 0.7ms, application-code: 9ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.5ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.6ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 52ms (next.js: 0.6ms, application-code: 52ms)
- GET /api/history?month=2026-10 503 in 7ms (next.js: 0.7ms, application-code: 6ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 24ms (next.js: 0.7ms, application-code: 24ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.7ms, application-code: 8ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET / 200 in 30ms (next.js: 1.3ms, application-code: 29ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 0.7ms, application-code: 5ms)
- GET /icons/icon-192 200 in 31ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/modules 503 in 9ms (next.js: 0.7ms, application-code: 8ms)
- GET /api/modules 503 in 9ms (next.js: 3ms, application-code: 6ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /icons/icon-192 200 in 15ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 1.1ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET / 200 in 38ms (next.js: 1.0ms, application-code: 37ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 3ms, application-code: 4ms)
- GET /icons/icon-192 200 in 33ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/modules 503 in 3ms (next.js: 1.1ms, application-code: 2ms)
- GET /api/modules 503 in 2ms (next.js: 0.5ms, application-code: 1.9ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 1.0ms, application-code: 5ms)
- GET /icons/icon-192 200 in 15ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET / 200 in 34ms (next.js: 0.9ms, application-code: 33ms)
- GET /manifest.webmanifest 200 in 6ms (next.js: 0.9ms, application-code: 5ms)
- GET /icons/icon-192 200 in 65ms
- GET /api/workspace?today=2026-11-05 503 in 8ms (next.js: 2ms, application-code: 6ms)
- GET /api/modules 503 in 5ms (next.js: 1.2ms, application-code: 3ms)
- GET /api/modules 503 in 5ms (next.js: 1.6ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 24ms (next.js: 4ms, application-code: 20ms)
- GET /icons/icon-192 200 in 18ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET / 200 in 38ms (next.js: 0.8ms, application-code: 38ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 1.4ms, application-code: 2ms)
+ GET /api/history?month=2026-10 200 in 33ms (next.js: 0.9ms, application-code: 32ms)
+ GET /api/history?month=2026-11 200 in 15ms (next.js: 0.7ms, application-code: 14ms)
+ GET /api/history?month=2026-10 200 in 6ms (next.js: 0.9ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 12ms (next.js: 5ms, application-code: 7ms)
+ GET /api/history?month=2026-11 200 in 7ms (next.js: 0.9ms, application-code: 6ms)
+ GET /api/history?month=2026-10 200 in 7ms (next.js: 1.0ms, application-code: 6ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
+✓ Compiled in 237ms
+ GET /api/history?month=2026-10 200 in 10ms (next.js: 1.5ms, application-code: 8ms)
+ GET /api/history?month=2026-11 200 in 12ms (next.js: 0.7ms, application-code: 12ms)
+ GET /api/history?month=2026-10 200 in 6ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
+ GET / 200 in 93ms (next.js: 4ms, application-code: 89ms)
+ GET /manifest.webmanifest 200 in 8ms (next.js: 0.8ms, application-code: 8ms)
+ GET /icons/icon-192 200 in 93ms
+ GET /api/workspace?today=2026-11-05 200 in 25ms (next.js: 0.9ms, application-code: 24ms)
+ GET /api/modules 200 in 32ms (next.js: 0.7ms, application-code: 32ms)
+ GET /api/modules 200 in 6ms (next.js: 1.8ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 6ms (next.js: 3ms, application-code: 4ms)
+ GET /manifest.webmanifest 200 in 3ms (next.js: 0.6ms, application-code: 2ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 31ms (next.js: 1.2ms, application-code: 30ms)
+ GET /api/history?month=2026-11 200 in 18ms (next.js: 0.6ms, application-code: 18ms)
+ GET /api/history?month=2026-09 200 in 56ms (next.js: 5ms, application-code: 51ms)
+ GET /api/history?month=2026-10 200 in 6ms (next.js: 0.9ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 10ms (next.js: 0.7ms, application-code: 9ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 0.7ms, application-code: 5ms)
+ GET /api/history?month=2026-10 200 in 40ms (next.js: 0.6ms, application-code: 40ms)
+ GET /api/history?month=2026-09 200 in 11ms (next.js: 4ms, application-code: 7ms)
+ GET /api/history?month=2026-10 200 in 46ms (next.js: 0.8ms, application-code: 46ms)
+ GET /api/history?month=2026-11 200 in 14ms (next.js: 0.7ms, application-code: 14ms)
  GET /icons/icon-192 200 in 20ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/modules 503 in 10ms (next.js: 0.5ms, application-code: 10ms)
- GET /api/modules 503 in 31ms (next.js: 0.5ms, application-code: 30ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 1.5ms, application-code: 3ms)
- GET /icons/icon-192 200 in 15ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
-✓ Compiled in 314ms
- GET /api/history?month=2026-10 503 in 12ms (next.js: 1.0ms, application-code: 11ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 9ms (next.js: 1.6ms, application-code: 8ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 9ms (next.js: 0.6ms, application-code: 8ms)
- GET /api/history?month=2026-10 503 in 29ms (next.js: 1.8ms, application-code: 27ms)
- GET /api/history?month=2026-11 503 in 10ms (next.js: 7ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 12ms (next.js: 1.3ms, application-code: 11ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 1.1ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 14ms (next.js: 0.7ms, application-code: 14ms)
- GET /api/history?month=2026-11 503 in 20ms (next.js: 0.7ms, application-code: 19ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET / 200 in 39ms (next.js: 1.1ms, application-code: 38ms)
- GET /manifest.webmanifest 200 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 1.2ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.5ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.5ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/ai-insights 200 in 4.2s (next.js: 0.6ms, application-code: 4.2s)
+[browser] Each child in a list should have a unique "key" prop.
+
+Check the render method of `InsightsView`. See https://react.dev/link/warning-keys for more information. 
+ GET /api/ai-insights 200 in 4.7s (next.js: 0.7ms, application-code: 4.7s)
+✓ Compiled in 255ms
+ GET /api/history?month=2026-10 200 in 18ms (next.js: 0.9ms, application-code: 17ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 0.7ms, application-code: 5ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 15ms (next.js: 0.9ms, application-code: 14ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/history?month=2026-09 200 in 6ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/history?month=2026-10 200 in 6ms (next.js: 1.0ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 2ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /api/history?month=2026-09 200 in 42ms (next.js: 0.9ms, application-code: 41ms)
+ GET /api/history?month=2026-10 200 in 16ms (next.js: 0.8ms, application-code: 15ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 0.7ms, application-code: 5ms)
+ GET / 200 in 37ms (next.js: 1.8ms, application-code: 35ms)
+ GET /api/workspace?today=2026-11-05 200 in 9ms (next.js: 1.1ms, application-code: 8ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/modules 200 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/modules 200 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 1.5ms, application-code: 5ms)
+ GET /api/history?month=2026-10 200 in 6ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-09 200 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-09 200 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 15ms (next.js: 1.1ms, application-code: 14ms)
+ GET /api/history?month=2026-11 200 in 13ms (next.js: 1.2ms, application-code: 12ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.5ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 30ms (next.js: 0.6ms, application-code: 29ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-11 200 in 14ms (next.js: 0.5ms, application-code: 13ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 46ms (next.js: 0.7ms, application-code: 45ms)
+ GET /api/ai-insights 200 in 7.3s (next.js: 0.6ms, application-code: 7.3s)
+ GET /api/ai-insights 200 in 8.4s (next.js: 0.6ms, application-code: 8.4s)
+ GET /api/habits/cmrbqq4g40004l604cy3nik3x/time-analysis?days=30 200 in 574ms (next.js: 548ms, application-code: 26ms)
+ GET /api/habits/cmrbqr2l50005l604rowc59wm/time-analysis?days=30 200 in 16ms (next.js: 10ms, application-code: 6ms)
+ GET /api/ai-insights 200 in 5.8s (next.js: 1.3ms, application-code: 5.8s)
+✓ Compiled in 318ms
+ GET / 200 in 31ms (next.js: 1.4ms, application-code: 29ms)
+ GET /manifest.webmanifest 200 in 8ms (next.js: 0.9ms, application-code: 7ms)
  GET /icons/icon-192 200 in 34ms
- GET /api/workspace?today=2026-11-05 503 in 5ms (next.js: 2ms, application-code: 3ms)
- GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/modules 503 in 3ms (next.js: 0.5ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /icons/icon-192 200 in 16ms
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-05 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 8ms (next.js: 0.7ms, application-code: 7ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.5ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 9ms (next.js: 2ms, application-code: 7ms)
+ GET /api/workspace?today=2026-11-05 200 in 30ms (next.js: 8ms, application-code: 22ms)
+ GET /api/modules 200 in 18ms (next.js: 1.0ms, application-code: 17ms)
+ GET /api/history?month=2026-10 200 in 43ms (next.js: 0.9ms, application-code: 43ms)
+ GET /api/history?month=2026-11 200 in 6ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/modules 200 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/history?month=2026-10 200 in 5ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/history?month=2026-11 200 in 5ms (next.js: 0.6ms, application-code: 5ms)
+ GET /manifest.webmanifest 200 in 26ms (next.js: 0.7ms, application-code: 25ms)
+ GET /api/history?month=2026-10 200 in 25ms (next.js: 0.8ms, application-code: 24ms)
+ GET /api/history?month=2026-11 200 in 15ms (next.js: 0.6ms, application-code: 14ms)
+ GET /api/history?month=2026-09 200 in 15ms (next.js: 0.6ms, application-code: 14ms)
+ GET /api/history?month=2026-10 200 in 4ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-11 200 in 4ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-09 200 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-10 200 in 50ms (next.js: 0.7ms, application-code: 49ms)
+ GET /api/history?month=2026-10 200 in 14ms (next.js: 3ms, application-code: 12ms)
+ GET /api/history?month=2026-11 200 in 14ms (next.js: 0.7ms, application-code: 13ms)
+ GET /api/history?month=2026-11 200 in 45ms (next.js: 1.4ms, application-code: 43ms)
+ GET /icons/icon-192 200 in 40ms
+ GET / 200 in 35ms (next.js: 1.0ms, application-code: 34ms)

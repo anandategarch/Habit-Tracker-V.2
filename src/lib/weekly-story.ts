@@ -1,9 +1,17 @@
-// Cerita Minggu (Fase 3) — rekap minggu kalender terakhir dalam format
+// Cerita Minggu (Fase 3, v1.1) — rekap minggu kalender terakhir dalam format
 // "story" (Instagram-style). Semua perhitungan murni dan teruji terpisah
 // dari UI: rentang minggu, metrik agregat, dan penyusunan slide.
 //
+// v1.1 — lapisan data storytelling:
+// - buildStorySlides(metrics, previous?): chip “vs pekan sebelumnya”
+//   (langkah / pengeluaran / mood) — hanya bila pekan pembanding tercatat.
+// - strongestDayLabel: hari terkuat pekan (bila ada pemenang jelas).
+// - Slide “time”: menit yang ditanam (dari time_spent_minutes).
+// - getStoryWeeks: rentang beberapa pekan untuk arsip cerita.
+//
 // Sumber data:
 // - habit records  : /api/history (server; bisa gagal saat offline/Turso mati)
+// - progress/durasi: /api/history → progress[] (time_spent_minutes)
 // - transaksi      : workspace (localStorage + sync)
 // - benih & bloom  : garden-rewards ledger (localStorage)
 // - check-in       : modul extended (localStorage)
@@ -55,6 +63,19 @@ export function formatStoryRangeLabel(range: StoryWeekRange): string {
   return `${startLabel} – ${endLabel}`;
 }
 
+/**
+ * Rentang beberapa pekan kalender terakhir yang sudah selesai, dari yang
+ * terbaru ke yang terlama: [pekan lalu, 2 pekan lalu, …]. Dipakai arsip
+ * cerita — pekan terakhir dalam daftar hanya menjadi pembanding.
+ */
+export function getStoryWeeks(today: string, count: number): StoryWeekRange[] {
+  const last = getLastWeekRange(today);
+  return Array.from({ length: Math.max(1, count) }, (_, index) => {
+    const start = isoShift(last.start, -7 * index);
+    return { start, end: isoShift(start, 6), weekKey: isoWeekKey(start) };
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Penanda "sudah ditonton" per minggu (localStorage).
 // ---------------------------------------------------------------------------
@@ -77,6 +98,9 @@ export function markStorySeen(weekKey: string): void {
 
 export interface StoryHabitRecord { habitId: string; title: string; date: string }
 
+/** Baris progress dari /api/history — dipakai untuk “menit yang ditanam”. */
+export interface StoryProgressRecord { habitId: string; title: string; date: string; timeSpentMinutes: number }
+
 export interface WeeklyStoryMetrics {
   range: StoryWeekRange;
   rangeLabel: string;
@@ -97,6 +121,10 @@ export interface WeeklyStoryMetrics {
     topCategoryAmount: number;
   };
   checkin: { count: number; avgMood: number; avgSleep: number };
+  /** Total menit tercatat (timer habit) dalam rentang — 0 bila tak ada. */
+  timeMinutes: number;
+  /** Jumlah hari yang punya durasi tercatat (> 0 menit). */
+  timeDays: number;
   hasActivity: boolean;
 }
 
@@ -110,8 +138,9 @@ export function buildWeeklyStoryMetrics(input: {
   seeds: GardenSeed[];
   bloomDays: string[];
   checkins: DailyCheckin[];
+  progress: StoryProgressRecord[];
 }): WeeklyStoryMetrics {
-  const { range, habitRecords, historyAvailable, transactions, seeds, bloomDays, checkins } = input;
+  const { range, habitRecords, historyAvailable, transactions, seeds, bloomDays, checkins, progress } = input;
   const inRange = (date: string) => date >= range.start && date <= range.end;
 
   const daily = Array.from({ length: 7 }, (_, index) => {
@@ -151,6 +180,16 @@ export function buildWeeklyStoryMetrics(input: {
     ? weekCheckins.reduce((sum, item) => sum + item.sleepHours, 0) / weekCheckins.length
     : 0;
 
+  // Menit yang ditanam: agregasi time_spent_minutes per hari dalam rentang.
+  const minutesByDate = new Map<string, number>();
+  progress.forEach((record) => {
+    if (!inRange(record.date) || record.timeSpentMinutes <= 0) return;
+    minutesByDate.set(record.date, (minutesByDate.get(record.date) ?? 0) + record.timeSpentMinutes);
+  });
+  let timeMinutes = 0;
+  minutesByDate.forEach((total) => { timeMinutes += total; });
+  const timeDays = [...minutesByDate.values()].filter((total) => total > 0).length;
+
   const hasActivity = steps > 0 || weekSeeds.length > 0 || weekBloom.length > 0
     || weekTx.length > 0 || weekCheckins.length > 0;
 
@@ -166,6 +205,8 @@ export function buildWeeklyStoryMetrics(input: {
     seedRareCount: weekSeeds.filter((seed) => seed.rarity !== "umum").length,
     finance: { income, expense, net: income - expense, count: weekTx.length, topCategory, topCategoryAmount },
     checkin: { count: weekCheckins.length, avgMood, avgSleep },
+    timeMinutes,
+    timeDays,
     hasActivity,
   };
 }
@@ -174,12 +215,19 @@ export function buildWeeklyStoryMetrics(input: {
 // Slide cerita — discriminated union yang dirender StoryViewer.
 // ---------------------------------------------------------------------------
 
+/** Chip perbandingan “vs pekan sebelumnya” — label ber-marka **bold**. */
+export interface SlideCompare {
+  label: string;
+  tone: "up" | "down" | "flat";
+}
+
 export type StorySlide =
   | { kind: "cover"; rangeLabel: string; preview: string }
-  | { kind: "rhythm"; steps: number; activeDays: number; daily: WeeklyStoryMetrics["daily"]; headline: string; message: string }
+  | { kind: "rhythm"; steps: number; activeDays: number; daily: WeeklyStoryMetrics["daily"]; headline: string; message: string; strongestLabel: string | null; compare: SlideCompare | null }
   | { kind: "bloom"; bloomDays: number; seeds: GardenSeed[]; headline: string; message: string }
-  | { kind: "finance"; income: number; expense: number; net: number; count: number; topCategory: string | null; topCategoryAmount: number; headline: string; message: string }
-  | { kind: "checkin"; count: number; avgMood: number; avgSleep: number; moodWord: string; headline: string; message: string }
+  | { kind: "finance"; income: number; expense: number; net: number; count: number; topCategory: string | null; topCategoryAmount: number; headline: string; message: string; compare: SlideCompare | null }
+  | { kind: "checkin"; count: number; avgMood: number; avgSleep: number; moodWord: string; headline: string; message: string; compare: SlideCompare | null }
+  | { kind: "time"; minutes: number; days: number; perDay: number; hoursLabel: string | null; headline: string; message: string }
   | { kind: "closing"; rangeLabel: string; recap: string };
 
 function moodWord(avg: number): string {
@@ -190,7 +238,44 @@ function moodWord(avg: number): string {
   return "melelahkan";
 }
 
-export function buildStorySlides(metrics: WeeklyStoryMetrics): StorySlide[] {
+/** Hari terkuat pekan: hanya bila ada pemenang yang jelas (maks ≥ 2 langkah). */
+function strongestDayLabel(daily: WeeklyStoryMetrics["daily"]): string | null {
+  const max = Math.max(...daily.map((day) => day.count));
+  if (max < 2) return null;
+  const top = daily.filter((day) => day.count === max);
+  if (top.length === 1) return `${top[0].label} jadi hari terkuatmu`;
+  if (top.length === 2) return `${top[0].label} & ${top[1].label} jadi hari terkuatmu`;
+  return null; // ≥3 hari seri — terlalu rancu untuk disebut "terkuat".
+}
+
+function rhythmCompare(current: WeeklyStoryMetrics, previous: WeeklyStoryMetrics | undefined): SlideCompare | null {
+  if (!previous || !previous.historyAvailable) return null;
+  const delta = current.steps - previous.steps;
+  if (delta > 0) return { label: `↑${delta} langkah vs pekan sebelumnya`, tone: "up" };
+  if (delta < 0) return { label: `↓${-delta} langkah vs pekan sebelumnya`, tone: "down" };
+  return { label: "≈ sama dengan pekan sebelumnya", tone: "flat" };
+}
+
+function financeCompare(current: WeeklyStoryMetrics, previous: WeeklyStoryMetrics | undefined): SlideCompare | null {
+  if (!previous) return null;
+  const prevExpense = previous.finance.expense;
+  if (prevExpense <= 0 || current.finance.expense <= 0) return null;
+  const pct = Math.round((current.finance.expense / prevExpense - 1) * 100);
+  if (pct <= -5) return { label: `Pengeluaran **turun ${-pct}%** vs pekan lalu`, tone: "up" };
+  if (pct >= 5) return { label: `Pengeluaran **naik ${pct}%** vs pekan lalu`, tone: "down" };
+  return { label: "Pengeluaran **setara** pekan lalu", tone: "flat" };
+}
+
+function checkinCompare(current: WeeklyStoryMetrics, previous: WeeklyStoryMetrics | undefined): SlideCompare | null {
+  if (!previous || previous.checkin.count <= 0 || current.checkin.count <= 0) return null;
+  const delta = current.checkin.avgMood - previous.checkin.avgMood;
+  const label = Math.abs(delta).toLocaleString("id-ID", { maximumFractionDigits: 1 });
+  if (delta >= 0.5) return { label: `Mood **naik ${label}** dari pekan lalu`, tone: "up" };
+  if (delta <= -0.5) return { label: `Mood **turun ${label}** dari pekan lalu`, tone: "down" };
+  return { label: "Mood **sejalan** dengan pekan lalu", tone: "flat" };
+}
+
+export function buildStorySlides(metrics: WeeklyStoryMetrics, previous?: WeeklyStoryMetrics): StorySlide[] {
   const slides: StorySlide[] = [];
 
   const previewBits = [
@@ -233,6 +318,8 @@ export function buildStorySlides(metrics: WeeklyStoryMetrics): StorySlide[] {
       daily: metrics.daily,
       headline,
       message,
+      strongestLabel: metrics.steps > 0 ? strongestDayLabel(metrics.daily) : null,
+      compare: rhythmCompare(metrics, previous),
     });
   }
 
@@ -268,6 +355,7 @@ export function buildStorySlides(metrics: WeeklyStoryMetrics): StorySlide[] {
       topCategoryAmount: metrics.finance.topCategoryAmount,
       headline,
       message,
+      compare: financeCompare(metrics, previous),
     });
   }
 
@@ -280,6 +368,24 @@ export function buildStorySlides(metrics: WeeklyStoryMetrics): StorySlide[] {
       moodWord: moodWord(metrics.checkin.avgMood),
       headline: "Kamu meluangkan waktu untuk dirimu",
       message: `${metrics.checkin.count} check-in tercatat. Rata-rata moodmu terasa ${moodWord(metrics.checkin.avgMood)} dengan tidur ${metrics.checkin.avgSleep.toLocaleString("id-ID", { maximumFractionDigits: 1 })} jam per hari.`,
+      compare: checkinCompare(metrics, previous),
+    });
+  }
+
+  // Menit yang ditanam — hanya bila durasi benar-benar tercatat (evidence gate).
+  if (metrics.timeMinutes > 0) {
+    const perDay = Math.max(1, Math.round(metrics.timeMinutes / Math.max(1, metrics.timeDays || metrics.activeDays || 7)));
+    const hoursLabel = metrics.timeMinutes >= 60
+      ? `≈ ${(metrics.timeMinutes / 60).toLocaleString("id-ID", { maximumFractionDigits: 1 })} jam total`
+      : null;
+    slides.push({
+      kind: "time",
+      minutes: metrics.timeMinutes,
+      days: metrics.timeDays,
+      perDay,
+      hoursLabel,
+      headline: "Waktu kecilmu ikut bertumbuh",
+      message: `Pekan lalu kamu meluangkan **${metrics.timeMinutes} menit** — sekitar **${perDay} menit sehari** untuk dirimu. Pelan-pelan, waktu itu menyuburkan.`,
     });
   }
 
