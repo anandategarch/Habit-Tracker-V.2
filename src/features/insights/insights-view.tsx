@@ -7,6 +7,7 @@ import type { DailyCheckin } from "@/lib/module-types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { PageIntro, SectionHeading, StatCard } from "@/components/ui/primitives";
+import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 const habitCategories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 type InsightType = "mood" | "sleep" | "performance" | "streak" | "finance";
@@ -302,6 +303,7 @@ export function InsightsView({ habits, income, expense, checkins = [] }: {
             <div className="insight-net-row"><span>Bersih</span><strong>{formatCompactRupiah(totalNet)}</strong></div>
           </section>
           <section className="insight-highlight">
+            <BotanicalIllustrationBackdrop variant="insights" />
             <div className="small-label">CATATAN HARI INI</div>
             <div className="insight-number">{completed}<span>/{total}</span></div>
             <p className="section-caption">{total === 0 ? "Belum ada kebiasaan tersimpan." : total === completed ? "Semua kebiasaan hari ini sudah kamu rawat. Luangkan waktu untuk menikmati progresmu." : "Masih ada ruang untuk melanjutkan, satu langkah kecil kapan pun kamu siap."}</p>
