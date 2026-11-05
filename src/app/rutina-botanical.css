@@ -6803,8 +6803,8 @@ html[data-theme="dark"] .finance-compare-insight { color: var(--ink-soft); }
   white-space: nowrap;
 }
 .finx-wallet-row .finx-delete {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
 }
 @media (max-width: 480px) {
@@ -6812,6 +6812,5 @@ html[data-theme="dark"] .finance-compare-insight { color: var(--ink-soft); }
   .finx-wallet-row { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 8px; }
   .finx-wallet-row .finx-row-icon { width: 34px; height: 34px; border-radius: 11px; }
   .finx-wallet-row .finx-row-value { font-size: 10.5px; }
-  .finx-wallet-row .finx-delete { width: 34px; height: 34px; }
 }
 
