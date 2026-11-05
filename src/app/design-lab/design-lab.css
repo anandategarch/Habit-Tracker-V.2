@@ -153,6 +153,24 @@
 .lab-app--E .lab-garden-hero .lab-eyebrow,.lab-app--E .lab-garden-hero p{color:#72826f}.lab-app--E .lab-ring{border-color:#c7d9b8;border-top-color:#6a9b6c;border-right-color:#6a9b6c}
 .lab-app--E .lab-finance-overview>div:first-child{background:linear-gradient(120deg,#fff0e4,#edf4e8);color:#344436;border:1px solid #efe0d2}
 .lab-app--E .lab-finance-overview>div:first-child small,.lab-app--E .lab-finance-overview>div:first-child span{color:#74816f}
+/* ===== Ilustrasi botani hero card (PEDOMAN UI) ===== */
+.lab-hero-art{position:absolute;pointer-events:none;user-select:none;line-height:0;z-index:0}
+.lab-hero-art svg{display:block;width:100%;height:auto}
+.lab-hero-art--dark{right:-6px;bottom:-6px;width:46%;max-width:220px}
+.lab-hero-art--peach{right:-5px;bottom:-6px;width:44%;max-width:180px}
+.lab-hero-art--leaf{right:-5px;bottom:-6px;width:40%;max-width:150px}
+.lab-hero-art--spark{right:12px;top:10px;width:26%;max-width:110px}
+.lab-garden-hero{position:relative}
+.lab-garden-hero>*:not(.lab-hero-art),.lab-editorial-welcome>*:not(.lab-hero-art),.lab-action-hero>*:not(.lab-hero-art),.lab-expressive-hero>*:not(.lab-hero-art),.lab-finance-net>*:not(.lab-hero-art),.lab-finance-garden-net>*:not(.lab-hero-art),.lab-compact-cash>*:not(.lab-hero-art){position:relative;z-index:1}
+.lab-editorial-welcome,.lab-action-hero,.lab-expressive-hero,.lab-finance-net,.lab-finance-garden-net,.lab-compact-cash{position:relative;overflow:hidden}
+.lab-finance-overview>div{position:relative;overflow:hidden}
+.lab-finance-overview>div>*:not(.lab-hero-art){position:relative;z-index:1}
+.lab-finance-action-summary>div{position:relative;overflow:hidden}
+.lab-finance-action-summary>div>*:not(.lab-hero-art){position:relative;z-index:1}
+.lab-finance-garden-net .lab-hero-art--peach{width:132px}
+.lab-compact-cash .lab-hero-art--leaf{width:34%;max-width:120px}
+.lab-garden-hero .lab-hero-art--dark{width:36%;max-width:150px;right:-12px;bottom:-14px}
+.lab-garden-hero .lab-link{color:#dcebcf}
 .lab-mobile-bar{display:none}
 @media(max-width:960px){.lab-app{grid-template-columns:54px minmax(0,1fr)}.lab-sidebar{padding:13px 6px}.lab-brand{justify-content:center;padding:2px 0 18px}.lab-brand>span:last-child,.lab-nav-label,.lab-nav-item>span:last-child,.lab-sidebar-foot>span:last-child{display:none}.lab-nav-item{justify-content:center;padding:10px 4px}.lab-sidebar-foot{justify-content:center}}
 @media(max-width:760px){.design-lab-root{padding:20px 10px 116px}.design-lab-header{display:block}.design-lab-status{display:inline-block;margin-top:13px}.design-lab-brief{grid-template-columns:1fr}.design-lab-controls{align-items:stretch}.design-lab-switch{width:100%}.design-lab-switch button{flex:1;padding:9px 5px;font-size:10px}.design-lab-howto{width:100%;margin:0}.design-lab-grid{grid-template-columns:1fr;gap:13px}.design-lab-variant{border-radius:16px}.design-lab-preview{padding:7px}.lab-app{display:block;min-height:0;border-radius:12px}.lab-sidebar{display:none}.lab-topbar{height:40px;padding:0 9px}.lab-search small,.lab-search kbd,.lab-sync{display:none}.lab-content{padding:11px 9px 19px;gap:9px}.lab-page-heading h2{font-size:18px}.lab-mobile-bar{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-around;height:49px;margin:-1px 0 0;background:rgba(255,253,249,.96);border-top:1px solid #eee7df;color:#777f73}.lab-mobile-bar span{display:grid;justify-items:center;gap:1px;font-size:13px}.lab-mobile-bar small{font-size:7px}.lab-mobile-bar b{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#417a57;color:#fff;font-size:17px}.feedback-launcher{right:10px;bottom:10px}.feedback-editor,.feedback-summary{right:10px;bottom:65px}.feedback-hint{right:10px;bottom:62px}}
