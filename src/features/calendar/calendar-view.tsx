@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock3, Heart, RefreshCw } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { todayISO } from "@/lib/format";
+import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import { EmptyState, IconAction, PageIntro } from "@/components/ui/primitives";
 
 type HistoryRecord = { habitId: string; title: string; date: string };
@@ -147,6 +148,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
         </section>
 
         <aside className="calendar-summary">
+          <BotanicalIllustrationBackdrop variant="calendar" />
           <div className="calendar-summary-top"><span className="small-label">RINGKASAN TANGGAL</span><CalendarDays size={17} /></div>
           <div className="calendar-summary-date">{selectedLabel}</div>
           {historyError ? <div className="calendar-history-note"><strong>Riwayat belum tersedia</strong><p>Catatan tanggal ini akan muncul kembali setelah koneksi pulih.</p></div> : (
