@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
 import { BackupView } from "@/features/settings/backup-view";
-import { ArrowRight, ArrowRightLeft, Check, ImagePlus, Plus, Sprout, Target, Trash2, X } from "lucide-react";
+import { ArrowRight, ArrowRightLeft, Banknote, CalendarClock, Check, CircleDollarSign, ImagePlus, Landmark, ListFilter, PiggyBank, Plus, Repeat, Sprout, Target, Trash2, TrendingDown, TrendingUp, Wallet as WalletGlyph, X } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { formatCompactRupiah, formatDate, todayISO } from "@/lib/format";
 import type { Transaction } from "@/lib/types";
@@ -476,29 +476,260 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
   const todayIncome = todaysTransactions.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
   const todayExpense = todaysTransactions.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
   const weeklyExpense = heatmapDays.slice(-7).reduce((sum, item) => sum + item.amount, 0);
-  return <section className="card card-pad finance-extras">
-    <SectionHeading title="Keuangan lanjutan" caption="Dompet, transfer, transaksi terjadwal, tabungan, aturan kategori, dan pemisahan transaksi." />
-    <div className="module-metrics compact"><Metric label="TOTAL SALDO DOMPET" value={formatCompactRupiah(finance.wallets.reduce((sum, wallet) => sum + walletBalance(wallet), 0))} foot={`${finance.wallets.length} dompet`} /><Metric label="PROYEKSI PENGELUARAN" value={formatCompactRupiah(projection)} foot="Estimasi akhir bulan dari rata-rata harian" /><Metric label="TARGET TABUNGAN" value={String(finance.savingsGoals.length)} foot="Tujuan tersimpan" /></div>
-    <div className="module-tabs">{([{id:"wallets",label:"Dompet"},{id:"transfers",label:"Transfer"},{id:"recurring",label:"Berulang"},{id:"savings",label:"Tabungan"},{id:"rules",label:"Aturan"},{id:"split",label:"Split"},{id:"weekly",label:"Budget mingguan"}] as const).map((item) => <button key={item.id} className={tab === item.id ? "active" : ""} onClick={() => setTab(item.id)}>{item.label}</button>)}</div>
-    {tab === "wallets" && <div className="module-two-col"><form className="form-grid" onSubmit={addWallet}><Field label="Nama dompet"><input className={field} name="name" required placeholder="Tunai, BCA, GoPay" /></Field><Field label="Jenis"><select className={field} name="type"><option value="cash">Tunai</option><option value="bank">Bank</option><option value="e-wallet">E-wallet</option><option value="other">Lainnya</option></select></Field><Field label="Saldo awal (Rp)"><input className={field} name="balance" type="number" min="0" defaultValue="0" /></Field><PrimaryButton type="submit"><Plus size={15} /> Tambah dompet</PrimaryButton></form><div className="module-list">{finance.wallets.length ? finance.wallets.map((wallet) => { const balance = walletBalance(wallet); return <article className="module-item module-inline-meta" key={wallet.id}><div><strong>{wallet.name}</strong><small className="module-muted"> · {WALLET_TYPE_LABELS[wallet.type] ?? wallet.type}</small></div><div><strong className={balance < 0 ? "is-negative" : undefined}>{formatCompactRupiah(balance)}</strong><button className="module-icon-action danger" onClick={() => confirmRemove(`dompet "${wallet.name}"`, () => update((current) => ({ ...current, wallets: remove(current.wallets, wallet.id) })))} aria-label={`Hapus ${wallet.name}`}><Trash2 size={14} /></button></div></article>; }) : <NoData>Tambahkan dompet untuk mencatat saldo dan transfer antar sumber dana.</NoData>}</div></div>}
-    {tab === "transfers" && <div className="module-two-col"><form className="form-grid" onSubmit={addTransfer}><Field label="Dari"><select className={field} name="from" required>{finance.wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</select></Field><Field label="Ke"><select className={field} name="to" required>{finance.wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</select></Field><Field label="Nominal (Rp)"><input className={field} name="amount" type="number" min="1" required /></Field><Field label="Tanggal"><input className={field} name="date" type="date" defaultValue={today()} /></Field><Field label="Catatan"><input className={field} name="note" /></Field><PrimaryButton type="submit" disabled={finance.wallets.length < 2}><ArrowRightLeft size={15} /> Simpan transfer</PrimaryButton></form>{finance.transfers.length ? <div className="module-list">{finance.transfers.map((item) => <article className="module-item" key={item.id}><div className="module-item-top"><strong>{finance.wallets.find((wallet) => wallet.id === item.fromWalletId)?.name || "Dompet dihapus"} → {finance.wallets.find((wallet) => wallet.id === item.toWalletId)?.name || "Dompet dihapus"}</strong><button className="module-icon-action danger" onClick={() => confirmRemove("transfer ini", () => update((current) => ({ ...current, transfers: remove(current.transfers, item.id) })))} aria-label="Hapus transfer"><Trash2 size={14} /></button></div><p>{formatCompactRupiah(item.amount)} · {formatDate(item.date)}</p></article>)}</div> : <NoData>Belum ada transfer tersimpan.</NoData>}</div>}
-    {tab === "recurring" && <div className="module-two-col"><form className="form-grid" onSubmit={addRecurring}><Field label="Nama transaksi berulang"><input className={field} name="title" required /></Field><div className="form-two-columns"><Field label="Jenis"><select className={field} name="type"><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></Field><Field label="Kategori"><select className={field} name="category"><option>Tagihan</option><option>Makanan</option><option>Transportasi</option><option>Lifestyle</option><option>Kesehatan</option><option>Gaji</option><option>Freelance</option><option>Lainnya</option></select></Field></div><Field label="Nominal (Rp)"><input className={field} name="amount" type="number" min="1" required /></Field><div className="form-two-columns"><Field label="Frekuensi"><select className={field} name="frequency"><option value="weekly">Mingguan</option><option value="monthly">Bulanan</option><option value="yearly">Tahunan</option></select></Field><Field label="Tanggal berikutnya"><input className={field} name="nextDate" type="date" defaultValue={today()} /></Field></div><PrimaryButton type="submit"><Plus size={15} /> Jadwalkan transaksi</PrimaryButton></form>{finance.recurring.length ? <div className="module-list">{finance.recurring.map((item) => <article className="module-item" key={item.id}><div className="module-item-top"><div><h3>{item.title}</h3><p>{item.category} · {item.frequency === "weekly" ? "Mingguan" : item.frequency === "yearly" ? "Tahunan" : "Bulanan"} · {formatDate(item.nextDate)}</p><strong>{formatCompactRupiah(item.amount)}</strong></div><button className="module-icon-action danger" onClick={() => confirmRemove(`transaksi berulang "${item.title}"`, () => update((current) => ({ ...current, recurring: remove(current.recurring, item.id) })))} aria-label="Hapus transaksi berulang"><Trash2 size={14} /></button></div><div className="module-inline-meta"><small>{item.active ? (item.nextDate <= today() ? "Jatuh tempo" : "Aktif") : "Dijeda"}</small><div className="module-button-row"><button className={secondary} disabled={!item.active || item.nextDate > today()} onClick={() => {
-  onAddTransactions([{ id: id(), title: item.title, category: item.category as Transaction["category"], type: item.type, amount: item.amount, date: item.nextDate }]);
-  const next = new Date(`${item.nextDate}T00:00:00Z`);
-  if (item.frequency === "weekly") next.setUTCDate(next.getUTCDate() + 7);
-  else if (item.frequency === "monthly") next.setUTCMonth(next.getUTCMonth() + 1);
-  else next.setUTCFullYear(next.getUTCFullYear() + 1);
-  const nextDate = `${next.getUTCFullYear()}-${String(next.getUTCMonth()+1).padStart(2,"0")}-${String(next.getUTCDate()).padStart(2,"0")}`;
-  update((current) => ({ ...current, recurring: current.recurring.map((entry) => entry.id === item.id ? { ...entry, nextDate } : entry) }));
-}}>Catat transaksi</button><button className={secondary} onClick={() => update((current) => ({ ...current, recurring: current.recurring.map((entry) => entry.id === item.id ? { ...entry, active: !entry.active } : entry) }))}>{item.active ? "Jeda" : "Aktifkan"}</button></div></div></article>)}</div> : <NoData>Belum ada transaksi berulang tersimpan.</NoData>}</div>}
-    {tab === "savings" && <div className="module-two-col"><form className="form-grid" onSubmit={addSavings}><Field label="Nama tujuan tabungan"><input className={field} name="title" required /></Field><div className="form-two-columns"><Field label="Target (Rp)"><input className={field} name="target" type="number" min="1" required /></Field><Field label="Sudah terkumpul (Rp)"><input className={field} name="saved" type="number" min="0" defaultValue="0" /></Field></div><Field label="Tenggat"><input className={field} name="dueDate" type="date" /></Field><PrimaryButton type="submit"><Plus size={15} /> Buat target</PrimaryButton></form>{finance.savingsGoals.length ? <div className="module-list">{finance.savingsGoals.map((goal) => { const progress = Math.min(100, goal.savedAmount / goal.targetAmount * 100); return <article className="module-item" key={goal.id}><div className="module-item-top"><div><h3>{goal.title}</h3><p>{formatCompactRupiah(goal.savedAmount)} / {formatCompactRupiah(goal.targetAmount)}</p></div><button className="module-icon-action danger" onClick={() => confirmRemove(`target tabungan "${goal.title}"`, () => update((current) => ({ ...current, savingsGoals: remove(current.savingsGoals, goal.id) })))} aria-label="Hapus target"><Trash2 size={14} /></button></div><div className="module-progress-track"><span style={{ width: `${progress}%` }} /></div><div className="module-inline-meta"><small>{Math.round(progress)}% {goal.dueDate && `· tenggat ${formatDate(goal.dueDate)}`}</small><button className={secondary} onClick={() => { const amount = Number(window.prompt("Nominal yang ditambahkan (Rp)")); if (amount > 0) update((current) => ({ ...current, savingsGoals: current.savingsGoals.map((item) => item.id === goal.id ? { ...item, savedAmount: item.savedAmount + Math.round(amount) } : item) })); }}>Tambah dana</button></div></article>; })}</div> : <NoData>Belum ada target tabungan tersimpan.</NoData>}</div>}
-    {tab === "rules" && <div className="module-two-col"><form className="form-grid" onSubmit={addRule}><Field label="Kata kunci transaksi"><input className={field} name="keyword" required placeholder="Contoh: Starbucks" /></Field><Field label="Kategori otomatis"><select className={field} name="category"><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lifestyle</option><option>Kesehatan</option><option>Gaji</option><option>Freelance</option><option>Lainnya</option></select></Field><PrimaryButton type="submit"><Plus size={15} /> Tambah aturan</PrimaryButton></form>{finance.categoryRules.length ? <div className="module-list">{finance.categoryRules.map((rule) => <article className="module-item module-inline-meta" key={rule.id}><div><strong>{rule.keyword}</strong><small className="module-muted">→ {rule.category}</small></div><button className="module-icon-action danger" onClick={() => confirmRemove(`aturan "${rule.keyword}"`, () => update((current) => ({ ...current, categoryRules: remove(current.categoryRules, rule.id) })))} aria-label="Hapus aturan"><Trash2 size={14} /></button></article>)}</div> : <NoData>Belum ada aturan kategori tersimpan.</NoData>}</div>}
-    {tab === "split" && <div className="module-two-col"><form className="form-grid" onSubmit={splitTransaction}><Field label="Nama transaksi"><input className={field} name="title" required placeholder="Belanja bersama" /></Field><Field label="Total nominal (Rp)"><input className={field} name="total" type="number" min="1" required /></Field><Field label="Tanggal"><input className={field} name="date" type="date" defaultValue={today()} /></Field><div className="form-two-columns"><Field label="Bagian 1 · kategori"><select className={field} name="firstCategory"><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lifestyle</option><option>Lainnya</option></select></Field><Field label="Bagian 1 · nominal"><input className={field} name="firstAmount" type="number" min="1" required /></Field></div><div className="form-two-columns"><Field label="Bagian 2 · kategori"><select className={field} name="secondCategory"><option>Lifestyle</option><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lainnya</option></select></Field><Field label="Bagian 2 · nominal"><input className={field} name="secondAmount" type="number" min="1" required /></Field></div><PrimaryButton type="submit"><Plus size={15} /> Simpan transaksi split</PrimaryButton></form><div className="module-muted">Transaksi akan dibuat sebagai dua baris pengeluaran yang terhubung oleh satu ID split. Total kedua bagian harus sama dengan total transaksi.</div></div>}
-    {tab === "weekly" && <div className="module-two-col"><form className="form-grid" onSubmit={addWeekly}><Field label="Kategori"><select className={field} name="category"><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lifestyle</option><option>Kesehatan</option><option>Lainnya</option></select></Field><Field label="Batas 7 hari (Rp)"><input className={field} name="limit" type="number" min="0" required /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan budget mingguan</PrimaryButton></form>{finance.weeklyBudgets.length ? <div className="module-list">{finance.weeklyBudgets.map((budget) => { const start = shiftISODate(today(), -6); const spent = transactions.filter((item) => item.type === "expense" && item.category === budget.category && item.date >= start && item.date <= today()).reduce((sum, item) => sum + item.amount, 0); const percent = budget.limit ? Math.round(spent / budget.limit * 100) : (spent ? 100 : 0); return <article className="module-item" key={budget.category}><div className="module-item-top"><strong>{budget.category}</strong><button className="module-icon-action danger" onClick={() => confirmRemove(`budget mingguan ${budget.category}`, () => update((current) => ({ ...current, weeklyBudgets: current.weeklyBudgets.filter((item) => item.category !== budget.category) })))} aria-label="Hapus budget mingguan"><Trash2 size={14} /></button></div><p>{formatCompactRupiah(spent)} / {formatCompactRupiah(budget.limit)} · {percent}%</p><div className="module-progress-track"><span style={{ width: `${Math.min(100, percent)}%` }} /></div></article>; })}</div> : <NoData>Belum ada budget mingguan tersimpan.</NoData>}</div>}
-    <div className="finance-recap"><SectionHeading title="Rekap harian" caption="Pergerakan transaksi dan pengeluaran dalam 7 hari terakhir" /><div className="finance-recap-grid"><div><small>PEMASUKAN HARI INI</small><strong className="income">{formatCompactRupiah(todayIncome)}</strong></div><div><small>PENGELUARAN HARI INI</small><strong className="expense">{formatCompactRupiah(todayExpense)}</strong></div><div><small>PENGELUARAN 7 HARI</small><strong>{formatCompactRupiah(weeklyExpense)}</strong></div></div></div>
-    <div className="finance-heatmap"><SectionHeading title="Spending heatmap" caption="Intensitas pengeluaran harian selama 30 hari terakhir" /><div className="finance-heatmap-grid">{heatmapDays.map((item) => <div key={item.date} className="finance-heatmap-cell" title={`${formatDate(item.date)} · ${formatCompactRupiah(item.amount)}`} aria-label={`${formatDate(item.date)} pengeluaran ${formatCompactRupiah(item.amount)}`} style={{ opacity: item.amount === 0 ? .16 : .25 + item.amount / maxDailySpend * .75 }} />)}</div><div className="finance-heatmap-legend"><span>Lebih rendah</span><i /><i /><i /><i /><span>Lebih tinggi</span></div></div>
-    <div className="wallet-history"><SectionHeading title="Riwayat saldo bersih" caption="Dihitung dari saldo awal, transaksi dan transfer yang ditautkan ke dompet; bukan snapshot manual." />{finance.wallets.length ? <div className="wallet-history-chart">{netWorthHistory.map((item) => { const max = Math.max(1, ...netWorthHistory.map((entry) => Math.abs(entry.amount))); const label = new Intl.DateTimeFormat("id-ID", { month: "short" }).format(new Date(`${item.month}T00:00:00`)); return <div className="wallet-history-column" key={item.month} title={`${formatDate(item.monthEnd)} · ${formatCompactRupiah(item.amount)}`}><strong>{formatCompactRupiah(item.amount)}</strong><div><span style={{ height: `${Math.max(4, Math.abs(item.amount) / max * 100)}%` }} /></div><small>{label}</small></div>; })}</div> : <p className="module-muted">Tambahkan dompet dan tautkan transaksi untuk membangun riwayat saldo.</p>}</div>
-    <div className="module-category-explorer"><SectionHeading title="Eksplorasi kategori" caption="Akumulasi pengeluaran pada bulan berjalan" />{categorySpend.length ? categorySpend.map(([category, amount]) => <div className="module-inline-meta" key={category}><span>{category}</span><strong>{formatCompactRupiah(amount)}</strong></div>) : <p className="module-muted">Belum ada pengeluaran bulan ini.</p>}</div>
+  // ── Turunan presentasi untuk redesain PEDOMAN UI (v2) ──
+  const totalWalletBalance = finance.wallets.reduce((sum, wallet) => sum + walletBalance(wallet), 0);
+  const totalSaved = finance.savingsGoals.reduce((sum, goal) => sum + goal.savedAmount, 0);
+  const savingsTargetTotal = finance.savingsGoals.reduce((sum, goal) => sum + goal.targetAmount, 0);
+  const savingsProgress = savingsTargetTotal ? Math.round(totalSaved / savingsTargetTotal * 100) : 0;
+  const currentNetWorth = netWorthHistory.length ? netWorthHistory[netWorthHistory.length - 1].amount : 0;
+  const previousNetWorth = netWorthHistory.length > 1 ? netWorthHistory[netWorthHistory.length - 2].amount : 0;
+  const netWorthDelta = previousNetWorth > 0 ? Math.round((currentNetWorth - previousNetWorth) / previousNetWorth * 100) : null;
+  const walletTile = (type: Wallet["type"]) => type === "cash" ? "is-peach" : type === "bank" ? "is-leaf" : type === "e-wallet" ? "is-amber" : "is-cream";
+  const walletIcon = (type: Wallet["type"]) => type === "cash" ? <Banknote size={19} /> : type === "bank" ? <Landmark size={19} /> : type === "e-wallet" ? <WalletGlyph size={19} /> : <CircleDollarSign size={19} />;
+
+  return <section className="finx" aria-label="Keuangan lanjutan">
+    <div className="finx-hero">
+      <span className="finx-hero-blob a" aria-hidden="true" />
+      <span className="finx-hero-blob b" aria-hidden="true" />
+      <svg className="finx-hero-art" viewBox="0 0 96 96" aria-hidden="true" fill="none">
+        <rect x="14" y="40" width="68" height="34" rx="12" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.55)" strokeWidth="2.4" />
+        <path d="M14 54h30a6 6 0 0 0 6-6v-2" stroke="rgba(255,255,255,.55)" strokeWidth="2.4" strokeLinecap="round" />
+        <path d="M82 57h8" stroke="rgba(255,255,255,.55)" strokeWidth="2.4" strokeLinecap="round" />
+        <path d="M50 40V27" stroke="rgba(255,255,255,.75)" strokeWidth="2.6" strokeLinecap="round" />
+        <path d="M50 31c-8-2-12-7-12-13 8 0 12 5 12 13z" fill="#EAF3E2" />
+        <path d="M50 28c8-3 11-8 11-14-8 0-11 5-11 14z" fill="#CDE3C4" />
+      </svg>
+      <div className="finx-hero-copy">
+        <small>TOTAL SALDO SEMUA DOMPET</small>
+        <strong>{formatCompactRupiah(totalWalletBalance)}</strong>
+        <div className="finx-hero-meta">{finance.wallets.length} dompet aktif · diperbarui hari ini</div>
+        {netWorthDelta !== null && Math.abs(netWorthDelta) >= 1 && <div className={`finx-trend ${netWorthDelta >= 0 ? "up" : "down"}`}>{netWorthDelta >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}{netWorthDelta >= 0 ? "+" : ""}{netWorthDelta}% vs bulan lalu</div>}
+      </div>
+    </div>
+
+    <div className="finx-stats">
+      <div className="finx-stat">
+        <span className="finx-stat-icon is-amber" aria-hidden="true"><TrendingUp size={20} /></span>
+        <div className="finx-stat-copy"><small>PROYEKSI PENGELUARAN</small><strong>{formatCompactRupiah(projection)}</strong><span>Estimasi akhir bulan</span></div>
+      </div>
+      <div className="finx-stat">
+        <span className="finx-stat-icon is-peach" aria-hidden="true"><PiggyBank size={20} /></span>
+        <div className="finx-stat-copy"><small>TABUNGAN TERKUMPUL</small><strong>{formatCompactRupiah(totalSaved)}</strong><span>{finance.savingsGoals.length} target · {savingsProgress}% tercapai</span></div>
+      </div>
+      <div className="finx-stat">
+        <span className="finx-stat-icon is-leaf" aria-hidden="true"><WalletGlyph size={20} /></span>
+        <div className="finx-stat-copy"><small>PENGELUARAN 7 HARI</small><strong>{formatCompactRupiah(weeklyExpense)}</strong><span>Minggu berjalan</span></div>
+      </div>
+    </div>
+
+    <div className="finx-tabs" role="tablist" aria-label="Fitur keuangan lanjutan">
+      {([{ id: "wallets", label: "Dompet" }, { id: "transfers", label: "Transfer" }, { id: "recurring", label: "Berulang" }, { id: "savings", label: "Tabungan" }, { id: "rules", label: "Aturan" }, { id: "split", label: "Split" }, { id: "weekly", label: "Budget mingguan" }] as const).map((item) => (
+        <button key={item.id} type="button" role="tab" className={`finx-tab ${tab === item.id ? "active" : ""}`} aria-selected={tab === item.id} onClick={() => setTab(item.id)}>{item.label}</button>
+      ))}
+    </div>
+
+    {tab === "wallets" && <div className="finx-panel">
+      <form className="finx-form-card" onSubmit={addWallet}>
+        <div className="finx-card-title"><strong>Buat dompet baru</strong><small>Sumber dana untuk saldo dan transfer</small></div>
+        <Field label="Nama dompet"><input className={field} name="name" required placeholder="Tunai, BCA, GoPay" /></Field>
+        <Field label="Jenis"><select className={field} name="type"><option value="cash">Tunai</option><option value="bank">Bank</option><option value="e-wallet">E-wallet</option><option value="other">Lainnya</option></select></Field>
+        <Field label="Saldo awal (Rp)"><input className={field} name="balance" type="number" min="0" defaultValue="0" /></Field>
+        <PrimaryButton type="submit"><Plus size={15} /> Tambah dompet</PrimaryButton>
+      </form>
+      <div className="finx-list-card">
+        <div className="finx-card-title"><strong>Dompet kamu</strong><small>{finance.wallets.length} dompet tersimpan</small></div>
+        {finance.wallets.length ? <div className="finx-rows">{finance.wallets.map((wallet) => { const balance = walletBalance(wallet); return (
+          <article className="finx-row" key={wallet.id}>
+            <span className={`finx-row-icon ${walletTile(wallet.type)}`} aria-hidden="true">{walletIcon(wallet.type)}</span>
+            <div className="finx-row-copy"><strong>{wallet.name}</strong><small>{WALLET_TYPE_LABELS[wallet.type] ?? wallet.type}</small></div>
+            <div className="finx-row-side">
+              <strong className={`finx-row-value ${balance < 0 ? "is-negative" : ""}`}>{formatCompactRupiah(balance)}</strong>
+              <button className="finx-delete" onClick={() => confirmRemove(`dompet "${wallet.name}"`, () => update((current) => ({ ...current, wallets: remove(current.wallets, wallet.id) })))} aria-label={`Hapus ${wallet.name}`}><Trash2 size={15} /></button>
+            </div>
+          </article>); })}</div> : <NoData>Tambahkan dompet untuk mencatat saldo dan transfer antar sumber dana.</NoData>}
+      </div>
+    </div>}
+
+    {tab === "transfers" && <div className="finx-panel">
+      <form className="finx-form-card" onSubmit={addTransfer}>
+        <div className="finx-card-title"><strong>Catat transfer</strong><small>Pindahkan dana antar dompet</small></div>
+        <Field label="Dari"><select className={field} name="from" required>{finance.wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</select></Field>
+        <Field label="Ke"><select className={field} name="to" required>{finance.wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</select></Field>
+        <Field label="Nominal (Rp)"><input className={field} name="amount" type="number" min="1" required /></Field>
+        <Field label="Tanggal"><input className={field} name="date" type="date" defaultValue={today()} /></Field>
+        <Field label="Catatan"><input className={field} name="note" /></Field>
+        <PrimaryButton type="submit" disabled={finance.wallets.length < 2}><ArrowRightLeft size={15} /> Simpan transfer</PrimaryButton>
+      </form>
+      <div className="finx-list-card">
+        <div className="finx-card-title"><strong>Riwayat transfer</strong><small>{finance.transfers.length} transfer tersimpan</small></div>
+        {finance.transfers.length ? <div className="finx-rows">{finance.transfers.map((item) => (
+          <article className="finx-row" key={item.id}>
+            <span className="finx-row-icon is-leaf" aria-hidden="true"><ArrowRightLeft size={19} /></span>
+            <div className="finx-row-copy"><strong>{finance.wallets.find((wallet) => wallet.id === item.fromWalletId)?.name || "Dompet dihapus"} → {finance.wallets.find((wallet) => wallet.id === item.toWalletId)?.name || "Dompet dihapus"}</strong><small>{formatDate(item.date)}{item.note ? ` · ${item.note}` : ""}</small></div>
+            <div className="finx-row-side">
+              <strong className="finx-row-value">{formatCompactRupiah(item.amount)}</strong>
+              <button className="finx-delete" onClick={() => confirmRemove("transfer ini", () => update((current) => ({ ...current, transfers: remove(current.transfers, item.id) })))} aria-label="Hapus transfer"><Trash2 size={15} /></button>
+            </div>
+          </article>))}</div> : <NoData>Belum ada transfer tersimpan.</NoData>}
+      </div>
+    </div>}
+
+    {tab === "recurring" && <div className="finx-panel">
+      <form className="finx-form-card" onSubmit={addRecurring}>
+        <div className="finx-card-title"><strong>Jadwalkan transaksi berulang</strong><small>Tagihan dan gaji otomatis tercatat</small></div>
+        <Field label="Nama transaksi berulang"><input className={field} name="title" required /></Field>
+        <div className="form-two-columns"><Field label="Jenis"><select className={field} name="type"><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></Field><Field label="Kategori"><select className={field} name="category"><option>Tagihan</option><option>Makanan</option><option>Transportasi</option><option>Lifestyle</option><option>Kesehatan</option><option>Gaji</option><option>Freelance</option><option>Lainnya</option></select></Field></div>
+        <Field label="Nominal (Rp)"><input className={field} name="amount" type="number" min="1" required /></Field>
+        <div className="form-two-columns"><Field label="Frekuensi"><select className={field} name="frequency"><option value="weekly">Mingguan</option><option value="monthly">Bulanan</option><option value="yearly">Tahunan</option></select></Field><Field label="Tanggal berikutnya"><input className={field} name="nextDate" type="date" defaultValue={today()} /></Field></div>
+        <PrimaryButton type="submit"><Plus size={15} /> Jadwalkan transaksi</PrimaryButton>
+      </form>
+      <div className="finx-list-card">
+        <div className="finx-card-title"><strong>Transaksi berulang</strong><small>{finance.recurring.length} jadwal tersimpan</small></div>
+        {finance.recurring.length ? <div className="finx-rows">{finance.recurring.map((item) => (
+          <article className="finx-row" key={item.id}>
+            <span className="finx-row-icon is-peach" aria-hidden="true"><Repeat size={19} /></span>
+            <div className="finx-row-copy"><strong>{item.title}</strong><small>{item.category} · {item.frequency === "weekly" ? "Mingguan" : item.frequency === "yearly" ? "Tahunan" : "Bulanan"} · {formatDate(item.nextDate)}</small></div>
+            <div className="finx-row-side">
+              <span className={`finx-badge ${item.active ? (item.nextDate <= today() ? "due" : "up") : "paused"}`}>{item.active ? (item.nextDate <= today() ? "Jatuh tempo" : "Aktif") : "Dijeda"}</span>
+              <strong className="finx-row-value">{formatCompactRupiah(item.amount)}</strong>
+              <div className="finx-row-buttons">
+                <button className={secondary} disabled={!item.active || item.nextDate > today()} onClick={() => {
+                  onAddTransactions([{ id: id(), title: item.title, category: item.category as Transaction["category"], type: item.type, amount: item.amount, date: item.nextDate }]);
+                  const next = new Date(`${item.nextDate}T00:00:00Z`);
+                  if (item.frequency === "weekly") next.setUTCDate(next.getUTCDate() + 7);
+                  else if (item.frequency === "monthly") next.setUTCMonth(next.getUTCMonth() + 1);
+                  else next.setUTCFullYear(next.getUTCFullYear() + 1);
+                  const nextDate = `${next.getUTCFullYear()}-${String(next.getUTCMonth()+1).padStart(2,"0")}-${String(next.getUTCDate()).padStart(2,"0")}`;
+                  update((current) => ({ ...current, recurring: current.recurring.map((entry) => entry.id === item.id ? { ...entry, nextDate } : entry) }));
+                }}>Catat transaksi</button>
+                <button className={secondary} onClick={() => update((current) => ({ ...current, recurring: current.recurring.map((entry) => entry.id === item.id ? { ...entry, active: !entry.active } : entry) }))}>{item.active ? "Jeda" : "Aktifkan"}</button>
+                <button className="finx-delete" onClick={() => confirmRemove(`transaksi berulang "${item.title}"`, () => update((current) => ({ ...current, recurring: remove(current.recurring, item.id) })))} aria-label={`Hapus ${item.title}`}><Trash2 size={15} /></button>
+              </div>
+            </div>
+          </article>))}</div> : <NoData>Belum ada transaksi berulang tersimpan.</NoData>}
+      </div>
+    </div>}
+
+    {tab === "savings" && <div className="finx-panel">
+      <form className="finx-form-card" onSubmit={addSavings}>
+        <div className="finx-card-title"><strong>Buat target tabungan</strong><small>Menabung tumbuh sedikit demi sedikit</small></div>
+        <Field label="Nama tujuan tabungan"><input className={field} name="title" required /></Field>
+        <div className="form-two-columns"><Field label="Target (Rp)"><input className={field} name="target" type="number" min="1" required /></Field><Field label="Sudah terkumpul (Rp)"><input className={field} name="saved" type="number" min="0" defaultValue="0" /></Field></div>
+        <Field label="Tenggat"><input className={field} name="dueDate" type="date" /></Field>
+        <PrimaryButton type="submit"><Plus size={15} /> Buat target</PrimaryButton>
+      </form>
+      <div className="finx-list-card">
+        <div className="finx-card-title"><strong>Target tabungan</strong><small>{finance.savingsGoals.length} target · {savingsProgress}% terkumpul</small></div>
+        {finance.savingsGoals.length ? <div className="finx-rows">{finance.savingsGoals.map((goal) => { const progress = Math.min(100, goal.savedAmount / goal.targetAmount * 100); return (
+          <article className="finx-row" key={goal.id}>
+            <span className="finx-row-icon is-leaf" aria-hidden="true"><Target size={19} /></span>
+            <div className="finx-row-copy">
+              <strong>{goal.title}</strong>
+              <small>{formatCompactRupiah(goal.savedAmount)} / {formatCompactRupiah(goal.targetAmount)}{goal.dueDate ? ` · tenggat ${formatDate(goal.dueDate)}` : ""}</small>
+              <div className="finx-bar"><span style={{ width: `${progress}%` }} /></div>
+            </div>
+            <div className="finx-row-side">
+              <span className="finx-badge up">{Math.round(progress)}%</span>
+              <div className="finx-row-buttons">
+                <button className={secondary} onClick={() => { const amount = Number(window.prompt("Nominal yang ditambahkan (Rp)")); if (amount > 0) update((current) => ({ ...current, savingsGoals: current.savingsGoals.map((item) => item.id === goal.id ? { ...item, savedAmount: item.savedAmount + Math.round(amount) } : item) })); }}>Tambah dana</button>
+                <button className="finx-delete" onClick={() => confirmRemove(`target tabungan "${goal.title}"`, () => update((current) => ({ ...current, savingsGoals: remove(current.savingsGoals, goal.id) })))} aria-label={`Hapus target ${goal.title}`}><Trash2 size={15} /></button>
+              </div>
+            </div>
+          </article>); })}</div> : <NoData>Belum ada target tabungan tersimpan.</NoData>}
+      </div>
+    </div>}
+
+    {tab === "rules" && <div className="finx-panel">
+      <form className="finx-form-card" onSubmit={addRule}>
+        <div className="finx-card-title"><strong>Aturan kategori otomatis</strong><small>Kata kunci transaksi dipetakan ke kategori</small></div>
+        <Field label="Kata kunci transaksi"><input className={field} name="keyword" required placeholder="Contoh: Starbucks" /></Field>
+        <Field label="Kategori otomatis"><select className={field} name="category"><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lifestyle</option><option>Kesehatan</option><option>Gaji</option><option>Freelance</option><option>Lainnya</option></select></Field>
+        <PrimaryButton type="submit"><Plus size={15} /> Tambah aturan</PrimaryButton>
+      </form>
+      <div className="finx-list-card">
+        <div className="finx-card-title"><strong>Aturan aktif</strong><small>{finance.categoryRules.length} aturan tersimpan</small></div>
+        {finance.categoryRules.length ? <div className="finx-rows">{finance.categoryRules.map((rule) => (
+          <article className="finx-row" key={rule.id}>
+            <span className="finx-row-icon is-cream" aria-hidden="true"><ListFilter size={19} /></span>
+            <div className="finx-row-copy"><strong>{rule.keyword}</strong><small>Setiap transaksi berisi kata ini → <b>{rule.category}</b></small></div>
+            <div className="finx-row-side">
+              <button className="finx-delete" onClick={() => confirmRemove(`aturan "${rule.keyword}"`, () => update((current) => ({ ...current, categoryRules: remove(current.categoryRules, rule.id) })))} aria-label={`Hapus aturan ${rule.keyword}`}><Trash2 size={15} /></button>
+            </div>
+          </article>))}</div> : <NoData>Belum ada aturan kategori tersimpan.</NoData>}
+      </div>
+    </div>}
+
+    {tab === "split" && <div className="finx-panel">
+      <form className="finx-form-card" onSubmit={splitTransaction}>
+        <div className="finx-card-title"><strong>Pisahkan transaksi</strong><small>Satu belanja, dua kategori</small></div>
+        <Field label="Nama transaksi"><input className={field} name="title" required placeholder="Belanja bersama" /></Field>
+        <Field label="Total nominal (Rp)"><input className={field} name="total" type="number" min="1" required /></Field>
+        <Field label="Tanggal"><input className={field} name="date" type="date" defaultValue={today()} /></Field>
+        <div className="form-two-columns"><Field label="Bagian 1 · kategori"><select className={field} name="firstCategory"><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lifestyle</option><option>Lainnya</option></select></Field><Field label="Bagian 1 · nominal"><input className={field} name="firstAmount" type="number" min="1" required /></Field></div>
+        <div className="form-two-columns"><Field label="Bagian 2 · kategori"><select className={field} name="secondCategory"><option>Lifestyle</option><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lainnya</option></select></Field><Field label="Bagian 2 · nominal"><input className={field} name="secondAmount" type="number" min="1" required /></Field></div>
+        <PrimaryButton type="submit"><Plus size={15} /> Simpan transaksi split</PrimaryButton>
+      </form>
+      <div className="finx-list-card">
+        <div className="finx-card-title"><strong>Cara kerja split</strong><small>Dua baris, satu ID split</small></div>
+        <div className="finx-rows">
+          <div className="finx-legend-row"><i className="finx-legend-dot is-income" /><span>Bagian 1 masuk kategori pertama</span></div>
+          <div className="finx-legend-row"><i className="finx-legend-dot is-expense" /><span>Bagian 2 masuk kategori kedua</span></div>
+        </div>
+        <p className="finx-note">Transaksi akan dibuat sebagai dua baris pengeluaran yang terhubung oleh satu ID split. Total kedua bagian harus sama dengan total transaksi.</p>
+      </div>
+    </div>}
+
+    {tab === "weekly" && <div className="finx-panel">
+      <form className="finx-form-card" onSubmit={addWeekly}>
+        <div className="finx-card-title"><strong>Budget mingguan</strong><small>Batas 7 hari per kategori</small></div>
+        <Field label="Kategori"><select className={field} name="category"><option>Makanan</option><option>Transportasi</option><option>Tagihan</option><option>Lifestyle</option><option>Kesehatan</option><option>Lainnya</option></select></Field>
+        <Field label="Batas 7 hari (Rp)"><input className={field} name="limit" type="number" min="0" required /></Field>
+        <PrimaryButton type="submit"><Plus size={15} /> Simpan budget mingguan</PrimaryButton>
+      </form>
+      <div className="finx-list-card">
+        <div className="finx-card-title"><strong>Budget aktif</strong><small>{finance.weeklyBudgets.length} kategori dibatasi</small></div>
+        {finance.weeklyBudgets.length ? <div className="finx-rows">{finance.weeklyBudgets.map((budget) => { const start = shiftISODate(today(), -6); const spent = transactions.filter((item) => item.type === "expense" && item.category === budget.category && item.date >= start && item.date <= today()).reduce((sum, item) => sum + item.amount, 0); const percent = budget.limit ? Math.round(spent / budget.limit * 100) : (spent ? 100 : 0); return (
+          <article className="finx-row" key={budget.category}>
+            <span className="finx-row-icon is-amber" aria-hidden="true"><CalendarClock size={19} /></span>
+            <div className="finx-row-copy">
+              <strong>{budget.category}</strong>
+              <small>{formatCompactRupiah(spent)} / {formatCompactRupiah(budget.limit)} · 7 hari terakhir</small>
+              <div className={`finx-bar ${percent > 100 ? "is-over" : ""}`}><span style={{ width: `${Math.min(100, percent)}%` }} /></div>
+            </div>
+            <div className="finx-row-side">
+              <span className={`finx-badge ${percent > 100 ? "due" : "up"}`}>{percent > 100 ? `Lewat ${percent - 100}%` : `${percent}%`}</span>
+              <button className="finx-delete" onClick={() => confirmRemove(`budget mingguan ${budget.category}`, () => update((current) => ({ ...current, weeklyBudgets: current.weeklyBudgets.filter((item) => item.category !== budget.category) })))} aria-label={`Hapus budget ${budget.category}`}><Trash2 size={15} /></button>
+            </div>
+          </article>); })}</div> : <NoData>Belum ada budget mingguan tersimpan.</NoData>}
+      </div>
+    </div>}
+
+    <div className="finx-list-card finx-recap">
+      <SectionHeading title="Rekap harian" caption="Pergerakan transaksi dan pengeluaran dalam 7 hari terakhir" />
+      <div className="finx-rows">
+        <div className="finx-legend-row"><i className="finx-legend-dot is-income" /><span>Pemasukan hari ini</span><strong className="is-income">{formatCompactRupiah(todayIncome)}</strong></div>
+        <div className="finx-legend-row"><i className="finx-legend-dot is-expense" /><span>Pengeluaran hari ini</span><strong className="is-expense">{formatCompactRupiah(todayExpense)}</strong></div>
+        <div className="finx-legend-row"><i className="finx-legend-dot is-amber" /><span>Pengeluaran 7 hari</span><strong>{formatCompactRupiah(weeklyExpense)}</strong></div>
+      </div>
+    </div>
+
+    <div className="finx-list-card finx-heat">
+      <SectionHeading title="Spending heatmap" caption="Intensitas pengeluaran harian selama 30 hari terakhir" />
+      <div className="finx-heat-grid">{heatmapDays.map((item) => <div key={item.date} className="finx-heat-cell" title={`${formatDate(item.date)} · ${formatCompactRupiah(item.amount)}`} aria-label={`${formatDate(item.date)} pengeluaran ${formatCompactRupiah(item.amount)}`} style={{ opacity: item.amount === 0 ? .16 : .25 + item.amount / maxDailySpend * .75 }} />)}</div>
+      <div className="finx-heat-legend"><span>Lebih rendah</span><i /><i /><i /><i /><span>Lebih tinggi</span></div>
+    </div>
+
+    <div className="finx-list-card finx-history">
+      <SectionHeading title="Riwayat saldo bersih" caption="Dihitung dari saldo awal, transaksi dan transfer yang ditautkan ke dompet; bukan snapshot manual." />
+      {finance.wallets.length ? <div className="finx-history-chart">{netWorthHistory.map((item) => { const max = Math.max(1, ...netWorthHistory.map((entry) => Math.abs(entry.amount))); const label = new Intl.DateTimeFormat("id-ID", { month: "short" }).format(new Date(`${item.month}T00:00:00`)); return (
+        <div className="finx-history-column" key={item.month} title={`${formatDate(item.monthEnd)} · ${formatCompactRupiah(item.amount)}`}><strong>{formatCompactRupiah(item.amount)}</strong><div><span style={{ height: `${Math.max(4, Math.abs(item.amount) / max * 100)}%` }} /></div><small>{label}</small></div>); })}</div> : <p className="finx-note">Tambahkan dompet dan tautkan transaksi untuk membangun riwayat saldo.</p>}
+    </div>
+
+    <div className="finx-list-card finx-explore">
+      <SectionHeading title="Eksplorasi kategori" caption="Akumulasi pengeluaran pada bulan berjalan" />
+      {categorySpend.length ? <div className="finx-rows">{categorySpend.map(([category, amount], index) => (
+        <div className="finx-legend-row" key={category}><i className="finx-legend-dot" style={{ background: `var(--spend-color-${index % 8})` }} /><span>{category}</span><strong>{formatCompactRupiah(amount)}</strong></div>))}</div> : <p className="finx-note">Belum ada pengeluaran bulan ini.</p>}
+    </div>
   </section>;
 }
 

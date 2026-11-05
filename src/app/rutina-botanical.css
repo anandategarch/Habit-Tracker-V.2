@@ -5695,3 +5695,210 @@ button:disabled:active {
 .weekly-milestone-item.is-unlocked .weekly-milestone-status{color:#4e8258;font-weight:800}
 @media(max-width:760px){.weekly-milestones-grid{grid-template-columns:1fr}.weekly-milestone-item{padding:8px 9px}.weekly-milestone-status{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.weekly-milestones>summary>svg{transition:none}}
+
+/* ════════════════════════════════════════════════════════════════════
+   KEUANGAN LANJUTAN v2 — redesain total mengikuti PEDOMAN UI.zip
+   (Rutina Botanical App Redesign / Pastel Botanical / Playful Showcase)
+   Bahasa desain: hero gradient sage gelap + blob organik, kartu putih
+   di atas kanvas krem, radius 20-26px, ikon tile pastel 44px, pil tab
+   aktif bergradasi hijau, baris legenda bertitik, bar progres gradasi
+   hijau. Violet pada pedoman dipetakan ke hijau botanical (aturan app).
+   ════════════════════════════════════════════════════════════════════ */
+.finx { display: grid; gap: 13px; }
+
+/* 1. Hero — gradient sage gelap (#4E7A52→#2F5A3C) + blob + dompet tumbuh */
+.finx-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  padding: 22px 24px 20px;
+  border-radius: 26px;
+  color: #fff;
+  background: linear-gradient(125deg, #4E7A52 0%, #2F5A3C 78%);
+  box-shadow: 0 18px 44px rgba(47, 90, 60, .3);
+}
+.finx-hero-blob { position: absolute; border-radius: 50%; pointer-events: none; }
+.finx-hero-blob.a { top: -46px; right: -36px; width: 160px; height: 160px; background: rgba(255, 255, 255, .09); }
+.finx-hero-blob.b { right: 104px; bottom: -34px; width: 88px; height: 88px; background: rgba(205, 227, 196, .16); }
+.finx-hero-art { position: absolute; right: 24px; bottom: 16px; width: 78px; height: 78px; }
+.finx-hero-copy { position: relative; z-index: 1; display: grid; gap: 5px; justify-items: start; max-width: 64%; }
+.finx-hero-copy small { color: rgba(255, 255, 255, .78); font-size: 9.5px; font-weight: 900; letter-spacing: 1.5px; }
+.finx-hero-copy strong { font-size: clamp(26px, 3.6vw, 32px); font-weight: 850; letter-spacing: -1.1px; line-height: 1.05; overflow-wrap: anywhere; }
+.finx-hero-meta { color: rgba(255, 255, 255, .85); font-size: 10.5px; }
+.finx-trend {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 7px;
+  padding: 5px 11px; border-radius: 999px; font-size: 10px; font-weight: 850;
+}
+.finx-trend.up { color: #2F5E40; background: #EAF3E2; }
+.finx-trend.down { color: #9A5B2E; background: #FBE3D6; }
+
+/* 2. Statistik cepat — kartu putih + tile ikon pastel */
+.finx-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.finx-stat {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 11px; align-items: center;
+  min-width: 0; padding: 13px 15px; border: 1px solid #EFEADD; border-radius: 22px;
+  background: #fff; box-shadow: 0 8px 24px rgba(120, 100, 70, .08);
+}
+.finx-stat-icon, .finx-row-icon {
+  display: grid; place-items: center; width: 44px; height: 44px; flex: none;
+  border-radius: 15px;
+}
+.finx-row-icon { border-radius: 50%; }
+.finx-stat-icon.is-amber, .finx-row-icon.is-amber { color: #9A6A32; background: #F8CBA6; }
+.finx-stat-icon.is-peach, .finx-row-icon.is-peach { color: #B4713D; background: #FBE3D6; }
+.finx-stat-icon.is-leaf, .finx-row-icon.is-leaf { color: #2F5E40; background: #EAF3E2; }
+.finx-stat-icon.is-cream, .finx-row-icon.is-cream { color: #8A8A80; background: #FDF0D5; }
+.finx-stat-copy { display: grid; gap: 3px; min-width: 0; }
+.finx-stat-copy small { color: #8A8A80; font-size: 8.5px; font-weight: 900; letter-spacing: 1.2px; }
+.finx-stat-copy strong {
+  overflow: hidden; color: #1F2A1F; font-size: clamp(15px, 1.8vw, 19px);
+  font-weight: 850; letter-spacing: -.55px; text-overflow: ellipsis; white-space: nowrap;
+}
+.finx-stat-copy span { display: -webkit-box; overflow: hidden; color: #8A8A80; font-size: 9.5px; line-height: 1.45; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* 3. Pil tab — aktif gradasi hijau, tidak aktif teks kelabu */
+.finx-tabs {
+  display: flex; gap: 7px; overflow-x: auto; padding: 4px;
+  border-radius: 999px; background: #F7F1E3; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 18px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 18px), transparent 100%);
+}
+.finx-tabs::-webkit-scrollbar { display: none; }
+.finx-tab {
+  display: inline-flex; flex: none; align-items: center; min-height: 40px;
+  padding: 0 17px; border: 1px solid transparent; border-radius: 999px;
+  color: #8A8A80; background: transparent; font-size: 11px; font-weight: 820;
+  white-space: nowrap; transition: color .18s ease, background .18s ease, transform .18s ease;
+}
+.finx-tab:active { transform: scale(.96); }
+.finx-tab.active {
+  color: #fff; background: linear-gradient(115deg, #4E7A52, #2F5A3C);
+  box-shadow: 0 6px 16px rgba(47, 90, 60, .24);
+}
+
+/* 4. Panel dua kolom — kartu formulir + kartu daftar */
+.finx-panel { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: 13px; align-items: start; }
+.finx-form-card, .finx-list-card {
+  display: grid; gap: 13px; min-width: 0; padding: 17px;
+  border: 1px solid #EFEADD; border-radius: 22px; background: #fff;
+  box-shadow: 0 8px 24px rgba(120, 100, 70, .07);
+}
+.finx-card-title { display: grid; gap: 3px; padding-bottom: 2px; }
+.finx-card-title strong { color: #1F2A1F; font-size: 14px; font-weight: 850; letter-spacing: -.3px; }
+.finx-card-title small { color: #8A8A80; font-size: 10px; }
+
+/* 5. Baris daftar — tile ikon + judul + nilai kanan */
+.finx-rows { display: grid; gap: 4px; }
+.finx-row {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px;
+  align-items: center; padding: 10px 2px; border-bottom: 1px solid #F1EDE3;
+}
+.finx-row:last-child { border-bottom: 0; padding-bottom: 4px; }
+.finx-row-copy { display: grid; gap: 3px; min-width: 0; }
+.finx-row-copy strong { overflow: hidden; color: #1F2A1F; font-size: 12.5px; font-weight: 830; text-overflow: ellipsis; white-space: nowrap; }
+.finx-row-copy small { overflow: hidden; color: #8A8A80; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.finx-row-copy small b { font-weight: 800; color: #6D7466; }
+.finx-row-side { display: grid; justify-items: end; gap: 7px; }
+.finx-row-value { color: #1F2A1F; font-size: 13px; font-weight: 850; letter-spacing: -.3px; }
+.finx-row-value.is-negative { color: #B04A2E; }
+.finx-row-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.finx-delete {
+  display: grid; place-items: center; width: 40px; height: 40px; flex: none;
+  padding: 0; border: 0; border-radius: 50%; color: #B04A2E; background: #FDF2EE;
+  transition: transform .16s ease, background .16s ease;
+}
+.finx-delete:active { transform: scale(.92); background: #FBE9E2; }
+
+/* 6. Badge status & bar progres */
+.finx-badge { display: inline-flex; align-items: center; padding: 4px 11px; border-radius: 999px; font-size: 9.5px; font-weight: 850; white-space: nowrap; }
+.finx-badge.up { color: #2F5E40; background: #EAF3E2; }
+.finx-badge.due { color: #9A5B2E; background: #FBE3D6; }
+.finx-badge.paused { color: #8A8A80; background: #F1EDE3; }
+.finx-bar { height: 9px; margin-top: 3px; overflow: hidden; border-radius: 999px; background: #EEE9DF; }
+.finx-bar > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #3BA35C, #8FCB8F); }
+.finx-bar.is-over > span { background: linear-gradient(90deg, #E88A4A, #F5B37E); }
+
+/* 7. Formulir & tombol dalam scope finx */
+.finx .form-control { border-color: #EFEADD; border-radius: 14px; background: #FBF8F1; color: #1F2A1F; }
+.finx .form-control:focus { border-color: #7FAE8B; outline: 3px solid rgba(65, 122, 87, .14); }
+.finx .form-label { color: #6D7466; }
+.finx .primary-button {
+  border-color: transparent; border-radius: 999px; color: #fff;
+  background: linear-gradient(115deg, #4E7A52, #2F5A3C);
+  box-shadow: 0 8px 20px rgba(47, 90, 60, .22);
+}
+.finx .primary-button:hover:not(:disabled) { background: linear-gradient(115deg, #56865C, #356844); }
+.finx .primary-button:disabled { opacity: .55; }
+.finx .secondary-button { border-radius: 999px; }
+
+/* 8. Empty state & catatan */
+.finx .module-empty {
+  display: grid; justify-items: center; gap: 8px; padding: 22px 16px;
+  border: 1px dashed #EAE4D6; border-radius: 18px; background: #FAF5EA;
+  color: #8A8A80; text-align: center;
+}
+.finx .module-empty svg { color: #7FA97C; }
+.finx-note {
+  padding: 11px 13px; border: 1px dashed #EAE4D6; border-radius: 14px;
+  background: #FAF5EA; color: #6D7466; font-size: 10.5px; line-height: 1.65;
+}
+
+/* 9. Baris legenda bertitik (rekap & eksplorasi kategori) */
+.finx-legend-row {
+  display: flex; align-items: center; gap: 10px; min-height: 40px;
+  padding: 5px 2px; border-bottom: 1px solid #F1EDE3; color: #6D7466; font-size: 11px;
+}
+.finx-legend-row:last-child { border-bottom: 0; }
+.finx-legend-row strong { margin-left: auto; color: #1F2A1F; font-size: 12.5px; font-weight: 850; }
+.finx-legend-row strong.is-income { color: #2F5E40; }
+.finx-legend-row strong.is-expense { color: #B4713D; }
+.finx-legend-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: #CDE3C4; }
+.finx-legend-dot.is-income { background: #3BA35C; }
+.finx-legend-dot.is-expense { background: #F2994A; }
+.finx-legend-dot.is-amber { background: #F8CBA6; }
+
+/* 10. Heatmap pengeluaran */
+.finx-heat-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
+.finx-heat-cell { height: 26px; border-radius: 9px; background: #417A57; }
+.finx-heat-legend { display: flex; align-items: center; gap: 5px; margin-top: 10px; color: #8A8A80; font-size: 9.5px; }
+.finx-heat-legend i { width: 14px; height: 14px; border-radius: 5px; background: #417A57; }
+.finx-heat-legend i:nth-of-type(1) { opacity: .4; }
+.finx-heat-legend i:nth-of-type(2) { opacity: .6; }
+.finx-heat-legend i:nth-of-type(3) { opacity: .8; }
+.finx-heat-legend i:nth-of-type(4) { opacity: 1; }
+
+/* 11. Riwayat saldo bersih — bar gradasi hijau */
+.finx-history-chart { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.finx-history-column { display: grid; grid-template-rows: auto 96px auto; gap: 6px; justify-items: center; min-width: 0; }
+.finx-history-column strong { color: #1F2A1F; font-size: 10.5px; font-weight: 830; }
+.finx-history-column > div {
+  display: flex; align-items: end; width: 100%; height: 100%; overflow: hidden;
+  border-radius: 9px 9px 4px 4px; background: #F7F1E3;
+}
+.finx-history-column > div > span {
+  display: block; width: 100%; min-height: 5px; border-radius: 9px 9px 4px 4px;
+  background: linear-gradient(180deg, #8FCB8F, #3BA35C);
+}
+.finx-history-column small { color: #8A8A80; font-size: 9.5px; text-transform: capitalize; }
+
+/* 12. Judul seksi dalam scope finx */
+.finx .section-title { color: #1F2A1F; font-size: 15px; font-weight: 850; }
+.finx .section-caption { color: #8A8A80; font-size: 10.5px; }
+
+/* 13. Responsif */
+@media (max-width: 760px) {
+  .finx-panel { grid-template-columns: minmax(0, 1fr); }
+  .finx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .finx-stats > .finx-stat:last-child { grid-column: 1 / -1; }
+  .finx-hero-copy { max-width: 60%; }
+}
+@media (max-width: 480px) {
+  .finx { gap: 11px; }
+  .finx-hero { padding: 18px 18px 16px; border-radius: 22px; }
+  .finx-hero-art { width: 58px; height: 58px; right: 14px; bottom: 12px; }
+  .finx-hero-blob.a { width: 110px; height: 110px; top: -34px; right: -26px; }
+  .finx-hero-blob.b { width: 64px; height: 64px; right: 78px; bottom: -24px; }
+  .finx-hero-copy { max-width: 58%; }
+  .finx-heat-cell { height: 22px; }
+  .finx-form-card, .finx-list-card { padding: 15px; border-radius: 20px; }
+}
