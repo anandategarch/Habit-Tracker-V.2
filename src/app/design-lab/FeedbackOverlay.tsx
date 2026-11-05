@@ -16,7 +16,7 @@ export function FeedbackOverlay({targetName}:{targetName:string}) {
   const [exported,setExported]=useState("");
   useEffect(()=>{
     if(!enabled)return;
-    const pick=(event:globalThis.MouseEvent)=>{
+    const pick=(event:MouseEvent)=>{
       const node=event.target;
       if(!(node instanceof HTMLElement)||node.closest(".feedback-overlay"))return;
       const variant=node.closest("[data-variant]");
