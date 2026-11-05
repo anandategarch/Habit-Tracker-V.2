@@ -99,3 +99,13 @@ Keyframes tetap boleh untuk sequence satu kali seperti splash screen, skeleton s
 - Riwayat amount memakai tabel habit_daily_progress yang sudah ada; endpoint history menambahkan field progress tanpa mengubah schema.
 - Jangan menyimpulkan tanggal penyelesaian tujuan/tugas dari status saat ini jika timestamp penyelesaian memang tidak disimpan. Tampilkan hanya tanggal pembuatan atau catatan yang benar-benar ada.
 - Ketika API riwayat habit tidak tersedia, tampilkan peringatan non-blocking; aktivitas dari sumber workspace lokal tetap bisa dilihat.
+
+
+## Experience Polish v0.8 — return, focus, and mobile clarity
+
+- Welcome-back prompt appears after a three-day gap and remains available for that day even when the user switches tabs; dismissing it stores a same-day dismissal. No missed-task or lost-streak guilt copy is used.
+- Daily focus is user-selectable and stored locally, without hiding other scheduled habits.
+- Garden atmosphere can be personalized with Sage, Peach, and Lavender accents while the Botanical design system remains consistent.
+- Weekly reflection is derived from real activity counts and previous-week comparison.
+- Workspace and per-habit histories use native disclosure controls, collapsed by default to reduce scrolling.
+- Mobile layouts use compact cards, touch-friendly controls, horizontally scrollable filters, and a one-column content flow.

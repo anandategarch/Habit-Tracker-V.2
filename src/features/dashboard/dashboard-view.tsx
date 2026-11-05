@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, Flame, HeartPulse, Pause, Play, Plus, RefreshCw, Sprout, TrendingUp, WalletCards } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Flame, HeartPulse, Pause, Play, Plus, RefreshCw, Sprout, TrendingUp, WalletCards } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
@@ -104,6 +104,64 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   const maxCategoryCount = Math.max(1, ...categoryCounts.map((item) => item.count));
   const sortedHabits = [...habits].sort((a, b) => a.time.localeCompare(b.time));
   const weekly = useWeeklyActivity(habits);
+  const [returning, setReturning] = useState(false);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(false);
+  const [preferencesReady, setPreferencesReady] = useState(false);
+  const [focusHabitId, setFocusHabitId] = useState("");
+  const [gardenTheme, setGardenTheme] = useState<"sage" | "peach" | "lavender">("sage");
+  useEffect(() => {
+    try {
+      const today = todayISO();
+      const lastVisit = window.localStorage.getItem("rutina.v2.last-dashboard-visit");
+      const dismissed = window.localStorage.getItem("rutina.v2.welcome-dismissed");
+      const pendingWelcome = window.localStorage.getItem("rutina.v2.welcome-pending");
+      const gap = lastVisit
+        ? Math.floor((new Date(`${today}T12:00:00+07:00`).getTime() - new Date(`${lastVisit}T12:00:00+07:00`).getTime()) / 86400000)
+        : 0;
+      const shouldWelcome = dismissed !== today && (pendingWelcome === today || gap >= 3);
+      setReturning(shouldWelcome);
+      if (shouldWelcome) window.localStorage.setItem("rutina.v2.welcome-pending", today);
+      window.localStorage.setItem("rutina.v2.last-dashboard-visit", today);
+      const savedFocus = window.localStorage.getItem("rutina.v2.daily-focus");
+      if (savedFocus) {
+        const focusPreference = JSON.parse(savedFocus) as { date?: unknown; habitId?: unknown };
+        if (focusPreference.date === today && typeof focusPreference.habitId === "string") {
+          setFocusHabitId(focusPreference.habitId);
+        }
+      }
+      const savedTheme = window.localStorage.getItem("rutina.v2.garden-theme");
+      if (savedTheme === "peach" || savedTheme === "lavender" || savedTheme === "sage") setGardenTheme(savedTheme);
+    } catch { /* Preferensi lokal bersifat opsional. */ }
+    setPreferencesReady(true);
+  }, []);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    try {
+      window.localStorage.setItem("rutina.v2.daily-focus", JSON.stringify({
+        date: todayISO(),
+        habitId: focusHabitId,
+      }));
+    } catch { /* Storage dinonaktifkan. */ }
+  }, [focusHabitId, preferencesReady]);
+  useEffect(() => {
+    if (!preferencesReady) return;
+    try { window.localStorage.setItem("rutina.v2.garden-theme", gardenTheme); } catch { /* Storage dinonaktifkan. */ }
+  }, [gardenTheme, preferencesReady]);
+  const focusedHabit = habits.find((habit) => habit.id === focusHabitId && !habit.completed) ?? upcomingHabit;
+  const weeklyMessage = weekly.total === 0
+    ? "Minggu ini masih terbuka. Pilih satu langkah kecil untuk memulainya."
+    : weekly.change > 0
+      ? `Ada ${weekly.change} langkah lebih banyak dibanding pekan sebelumnya. Progres kecilmu mulai terlihat.`
+      : weekly.change < 0
+        ? "Minggu ini berjalan lebih ringan. Kamu tetap boleh bangga sudah meluangkan waktu untuk diri sendiri."
+        : "Kamu sedang menjaga ritme yang sudah dibangun. Lanjutkan dengan cara yang terasa nyaman.";
+  const gardenMilestone = longestStreak >= 30 ? "Akar yang kuat · 30 hari" : longestStreak >= 7 ? "Tunas konsisten · 7 hari" : completed > 0 ? "Tunas pertamamu mulai tumbuh" : "Setiap taman dimulai dari satu benih";
+  const weeklyMilestones = [
+    { title: "Benih pertama", target: 1, hint: "1 langkah tercatat" },
+    { title: "Akar mulai kuat", target: 7, hint: "7 langkah tercatat" },
+    { title: "Taman berbunga", target: 15, hint: "15 langkah tercatat" },
+  ];
+  const unlockedMilestones = weeklyMilestones.filter((item) => weekly.total >= item.target).length;
   const weeklyMax = Math.max(1, ...weekly.days.map((day) => day.completed));
   const dailyEncouragement = vacationMode
     ? "Hari ini kamu boleh mengambil jeda. Rutinitasmu tetap ada saat kamu siap kembali."
@@ -118,12 +176,13 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
             : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
 
   return (
-    <div className="botanical-dashboard-page">
+    <div className={`botanical-dashboard-page garden-theme-${gardenTheme}`}>
       <PageIntro
         eyebrow={dateLabel}
         title={`${greeting}, Ananda! 🌱`}
         subtitle={dailyEncouragement}
       />
+      {returning && !welcomeDismissed && !vacationMode && <section className="welcome-back-card" aria-label="Selamat datang kembali"><span className="welcome-back-art"><Sprout size={25} /></span><div className="welcome-back-copy"><span className="small-label">TAMANMU MENUNGGU</span><strong>Senang kamu kembali.</strong><p>Kita tidak perlu mengejar hari yang terlewat. Mulai lagi dari satu hal kecil yang terasa mudah.</p></div><button type="button" className="welcome-back-close" onClick={() => { setWelcomeDismissed(true); try { window.localStorage.setItem("rutina.v2.welcome-dismissed", todayISO()); window.localStorage.removeItem("rutina.v2.welcome-pending"); } catch { /* abaikan */ } }} aria-label="Tutup pesan selamat datang">×</button></section>}
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
 
       <section className="hero-card botanical-hero" aria-label="Ringkasan perkembangan hari ini">
@@ -175,6 +234,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           </div>
         </div>
       </section>
+      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div><div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "lavender" ? "active" : ""} aria-pressed={gardenTheme === "lavender"} onClick={() => setGardenTheme("lavender")}><i className="lavender" />Lavender</button></div></section>
 
             <div className="stats-grid botanical-stats botanical-stats-three">
         <StatCard label="Rekor konsistensi" value={`${longestStreak} hari`} foot="Satu capaian yang pernah kamu bangun" icon={Flame} tone="amber" />
@@ -255,10 +315,23 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               </div>
               <div className="weekly-trend-footer">
                 <span className={"weekly-comparison " + (weekly.change > 0 ? "positive" : weekly.change < 0 ? "negative" : "")}>
-                  {weekly.change > 0 ? `Kamu mencatat ${weekly.change} langkah lebih banyak dari pekan sebelumnya.` : weekly.change < 0 ? "Pekan ini berjalan lebih ringan. Setiap ritme tetap punya tempat." : "Kamu menjaga ritme yang sama dengan pekan sebelumnya."}
+                  {weeklyMessage}
                 </span>
                 <button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button>
               </div>
+              <details className="weekly-milestones">
+                <summary><span><Sprout size={14} /> Koleksi langkah minggu ini</span><small>{unlockedMilestones}/3 tercapai</small><ChevronDown size={14} /></summary>
+                <div className="weekly-milestones-grid">
+                  {weeklyMilestones.map((item) => {
+                    const unlocked = weekly.total >= item.target;
+                    return <div className={`weekly-milestone-item${unlocked ? " is-unlocked" : ""}`} key={item.title}>
+                      <span className="weekly-milestone-icon"><Sprout size={15} /></span>
+                      <span className="weekly-milestone-copy"><strong>{item.title}</strong><small>{item.hint}</small></span>
+                      <span className="weekly-milestone-status">{unlocked ? "Tercapai" : "Berproses"}</span>
+                    </div>;
+                  })}
+                </div>
+              </details>
             </>
           ) : (
             <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p><button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button></div>
@@ -297,17 +370,18 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               <h2>Hari ini, izinkan dirimu beristirahat.</h2>
               <p>Mode libur aktif. Tidak ada target yang perlu dikejar hari ini.</p>
             </>
-          ) : upcomingHabit ? (
+          ) : focusedHabit ? (
             <>
-              <div className="daily-intention-meta"><span>{upcomingHabit.time}</span><span>{upcomingHabit.duration} menit</span><span>{upcomingHabit.category}</span></div>
-              <h2>{upcomingHabit.title}</h2>
+              <label className="daily-focus-picker">FOKUS HARI INI<select value={focusedHabit.id} onChange={(event) => setFocusHabitId(event.target.value)} aria-label="Pilih fokus kebiasaan">{habits.filter((habit) => !habit.completed).map((habit) => <option key={habit.id} value={habit.id}>{habit.title}</option>)}</select></label>
+              <div className="daily-intention-meta"><span>{focusedHabit.time}</span><span>{focusedHabit.duration} menit</span><span>{focusedHabit.category}</span></div>
+              <h2>{focusedHabit.title}</h2>
               <p>Cukup fokus pada satu hal ini. Kamu tidak perlu memikirkan semuanya sekaligus.</p>
               <div className="daily-intention-actions">
-                <button className="next-step-action" type="button" disabled={!onTimerToggle} onClick={() => onTimerToggle?.(upcomingHabit.id)} aria-pressed={activeTimerId === upcomingHabit.id}>
-                  {activeTimerId === upcomingHabit.id ? <Pause size={15} /> : <Play size={15} />}
-                  {activeTimerId === upcomingHabit.id ? "Hentikan timer habit" : "Mulai timer habit"}
+                <button className="next-step-action" type="button" disabled={!onTimerToggle} onClick={() => onTimerToggle?.(focusedHabit.id)} aria-pressed={activeTimerId === focusedHabit.id}>
+                  {activeTimerId === focusedHabit.id ? <Pause size={15} /> : <Play size={15} />}
+                  {activeTimerId === focusedHabit.id ? "Hentikan timer habit" : "Mulai timer habit"}
                 </button>
-                <button className="daily-intention-complete" type="button" onClick={() => onToggle(upcomingHabit.id)}>
+                <button className="daily-intention-complete" type="button" onClick={() => onToggle(focusedHabit.id)}>
                   <Check size={14} /> Tandai selesai
                 </button>
               </div>

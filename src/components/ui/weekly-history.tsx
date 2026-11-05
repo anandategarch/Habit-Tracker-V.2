@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import {
   Activity, Camera, CheckCircle2, ClipboardList, Droplets,
-  HeartPulse, Sprout, Target, Wallet, Dumbbell, RefreshCw, StickyNote,
+  HeartPulse, Sprout, Target, Wallet, Dumbbell, RefreshCw, StickyNote, ChevronDown,
 } from "lucide-react";
 import type { Habit, Transaction } from "@/lib/types";
 import type { WorkspaceModules } from "@/lib/module-types";
@@ -440,8 +440,8 @@ export function WeeklyHistoryPanel({ value }: { value: WorkspaceHistoryValue }) 
   const selectedEvents = value.events.filter((item) => item.date === activeDate);
 
   return (
-    <section className="weekly-history-panel card card-pad" aria-label="Riwayat aktivitas tujuh hari">
-      <div className="weekly-history-heading">
+    <details className="weekly-history-panel card card-pad" aria-label="Riwayat aktivitas tujuh hari">
+      <summary className="weekly-history-summary"><div className="weekly-history-heading">
         <div>
           <span className="small-label">AKTIVITAS WORKSPACE</span>
           <h2>Jejak 7 hari terakhir</h2>
@@ -451,8 +451,8 @@ export function WeeklyHistoryPanel({ value }: { value: WorkspaceHistoryValue }) 
           <strong>{value.events.length}</strong>
           <span>catatan</span>
         </div>
-      </div>
-
+      </div><ChevronDown className="weekly-history-chevron" size={17} aria-hidden="true" /></summary>
+      <div className="weekly-history-content">
       <div className="weekly-history-days" role="group" aria-label="Pilih tanggal riwayat">
         {value.dates.map((date) => {
           const dayEvents = value.events.filter((item) => item.date === date);
@@ -462,7 +462,7 @@ export function WeeklyHistoryPanel({ value }: { value: WorkspaceHistoryValue }) 
               type="button"
               key={date}
               className={`weekly-history-day${activeDate === date ? " is-selected" : ""}${date === today ? " is-today" : ""}`}
-              aria-pressed={selectedDate === date}
+              aria-pressed={activeDate === date}
               aria-label={`${formatWeekday(date, "long")}, ${dateLabel(date)}: ${dayEvents.length} catatan`}
               onClick={() => setSelectedDate(date)}
             >
@@ -523,7 +523,8 @@ export function WeeklyHistoryPanel({ value }: { value: WorkspaceHistoryValue }) 
           <button type="button" onClick={value.retry}><RefreshCw size={13} /> Coba lagi</button>
         </div>
       )}
-    </section>
+      </div>
+    </details>
   );
 }
 
@@ -573,11 +574,9 @@ export function HabitWeekHistory({ habit }: { habit: Habit }) {
   const selected = selectedDate ? habitDayStatus(habit, selectedDate, value) : null;
 
   return (
-    <div className="habit-week-history">
-      <div className="habit-week-history-heading">
-        <span>RIWAYAT 7 HARI</span>
-        <small>{value.loading ? "Memuat…" : "Pilih hari untuk detail"}</small>
-      </div>
+    <details className="habit-week-history">
+      <summary className="habit-week-history-summary"><span>RIWAYAT 7 HARI</span><small>{value.loading ? "Memuat…" : "Pilih hari untuk detail"}</small><ChevronDown size={14} aria-hidden="true" /></summary>
+      <div className="habit-week-history-content">
       <div className="habit-week-history-days" role="group" aria-label={`Riwayat tujuh hari ${habit.title}`}>
         {value.dates.map((date) => {
           const day = habitDayStatus(habit, date, value);
@@ -604,6 +603,7 @@ export function HabitWeekHistory({ habit }: { habit: Habit }) {
         </div>
       )}
       {value.error && <small className="habit-week-history-note">Riwayat habit belum tersambung ke server.</small>}
-    </div>
+      </div>
+    </details>
   );
 }

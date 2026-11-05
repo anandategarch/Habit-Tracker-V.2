@@ -5604,3 +5604,85 @@ button:disabled:active {
   .weekly-history-legend { gap: 6px 9px; }
   .weekly-history-legend span { font-size: 8px; }
 }
+
+/* v0.8 — clean mobile rhythm, calm return, and optional detail panels. */
+.welcome-back-card,.weekly-reflection-card,.garden-personalize-row{display:flex;align-items:center;gap:13px;border:1px solid #e3ebdc;border-radius:19px;background:linear-gradient(115deg,#fffdf7,#f3f7ed)}
+.welcome-back-card{position:relative;margin:0 0 15px;padding:14px 42px 14px 14px}
+.welcome-back-art,.weekly-reflection-icon{display:grid;flex:none;place-items:center;width:43px;height:43px;border-radius:15px;color:#477653;background:#e5efdf}
+.welcome-back-copy,.weekly-reflection-copy{min-width:0;display:grid;gap:3px}
+.welcome-back-copy strong,.weekly-reflection-copy strong{color:#304c39;font-size:14px;font-weight:850}
+.welcome-back-copy p,.weekly-reflection-copy p{margin:0;color:#778273;font-size:11px;line-height:1.5}
+.welcome-back-close{position:absolute;top:8px;right:10px;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:10px;color:#7d8b79;background:transparent;font-size:20px;cursor:pointer}
+.garden-personalize-row{justify-content:space-between;margin:12px 0 16px;padding:10px 13px}
+.garden-personalize-row>div:first-child{display:grid;gap:3px}
+.garden-personalize-row strong{color:#4e694e;font-size:11px;font-weight:800}
+.garden-theme-options{display:flex;flex-wrap:wrap;gap:5px}
+.garden-theme-options button{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:5px 8px;border:1px solid #e5e9df;border-radius:999px;color:#6f7d6b;background:#fffdf8;font:inherit;font-size:10px;cursor:pointer}
+.garden-theme-options button.active{border-color:#9db99b;color:#365d40;background:#edf4e9}
+.garden-theme-options i{width:9px;height:9px;border-radius:50%;background:#8eae86}
+.garden-theme-options i.peach{background:#d9a28a}.garden-theme-options i.lavender{background:#a99bc8}
+.garden-theme-peach .botanical-hero{background:linear-gradient(120deg,#fff0e7,#fffaf3 58%,#f7eee5)}
+.garden-theme-lavender .botanical-hero{background:linear-gradient(120deg,#f0edf8,#fffdf8 58%,#edf1e8)}
+.garden-theme-peach .hero-ring-progress{stroke:#c98568}.garden-theme-lavender .hero-ring-progress{stroke:#8e82b5}
+.weekly-reflection-card{position:relative;margin:0 0 15px;padding:12px 15px}
+.weekly-reflection-icon{width:38px;height:38px}.weekly-reflection-copy{flex:1}.weekly-reflection-mark{margin-left:auto;color:#b6c99f;font-size:23px}
+.daily-focus-picker{display:grid;gap:5px;max-width:100%;margin:0 0 9px;color:#8a947f;font-size:9px;font-weight:850;letter-spacing:.08em}
+.daily-focus-picker select{width:100%;min-height:38px;padding:7px 30px 7px 10px;border:1px solid #dfe8d9;border-radius:11px;color:#385841;background:rgba(255,255,255,.78);font:inherit;font-size:12px;font-weight:750}
+.weekly-history-panel{padding:0;overflow:hidden}
+.weekly-history-summary{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;list-style:none}
+.weekly-history-summary::-webkit-details-marker,.habit-week-history-summary::-webkit-details-marker{display:none}
+.weekly-history-summary::marker,.habit-week-history-summary::marker{content:""}
+.weekly-history-summary .weekly-history-heading{flex:1;min-width:0;margin:0}
+.weekly-history-chevron,.habit-week-history-summary>svg{flex:none;color:#789075;transition:transform 180ms ease}
+.weekly-history-panel[open] .weekly-history-chevron,.habit-week-history[open] .habit-week-history-summary>svg{transform:rotate(180deg)}
+.weekly-history-content{padding:0 16px 14px}
+.habit-week-history{padding:0}
+.habit-week-history-summary{display:flex;align-items:center;gap:8px;min-height:38px;padding:5px 3px;color:#71816d;font-size:9px;font-weight:800;cursor:pointer;list-style:none}
+.habit-week-history-summary>span{flex:1}.habit-week-history-summary small{color:#9aa493;font-size:8px;font-weight:650}
+.habit-week-history-content{padding:0 0 4px}
+@media(max-width:760px){
+.botanical-dashboard-page{gap:11px}.welcome-back-card{gap:10px;margin-bottom:10px;padding:11px 38px 11px 11px;border-radius:16px}
+.welcome-back-art{width:36px;height:36px;border-radius:12px}.welcome-back-copy strong{font-size:13px}.welcome-back-copy p{font-size:10px}
+.garden-personalize-row{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 11px;margin:8px 0 12px}
+.garden-theme-options{width:100%}.garden-theme-options button{flex:1;justify-content:center;min-height:35px}
+.weekly-reflection-card{margin-bottom:11px;padding:10px 11px;gap:9px}.weekly-reflection-icon{width:34px;height:34px;border-radius:11px}
+.weekly-reflection-copy strong{font-size:12px}.weekly-reflection-copy p{font-size:10px}
+.daily-focus-picker select{min-height:42px;font-size:16px}
+.weekly-history-summary{padding:11px 12px}.weekly-history-content{padding:0 11px 12px}
+.habit-week-history-summary{min-height:42px}.habit-week-history-day{min-height:40px}
+.habit-toolbar{gap:8px}.habit-search{min-height:42px}
+.completion-filters{display:flex;width:100%;overflow-x:auto;gap:5px;padding-bottom:2px;scrollbar-width:none}
+.completion-filters button{flex:1 0 auto;min-height:38px;white-space:nowrap}
+.category-filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.category-filters button{flex:0 0 auto;min-height:36px}.habit-list>*{min-width:0}
+.dashboard-feature-grid,.dashboard-support-grid{grid-template-columns:minmax(0,1fr)}
+.botanical-hero{min-height:0;padding:17px;border-radius:22px}.hero-title{font-size:clamp(25px,7vw,34px)}
+.hero-description{max-width:28ch;font-size:11px}
+.stats-grid.botanical-stats-three{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stats-grid.botanical-stats-three>:last-child{grid-column:1/-1}
+.weekly-trend-layout{grid-template-columns:1fr;gap:9px}.weekly-trend-chart{min-height:96px}
+.daily-intention-actions{display:grid;grid-template-columns:1fr}.daily-intention-actions button{min-height:42px}
+}
+@media(max-width:390px){.weekly-history-summary .weekly-history-heading p{display:none}}
+@media(prefers-reduced-motion:reduce){.weekly-history-chevron,.habit-week-history-summary>svg{transition:none}}
+
+.weekly-milestones{margin-top:10px;padding-top:8px;border-top:1px solid #edf1e8}
+.weekly-milestones>summary{display:flex;align-items:center;gap:8px;min-height:34px;color:#6f806c;cursor:pointer;list-style:none;font-size:10px;font-weight:800}
+.weekly-milestones>summary::-webkit-details-marker{display:none}
+.weekly-milestones>summary::marker{content:""}
+.weekly-milestones>summary>span{display:inline-flex;flex:1;align-items:center;gap:6px}
+.weekly-milestones>summary>small{color:#899584;font-size:9px;font-weight:700}
+.weekly-milestones>summary>svg{transition:transform 160ms ease}
+.weekly-milestones[open]>summary>svg{transform:rotate(180deg)}
+.weekly-milestones-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:5px 0 2px}
+.weekly-milestone-item{display:flex;min-width:0;align-items:center;gap:7px;padding:8px;border:1px solid #edf0e8;border-radius:12px;background:#fbfcf8;opacity:.76}
+.weekly-milestone-item.is-unlocked{border-color:#dce9d8;background:#f1f7ed;opacity:1}
+.weekly-milestone-icon{display:grid;flex:none;place-items:center;width:28px;height:28px;border-radius:9px;color:#8d9b83;background:#eff2e9}
+.weekly-milestone-item.is-unlocked .weekly-milestone-icon{color:#4d8058;background:#dfedd9}
+.weekly-milestone-copy{display:grid;min-width:0;gap:2px}
+.weekly-milestone-copy strong{overflow:hidden;color:#52664f;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.weekly-milestone-copy small{color:#929b8b;font-size:8px}
+.weekly-milestone-status{margin-left:auto;color:#8a9685;font-size:8px;white-space:nowrap}
+.weekly-milestone-item.is-unlocked .weekly-milestone-status{color:#4e8258;font-weight:800}
+@media(max-width:760px){.weekly-milestones-grid{grid-template-columns:1fr}.weekly-milestone-item{padding:8px 9px}.weekly-milestone-status{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.weekly-milestones>summary>svg{transition:none}}
