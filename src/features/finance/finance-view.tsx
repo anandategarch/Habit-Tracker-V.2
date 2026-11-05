@@ -20,7 +20,7 @@ import {
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
-import { budgetNarrative, categoryEmoji, financeAnomaly, financeStory, noSpendDaysStory } from "@/lib/storytelling";
+import { budgetNarrative, categoryEmoji, financeAnomaly, financeStory } from "@/lib/storytelling";
 import { RichText } from "@/components/ui/rich-text";
 import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
@@ -90,13 +90,6 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const animatedIncome = useCountUp(displayedIncome, 860, 240);
   const animatedExpense = useCountUp(displayedExpense, 860, 320);
 
-  const periodEndKey = useMemo(() => {
-    if (monthKey === currentMonthKey) return todayKey;
-    const [year, month] = monthKey.split("-").map(Number);
-    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
-    return `${monthKey}-${String(lastDay).padStart(2, "0")}`;
-  }, [monthKey, currentMonthKey, todayKey]);
-
   function changeMonth(offset: number) {
     const [year, month] = monthKey.split("-").map(Number);
     const next = new Date(Date.UTC(year, month - 1 + offset, 1));
@@ -107,45 +100,6 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     }
   }
 
-  // Daily totals use the complete transaction history; the seven-day window
-  // is then anchored to the end of the selected report period.
-  const dailyTotals = useMemo(() => {
-    const totals = new Map<string, { income: number; expense: number }>();
-    transactions.forEach((transaction) => {
-      const current = totals.get(transaction.date) ?? { income: 0, expense: 0 };
-      current[transaction.type] += transaction.amount;
-      totals.set(transaction.date, current);
-    });
-    return totals;
-  }, [transactions]);
-
-  const cashflowWeek = useMemo(() => {
-    const endParts = periodEndKey.split("-").map(Number);
-    const periodEndUtc = new Date(Date.UTC(endParts[0], endParts[1] - 1, endParts[2]));
-    const dayFormatter = new Intl.DateTimeFormat("id-ID", {
-      weekday: "short",
-      day: "numeric",
-      timeZone: "Asia/Jakarta",
-    });
-    return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(periodEndUtc);
-      date.setUTCDate(periodEndUtc.getUTCDate() - (6 - index));
-      const iso = date.toISOString().slice(0, 10);
-      const totals = dailyTotals.get(iso) ?? { income: 0, expense: 0 };
-      return {
-        iso,
-        income: totals.income,
-        expense: totals.expense,
-        label: dayFormatter.format(new Date(iso + "T12:00:00+07:00")),
-      };
-    });
-  }, [dailyTotals, periodEndKey]);
-
-  const weeklyScale = Math.max(1, ...cashflowWeek.flatMap((day) => [day.income, day.expense]));
-  const weeklyIncome = cashflowWeek.reduce((sum, day) => sum + day.income, 0);
-  const weeklyExpense = cashflowWeek.reduce((sum, day) => sum + day.expense, 0);
-  // Hari tanpa catatan pengeluaran dalam jendela 7 hari (insight hemat).
-  const noSpendMessage = noSpendDaysStory({ days: cashflowWeek, totalExpense: weeklyExpense });
   const spendByCategory = useMemo(
     () => summarizeBudgets(monthTransactions, budgets),
     [monthTransactions, budgets],
@@ -189,12 +143,6 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     year: "numeric",
     timeZone: "Asia/Jakarta",
   }).format(new Date(monthKey + "-01T12:00:00+07:00"));
-  const periodEndLabel = new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(periodEndKey + "T12:00:00+07:00"));
   // Tiga keadaan: net = 0 sebelumnya salah menyatakan "pemasukan lebih besar"
   // padahal keduanya sama (audit v0.4.1).
   const cashflowMessage = net > 0
@@ -202,6 +150,21 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
     : net < 0
       ? "Pengeluaran pada periode ini lebih besar dari pemasukan."
       : "Pemasukan dan pengeluaran pada periode ini seimbang.";
+  const comparisonScale = Math.max(displayedIncome, displayedExpense, 1);
+  const incomeComparisonWidth = displayedIncome / comparisonScale * 100;
+  const expenseComparisonWidth = displayedExpense / comparisonScale * 100;
+  const expenseRatio = displayedIncome > 0
+    ? Math.round(displayedExpense / displayedIncome * 100)
+    : null;
+  const comparisonInsight = monthTransactions.length === 0
+    ? "Belum ada transaksi pada periode ini. Catat pemasukan atau pengeluaran untuk mulai melihat perbandingannya."
+    : displayedIncome > 0 && displayedExpense > displayedIncome
+      ? `Pengeluaran melampaui pemasukan sebesar ${formatCompactRupiah(displayedExpense - displayedIncome)}.`
+      : displayedIncome > 0
+        ? `Pengeluaran menggunakan ${expenseRatio}% dari total pemasukan.`
+        : displayedExpense > 0
+          ? "Belum ada pemasukan tercatat untuk dibandingkan dengan pengeluaran."
+          : cashflowMessage;
 
   // Banner cerita keuangan (v0.12): satu kalimat insight berkode warna + chip
   // fakta cepat — menggantikan tumpukan angka sebagai pesan pertama layar.
@@ -327,84 +290,42 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
         </section>
       </section>
 
-      <section className="card card-pad finance-chart-card" aria-labelledby="finance-cashflow-title">
-        <div className="finance-chart-header">
+      <section className="card card-pad finance-compare-card" aria-labelledby="finance-cashflow-title">
+        <div className="finance-compare-header">
           <div>
             <span className="finance-section-kicker">ARUS UANG</span>
             <h2 className="section-title" id="finance-cashflow-title">Pemasukan vs pengeluaran</h2>
-            <p className="section-caption">7 hari hingga {periodEndLabel} dalam periode terpilih</p>
-          </div>
-          <div className="finance-chart-totals" aria-label="Total arus uang pada tujuh hari periode terpilih">
-            <div><span className="finance-chart-dot income" /><span>Masuk</span><strong>{formatCompactRupiah(weeklyIncome)}</strong></div>
-            <div><span className="finance-chart-dot expense" /><span>Keluar</span><strong>{formatCompactRupiah(weeklyExpense)}</strong></div>
+            <p className="section-caption">Perbandingan total pada {monthLabel}</p>
           </div>
         </div>
-        {weeklyIncome === 0 && weeklyExpense === 0 ? (
-          <div className="finance-chart-empty">
-            <Sprout size={18} />
-            <span>Belum ada transaksi dalam tujuh hari pada periode ini.</span>
+
+        <div className="finance-compare-items">
+          <div className="finance-compare-item income">
+            <div className="finance-compare-label">
+              <span className="finance-compare-icon income" aria-hidden="true"><ArrowDownLeft size={16} /></span>
+              <span>Pemasukan</span>
+            </div>
+            <strong className="finance-compare-value">{formatCompactRupiah(displayedIncome)}</strong>
+            <div className="finance-compare-track" aria-hidden="true">
+              <span style={{ width: `${incomeComparisonWidth}%` }} />
+            </div>
           </div>
-        ) : (
-          <div className="finance-chart-plot">
-            <svg viewBox="0 0 600 154" role="img" aria-label="Grafik batang pemasukan dan pengeluaran harian pada tujuh hari periode terpilih">
-              <line className="finance-chart-gridline" x1="12" y1="16" x2="588" y2="16" />
-              <line className="finance-chart-gridline" x1="12" y1="64" x2="588" y2="64" />
-              <line className="finance-chart-baseline" x1="12" y1="112" x2="588" y2="112" />
-              {cashflowWeek.map((day, index) => {
-                const x = 30 + index * 82;
-                const incomeHeight = day.income / weeklyScale * 88;
-                const expenseHeight = day.expense / weeklyScale * 88;
-                return (
-                  <g
-                    key={day.iso}
-                    aria-label={`${day.label}: masuk ${formatRupiah(day.income)}, keluar ${formatRupiah(day.expense)}`}
-                  >
-                    <title>{`${day.label} — Masuk ${formatRupiah(day.income)}; Keluar ${formatRupiah(day.expense)}`}</title>
-                    <rect
-                      className="finance-chart-bar income"
-                      x={x}
-                      y={112 - incomeHeight}
-                      width="19"
-                      height={incomeHeight}
-                      rx="5"
-                    />
-                    <rect
-                      className="finance-chart-bar expense"
-                      x={x + 24}
-                      y={112 - expenseHeight}
-                      width="19"
-                      height={expenseHeight}
-                      rx="5"
-                    />
-                    <text className="finance-chart-day" x={x + 21} y="139" textAnchor="middle">{day.label}</text>
-                  </g>
-                );
-              })}
-            </svg>
+          <div className="finance-compare-item expense">
+            <div className="finance-compare-label">
+              <span className="finance-compare-icon expense" aria-hidden="true"><ArrowUpRight size={16} /></span>
+              <span>Pengeluaran</span>
+            </div>
+            <strong className="finance-compare-value">{formatCompactRupiah(displayedExpense)}</strong>
+            <div className="finance-compare-track" aria-hidden="true">
+              <span style={{ width: `${expenseComparisonWidth}%` }} />
+            </div>
           </div>
-        )}
-        {(weeklyIncome > 0 || weeklyExpense > 0) && (
-          <div className="finance-day-detail-grid" aria-label="Rincian pemasukan dan pengeluaran per hari">
-            {cashflowWeek.map((day) => (
-              <div className="finance-day-detail" key={day.iso}>
-                <span className="finance-day-detail-label">{day.label}</span>
-                <div className="finance-day-detail-value income">
-                  <small>Masuk</small>
-                  <strong>{formatCompactRupiah(day.income)}</strong>
-                </div>
-                <div className="finance-day-detail-value expense">
-                  <small>Keluar</small>
-                  <strong>{formatCompactRupiah(day.expense)}</strong>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        {noSpendMessage && (
-          <p className="finance-chart-insight" role="status">
-            <RichText text={noSpendMessage.message} />
-          </p>
-        )}
+        </div>
+
+        <div className={`finance-compare-insight ${net > 0 ? "is-positive" : net < 0 ? "is-negative" : "is-neutral"}`} role="status" aria-live="polite">
+          <span className="finance-compare-insight-mark" aria-hidden="true"><Sprout size={16} /></span>
+          <p>{comparisonInsight}</p>
+        </div>
       </section>
 
       <div className="finance-analysis-grid">
