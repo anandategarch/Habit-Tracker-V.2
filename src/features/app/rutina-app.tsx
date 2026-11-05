@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import { RutinaMark } from "@/components/ui/rutina-mark";
-import type { Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
+import type { Budget, Habit, TabId, Transaction, TransactionCategory, TransactionType } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { isScheduledOn, parseNumberList } from "@/lib/habit-schedule";
 import { summarizeTransactions } from "@/lib/finance";
@@ -17,6 +17,7 @@ import { FinanceView } from "@/features/finance/finance-view";
 import { CalendarView } from "@/features/calendar/calendar-view";
 import { InsightsView } from "@/features/insights/insights-view";
 import { EntryModal } from "@/components/ui/entry-modal";
+import { BudgetModal } from "@/components/ui/budget-modal";
 import { SearchDialog } from "@/components/ui/search-dialog";
 import { PwaInstallButton } from "@/components/pwa/install-button";
 import { useModules } from "@/lib/use-modules";
@@ -68,7 +69,7 @@ export function RutinaApp() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [hasPageTransitioned, setHasPageTransitioned] = useState(false);
   const previousActiveTab = useRef<TabId>("home");
-  const [modal, setModal] = useState<"habit" | "transaction" | null>(null);
+  const [modal, setModal] = useState<"habit" | "transaction" | "budget" | null>(null);
   const [toast, setToast] = useState<{ message: string; tone: "info" | "error" }>({ message: "", tone: "info" });
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,6 +92,7 @@ export function RutinaApp() {
     syncStatus,
     updateHabits,
     updateTransactions,
+    updateBudgets,
     refreshWorkspace,
     isReady: workspaceReady,
   } = useWorkspace();
@@ -436,6 +438,14 @@ export function RutinaApp() {
     showToast("Transaksi berhasil dicatat.");
   }
 
+  function submitBudget(nextBudgets: Budget[]) {
+    updateBudgets(nextBudgets);
+    setModal(null);
+    showToast(nextBudgets.length > 0
+      ? "Anggaran berhasil disimpan."
+      : "Semua anggaran dihapus.");
+  }
+
   if (!workspaceReady || !modulesReady) {
     return (
       <main className="workspace-loading" role="status" aria-live="polite">
@@ -672,7 +682,7 @@ export function RutinaApp() {
           <WorkspaceHistoryProvider value={workspaceHistory}>
           {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} focusTimerRemainingSeconds={focusTimer.remainingSeconds} focusTimerRunning={focusTimer.running} onFocusTimerToggle={toggleFocusTimer} onFocusTimerReset={resetFocusTimer} storySlot={<WeeklyStorySection transactions={transactions} checkins={modules.checkins} />} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onTimerToggle={toggleHabitTimer} activeTimerId={activeHabitTimer?.habitId ?? null} timerElapsedSeconds={activeHabitTimer ? Math.max(0, Math.floor((timerNow - activeHabitTimer.startedAt) / 1000)) : 0} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} onDeleteGroup={(groupId) => { const group = modules.habitGroups.find((item) => item.id === groupId); updateModule("habitGroups", (current) => current.filter((item) => item.id !== groupId)); if (group) updateHabits((current) => current.map((habit) => habit.groupName === group.name ? { ...habit, groupName: "" } : habit)); }} />}
-          {activeTab === "finance" && <><FinanceView transactions={transactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
+          {activeTab === "finance" && <><FinanceView transactions={transactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} onEditBudgets={() => setModal("budget")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
           {activeTab === "insights" && <InsightsView habits={habits} income={income} expense={expense} transactions={transactions} checkins={modules.checkins} />}
           {(activeTab === "goals" || activeTab === "checkin" || activeTab === "work" || activeTab === "wellness" || activeTab === "training" || activeTab === "tree" || activeTab === "settings") && <ModulesView tab={activeTab} modules={modules} updateModule={updateModule} />}
@@ -787,7 +797,8 @@ export function RutinaApp() {
         </div>
       </div>}
 
-      {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
+      {modal && modal !== "budget" && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
+      {modal === "budget" && <BudgetModal budgets={budgets} onClose={() => setModal(null)} onSubmit={submitBudget} />}
       {bloom && <FullBloomOverlay seed={bloom.seed} bloomStreak={bloom.streak} onClose={() => setBloom(null)} />}
       <SearchDialog
         open={searchOpen}

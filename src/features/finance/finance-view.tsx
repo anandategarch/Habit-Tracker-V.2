@@ -15,6 +15,7 @@ import {
   Heart,
   Plus,
   Receipt,
+  SlidersHorizontal,
   Sprout,
 } from "lucide-react";
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
@@ -36,12 +37,13 @@ const budgetIcons: Record<string, typeof Coffee> = {
 const categoryPaletteLength = 8;
 type TransactionFilter = "all" | "income" | "expense";
 
-export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
+export function FinanceView({ transactions, budgets, income, expense, onAdd, onEditBudgets }: {
   transactions: Transaction[];
   budgets: Budget[];
   income: number;
   expense: number;
   onAdd: () => void;
+  onEditBudgets: () => void;
 }) {
   const [filter, setFilter] = useState<TransactionFilter>("all");
   const [showAllTransactions, setShowAllTransactions] = useState(false);
@@ -389,6 +391,11 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
           <SectionHeading
             title="Kontrol anggaran"
             caption="Pantau realisasi terhadap batas bulanan"
+            action={
+              <button className="text-button" type="button" onClick={onEditBudgets}>
+                <SlidersHorizontal size={13} /> Atur
+              </button>
+            }
           />
           {monthKey !== currentMonthKey && (
             <p className="finance-budget-period-note">
@@ -440,9 +447,12 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
               })}
             </div>
           ) : (
-            <div className="finance-panel-empty">
+            <div className="finance-panel-empty budget-empty-with-action">
               <CircleDollarSign size={20} />
               <p>Belum ada kategori anggaran yang tersedia.</p>
+              <PrimaryButton onClick={onEditBudgets}>
+                <SlidersHorizontal size={14} /> Atur anggaran
+              </PrimaryButton>
             </div>
           )}
         </section>

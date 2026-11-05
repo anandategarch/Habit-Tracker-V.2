@@ -6814,3 +6814,187 @@ html[data-theme="dark"] .finance-compare-insight { color: var(--ink-soft); }
   .finx-wallet-row .finx-row-value { font-size: 10.5px; }
 }
 
+/* ===================================================================
+   ATUR ANGGARAN — modal editor budget (v0.13)
+   Material form Botanical: paper surface, border lembut, radius 13px
+   untuk kontrol, target sentuh minimal 40px, dark mode didukung.
+   =================================================================== */
+
+/* Empty state anggaran dengan CTA — susun vertikal agar tombol mudah
+   disentuh dan tidak menabrak ikon/teks. */
+.finance-panel-empty.budget-empty-with-action {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.budget-editor-empty {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  padding: 22px 16px;
+  border: 1.5px dashed #ddcebe;
+  border-radius: 16px;
+  color: #8b9185;
+  text-align: center;
+}
+.budget-editor-empty > svg { color: #78966d; }
+.budget-editor-empty p { margin: 0; max-width: 300px; font-size: 11px; line-height: 1.65; }
+
+.budget-editor-rows { display: grid; gap: 11px; }
+
+.budget-editor-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid #efe4d9;
+  border-radius: 16px;
+  background: #fffdf9;
+  transition: border-color .18s ease;
+}
+.budget-editor-row:hover { border-color: #e0d2c3; }
+.budget-editor-row:focus-within { border-color: #cdbfae; }
+
+.budget-editor-fields { display: grid; gap: 10px; min-width: 0; }
+@media (min-width: 431px) {
+  .budget-editor-fields { grid-template-columns: 1.15fr 1fr; }
+}
+
+.budget-editor-remove {
+  width: 40px;
+  height: 40px;
+  margin-top: 22px;
+  color: var(--danger);
+  border-color: #f0ddd6;
+  background: #fdf6f3;
+}
+.budget-editor-remove:hover {
+  color: #9c4f40;
+  border-color: #e3c4b8;
+  background: #fbeee9;
+}
+
+.budget-editor-error { grid-column: 1 / -1; }
+
+.budget-add-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1.5px dashed #c9d8c4;
+  border-radius: 14px;
+  background: transparent;
+  color: #4c7a5d;
+  font-size: 11px;
+  font-weight: 760;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.budget-add-row:hover { border-color: #a9c58f; background: #f4f8f1; color: #2f6245; }
+.budget-add-row:focus-visible { outline: none; border-color: #8f7ae5; box-shadow: 0 0 0 3px rgba(143, 122, 229, .18); }
+
+/* Dark mode */
+html[data-theme="dark"] .budget-editor-row {
+  border-color: #3a4a3c;
+  background: #233026;
+}
+html[data-theme="dark"] .budget-editor-row:hover { border-color: #4a5d4c; }
+html[data-theme="dark"] .budget-editor-row:focus-within { border-color: #556b57; }
+html[data-theme="dark"] .budget-editor-remove {
+  color: #d8a396;
+  border-color: #4e3b35;
+  background: #322925;
+}
+html[data-theme="dark"] .budget-editor-remove:hover {
+  color: #eabbb0;
+  border-color: #6a4b41;
+  background: #3d2f2a;
+}
+html[data-theme="dark"] .budget-editor-empty { border-color: #455946; color: #a9b8a4; }
+html[data-theme="dark"] .budget-editor-empty > svg { color: #8fae7f; }
+html[data-theme="dark"] .budget-add-row { border-color: #455946; color: #a9c58f; }
+html[data-theme="dark"] .budget-add-row:hover { border-color: #6d8a6a; background: #243227; color: #c9dfb9; }
+
+@media (max-width: 430px) {
+  .budget-editor-row { padding: 11px; }
+  .budget-editor-remove { margin-top: 0; align-self: stretch; }
+}
+
+/* ===================================================================
+   DARK MODE — FinanceExtrasPanel (finx-*) v0.13
+   Sebelumnya seluruh keluarga finx memakai latar putih/krem tetap,
+   sehingga kartu statistik, pil tab, dan kartu formulir menyala terang
+   di tema gelap. Blok ini menyelaraskannya dengan palet gelap Botanical
+   (surface #22301f, border #3a4a3c, ink #e8efe2) sesuai release gate
+   pedoman: tema terang/gelap harus sama-sama layak pakai.
+   =================================================================== */
+
+html[data-theme="dark"] .finx-stat {
+  border-color: #3a4a3c;
+  background: #22301f;
+  box-shadow: none;
+}
+html[data-theme="dark"] .finx-stat-copy strong { color: #e8efe2; }
+html[data-theme="dark"] .finx-stat-copy small,
+html[data-theme="dark"] .finx-stat-copy span { color: #a9b8a4; }
+
+html[data-theme="dark"] .finx-stat-icon.is-amber,
+html[data-theme="dark"] .finx-row-icon.is-amber { color: #d8ad69; background: #453a2a; }
+html[data-theme="dark"] .finx-stat-icon.is-peach,
+html[data-theme="dark"] .finx-row-icon.is-peach { color: #dfab85; background: #48372c; }
+html[data-theme="dark"] .finx-stat-icon.is-leaf,
+html[data-theme="dark"] .finx-row-icon.is-leaf { color: #a9c58f; background: #2e3f2c; }
+html[data-theme="dark"] .finx-stat-icon.is-cream,
+html[data-theme="dark"] .finx-row-icon.is-cream { color: #cfc7a8; background: #3d3a2a; }
+
+html[data-theme="dark"] .finx-tabs { background: #243227; }
+html[data-theme="dark"] .finx-tab { color: #a9b8a4; }
+html[data-theme="dark"] .finx-tab.active { color: #fff; }
+
+html[data-theme="dark"] .finx-form-card,
+html[data-theme="dark"] .finx-list-card {
+  border-color: #3a4a3c;
+  background: #22301f;
+  box-shadow: none;
+}
+html[data-theme="dark"] .finx-card-title strong { color: #e8efe2; }
+html[data-theme="dark"] .finx-card-title small { color: #a9b8a4; }
+
+html[data-theme="dark"] .finx-row { border-bottom-color: #33402f; }
+html[data-theme="dark"] .finx-row-copy strong { color: #d9e4d3; }
+html[data-theme="dark"] .finx-row-copy small { color: #a9b8a4; }
+html[data-theme="dark"] .finx-row-copy small b { color: #b7c4b0; }
+html[data-theme="dark"] .finx-row-value { color: #e8efe2; }
+html[data-theme="dark"] .finx-row-value.is-negative { color: #e2a088; }
+
+html[data-theme="dark"] .finx-delete { color: #e2a088; background: #3d2f2a; }
+html[data-theme="dark"] .finx-delete:active { background: #4a382f; }
+
+html[data-theme="dark"] .finx-badge.up { color: #b7d8a8; background: #2e3f2c; }
+html[data-theme="dark"] .finx-badge.due { color: #dfab85; background: #48372c; }
+html[data-theme="dark"] .finx-badge.paused { color: #a9b8a4; background: #2c352b; }
+html[data-theme="dark"] .finx-bar { background: #33402f; }
+
+html[data-theme="dark"] .finx .form-control { border-color: #455946; background: #1b2719; color: #e8efe2; }
+html[data-theme="dark"] .finx .form-control:focus { border-color: #8fae7f; outline-color: rgba(143, 174, 127, .16); }
+html[data-theme="dark"] .finx .form-label { color: #a9b8a4; }
+
+html[data-theme="dark"] .finx .module-empty { border-color: #455946; background: #1f2b1e; color: #a9b8a4; }
+html[data-theme="dark"] .finx .module-empty svg { color: #8fae7f; }
+html[data-theme="dark"] .finx-note { border-color: #455946; background: #1f2b1e; color: #a9b8a4; }
+
+html[data-theme="dark"] .finx-legend-row { border-bottom-color: #33402f; color: #a9b8a4; }
+html[data-theme="dark"] .finx-legend-row strong { color: #e8efe2; }
+html[data-theme="dark"] .finx-legend-row strong.is-income { color: #a9c58f; }
+html[data-theme="dark"] .finx-legend-row strong.is-expense { color: #dfab85; }
+
+html[data-theme="dark"] .finx-history-column strong { color: #d9e4d3; }
+html[data-theme="dark"] .finx-history-column small { color: #a9b8a4; }
+html[data-theme="dark"] .finx-history-column > div { background: #2c352b; }
+
+html[data-theme="dark"] .finx .section-title { color: #e8efe2; }
+html[data-theme="dark"] .finx .section-caption { color: #a9b8a4; }

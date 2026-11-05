@@ -1,6 +1,5 @@
 import "server-only";
 
-import { initialBudgets } from "@/lib/seed-data";
 import { getTursoClient } from "@/lib/server/turso";
 
 const schemaStatements = [
@@ -68,12 +67,9 @@ async function initializeSchema(): Promise<void> {
     await client.execute(statement);
   }
 
-  for (const budget of initialBudgets) {
-    await client.execute({
-      sql: "INSERT OR IGNORE INTO budgets (category, monthly_limit) VALUES (?, ?)",
-      args: [budget.category, budget.limit],
-    });
-  }
+  // Tidak ada data contoh yang dimasukkan otomatis. Anggaran kini diatur
+  // sendiri oleh pengguna lewat "Atur anggaran" pada halaman Keuangan,
+  // sesuai pedoman: jangan menampilkan data demo sebagai data nyata.
 }
 
 export async function ensureSchema(): Promise<void> {

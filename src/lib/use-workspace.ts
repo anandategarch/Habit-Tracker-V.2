@@ -3,9 +3,11 @@
 import { useEffect, useSyncExternalStore } from "react";
 import type { Budget, Habit, Transaction } from "@/lib/types";
 import { todayISO } from "@/lib/format";
-import { initialBudgets, initialHabits, getInitialTransactions } from "@/lib/seed-data";
 
-const STORAGE_KEY = "rutina.v2.workspace";
+// v3: kunci baru karena versi lama (v2) berpotensi berisi data demo bawaan
+// yang otomatis terpublish ke localStorage. Snapshot kini selalu dimulai
+// kosong — tidak ada lagi data contoh yang bisa lolos ke database.
+const STORAGE_KEY = "rutina.v3.workspace";
 const CHANGE_EVENT = "rutina:workspace-change";
 
 export interface WorkspaceSnapshot {
@@ -21,17 +23,15 @@ interface RemoteWorkspace extends WorkspaceSnapshot {
 type Update<T> = T | ((current: T) => T);
 type SyncStatus = "local" | "syncing" | "synced" | "error";
 
-// Dibangun ulang saat dipanggil agar tanggal demo (todayISO) tidak membeku
-// pada saat proses pertama kali memuat modul.
-function seedSnapshot(): WorkspaceSnapshot {
-  return {
-    habits: initialHabits,
-    transactions: getInitialTransactions(),
-    budgets: initialBudgets,
-  };
+// Snapshot awal selalu kosong: aplikasi dimulai tanpa data contoh apa pun
+// (pedoman: "Jangan menampilkan data demo seolah data keuangan nyata").
+// Data hanya muncul setelah pengguna menambahkannya sendiri atau setelah
+// sinkronisasi dengan server.
+function emptySnapshot(): WorkspaceSnapshot {
+  return { habits: [], transactions: [], budgets: [] };
 }
 
-const SERVER_SNAPSHOT = JSON.stringify(seedSnapshot());
+const SERVER_SNAPSHOT = JSON.stringify(emptySnapshot());
 let memorySnapshot = SERVER_SNAPSHOT;
 let syncStatus: SyncStatus = "local";
 let remoteReady = false;
@@ -45,7 +45,7 @@ if (typeof window !== "undefined") {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored) memorySnapshot = JSON.stringify(normalizeSnapshot(stored));
   } catch {
-    // Keep the in-memory demo snapshot when browser storage is unavailable.
+    // Snapshot kosong tetap dipakai bila penyimpanan browser tidak tersedia.
   }
 }
 
@@ -53,12 +53,12 @@ function normalizeSnapshot(raw: string): WorkspaceSnapshot {
   try {
     const parsed = JSON.parse(raw) as Partial<WorkspaceSnapshot>;
     return {
-      habits: Array.isArray(parsed.habits) ? parsed.habits : initialHabits,
-      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : getInitialTransactions(),
-      budgets: Array.isArray(parsed.budgets) ? parsed.budgets : initialBudgets,
+      habits: Array.isArray(parsed.habits) ? parsed.habits : [],
+      transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
+      budgets: Array.isArray(parsed.budgets) ? parsed.budgets : [],
     };
   } catch {
-    return seedSnapshot();
+    return emptySnapshot();
   }
 }
 
@@ -300,6 +300,14 @@ export function useWorkspace() {
     enqueueRemoteWrite(next);
   }
 
+  function updateBudgets(update: Update<Budget[]>): void {
+    const current = normalizeSnapshot(getSnapshot());
+    const budgets = typeof update === "function" ? update(current.budgets) : update;
+    const next = { ...current, budgets };
+    publishSnapshot(next);
+    enqueueRemoteWrite(next);
+  }
+
   return {
     habits: snapshot.habits,
     transactions: snapshot.transactions,
@@ -308,6 +316,7 @@ export function useWorkspace() {
     isReady,
     updateHabits,
     updateTransactions,
+    updateBudgets,
     refreshWorkspace,
   };
 }
