@@ -240,6 +240,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
             >
               <HabitRow
                 habit={habit}
+                variant="card"
                 onToggle={onToggle}
                 onAdjust={onAdjust}
                 paused={vacationMode}

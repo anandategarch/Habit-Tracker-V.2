@@ -570,39 +570,63 @@ function habitDayStatus(
 export function HabitWeekHistory({ habit }: { habit: Habit }) {
   const value = useWorkspaceHistory();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const today = todayISO();
   if (!value) return null;
   const selected = selectedDate ? habitDayStatus(habit, selectedDate, value) : null;
 
   return (
     <details className="habit-week-history">
-      <summary className="habit-week-history-summary"><span>RIWAYAT 7 HARI</span><small>{value.loading ? "Memuat…" : "Pilih hari untuk detail"}</small><ChevronDown size={14} aria-hidden="true" /></summary>
+      <summary className="habit-week-history-summary">
+        <span className="habit-week-history-summary-title">
+          <strong>7 HARI</strong>
+          <small>{value.loading ? "Memuat…" : value.error ? "Riwayat belum tersedia" : "Progres mingguan"}</small>
+        </span>
+        <span className="habit-week-history-preview" role="list" aria-label={`Ringkasan tujuh hari ${habit.title}`}>
+          {value.dates.map((date) => {
+            const day = habitDayStatus(habit, date, value);
+            return (
+              <span
+                key={date}
+                role="listitem"
+                className={`habit-week-history-preview-day is-${day.status}${date === today ? " is-today" : ""}`}
+                title={`${formatWeekday(date, "long")}, ${dateLabel(date)}: ${day.text}`}
+              >
+                <small>{formatWeekday(date)}</small>
+                <i aria-hidden="true">{day.status === "done" ? "✓" : day.status === "partial" ? "◔" : day.status === "off" ? "–" : ""}</i>
+              </span>
+            );
+          })}
+        </span>
+        <span className="habit-week-history-open-hint">Detail</span>
+        <ChevronDown size={14} aria-hidden="true" />
+      </summary>
       <div className="habit-week-history-content">
-      <div className="habit-week-history-days" role="group" aria-label={`Riwayat tujuh hari ${habit.title}`}>
-        {value.dates.map((date) => {
-          const day = habitDayStatus(habit, date, value);
-          return (
-            <button
-              key={date}
-              type="button"
-              className={`habit-week-history-day is-${day.status}${selectedDate === date ? " is-selected" : ""}`}
-              aria-pressed={selectedDate === date}
-              aria-label={`${formatWeekday(date, "long")}, ${dateLabel(date)}: ${day.text}`}
-              title={day.text}
-              onClick={() => setSelectedDate((current) => current === date ? null : date)}
-            >
-              <span>{formatWeekday(date)}</span>
-              <i aria-hidden="true">{day.status === "done" ? "✓" : day.status === "partial" ? "◔" : day.status === "off" ? "–" : ""}</i>
-            </button>
-          );
-        })}
-      </div>
-      {selected && selectedDate && (
-        <div className="habit-week-history-selected" aria-live="polite">
-          <strong>{formatWeekday(selectedDate, "long")}, {dateLabel(selectedDate)}</strong>
-          <span>{selected.text}</span>
+        <div className="habit-week-history-days" role="group" aria-label={`Riwayat tujuh hari ${habit.title}`}>
+          {value.dates.map((date) => {
+            const day = habitDayStatus(habit, date, value);
+            return (
+              <button
+                key={date}
+                type="button"
+                className={`habit-week-history-day is-${day.status}${selectedDate === date ? " is-selected" : ""}`}
+                aria-pressed={selectedDate === date}
+                aria-label={`${formatWeekday(date, "long")}, ${dateLabel(date)}: ${day.text}`}
+                title={day.text}
+                onClick={() => setSelectedDate((current) => current === date ? null : date)}
+              >
+                <span>{formatWeekday(date)}</span>
+                <i aria-hidden="true">{day.status === "done" ? "✓" : day.status === "partial" ? "◔" : day.status === "off" ? "–" : ""}</i>
+              </button>
+            );
+          })}
         </div>
-      )}
-      {value.error && <small className="habit-week-history-note">Riwayat habit belum tersambung ke server.</small>}
+        {selected && selectedDate && (
+          <div className="habit-week-history-selected" aria-live="polite">
+            <strong>{formatWeekday(selectedDate, "long")}, {dateLabel(selectedDate)}</strong>
+            <span>{selected.text}</span>
+          </div>
+        )}
+        {value.error && <small className="habit-week-history-note">Riwayat habit belum tersambung ke server.</small>}
       </div>
     </details>
   );

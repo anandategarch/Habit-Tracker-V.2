@@ -7333,3 +7333,397 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
   background: rgba(34, 48, 31, .9);
   color: #d9e4d3;
 }
+
+
+/* ================================================================
+   HABIT CARDS — compact hierarchy + visible weekly rhythm
+   Scoped to "Semua kebiasaan"; dashboard rows remain unchanged.
+   ================================================================ */
+.habits-panel .habit-list { gap: 10px; }
+
+.habits-panel .habit-draggable {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.habits-panel .habit-draggable:hover {
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--line));
+  box-shadow: var(--shadow-card);
+}
+.habits-panel .habit-draggable.is-pointer-dragging {
+  border-color: var(--primary);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+.habits-panel .habit-row-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.habits-panel .habit-row-card:hover {
+  transform: none;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.habits-panel .habit-row-card.is-complete {
+  background: color-mix(in srgb, var(--surface-green) 58%, var(--surface));
+}
+.habits-panel .habit-row-card .habit-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  color: var(--primary);
+  background: var(--surface-green);
+}
+.habits-panel .habit-row-card .habit-main {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+.habits-panel .habit-row-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.habits-panel .habit-row-heading .habit-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 780;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.habits-panel .habit-streak-chip {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: 4px;
+  padding: 5px 8px;
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--line));
+  border-radius: 999px;
+  color: var(--primary-strong);
+  background: var(--surface-green);
+  font-size: 9px;
+  line-height: 1;
+}
+.habits-panel .habit-streak-chip svg { flex: none; }
+.habits-panel .habit-streak-chip strong { font-size: 10px; font-weight: 850; }
+.habits-panel .habit-streak-chip small { color: var(--muted); font-size: 8px; font-weight: 700; }
+
+.habits-panel .habit-row-card .habit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 10px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.habits-panel .habit-row-card .habit-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.habits-panel .habit-context-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+.habits-panel .habit-context-tags .habit-detail-tag {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  background: var(--surface-soft);
+  font-size: 8px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.habits-panel .habit-row-card .habit-amount-progress {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  margin-top: 1px;
+}
+.habits-panel .habit-row-card .habit-amount-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 9px;
+}
+.habits-panel .habit-row-card .habit-amount-caption strong {
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 780;
+  font-variant-numeric: tabular-nums;
+}
+.habits-panel .habit-row-card .module-progress-track { height: 7px; }
+
+.habits-panel .habit-row-card .habit-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+.habits-panel .habit-check-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 11px 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--primary-strong);
+  background: var(--surface-soft);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.habits-panel .habit-check-icon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--line));
+  border-radius: 50%;
+  color: var(--primary);
+  background: var(--surface);
+}
+.habits-panel .habit-check-action.is-complete {
+  border-color: var(--primary);
+  color: var(--surface);
+  background: var(--primary);
+}
+.habits-panel .habit-check-action.is-complete .habit-check-icon {
+  border-color: color-mix(in srgb, var(--surface) 35%, transparent);
+  color: var(--surface);
+  background: color-mix(in srgb, var(--surface) 13%, transparent);
+}
+.habits-panel .habit-check-action:disabled { cursor: not-allowed; opacity: .55; }
+.habits-panel .habit-row-card .habit-amount-stepper { display: flex; align-items: center; gap: 6px; }
+.habits-panel .habit-row-card .habit-amount-stepper button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--primary-strong);
+  background: var(--surface-soft);
+  font-size: 18px;
+  font-weight: 650;
+}
+.habits-panel .habit-row-card .habit-amount-stepper button:disabled { cursor: not-allowed; opacity: .45; }
+.habits-panel .habit-row-card .habit-kind-note {
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+/* Seven-day summary is visible before opening the detailed history. */
+.habits-panel .habit-week-history {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface-soft);
+}
+.habits-panel .habit-week-history-summary {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 56px;
+  padding: 7px 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  list-style: none;
+}
+.habits-panel .habit-week-history-summary-title {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.habits-panel .habit-week-history-summary-title strong {
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .55px;
+}
+.habits-panel .habit-week-history-summary-title small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.habits-panel .habit-week-history-preview {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+.habits-panel .habit-week-history-preview-day {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 2px 0;
+  border-radius: 8px;
+}
+.habits-panel .habit-week-history-preview-day > small {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.habits-panel .habit-week-history-preview-day > i {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 850;
+  line-height: 1;
+}
+.habits-panel .habit-week-history-preview-day.is-done > i {
+  border-color: var(--primary);
+  color: var(--surface);
+  background: var(--primary);
+}
+.habits-panel .habit-week-history-preview-day.is-partial > i {
+  border-color: color-mix(in srgb, var(--sage) 70%, var(--line));
+  color: var(--primary-strong);
+  background: color-mix(in srgb, var(--sage) 25%, var(--surface));
+}
+.habits-panel .habit-week-history-preview-day.is-off > i {
+  border-style: dashed;
+  background: transparent;
+}
+.habits-panel .habit-week-history-preview-day.is-today > small {
+  color: var(--primary-strong);
+  font-weight: 850;
+}
+.habits-panel .habit-week-history-open-hint {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.habits-panel .habit-week-history-summary > svg {
+  color: var(--muted);
+  transition: transform 180ms ease;
+}
+.habits-panel .habit-week-history[open] .habit-week-history-summary > svg { transform: rotate(180deg); }
+.habits-panel .habit-week-history-content { padding: 0 13px 10px; }
+.habits-panel .habit-week-history-days { gap: 6px; }
+.habits-panel .habit-week-history-day > i {
+  width: 19px;
+  height: 19px;
+}
+
+/* Responsive card density and drag-handle placement. */
+@media (max-width: 760px) {
+  .habits-panel .habit-row-card {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 13px 12px;
+  }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) {
+    grid-template-columns: 18px 34px minmax(0, 1fr) auto;
+    gap: 7px;
+  }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-drag-handle {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    margin: 0;
+  }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-icon { grid-column: 2; }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-main { grid-column: 3; }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-row-actions { grid-column: 4; }
+  .habits-panel .habit-row-card .habit-icon { width: 38px; height: 38px; }
+  .habits-panel .habit-week-history-summary {
+    grid-template-columns: 78px minmax(0, 1fr) auto auto;
+    gap: 7px;
+    min-height: 52px;
+    padding-inline: 11px;
+  }
+}
+@media (max-width: 430px) {
+  .habits-panel .habit-row-card {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 12px 10px;
+  }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) {
+    grid-template-columns: 17px 32px minmax(0, 1fr) auto;
+    gap: 6px;
+    padding-inline: 8px;
+  }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-icon { grid-column: 2; width: 32px; height: 32px; }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-main { grid-column: 3; }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-row-actions { grid-column: 4; }
+  .habits-panel .habit-row-card .habit-icon { width: 34px; height: 34px; }
+  .habits-panel .habit-row-heading { gap: 5px; }
+  .habits-panel .habit-row-heading .habit-name { font-size: 12px; }
+  .habits-panel .habit-check-action { min-height: 36px; gap: 5px; padding: 0 8px 0 6px; font-size: 9px; }
+  .habits-panel .habit-check-icon { width: 22px; height: 22px; }
+  .habits-panel .habit-week-history-summary {
+    grid-template-columns: 65px minmax(0, 1fr) auto;
+    gap: 6px;
+    min-height: 50px;
+    padding-inline: 9px;
+  }
+  .habits-panel .habit-week-history-open-hint { display: none; }
+  .habits-panel .habit-week-history-preview-day > small { font-size: 7px; }
+  .habits-panel .habit-week-history-preview-day > i { width: 15px; height: 15px; }
+}
+@media (max-width: 390px) {
+  .habits-panel .habit-row-card { gap: 6px; padding-inline: 8px; }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) { grid-template-columns: 16px 30px minmax(0, 1fr) auto; gap: 5px; }
+  .habits-panel .habit-row-card:has(.habit-drag-handle) > .habit-icon { width: 30px; height: 30px; }
+  .habits-panel .habit-streak-chip { padding: 4px 6px; }
+  .habits-panel .habit-week-history-summary { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .habits-panel .habit-draggable,
+  .habits-panel .habit-week-history-summary > svg { transition: none; }
+}
