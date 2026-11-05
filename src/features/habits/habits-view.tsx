@@ -9,6 +9,7 @@ import { isScheduledOn } from "@/lib/habit-schedule";
 import { todayISO } from "@/lib/format";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { HabitWeekHistory } from "@/components/ui/weekly-history";
+import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 type CompletionFilter = "all" | "pending" | "completed";
 const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
@@ -213,6 +214,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onTimerToggle, a
 
       <div className="habit-overview-grid">
         <section className="card habit-progress-card">
+          <BotanicalIllustrationBackdrop variant="habit" />
           <div className="habit-progress-copy">
             <div className="small-label">PROGRESS HARI INI</div>
             <div className="habit-progress-value">{progress}<span>%</span></div>

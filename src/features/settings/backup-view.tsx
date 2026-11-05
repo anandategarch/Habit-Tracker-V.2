@@ -3,6 +3,7 @@
 import { useState, type ChangeEvent } from "react";
 import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sprout } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import type { WorkspaceSettings } from "@/lib/module-types";
 import { APP_VERSION_LABEL } from "@/lib/version";
 
@@ -95,6 +96,7 @@ export function BackupView({ settings, onUpdateSettings }: {
   return <>
     <PageIntro eyebrow="PREFERENSI & DATA" title="Ruang nyaman untuk bertumbuh." subtitle="Atur suasana Rutina dan jaga catatan kebiasaanmu tetap aman." />
     <section className="settings-profile-card">
+      <BotanicalIllustrationBackdrop variant="settings" />
       <span className="settings-profile-mark">
         {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis untuk ukuran profil kecil */}
         <img src="/illustrations/avatar.png" alt="Ilustrasi profil Rutina" width={52} height={52} />

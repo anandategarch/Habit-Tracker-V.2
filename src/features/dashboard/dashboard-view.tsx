@@ -6,6 +6,7 @@ import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
 import { FocusTimer } from "@/features/focus/focus-timer";
+import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 const RING_RADIUS = 31;
@@ -187,6 +188,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
 
       <section className="hero-card botanical-hero" aria-label="Ringkasan perkembangan hari ini">
+        <BotanicalIllustrationBackdrop variant="home" />
         <div className="hero-copy">
           <div className="hero-kicker">{vacationMode ? "A MOMENT TO REST" : "YOUR LITTLE GARDEN"}</div>
           <h2 className="hero-title">Tumbuh pelan,<br />tetap bertumbuh.</h2>

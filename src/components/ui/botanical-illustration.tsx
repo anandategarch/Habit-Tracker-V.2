@@ -236,3 +236,28 @@ export function BotanicalIllustration({ variant = "sprout", className = "" }: {
     </div>
   );
 }
+
+
+/**
+ * Large, low-contrast artwork layer for hero and summary cards.
+ * Keep this decorative layer separate from the foreground PageIntro artwork.
+ */
+export function BotanicalIllustrationBackdrop({ variant, className = "" }: {
+  variant: BotanicalIllustrationVariant;
+  className?: string;
+}) {
+  const palette = palettes[variant];
+  return (
+    <span
+      className={`botanical-card-art botanical-card-art--${variant} ${className}`}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 180 132" fill="none" focusable="false">
+        <circle cx="126" cy="58" r="48" fill={palette.halo} />
+        <circle cx="158" cy="21" r="6" fill={palette.blush} opacity=".55" />
+        <path d="M15 116c21-10 42-10 63 0" stroke={palette.leaf} strokeWidth="2" strokeLinecap="round" opacity=".5" />
+        <Scene variant={variant} palette={palette} />
+      </svg>
+    </span>
+  );
+}

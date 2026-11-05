@@ -6263,3 +6263,158 @@ input[type="radio"] { accent-color: #417a57; }
   background: linear-gradient(115deg, #fffdf7, #f8f3e9);
   box-shadow: 0 8px 24px rgba(120, 100, 70, .08);
 }
+
+
+/* ==========================================================================
+   BOTANICAL CARD BACKDROPS · ALL 12 TABS
+   Each main tab gets one contextual SVG watermark inside its primary card.
+   Art stays behind controls/content and does not add layout height or scroll.
+   ========================================================================== */
+.botanical-card-art {
+  position: absolute;
+  z-index: 0;
+  right: -10px;
+  bottom: -18px;
+  display: block;
+  width: clamp(142px, 19vw, 218px);
+  height: auto;
+  margin: 0;
+  opacity: .18;
+  line-height: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.botanical-card-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.botanical-hero,
+.habit-progress-card,
+.finance-balance,
+.calendar-summary,
+.insight-highlight,
+.goal-list-panel,
+.module-art-card,
+.tree-journey-hero,
+.settings-profile-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.botanical-hero .hero-copy,
+.botanical-hero .hero-quote-bubble,
+.botanical-hero .hero-progress-card {
+  z-index: 2;
+}
+.habit-progress-card > :not(.botanical-card-art),
+.calendar-summary > :not(.botanical-card-art),
+.insight-highlight > :not(.botanical-card-art),
+.goal-list-panel > :not(.botanical-card-art),
+.module-art-card > :not(.botanical-card-art),
+.tree-journey-hero > :not(.botanical-card-art),
+.settings-profile-card > :not(.botanical-card-art) {
+  position: relative;
+  z-index: 1;
+}
+.botanical-hero .botanical-card-art--home {
+  right: 1.5%;
+  bottom: -22px;
+  width: clamp(205px, 27vw, 282px);
+  opacity: .2;
+}
+.habit-progress-card .botanical-card-art--habit {
+  right: -4px;
+  bottom: -26px;
+  width: 178px;
+  opacity: .17;
+}
+.finance-balance .botanical-card-art--finance {
+  right: -7px;
+  bottom: -24px;
+  width: 192px;
+  opacity: .17;
+  filter: brightness(0) invert(1);
+}
+.calendar-summary .botanical-card-art--calendar {
+  right: -10px;
+  bottom: -20px;
+  width: 168px;
+  opacity: .18;
+}
+.insight-highlight .botanical-card-art--insights {
+  right: -10px;
+  bottom: -25px;
+  width: 158px;
+  opacity: .17;
+}
+.goal-list-panel .botanical-card-art--goals {
+  right: -10px;
+  bottom: -24px;
+  width: 178px;
+  opacity: .13;
+}
+.module-art-card .botanical-card-art {
+  right: -8px;
+  bottom: -22px;
+  width: 166px;
+  opacity: .13;
+}
+.tree-journey-hero .botanical-card-art--tree {
+  right: 28%;
+  bottom: 6px;
+  width: clamp(175px, 22vw, 228px);
+  opacity: .1;
+}
+.settings-profile-card .botanical-card-art--settings {
+  right: 72px;
+  bottom: -30px;
+  width: 142px;
+  opacity: .13;
+}
+
+html[data-theme="dark"] .botanical-card-art {
+  opacity: .11;
+  filter: saturate(.68) brightness(.95);
+}
+html[data-theme="dark"] .finance-balance .botanical-card-art--finance {
+  opacity: .15;
+  filter: brightness(0) invert(1);
+}
+
+@media (max-width: 760px) {
+  .botanical-card-art {
+    right: -8px;
+    bottom: -15px;
+    width: 142px;
+    opacity: .13;
+  }
+  .botanical-hero .botanical-card-art--home {
+    right: -3px;
+    bottom: -18px;
+    width: 188px;
+    opacity: .16;
+  }
+  .habit-progress-card .botanical-card-art--habit { width: 145px; opacity: .14; }
+  .finance-balance .botanical-card-art--finance { width: 158px; opacity: .14; }
+  .calendar-summary .botanical-card-art--calendar { width: 140px; opacity: .14; }
+  .insight-highlight .botanical-card-art--insights { width: 135px; opacity: .13; }
+  .goal-list-panel .botanical-card-art--goals { width: 145px; opacity: .1; }
+  .module-art-card .botanical-card-art { width: 132px; opacity: .1; }
+  .tree-journey-hero .botanical-card-art--tree {
+    right: 17%;
+    bottom: 3px;
+    width: 150px;
+    opacity: .08;
+  }
+  .settings-profile-card .botanical-card-art--settings {
+    right: 54px;
+    bottom: -24px;
+    width: 112px;
+    opacity: .1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .botanical-card-art { animation: none !important; transition: none !important; }
+}
