@@ -1,4 +1,4 @@
-const STATIC_CACHE = "rutina-static-v14";
+const STATIC_CACHE = "rutina-static-v15";
 const STATIC_PREFIX = "/_next/static/";
 const PUBLIC_ASSET = /^\/(?:icons\/|favicon\.ico$|apple-touch-icon)/;
 

@@ -270,8 +270,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
     padding:9px 8px calc(9px + env(safe-area-inset-bottom)); border-top:1px solid rgba(226,233,225,.9);
     background:rgba(255,255,255,.94); backdrop-filter:blur(18px);
   }
-  .bottom-nav button { display:grid; justify-items:center; align-content:center; gap:4px; min-height:49px; border:0; border-radius:13px; color:#8b968e; background:transparent; font-size:9px; font-weight:700; }
-  .bottom-nav button.active { color:var(--primary); background:#edf3ec; }
+  .bottom-nav button { display:grid; justify-items:center; align-content:center; gap:4px; min-height:49px; border:0; border-radius:13px; color:#8b968e; background:transparent; font-size:9px; font-weight:700; position:relative; z-index:1; }
+  .bottom-nav button.active { color:var(--primary); background:transparent; }
+  /* Pill aktif yang meluncur antar tab (bukan teleport). */
+  .bottom-nav-pill { position:absolute; top:9px; height:49px; border-radius:13px; background:#edf3ec; z-index:0; pointer-events:none; transition:left .38s var(--ease-spring), width .38s var(--ease-spring); }
 }
 @media (max-width:680px) {
   body { font-size:13px; }
@@ -2797,4 +2799,146 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   .finance-current-month { min-height:33px; padding:0 6px; font-size:8px; }
   .finance-month-input-wrap { gap:4px; padding:0 6px; }
   .finance-day-detail-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+/* --------------------------------------------------------------------------
+   Fase 1 & 2 — Kebun yang hidup: leaf burst, full bloom, ritme kebun.
+   Warna mengikuti PEDOMAN UI: hijau botani + aksen peach/coral lembut.
+   -------------------------------------------------------------------------- */
+
+/* Leaf burst — ledakan daun & kelopak saat habit diselesaikan. */
+.fx-leaf-burst { position:fixed; z-index:90; width:0; height:0; pointer-events:none; }
+.fx-leaf-burst i {
+  position:absolute; left:-5px; top:-5px; width:10px; height:10px;
+  opacity:0; will-change:transform,opacity;
+  animation:fx-leaf-fly .95s var(--ease-spring) var(--fx-d, 0ms) both;
+}
+.fx-leaf-burst .fx-leaf { border-radius:0 50% 0 50%; }
+.fx-leaf-burst .fx-petal { border-radius:50% 50% 50% 12%; }
+.fx-leaf-burst .fx-spark { width:5px; height:5px; border-radius:50%; background:#f5d9a8; left:-2px; top:-2px; }
+@keyframes fx-leaf-fly {
+  0% { transform:translate(0,0) rotate(0deg) scale(calc(var(--fx-s,1)*.4)); opacity:0; }
+  18% { opacity:1; }
+  100% { transform:translate(var(--fx-x,0px), var(--fx-y,-40px)) rotate(var(--fx-r,90deg)) scale(var(--fx-s,1)); opacity:0; }
+}
+
+/* Full Bloom — perayaan layar penuh saat 100% habit selesai. */
+.fx-bloom-layer {
+  position:fixed; inset:0; z-index:95; display:grid; place-items:center;
+  padding:24px; background:rgba(41,42,37,.42);
+  animation:rutina-backdrop-in .3s ease both; backdrop-filter:blur(5px);
+}
+.fx-bloom-glow { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 42%, rgba(246,212,184,.4), transparent 62%); pointer-events:none; }
+.fx-bloom-panel {
+  position:relative; width:min(420px, 100%); display:grid; justify-items:center; gap:14px;
+  padding:26px 22px 20px; border:1px solid #e8ded2; border-radius:24px;
+  background:linear-gradient(150deg,#fffdf9,#f3f7ed);
+  box-shadow:0 24px 64px rgba(44,39,31,.28);
+  text-align:center; overflow:hidden;
+  animation:rutina-sheet-in .42s var(--ease-spring) both;
+}
+.fx-bloom-fall { position:absolute; inset:0; pointer-events:none; }
+.fx-bloom-fall i {
+  position:absolute; top:-14px; width:8px; height:12px; border-radius:50% 50% 50% 12%;
+  background:#f2a48c; opacity:0; animation:fx-petal-fall 3s linear both;
+}
+.fx-bloom-fall i:nth-child(1) { left:12%; animation-delay:.15s; }
+.fx-bloom-fall i:nth-child(2) { left:26%; background:#f5d9a8; animation-delay:.55s; transform:scale(.8); }
+.fx-bloom-fall i:nth-child(3) { left:41%; animation-delay:.35s; }
+.fx-bloom-fall i:nth-child(4) { left:57%; background:#a3c585; animation-delay:.75s; transform:scale(.85); }
+.fx-bloom-fall i:nth-child(5) { left:69%; animation-delay:.25s; }
+.fx-bloom-fall i:nth-child(6) { left:81%; background:#f5d9a8; animation-delay:.65s; transform:scale(.75); }
+.fx-bloom-fall i:nth-child(7) { left:92%; animation-delay:.95s; background:#7fb069; transform:scale(.8); }
+.fx-bloom-fall i:nth-child(8) { left:5%; background:#f2a48c; animation-delay:.85s; transform:scale(.7); }
+@keyframes fx-petal-fall {
+  0% { transform:translateY(0) rotate(0deg); opacity:0; }
+  12% { opacity:.9; }
+  100% { transform:translateY(340px) rotate(220deg); opacity:0; }
+}
+.fx-bloom-flower { width:132px; height:132px; }
+.fx-bloom-flower svg { width:100%; height:100%; overflow:visible; }
+/* transform-box agar animasi CSS tiap kelopak skala/rotasi di sekitar
+   pusat kelopak itu sendiri, tanpa menimpa rotasi <g> induknya. */
+.fx-bloom-petal, .fx-bloom-core { transform-box: fill-box; transform-origin: center; }
+.fx-bloom-petal { opacity:0; animation:fx-petal-bloom .5s var(--ease-spring) both; }
+.fx-bloom-core { opacity:0; animation:fx-core-pop .45s var(--ease-spring) both; }
+.fx-bloom-halo { opacity:0; animation:rutina-backdrop-in .6s ease both; transform-origin:60px 60px; }
+.fx-bloom-leafone, .fx-bloom-leaftwo { opacity:0; animation:fx-leaf-unfold .5s var(--ease-spring) both; }
+@keyframes fx-petal-bloom {
+  0% { opacity:0; transform:scale(.2) rotate(-50deg); }
+  100% { opacity:1; transform:scale(1) rotate(0deg); }
+}
+@keyframes fx-core-pop {
+  0% { opacity:0; transform:scale(.3); }
+  70% { transform:scale(1.12); }
+  100% { opacity:1; transform:scale(1); }
+}
+@keyframes fx-leaf-unfold {
+  0% { opacity:0; transform:translateY(6px) rotate(-14deg); }
+  100% { opacity:1; transform:translateY(0) rotate(0deg); }
+}
+.fx-bloom-copy { display:grid; gap:5px; justify-items:center; }
+.fx-bloom-kicker { font-size:9px; font-weight:900; letter-spacing:1.4px; color:#8a947f; }
+.fx-bloom-copy h2 { margin:0; font-size:22px; letter-spacing:-.7px; color:#304c39; }
+.fx-bloom-copy p { margin:0; max-width:300px; color:#778273; font-size:11.5px; line-height:1.55; }
+.fx-bloom-seed {
+  display:grid; grid-template-columns:auto 1fr; gap:4px 12px; align-items:center;
+  width:100%; padding:13px 15px; border:1px solid #e3ebdc; border-radius:17px;
+  background:#fffdf8; text-align:left;
+  animation:rutina-rise .5s var(--ease-spring) .45s both;
+}
+.fx-bloom-seed-icon { display:grid; place-items:center; width:44px; height:44px; border-radius:15px; background:#e5efdf; color:#477653; grid-row:span 2; }
+.fx-bloom-seed-copy { display:grid; gap:2px; }
+.fx-bloom-seed-copy small { font-size:8.5px; font-weight:900; letter-spacing:1.1px; color:#8a947f; }
+.fx-bloom-seed-copy strong { font-size:14.5px; font-weight:850; color:#304c39; }
+.fx-bloom-seed-copy span { font-size:10.5px; color:#778273; }
+.fx-bloom-seed-streak { grid-column:1 / -1; font-size:10px; font-weight:800; font-style:normal; color:#52845a; border-top:1px dashed #dfe8d9; padding-top:8px; margin-top:2px; }
+.fx-bloom-seed[data-rarity="langka"] .fx-bloom-seed-icon { background:#fdeede; color:#b07a3e; }
+.fx-bloom-seed[data-rarity="langka"] { border-color:#eedfc8; }
+.fx-bloom-seed[data-rarity="legendaris"] { border-color:#cdbf8f; background:linear-gradient(120deg,#fffdf8,#f7f1dd); }
+.fx-bloom-seed[data-rarity="legendaris"] .fx-bloom-seed-icon { background:#f1e7c6; color:#8a743a; }
+.fx-bloom-seed[data-rarity="legendaris"] .fx-bloom-seed-copy strong { color:#6e5c2e; }
+.fx-bloom-close {
+  width:100%; min-height:46px; border:0; border-radius:14px;
+  background:#417a57; color:#fff; font:800 13px "Nunito Variable",sans-serif;
+  cursor:pointer; transition:transform .18s var(--ease-spring), box-shadow .18s ease;
+}
+.fx-bloom-close:hover { transform:translateY(-1px); box-shadow:0 10px 24px rgba(65,122,87,.28); }
+.fx-bloom-close:focus-visible { outline:3px solid #a3c585; outline-offset:2px; }
+
+/* Ritme kebun — kartu perisai / layu (loss aversion + perlindungan). */
+.garden-rhythm-card {
+  display:flex; align-items:center; gap:13px;
+  margin:0 0 15px; padding:14px 16px; border-radius:19px;
+  border:1px solid #e3ebdc; background:linear-gradient(115deg,#fffdf7,#f3f7ed);
+  animation:rutina-rise .5s var(--ease-spring) both;
+}
+.garden-rhythm-icon { display:grid; place-items:center; flex:none; width:43px; height:43px; border-radius:15px; background:#e5efdf; color:#477653; }
+.garden-rhythm-copy { display:grid; gap:3px; min-width:0; }
+.garden-rhythm-copy strong { color:#304c39; font-size:14px; font-weight:850; }
+.garden-rhythm-copy p { margin:0; color:#778273; font-size:11px; line-height:1.5; }
+.garden-rhythm-copy small { color:#52845a; font-size:10px; font-weight:800; }
+.garden-rhythm-card.shield { border-color:#d9e7d7; background:linear-gradient(115deg,#fffdf7,#eaf4e6); }
+.garden-rhythm-card.shield .garden-rhythm-icon { background:#e5efdf; color:#2f6245; }
+.garden-rhythm-card.parched { border-color:#efe3cf; background:linear-gradient(115deg,#fffdf7,#faf3e6); }
+.garden-rhythm-card.parched .garden-rhythm-icon { background:#fdeede; color:#b07a3e; }
+.garden-rhythm-card.wilted { border-color:#e8dfce; background:linear-gradient(115deg,#fffdf7,#f6f2e9); }
+.garden-rhythm-card.wilted .garden-rhythm-icon { background:#f1ece0; color:#8f8368; }
+.garden-rhythm-card.wilted .garden-rhythm-copy strong { color:#6e664e; }
+
+/* Chip koleksi benih di baris personalisasi taman. */
+.garden-seed-chip {
+  flex:none; display:inline-flex; align-items:center; gap:5px; align-self:center;
+  padding:6px 11px; border:1px solid #e3ebdc; border-radius:999px;
+  background:#fffdf8; color:#5f6f5c; font-size:10px; font-weight:750;
+  white-space:nowrap;
+}
+.garden-seed-chip strong { color:#2f6245; font-weight:900; }
+
+@media (max-width:680px) {
+  .garden-rhythm-card { gap:10px; padding:11px 12px; border-radius:16px; margin-bottom:10px; }
+  .garden-rhythm-icon { width:38px; height:38px; }
+  .fx-bloom-panel { border-radius:20px; padding:22px 16px 16px; gap:12px; }
+  .fx-bloom-flower { width:128px; height:128px; }
+  .fx-bloom-copy h2 { font-size:19px; }
 }

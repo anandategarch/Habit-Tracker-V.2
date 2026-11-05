@@ -8,6 +8,7 @@ import {
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
 import { scheduleLabel } from "@/lib/habit-schedule";
+import { burstLeaves } from "@/components/ui/celebrate";
 
 function pageArtwork(eyebrow: string): BotanicalIllustrationVariant | null {
   const label = eyebrow.toLocaleUpperCase("id-ID");
@@ -98,7 +99,7 @@ function HabitRow({ habit, onToggle, onAdjust, onTimerToggle, onViewTimeAnalysis
         {avoid && <small className="habit-kind-note">Streak dihitung pada hari berhasil menghindari kebiasaan ini.</small>}
       </div>
       <div className="habit-row-actions">
-        {amountHabit ? <div className="habit-amount-stepper"><button type="button" aria-label={`Kurangi ${habit.title}`} disabled={current <= 0 || paused} onClick={() => onAdjust?.(habit.id, -1)}>−</button><button type="button" aria-label={`Tambah ${habit.title}`} disabled={!onAdjust || paused} onClick={() => onAdjust?.(habit.id, 1)}>+</button></div> : <button type="button" className={`check-button ${habit.completed ? "done" : ""}`} aria-label={habit.completed ? (avoid ? `Catat pelanggaran ${habit.title}` : `Batalkan ${habit.title}`) : (avoid ? `Tandai hari bersih ${habit.title}` : `Tandai ${habit.title} selesai`)} aria-pressed={habit.completed} disabled={paused} onClick={() => onToggle(habit.id)}>{habit.completed && <Check size={15} strokeWidth={2.8} />}</button>}
+        {amountHabit ? <div className="habit-amount-stepper"><button type="button" aria-label={`Kurangi ${habit.title}`} disabled={current <= 0 || paused} onClick={() => onAdjust?.(habit.id, -1)}>−</button><button type="button" aria-label={`Tambah ${habit.title}`} disabled={!onAdjust || paused} onClick={(event) => { if (!habit.completed && current + 1 >= target) burstLeaves(event.currentTarget); onAdjust?.(habit.id, 1); }}>+</button></div> : <button type="button" className={`check-button ${habit.completed ? "done" : ""}`} aria-label={habit.completed ? (avoid ? `Catat pelanggaran ${habit.title}` : `Batalkan ${habit.title}`) : (avoid ? `Tandai hari bersih ${habit.title}` : `Tandai ${habit.title} selesai`)} aria-pressed={habit.completed} disabled={paused} onClick={(event) => { if (!habit.completed) burstLeaves(event.currentTarget); onToggle(habit.id); }}>{habit.completed && <Check size={15} strokeWidth={2.8} />}</button>}
         {onTimerToggle && <button className={`habit-time-track ${timerActive ? "active" : ""}`} type="button" onClick={() => onTimerToggle(habit.id)} disabled={paused} aria-pressed={timerActive} aria-label={timerActive ? `Hentikan timer ${habit.title}` : `Mulai timer ${habit.title}`}>{timerActive ? `Stop ${String(Math.floor(timerElapsedSeconds / 60)).padStart(2, "0")}:${String(timerElapsedSeconds % 60).padStart(2, "0")}` : "Mulai timer"}</button>}
         {onViewTimeAnalysis && <button className="habit-history-action" type="button" onClick={() => onViewTimeAnalysis(habit.id)}>Riwayat waktu</button>}
       </div>

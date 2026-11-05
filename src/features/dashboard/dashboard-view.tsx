@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Flame, HeartPulse, Pause, Play, Plus, RefreshCw, Sprout, TrendingUp, WalletCards } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, Leaf, Pause, Play, Plus, RefreshCw, Shield, Sprout, TrendingUp, WalletCards } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
+import { computeGardenRhythm, consumeShield, shieldAvailableThisWeek, summarizeSeedBank, type GardenRhythm } from "@/lib/garden-rewards";
+import { burstLeaves, useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
 import { FocusTimer } from "@/features/focus/focus-timer";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
@@ -67,6 +69,8 @@ function useWeeklyActivity(habits: Habit[]) {
   const total = days.reduce((sum, day) => sum + day.completed, 0);
   return {
     days,
+    byDate: completedByDate,
+    ready: records !== null && !historyError,
     loading: records === null,
     error: historyError,
     total,
@@ -86,6 +90,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   focusTimerRemainingSeconds: number; focusTimerRunning: boolean; onFocusTimerToggle: () => void; onFocusTimerReset: () => void;
 }) {
   const now = new Date();
+  const todayKey = todayISO();
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta",
   }).format(now);
@@ -105,6 +110,32 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   const maxCategoryCount = Math.max(1, ...categoryCounts.map((item) => item.count));
   const sortedHabits = [...habits].sort((a, b) => a.time.localeCompare(b.time));
   const weekly = useWeeklyActivity(habits);
+
+  // ===== Fase 1: angka roll-up (streak & rupiah) =====
+  const animatedStreak = useCountUp(longestStreak, 700, 180);
+  const animatedNet = useCountUp(net, 950, 240);
+
+  // ===== Fase 2: ritme kebun (perisai / layu) + koleksi benih =====
+  const [rhythm, setRhythm] = useState<GardenRhythm | null>(null);
+  const rhythmDecided = useRef(false);
+  const [seedChip, setSeedChip] = useState(() => summarizeSeedBank());
+  useEffect(() => {
+    const onSeedAdded = () => setSeedChip(summarizeSeedBank());
+    window.addEventListener("rutina:seed-added", onSeedAdded);
+    return () => window.removeEventListener("rutina:seed-added", onSeedAdded);
+  }, []);
+  useEffect(() => {
+    if (rhythmDecided.current || !weekly.ready || weekly.byDate.size === 0) return;
+    const plan = computeGardenRhythm(todayKey, weekly.byDate, completed, shieldAvailableThisWeek());
+    if (!plan.level) return;
+    rhythmDecided.current = true;
+    if (plan.level === "shield") {
+      const applied = consumeShield();
+      setRhythm(applied ? plan : { ...plan, level: "parched" });
+    } else {
+      setRhythm(plan);
+    }
+  }, [weekly.ready, weekly.byDate, todayKey, completed]);
   const [returning, setReturning] = useState(false);
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
   const [preferencesReady, setPreferencesReady] = useState(false);
@@ -173,7 +204,9 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         : completed === habits.length
           ? "Semua langkah terjadwal sudah kamu rawat. Sisakan ruang untuk menikmati harimu."
           : completed > 0
-            ? `${completed} langkah sudah kamu lakukan. Pilih satu hal kecil berikutnya, sesuai ritmemu.`
+            ? habits.length - completed === 1
+              ? "Satu langkah lagi menuju taman berbunga penuh hari ini 🌸"
+              : `${habits.length - completed} langkah lagi menuju bloom hari ini — pelan-pelan saja, kamu hampir sampai ✨`
             : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
 
   return (
@@ -186,6 +219,38 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
       />
       {returning && !welcomeDismissed && !vacationMode && <section className="welcome-back-card" aria-label="Selamat datang kembali"><span className="welcome-back-art"><Sprout size={25} /></span><div className="welcome-back-copy"><span className="small-label">TAMANMU MENUNGGU</span><strong>Senang kamu kembali.</strong><p>Kita tidak perlu mengejar hari yang terlewat. Mulai lagi dari satu hal kecil yang terasa mudah.</p></div><button type="button" className="welcome-back-close" onClick={() => { setWelcomeDismissed(true); try { window.localStorage.setItem("rutina.v2.welcome-dismissed", todayISO()); window.localStorage.removeItem("rutina.v2.welcome-pending"); } catch { /* abaikan */ } }} aria-label="Tutup pesan selamat datang">×</button></section>}
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
+
+      {rhythm?.level === "shield" && (
+        <section className="garden-rhythm-card shield" role="status" aria-live="polite">
+          <span className="garden-rhythm-icon"><Shield size={20} /></span>
+          <div className="garden-rhythm-copy">
+            <span className="small-label">BUNGA PELINDUNG AKTIF</span>
+            <strong>Bloom streak-mu tetap aman 🛡️</strong>
+            <p>Kemarin sempat bolos, tapi ritme kebunmu kami jaga tetap hidup. Satu perisai tersedia setiap minggu — yang ini terpakai untuk pekan ini.</p>
+            {rhythm.bloomStreak > 1 && <small>Bloom streak: {rhythm.bloomStreak} hari berjalan</small>}
+          </div>
+        </section>
+      )}
+      {rhythm?.level === "parched" && (
+        <section className="garden-rhythm-card parched" role="status">
+          <span className="garden-rhythm-icon"><Droplets size={20} /></span>
+          <div className="garden-rhythm-copy">
+            <span className="small-label">TAMANMU MENUNGGU</span>
+            <strong>Daun-daunmu merindukan perhatian</strong>
+            <p>Kemarin berlalu tanpa satu langkah kecil. Tidak apa-apa — satu habit ringan hari ini cukup untuk menghidupkannya kembali.</p>
+          </div>
+        </section>
+      )}
+      {rhythm?.level === "wilted" && (
+        <section className="garden-rhythm-card wilted" role="status">
+          <span className="garden-rhythm-icon"><Leaf size={20} /></span>
+          <div className="garden-rhythm-copy">
+            <span className="small-label">KEBUN MENGUNING</span>
+            <strong>Kecambahmu menunggu disiram 🥀</strong>
+            <p>Sudah beberapa hari tanpa langkah kecil. Mulai lagi dari habit paling ringan — satu langkah saja sudah cukup untuk mengembalikan warna hijaunya.</p>
+          </div>
+        </section>
+      )}
 
       <section className="hero-card botanical-hero" aria-label="Ringkasan perkembangan hari ini">
         <BotanicalIllustrationBackdrop variant="home" />
@@ -237,12 +302,12 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           </div>
         </div>
       </section>
-      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div><div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "lavender" ? "active" : ""} aria-pressed={gardenTheme === "lavender"} onClick={() => setGardenTheme("lavender")}><i className="lavender" />Lavender</button></div></section>
+      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div>{seedChip.total > 0 && <div className="garden-seed-chip" role="status" title="Koleksi benih dari perayaan bloom">🌱 <strong>{seedChip.total}</strong> benih{seedChip.langka > 0 ? ` · ${seedChip.langka} langka` : ""}{seedChip.legendaris > 0 ? ` · ${seedChip.legendaris} legendaris` : ""}</div>}<div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "lavender" ? "active" : ""} aria-pressed={gardenTheme === "lavender"} onClick={() => setGardenTheme("lavender")}><i className="lavender" />Lavender</button></div></section>
 
             <div className="stats-grid botanical-stats botanical-stats-three">
-        <StatCard label="Rekor konsistensi" value={`${longestStreak} hari`} foot="Satu capaian yang pernah kamu bangun" icon={Flame} tone="amber" />
+        <StatCard label="Rekor konsistensi" value={`${animatedStreak} hari`} foot="Satu capaian yang pernah kamu bangun" icon={Flame} tone="amber" />
         <StatCard label="Kebiasaan aktif" value={String(totalHabits)} foot="Hal yang sedang kamu rawat" icon={Sprout} tone="green" />
-        <StatCard label="Arus kas bersih" value={formatCompactRupiah(net)} foot="Bulan berjalan" icon={WalletCards} tone="orange" />
+        <StatCard label="Arus kas bersih" value={formatCompactRupiah(animatedNet)} foot="Bulan berjalan" icon={WalletCards} tone="orange" />
       </div>
 
       <div className="dashboard-feature-grid">
@@ -357,7 +422,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
 
         <section className="card finance-mini botanical-finance-card">
           <div className="finance-mini-head"><span className="small-label">KEUANGAN BULAN INI</span><WalletCards size={18} /></div>
-          <div className="finance-mini-value">{formatCompactRupiah(net)}</div>
+          <div className="finance-mini-value">{formatCompactRupiah(animatedNet)}</div>
           <div className="small-label">Arus kas bersih · bulan berjalan</div>
           <div className="finance-pair">
             <div className="finance-pair-item income"><span className="small-label">Pemasukan</span><strong>{formatCompactRupiah(income)}</strong></div>
@@ -384,7 +449,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
                   {activeTimerId === focusedHabit.id ? <Pause size={15} /> : <Play size={15} />}
                   {activeTimerId === focusedHabit.id ? "Hentikan timer habit" : "Mulai timer habit"}
                 </button>
-                <button className="daily-intention-complete" type="button" onClick={() => onToggle(focusedHabit.id)}>
+                <button className="daily-intention-complete" type="button" onClick={(event) => { if (!focusedHabit.completed) burstLeaves(event.currentTarget); onToggle(focusedHabit.id); }}>
                   <Check size={14} /> Tandai selesai
                 </button>
               </div>

@@ -20,6 +20,7 @@ import {
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
+import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
 import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
@@ -60,6 +61,10 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
   const displayedIncome = monthKey === currentMonthKey ? income : periodSummary.income;
   const displayedExpense = monthKey === currentMonthKey ? expense : periodSummary.expense;
   const net = displayedIncome - displayedExpense;
+  // Angka roll-up (Fase 1): rupiah "menghitung naik" saat masuk tab keuangan.
+  const animatedNet = useCountUp(net, 900, 160);
+  const animatedIncome = useCountUp(displayedIncome, 860, 240);
+  const animatedExpense = useCountUp(displayedExpense, 860, 320);
 
   const periodEndKey = useMemo(() => {
     if (monthKey === currentMonthKey) return todayKey;
@@ -239,7 +244,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
         <div className="card finance-balance">
           <BotanicalIllustrationBackdrop variant="finance" />
           <span className="small-label">ARUS KAS BERSIH</span>
-          <div className="metric-value">{formatRupiah(net)}</div>
+          <div className="metric-value">{formatRupiah(animatedNet)}</div>
           <span className="finance-balance-note">{cashflowMessage}</span>
           <div className="finance-balance-period"><CalendarDays size={13} /> {monthLabel}</div>
         </div>
@@ -248,7 +253,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             <span className="finance-metric-icon income"><ArrowDownLeft size={15} /></span>
             PEMASUKAN
           </span>
-          <div className="metric-value metric-positive">{formatCompactRupiah(displayedIncome)}</div>
+          <div className="metric-value metric-positive">{formatCompactRupiah(animatedIncome)}</div>
           <span className="stat-foot">Total pemasukan dalam periode ini</span>
         </section>
         <section className="card finance-metric">
@@ -256,7 +261,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
             <span className="finance-metric-icon expense"><ArrowUpRight size={15} /></span>
             PENGELUARAN
           </span>
-          <div className="metric-value metric-negative">{formatCompactRupiah(displayedExpense)}</div>
+          <div className="metric-value metric-negative">{formatCompactRupiah(animatedExpense)}</div>
           <span className="stat-foot">Total pengeluaran dalam periode ini</span>
         </section>
       </section>

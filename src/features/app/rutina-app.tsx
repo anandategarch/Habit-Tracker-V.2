@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus,
 } from "lucide-react";
@@ -24,6 +24,10 @@ import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 import { FOCUS_SESSION_SECONDS } from "@/features/focus/focus-timer";
 import { WorkspaceHistoryProvider, useWorkspaceActivityHistory } from "@/components/ui/weekly-history";
+import { FullBloomOverlay } from "@/features/app/full-bloom";
+import {
+  addSeed, getBloomStreakToday, isBloomShownToday, markBloomShown, recordBloomDay, rollSeed, type GardenSeed,
+} from "@/lib/garden-rewards";
 
 const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
   { id: "home", label: "Beranda", icon: "home", description: "Ringkasan hari ini" },
@@ -70,6 +74,10 @@ export function RutinaApp() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [quickActionOpen, setQuickActionOpen] = useState(false);
   const [activeHabitTimer, setActiveHabitTimer] = useState<{ habitId: string; startedAt: number } | null>(null);
+  // Perayaan Full Bloom (100% habit selesai) — sekali per hari.
+  const [bloom, setBloom] = useState<{ seed: GardenSeed; streak: number } | null>(null);
+  // Indikator pill yang meluncur di bottom-nav (mobile).
+  const [navPill, setNavPill] = useState<{ left: number; width: number } | null>(null);
   const [focusTimer, setFocusTimer] = useState<FocusTimerSnapshot>({
     remainingSeconds: FOCUS_SESSION_SECONDS, running: false, endsAt: null,
   });
@@ -261,6 +269,47 @@ export function RutinaApp() {
   const sync = syncPresentation[syncStatus as SyncStatus];
   const pendingHabitCount = todayHabits.filter((habit) => !habit.completed).length;
 
+  // Full Bloom: saat semua habit terjadwal hari ini selesai (dan belum
+  // dirayakan hari ini) → roll benih kejutan + tampilkan overlay.
+  useEffect(() => {
+    if (!workspaceReady || todayHabits.length === 0) return;
+    if (!todayHabits.every((habit) => habit.completed)) return;
+    if (isBloomShownToday()) return;
+    markBloomShown();
+    recordBloomDay(todayKey);
+    const seed = rollSeed(todayKey);
+    addSeed(seed);
+    setBloom({ seed, streak: getBloomStreakToday() });
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      try { navigator.vibrate?.([16, 54, 16, 54, 110]); } catch { /* diabaikan */ }
+    }
+  }, [workspaceReady, todayHabits, todayKey]);
+
+  // Pill navigasi: ukur tombol aktif (aria-current) lalu geser halus (spring).
+  // Nav bisa masuk DOM setelah streaming selesai, jadi ukur dengan retry
+  // (setiap 60ms, maksimum 2.5 dtk) sampai tombol aktif ditemukan.
+  useLayoutEffect(() => {
+    let timer = 0;
+    let attempts = 0;
+    const measure = () => {
+      const nav = document.querySelector("nav.bottom-nav");
+      const active = nav?.querySelector<HTMLButtonElement>("button[aria-current='page']");
+      if (!nav || !active) {
+        if (activeTab === "home" || mobilePrimary.some((item) => item.id === activeTab)) {
+          if (attempts < 40) { attempts += 1; timer = window.setTimeout(measure, 60); }
+          return;
+        }
+        setNavPill(null);
+        return;
+      }
+      setNavPill({ left: active.offsetLeft, width: active.offsetWidth });
+    };
+    timer = window.setTimeout(measure, 50);
+    const onResize = () => { window.clearTimeout(timer); timer = window.setTimeout(measure, 60); };
+    window.addEventListener("resize", onResize);
+    return () => { window.clearTimeout(timer); window.removeEventListener("resize", onResize); };
+  }, [activeTab]);
+
   function toggleFocusTimer() {
     setFocusTimer((current) => {
       if (current.running && current.endsAt) {
@@ -288,9 +337,10 @@ export function RutinaApp() {
       nowCompleted = !habit.completed;
       return { ...habit, completed: nowCompleted };
     }));
-    // Haptic halus saat menyelesaikan habit (no-op di iOS/unsupported).
+    // Haptic perayaan saat menyelesaikan habit (no-op di iOS/unsupported):
+    // pola pendek-pendek terasa seperti "tumbuh", bukan sekadar getar notifikasi.
     if (nowCompleted && typeof navigator !== "undefined" && "vibrate" in navigator) {
-      try { navigator.vibrate?.(8); } catch { /* diabaikan */ }
+      try { navigator.vibrate?.([10, 34, 14]); } catch { /* diabaikan */ }
     }
   }
 
@@ -669,6 +719,7 @@ export function RutinaApp() {
         </div>
       )}
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
+        {navPill && <span className="bottom-nav-pill" style={{ left: navPill.left, width: navPill.width }} aria-hidden="true" />}
         {mobilePrimary.slice(0, 2).map(({ id, label, icon }) => (
           <button
             key={id}
@@ -736,6 +787,7 @@ export function RutinaApp() {
       </div>}
 
       {modal && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
+      {bloom && <FullBloomOverlay seed={bloom.seed} bloomStreak={bloom.streak} onClose={() => setBloom(null)} />}
       <SearchDialog
         open={searchOpen}
         query={searchQuery}
