@@ -3,14 +3,13 @@
 import { useState } from "react";
 import "./design-lab.css";
 import { FeedbackOverlay } from "./FeedbackOverlay";
-import { IllustrationDrafts } from "../../../.claude-design/lab/components/IllustrationDrafts";
 import { VariantA } from "../../../.claude-design/lab/variants/VariantA";
 import { VariantB } from "../../../.claude-design/lab/variants/VariantB";
 import { VariantC } from "../../../.claude-design/lab/variants/VariantC";
 import { VariantD } from "../../../.claude-design/lab/variants/VariantD";
 import { VariantE } from "../../../.claude-design/lab/variants/VariantE";
 
-type View = "dashboard" | "finance" | "illustrations";
+type View = "dashboard" | "finance";
 type FinanceSection = "wallets" | "transfers" | "recurring" | "savings" | "rules" | "split" | "weekly";
 const variants = [
   {id:"A",title:"Information Hierarchy",note:"One Thing Today dan habit utama menjadi pusat; statistik memberi konteks.",Component:VariantA},
@@ -21,7 +20,7 @@ const variants = [
 ] as const;
 
 export default function DesignLabPage() {
-  const [view,setView]=useState<View>("dashboard");
+  const [view,setView]=useState<View>("illustrations");
   const [financeSection,setFinanceSection]=useState<FinanceSection>("wallets");
   return <main className="design-lab-root">
     <header className="design-lab-header">
@@ -37,7 +36,6 @@ export default function DesignLabPage() {
       <div className="design-lab-switch" role="group" aria-label="Pilih halaman yang dibandingkan">
         <button type="button" className={view==="dashboard"?"active":""} onClick={()=>setView("dashboard")}>01 · Dashboard</button>
         <button type="button" className={view==="finance"?"active":""} onClick={()=>setView("finance")}>02 · Keuangan & lanjutan</button>
-        <button type="button" className={view==="illustrations"?"active":""} onClick={()=>setView("illustrations")}>03 · Ilustrasi 12 tab</button>
       </div>
       {view==="finance" && <label className="design-lab-finance-select">Subfitur keuangan
         <select value={financeSection} onChange={event=>setFinanceSection(event.target.value as FinanceSection)}>
@@ -46,13 +44,13 @@ export default function DesignLabPage() {
       </label>}
       <div className="design-lab-howto"><strong>Cara menilai:</strong> bandingkan hierarki, jumlah scroll, keterbacaan, kejelasan navigasi, dan jarak ke tindakan utama.</div>
     </div>
-    {view==="illustrations" ? <IllustrationDrafts/> : <div className="design-lab-grid">
+    <div className="design-lab-grid">
       {variants.map(({id,title,note,Component})=><section className="design-lab-variant" data-variant={id} key={id}>
         <header className="design-lab-variant-header"><div><span className="design-lab-variant-letter">{id}</span><span><strong>{title}</strong><small>Kenapa opsi ini ada</small></span></div><span className="design-lab-variant-index">VARIANT {id}</span><p>{note}</p></header>
         <div className="design-lab-preview"><Component view={view} financeSection={financeSection}/></div>
       </section>)}
-    </div>}
-    <div className="design-lab-footer-note">Preview ilustrasi dan layout memakai data/vektor statis. Tidak ada komponen produksi, database, atau transaksi yang diubah.</div>
-    <FeedbackOverlay targetName="Rutina — App Shell, Dashboard, Keuangan & Ilustrasi 12 Tab"/>
+    </div>
+    <div className="design-lab-footer-note">Angka dan transaksi pada preview adalah data fixture untuk membandingkan UI, bukan isi workspace atau saldo nyata. Tombol pada preview tidak menulis ke database.</div>
+    <FeedbackOverlay targetName="Rutina — App Shell, Dashboard & Keuangan Lanjutan"/>
   </main>;
 }
