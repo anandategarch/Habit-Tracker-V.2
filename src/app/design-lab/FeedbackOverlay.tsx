@@ -9,6 +9,7 @@ function describe(element:HTMLElement) {
 }
 export function FeedbackOverlay({targetName}:{targetName:string}) {
   const [enabled,setEnabled]=useState(false);
+  const [summaryOpen,setSummaryOpen]=useState(false);
   const [target,setTarget]=useState<{variant:string;selector:string;element:string}|null>(null);
   const [draft,setDraft]=useState("");
   const [overall,setOverall]=useState("");
@@ -45,9 +46,9 @@ export function FeedbackOverlay({targetName}:{targetName:string}) {
     void navigator.clipboard?.writeText(body).catch(()=>undefined);
   }
   return <div className="feedback-overlay">
-    <div className="feedback-launcher"><button type="button" className={enabled?"is-active":""} onClick={()=>{setEnabled(v=>!v);setTarget(null);}}>{enabled?"Pilih elemen…":"＋ Tambah feedback"}</button><span>{comments.length} komentar</span></div>
+    <div className="feedback-launcher"><button type="button" className={enabled?"is-active":""} onClick={()=>{setEnabled(v=>!v);setTarget(null);}}>{enabled?"Pilih elemen…":"＋ Tambah feedback"}</button><button type="button" className={"feedback-toggle"+(summaryOpen?" is-open":"")} onClick={()=>setSummaryOpen(v=>!v)}>{summaryOpen?"Tutup":"Ringkasan"} · {comments.length}</button></div>
     {enabled&&<div className="feedback-hint">Mode komentar aktif — klik elemen pada salah satu variasi.</div>}
     {target&&<section className="feedback-editor"><button type="button" className="feedback-close" aria-label="Tutup editor" onClick={()=>setTarget(null)}>×</button><small>VARIANT {target.variant} · {target.selector}</small><strong>{target.element}</strong><textarea value={draft} onChange={event=>setDraft(event.target.value)} placeholder="Apa yang perlu diubah pada elemen ini?" rows={3}/><button type="button" disabled={!draft.trim()} onClick={saveComment}>Simpan komentar</button></section>}
-    <section className="feedback-summary"><label>Overall Direction <span>*</span><textarea value={overall} onChange={event=>setOverall(event.target.value)} placeholder="Contoh: Gunakan struktur B, pertahankan fokus One Thing Today dari A, dan gaya visual E." rows={3}/></label><div className="feedback-summary-actions"><button type="button" disabled={!overall.trim()} onClick={submit}>Submit & salin feedback</button><span>{comments.length} komentar tersimpan</span></div>{exported&&<textarea className="feedback-export" readOnly value={exported} rows={7} aria-label="Feedback siap disalin"/>}<small>Tempel hasil feedback di percakapan ini agar desain final dapat disintesis.</small></section>
+    {summaryOpen&&<section className="feedback-summary"><button type="button" className="feedback-close" aria-label="Tutup ringkasan" onClick={()=>setSummaryOpen(false)}>×</button><label>Overall Direction <span>*</span><textarea value={overall} onChange={event=>setOverall(event.target.value)} placeholder="Contoh: Gunakan struktur B, pertahankan fokus One Thing Today dari A, dan gaya visual E." rows={3}/></label><div className="feedback-summary-actions"><button type="button" disabled={!overall.trim()} onClick={submit}>Submit & salin feedback</button><span>{comments.length} komentar tersimpan</span></div>{exported&&<textarea className="feedback-export" readOnly value={exported} rows={7} aria-label="Feedback siap disalin"/>}<small>Tempel hasil feedback di percakapan ini agar desain final dapat disintesis.</small></section>}
   </div>;
 }
