@@ -1561,7 +1561,8 @@ html[data-theme="dark"] .insight-checkin-grid > div { background:var(--surface-s
 html[data-theme="dark"] .wallet-history-column > div { background:var(--surface-soft); }
 @media (max-width:560px) {
  .wallet-history-chart { gap:4px; }
- .wallet-history-column > strong { font-size:8px; }
+ .wallet-history-column > strong { font-size:9px; }
+ .wallet-history-column > small { font-size: 9px; }
  .wallet-history-column { grid-template-rows:auto 78px auto; }
  .wallet-history-column > div { height:78px; }
 }
@@ -1726,7 +1727,7 @@ body { background: var(--canvas); color: var(--ink); }
 .app-shell[data-active-tab="home"] { --module-accent:#417a57; }
 .app-shell[data-active-tab="habits"] { --module-accent:#249b71; }
 .app-shell[data-active-tab="finance"] { --module-accent:#dc963b; }
-.app-shell[data-active-tab="calendar"] { --module-accent:#b0713d; }
+.app-shell[data-active-tab="calendar"] { --module-accent:#417a57; }
 .app-shell[data-active-tab="insights"] { --module-accent:#c2554f; }
 .app-shell[data-active-tab="goals"] { --module-accent:#e67d56; }
 .app-shell[data-active-tab="checkin"] { --module-accent:#d86b9e; }
@@ -1734,7 +1735,7 @@ body { background: var(--canvas); color: var(--ink); }
 .app-shell[data-active-tab="wellness"] { --module-accent:#2ba69a; }
 .app-shell[data-active-tab="training"] { --module-accent:#de6e54; }
 .app-shell[data-active-tab="tree"] { --module-accent:#60a46a; }
-.app-shell[data-active-tab="settings"] { --module-accent:#738196; }
+.app-shell[data-active-tab="settings"] { --module-accent:#3a7350; }
 
 /* Shared page rhythm and surfaces */
 .main-shell { min-width: 0; min-height: 100svh; margin-left: 78px; }
@@ -1864,12 +1865,12 @@ body { background: var(--canvas); color: var(--ink); }
   box-shadow:0 13px 28px rgba(220,150,59,.18);
 }
 .app-shell[data-active-tab="calendar"] .calendar-summary {
-  border-color:#d9e8fa;
-  background:linear-gradient(145deg,#edf5ff,#e5f0fc);
+  border-color:#d9e6cf;
+  background:linear-gradient(145deg,#f4f8ec,#eaf3e2);
 }
 .app-shell[data-active-tab="insights"] .insight-highlight {
-  border-color:#e5d9f5;
-  background:linear-gradient(145deg,#f5effc,#eee6fa);
+  border-color:#f0e3d3;
+  background:linear-gradient(145deg,#fff8ed,#f7eede);
 }
 .app-shell[data-active-tab="tree"] .tree-season-card { border-color:#dcebdc; background:linear-gradient(145deg,#f1f8ef,#e8f4e8); }
 
@@ -1906,7 +1907,7 @@ body { background: var(--canvas); color: var(--ink); }
 .menu-item[data-module="home"] { --item-accent:#417a57; }
 .menu-item[data-module="habits"] { --item-accent:#249b71; }
 .menu-item[data-module="finance"] { --item-accent:#dc963b; }
-.menu-item[data-module="calendar"] { --item-accent:#b0713d; }
+.menu-item[data-module="calendar"] { --item-accent:#417a57; }
 .menu-item[data-module="insights"] { --item-accent:#c2554f; }
 .menu-item[data-module="goals"] { --item-accent:#e67d56; }
 .menu-item[data-module="checkin"] { --item-accent:#d86b9e; }
@@ -1914,7 +1915,7 @@ body { background: var(--canvas); color: var(--ink); }
 .menu-item[data-module="wellness"] { --item-accent:#2ba69a; }
 .menu-item[data-module="training"] { --item-accent:#de6e54; }
 .menu-item[data-module="tree"] { --item-accent:#60a46a; }
-.menu-item[data-module="settings"] { --item-accent:#738196; }
+.menu-item[data-module="settings"] { --item-accent:#3a7350; }
 .menu-item:hover { color:var(--ink); background:color-mix(in srgb,var(--item-accent) 8%,var(--surface)); transform:translateX(2px); }
 .menu-item.active {
   color:color-mix(in srgb,var(--item-accent) 68%,var(--ink));
@@ -2529,13 +2530,15 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
     white-space: nowrap;
   }
 
-  .mobile-quick-actions[hidden] { display: none !important; }
-
+  /* Panel aksi cepat sekarang DILUAR bottom-nav (JSX audit v0.4.2) —
+     position: fixed agar tidak terpotong oleh backdrop-filter + border-radius
+     nav di iOS Safari. z-index 80 > scrim 69, tidak tumpang tindih dengan
+     nav (70) karena menu berada di atas nav. */
   .mobile-quick-actions {
-    position: absolute;
-    z-index: 90;
+    position: fixed;
+    z-index: 80;
     left: 50%;
-    bottom: calc(100% + 15px);
+    bottom: calc(96px + env(safe-area-inset-bottom));
     display: grid;
     width: min(292px, calc(100vw - 32px));
     gap: 5px;
@@ -2559,7 +2562,7 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
     letter-spacing: 1.35px;
   }
 
-  .bottom-nav .mobile-quick-action {
+  .mobile-quick-action {
     display: flex;
     width: 100%;
     min-width: 0;
@@ -2577,7 +2580,7 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
     transition: background .18s ease, transform .18s ease;
   }
 
-  .bottom-nav .mobile-quick-action:active {
+  .mobile-quick-action:active {
     background: var(--surface-soft);
     transform: scale(.985);
   }
@@ -2592,8 +2595,8 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   }
 
   .mobile-quick-action-icon.habit { color: #4f8b68; background: #eaf5ed; }
-  .mobile-quick-action-icon.finance { color: #7b68d8; background: #f0edff; }
-  .mobile-quick-action-icon.browse { color: #b47a39; background: #fff3e5; }
+  .mobile-quick-action-icon.finance { color: #b47a39; background: #fff3e5; }
+  .mobile-quick-action-icon.browse { color: #417a57; background: #eaf3ea; }
 
   .mobile-quick-action-copy {
     display: grid;
@@ -2618,7 +2621,7 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
     white-space: nowrap;
   }
 
-  .bottom-nav .mobile-quick-action > svg {
+  .mobile-quick-action > svg {
     flex: none;
     color: var(--muted);
   }
@@ -2655,7 +2658,7 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   .mobile-quick-actions { animation: none !important; }
   .bottom-nav .bottom-nav-action,
   .bottom-nav .bottom-nav-action svg,
-  .bottom-nav .mobile-quick-action { transition: none !important; }
+  .mobile-quick-action { transition: none !important; }
 }
 
 

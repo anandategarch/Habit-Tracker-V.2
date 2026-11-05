@@ -6,7 +6,6 @@
  * ubah `APP_VERSION` di bawah. `BUILD_DATE` diisi otomatis saat build.
  */
 export const APP_VERSION = "0.8.1";
-
 export const APP_BUILD_DATE = (() => {
   // Format ISO pendek (YYYY-MM-DD). Tidak di-cache supaya selalu fresh
   // saat Vercel rebuild, dan hanya membaca sekali per modul.

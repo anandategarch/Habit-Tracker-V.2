@@ -632,6 +632,42 @@ export function RutinaApp() {
       {/* Scrim aksi cepat: menutup menu saat tap di luar + mencegah
           konten di belakangnya tetap interaktif (audit v0.4.0). */}
       {quickActionOpen && <button type="button" className="quick-action-scrim" aria-label="Tutup aksi cepat" onClick={() => setQuickActionOpen(false)} />}
+
+      {/* Panel aksi cepat DILUAR bottom-nav agar tidak dipotong oleh
+          backdrop-filter + border-radius pada nav di iOS Safari
+          (menu mengambang di atas nav, keluar dari clipping context). */}
+      {quickActionOpen && (
+        <div id="mobile-quick-actions" className="mobile-quick-actions" role="group" aria-label="Aksi cepat">
+          <div className="mobile-quick-actions-heading">MULAI SESUATU</div>
+          <button
+            type="button"
+            className="mobile-quick-action"
+            onClick={() => { setQuickActionOpen(false); setModal("habit"); }}
+          >
+            <span className="mobile-quick-action-icon habit"><AppIcon name="habits" size={18} /></span>
+            <span className="mobile-quick-action-copy"><strong>Tambah kebiasaan</strong><small>Buat rutinitas baru</small></span>
+            <ChevronRight size={16} />
+          </button>
+          <button
+            type="button"
+            className="mobile-quick-action"
+            onClick={() => { setQuickActionOpen(false); setModal("transaction"); }}
+          >
+            <span className="mobile-quick-action-icon finance"><AppIcon name="finance" size={18} /></span>
+            <span className="mobile-quick-action-copy"><strong>Catat transaksi</strong><small>Tambah pemasukan atau pengeluaran</small></span>
+            <ChevronRight size={16} />
+          </button>
+          <button
+            type="button"
+            className="mobile-quick-action"
+            onClick={() => { setQuickActionOpen(false); setMoreOpen(true); }}
+          >
+            <span className="mobile-quick-action-icon browse"><Grid2X2 size={18} /></span>
+            <span className="mobile-quick-action-copy"><strong>Semua fitur</strong><small>Jelajahi seluruh ruang Rutina</small></span>
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
         {mobilePrimary.slice(0, 2).map(({ id, label, icon }) => (
           <button
@@ -647,36 +683,6 @@ export function RutinaApp() {
         ))}
 
         <div className={`bottom-nav-action-wrap ${quickActionOpen ? "is-open" : ""}`}>
-          <div id="mobile-quick-actions" className="mobile-quick-actions" role="group" aria-label="Aksi cepat" hidden={!quickActionOpen}>
-            <div className="mobile-quick-actions-heading">MULAI SESUATU</div>
-            <button
-              type="button"
-              className="mobile-quick-action"
-              onClick={() => { setQuickActionOpen(false); setModal("habit"); }}
-            >
-              <span className="mobile-quick-action-icon habit"><AppIcon name="habits" size={18} /></span>
-              <span className="mobile-quick-action-copy"><strong>Tambah kebiasaan</strong><small>Buat rutinitas baru</small></span>
-              <ChevronRight size={16} />
-            </button>
-            <button
-              type="button"
-              className="mobile-quick-action"
-              onClick={() => { setQuickActionOpen(false); setModal("transaction"); }}
-            >
-              <span className="mobile-quick-action-icon finance"><AppIcon name="finance" size={18} /></span>
-              <span className="mobile-quick-action-copy"><strong>Catat transaksi</strong><small>Tambah pemasukan atau pengeluaran</small></span>
-              <ChevronRight size={16} />
-            </button>
-            <button
-              type="button"
-              className="mobile-quick-action"
-              onClick={() => { setQuickActionOpen(false); setMoreOpen(true); }}
-            >
-              <span className="mobile-quick-action-icon browse"><Grid2X2 size={18} /></span>
-              <span className="mobile-quick-action-copy"><strong>Semua fitur</strong><small>Jelajahi seluruh ruang Rutina</small></span>
-              <ChevronRight size={16} />
-            </button>
-          </div>
           <button
             type="button"
             className={`bottom-nav-action ${quickActionOpen ? "active" : ""}`}

@@ -25,11 +25,11 @@
   --content-width: 1500px;
   --spend-color-0: #82a96f;
   --spend-color-1: #f0a477;
-  --spend-color-2: #9985df;
+  --spend-color-2: #c98b5a;
   --spend-color-3: #69a7a0;
   --spend-color-4: #e8c36d;
   --spend-color-5: #d58b9a;
-  --spend-color-6: #8c9eaf;
+  --spend-color-6: #9fb985;
   --spend-color-7: #b3bf82;
   --rutina-ivory: #fff7ef;
   --rutina-paper: #fffdf9;
@@ -806,7 +806,7 @@ html[data-theme="dark"] .text-button { color: #b7a8ff; }
 .insight-trend-day { display: grid; align-content: end; justify-items: center; gap: 8px; min-width: 0; height: 100%; }
 .insight-trend-bars { display: flex; align-items: end; justify-content: center; gap: 5px; width: 100%; height: 112px; }
 .insight-trend-bar { display: block; width: min(17px,35%); min-height: 5px; border-radius: 8px 8px 3px 3px; }
-.insight-trend-bar.mood { background: linear-gradient(180deg,#a28de9,#8069d5); }
+.insight-trend-bar.mood { background: linear-gradient(180deg,#d49a4f,#b87632); }
 .insight-trend-bar.energy { background: linear-gradient(180deg,#a6c98a,#6f9d67); }
 .insight-trend-bar.activity { background: linear-gradient(180deg,#a6c98a,#5f9567); }
 .insight-trend-value { color: #4f8056; font-size: 11px; font-weight: 800; }
@@ -1051,7 +1051,7 @@ html[data-theme="dark"] .tree-lifetime-stage {
   .botanical-dashboard-page .botanical-stats .metric-value {
     grid-column: 2;
     grid-row: 2;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: -.35px;
     line-height: 1.2;
     overflow-wrap: anywhere;
@@ -1368,7 +1368,7 @@ body { background: var(--rutina-ivory); }
 .tree-journey-copy h2 { margin: 11px 0 8px; color: #36523b; font-size: clamp(27px,3vw,38px); font-weight: 820; line-height: 1.08; letter-spacing: -1.35px; }
 .tree-journey-copy > p { max-width: 320px; margin: 0 0 16px; color: #7f8e78; font-size: 11px; line-height: 1.65; }
 .tree-level-lockup { display: flex; align-items: center; gap: 8px; margin: 2px 0 14px; }
-.tree-level-badge { padding: 6px 11px; border-radius: 999px; color: #fff; background: linear-gradient(120deg,#8d79e4,#6f5bc8); box-shadow: 0 5px 12px rgba(111,91,200,.19); font-size: 9px; font-weight: 900; letter-spacing: .65px; }
+.tree-level-badge { padding: 6px 11px; border-radius: 999px; color: #fff; background: linear-gradient(120deg,#417a57,#2f5e40); box-shadow: 0 5px 12px rgba(47,98,69,.19); font-size: 9px; font-weight: 900; letter-spacing: .65px; }
 .tree-level-name { color: #64745e; font-size: 10px; font-weight: 750; }
 .tree-level-progress-copy { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; max-width: 310px; margin-bottom: 6px; }
 .tree-level-progress-copy strong { color: #4e8558; font-size: 14px; font-weight: 850; }
@@ -1384,7 +1384,7 @@ body { background: var(--rutina-ivory); }
 .tree-art-orbit-two { left: 13%; bottom: 21%; width: 15px; height: 15px; background: #9fbd81; box-shadow: 19px -12px 0 -4px #9fbd81; }
 .tree-art-badge { position: absolute; z-index: 4; top: 15px; right: 24px; display: inline-flex; align-items: center; gap: 5px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.8); border-radius: 999px; color: #59805a; background: rgba(255,255,255,.75); font-size: 9px; font-weight: 800; backdrop-filter: blur(8px); }
 .tree-art-ground { position: absolute; z-index: 1; right: 3%; bottom: 17px; left: 3%; height: 41px; border-radius: 50%; background: linear-gradient(180deg,#d9e7bd,#b7ce9a); opacity: .7; }
-.tree-art-level-stamp { position: absolute; z-index: 5; right: 13%; bottom: 23px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.9); border-radius: 999px; color: #fff; background: linear-gradient(110deg,#8e79e7,#6e58ca); box-shadow: 0 6px 14px rgba(96,79,178,.22); font-size: 9px; font-weight: 900; }
+.tree-art-level-stamp { position: absolute; z-index: 5; right: 13%; bottom: 23px; padding: 7px 12px; border: 1px solid rgba(255,255,255,.9); border-radius: 999px; color: #fff; background: linear-gradient(110deg,#417a57,#2f5e40); box-shadow: 0 6px 14px rgba(47,98,69,.22); font-size: 9px; font-weight: 900; }
 .tree-weekly-ribbon { display: flex; grid-column: 1/-1; align-items: center; gap: 11px; margin: 0 18px 16px; padding: 11px 15px; border: 1px solid rgba(255,255,255,.88); border-radius: 17px; background: rgba(255,253,247,.77); backdrop-filter: blur(10px); }
 .tree-weekly-ribbon-icon { display: grid; width: 34px; height: 34px; flex: none; place-items: center; border-radius: 50%; color: #548358; background: #eaf3e2; }
 .tree-weekly-ribbon > span:nth-child(2) { display: grid; flex: 1; gap: 2px; }
@@ -2419,7 +2419,7 @@ label,.field-label{color:#666b60}
 .module-tag{border-radius:999px}
 .module-progress-track,.budget-track{overflow:hidden;border-radius:999px;background:#ecebe2}
 .module-progress-track>span,.budget-track>span{border-radius:inherit}
-.insight-highlight{border-color:#eee5f8;border-radius:20px;background:linear-gradient(135deg,#f5f0ff,#fff8ed)}
+.insight-highlight{border-color:#f0e3d3;border-radius:20px;background:linear-gradient(135deg,#fff8ed,#f7eede)}
 .modal-card{border:1px solid #eee4d9;border-radius:24px;background:#fffdf9;box-shadow:0 24px 70px rgba(58,49,38,.22)}
 .toast{border:1px solid #e5ecdd;border-radius:15px;background:#fffdf9;color:#3f5841;box-shadow:var(--shadow-float)}
 .empty-state{border:1px dashed #e6e3d8;border-radius:18px;background:#fffaf4}
@@ -2595,10 +2595,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .daily-intention-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
 .daily-intention-meta span { padding: 5px 9px; border: 1px solid rgba(226,230,213,.9); border-radius: 999px; color: #71806b; background: rgba(255,255,255,.68); font-size: 8px; font-weight: 800; }
 .daily-intention-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
-.daily-intention-actions .next-step-action { min-height: 38px; margin: 0; padding-inline: 15px; border: 1px solid #7e69ce; border-radius: 999px; color: #fff; background: linear-gradient(135deg,#9883e6,#7963cb); box-shadow: 0 6px 14px rgba(126,104,208,.17); font-size: 10px; font-weight: 850; }
+.daily-intention-actions .next-step-action { min-height: 40px; margin: 0; padding-inline: 15px; border: 1px solid #7e69ce; border-radius: 999px; color: #fff; background: linear-gradient(135deg,#9883e6,#7963cb); box-shadow: 0 6px 14px rgba(126,104,208,.17); font-size: 10px; font-weight: 850; }
 .daily-intention-actions .next-step-action:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 9px 18px rgba(126,104,208,.2); }
 .daily-intention-actions .next-step-action:disabled { opacity: .5; cursor: not-allowed; }
-.daily-intention-complete { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 13px; border: 1px solid #d8e4d2; border-radius: 999px; color: #50704e; background: rgba(255,255,255,.72); font-size: 10px; font-weight: 800; }
+.daily-intention-complete { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 13px; border: 1px solid #d8e4d2; border-radius: 999px; color: #50704e; background: rgba(255,255,255,.72); font-size: 10px; font-weight: 800; }
 .daily-intention-complete:hover { border-color: #b8d0b1; background: #fff; }
 .daily-intention-complete:disabled { opacity: .45; cursor: not-allowed; }
 
@@ -2643,7 +2643,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .module-item:hover { border-color: #dfe8d8; box-shadow: 0 6px 16px rgba(85,65,46,.045); }
 .module-tabs { border: 1px solid #eee6dc; border-radius: 999px; background: #faf5ee; }
 .module-tabs button { border-radius: 999px; color: #7e8075; }
-.module-tabs button.active { color: #715dc3; background: #eee9ff; box-shadow: 0 2px 7px rgba(126,104,208,.1); }
+.module-tabs button.active { color: #2f5e40; background: #e6f0e0; box-shadow: 0 2px 7px rgba(47,98,69,.12); }
 .form-field { gap: 7px; }
 .form-label { color: #6b6c61; font-size: 10px; font-weight: 800; }
 .form-control, .module-form-control, .form-field input, .form-field select, .form-field textarea {
@@ -3086,7 +3086,7 @@ html[data-theme="dark"] .menu-panel-footer .sidebar-growth { border-color: #3c4f
 .section-caption { color: #5f7057; font-size: 11px; }
 .finance-period-label { font-size: 10.5px; }
 .finance-period-copy strong { font-size: 13px; }
-.finance-month-input { font-size: 12px; width: 128px; }
+.finance-month-input { font-size: 16px; width: 128px; }
 .finance-chart-day { font-size: 11px; fill: var(--ink-soft); font-weight: 700; }
 .finance-day-detail-label { font-size: 10.5px; }
 .finance-day-detail-value small { font-size: 10px; }
@@ -3346,7 +3346,7 @@ html[data-theme="dark"] .hero-ring-label small { color: var(--muted); }
 .text-button {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 40px;
   padding: 4px 2px;
   margin: -4px 0;
   border-radius: 8px;
@@ -3507,12 +3507,13 @@ html[data-theme="dark"] .settings-about-note p {
   .finance-balance .metric-value { font-size: 23px; }
 }
 
-/* --- R. Finance day-detail grid: 3 kol tidak rata di 7 kartu → 7 kol scroll --- */
+/* --- R. Finance day-detail grid: 7 kol tidak rata di layar sempit —
+   biarkan kolom menyusut (minmax(0,1fr)) alih-alih memaksa 48px yang
+   menyebabkan overflow horizontal pada 375px (audit v0.4.2 F4). --- */
 @media (max-width: 420px) {
   .finance-day-detail-grid {
-    grid-template-columns: repeat(7, minmax(48px, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 3px;
-    overflow-x: auto;
   }
   .finance-day-detail { padding: 6px 4px; }
   .finance-day-detail-value strong { font-size: 10px; }
@@ -4175,12 +4176,15 @@ html[data-theme="dark"] .search-empty span { color: var(--ink-soft); }
     line-height: 1;
     white-space: nowrap;
   }
-  .mobile-quick-actions[hidden] { display: none !important; }
+  /* Panel aksi cepat DILUAR bottom-nav (audit v0.4.2) — position: fixed
+     agar lolos dari clipping backdrop-filter + border-radius nav pada
+     iOS Safari. Selector .bottom-nav .mobile-quick-action hapus prefix
+     karena menu tidak lagi anak nav. */
   .mobile-quick-actions {
-    position: absolute;
-    z-index: 90;
+    position: fixed;
+    z-index: 80;
     left: 50%;
-    bottom: calc(100% + 15px);
+    bottom: calc(96px + env(safe-area-inset-bottom));
     display: grid;
     width: min(320px, calc(100vw - 32px));
     gap: 5px;
@@ -4231,12 +4235,12 @@ html[data-theme="dark"] .search-empty span { color: var(--ink-soft); }
 
 /* --- 7. TOUCH TARGETS + iOS ZOOM --- */
 .module-icon-action { width: 40px; height: 40px; border-radius: 12px; }
-.module-tabs.compact button { min-height: 38px; }
+.module-tabs.compact button { min-height: 40px; }
 .module-tabs button { min-height: 40px; }
 .module-tabs button span { font-size: 10px; min-width: 20px; }
 .module-photo-grid figcaption button {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   margin: -7px -7px -7px 0;
   border-radius: 10px;
   place-items: center;
@@ -4684,6 +4688,7 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
    naikkan opasitas + 11px (audit C #2). ── */
 .finance-balance-note { color: rgba(255, 255, 255, .95); font-size: 11px; }
 .finance-balance .small-label { color: rgba(255, 255, 255, .9); }
+.finance-balance-period { color: rgba(255, 255, 255, .92); }
 
 /* ── H. Budget hint 9px @3.1:1 → 10px dengan warna lebih gelap (audit C #6). ── */
 .finance-budget-panel .budget-hint { color: #6d6f62; font-size: 10px; }
@@ -4717,11 +4722,14 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
    (audit C #5). ── */
 .module-inline-meta strong.is-negative { color: #b04a2e; }
 
-/* ── L. Handle seret di dalam habit-row ber-GRID (mobile): tanpa ini
-   handle menjadi anak grid liar — kolom nama habit tergencet 34px dan
-   judul terpotong satu kata (regresi ditemukan verifikasi v0.4.1). ── */
+/* ── L. Handle seret di dalam habit-row ber-GRID (mobile):
+   Grid 4-kol (grip + icon + main + actions) HANYA berlaku bila
+   dragHandle ada (`:has(.habit-drag-handle)`). Tanpa ini, dashboard
+   yang merender habit-row tanpa dragHandle menempatkan icon di kolom
+   grip 22px dan main tergencet 38px → judul terpotong (audit v0.4.2 D1/H1). ── */
 @media (max-width: 760px) {
-  .habit-row { grid-template-columns: 22px 38px minmax(0, 1fr) auto; }
+  .habit-row { grid-template-columns: 38px minmax(0, 1fr) auto; }
+  .habit-row:has(.habit-drag-handle) { grid-template-columns: 22px 38px minmax(0, 1fr) auto; }
   .habit-drag-handle {
     grid-column: 1;
     grid-row: 1;
@@ -4730,14 +4738,15 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
   }
 }
 @media (max-width: 430px) {
-  .habit-row { grid-template-columns: 20px 34px minmax(0, 1fr); }
+  .habit-row { grid-template-columns: 38px minmax(0, 1fr) auto; }
+  .habit-row:has(.habit-drag-handle) { grid-template-columns: 20px 34px minmax(0, 1fr); }
   .habit-drag-handle {
     grid-column: 1;
     grid-row: 1 / 3;
     align-self: center;
     margin: 0;
   }
-  .habit-row-actions { grid-column: 3 / -1; }
+  .habit-row:has(.habit-drag-handle) .habit-row-actions { grid-column: 3 / -1; }
 }
 
 
