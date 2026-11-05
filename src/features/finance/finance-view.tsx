@@ -21,6 +21,7 @@ import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
+import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 const budgetIcons: Record<string, typeof Coffee> = {
   Makanan: Coffee,
@@ -236,6 +237,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd }: {
 
       <section className="finance-overview" aria-label={`Ringkasan keuangan ${monthLabel}`}>
         <div className="card finance-balance">
+          <BotanicalIllustrationBackdrop variant="finance" />
           <span className="small-label">ARUS KAS BERSIH</span>
           <div className="metric-value">{formatRupiah(net)}</div>
           <span className="finance-balance-note">{cashflowMessage}</span>
