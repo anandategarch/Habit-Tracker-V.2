@@ -7241,3 +7241,14 @@ html[data-theme="dark"] .confirm-danger-button {
 html[data-theme="dark"] .confirm-danger-button:hover {
   background: linear-gradient(115deg, #d3765f, #bd684f);
 }
+
+/* ── Bug hunt v0.14.1: toast menutupi dialog ──
+   Toast (z-index 150) berada di atas backdrop modal (z-index 100), dan di
+   mobile posisinya bottom-center — tepat menimpa pesan & tombol dialog
+   sheet (mis. toast "Perubahanmu tersimpan…" saat grup dibuat lalu dialog
+   hapus dibuka <4,2 detik kemudian). Selama ada modal terbuka, pindahkan
+   toast ke atas layar. `:has()` sudah dipakai di file ini (drag handle). */
+body:has(.modal-backdrop) .toast {
+  bottom: auto;
+  top: calc(14px + env(safe-area-inset-top));
+}
