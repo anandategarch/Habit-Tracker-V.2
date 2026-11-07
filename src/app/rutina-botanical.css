@@ -3692,7 +3692,7 @@ textarea:focus-visible {
   border-color: #7fae8b;
   outline: 3px solid rgba(65, 122, 87, .14);
 }
-/* 1d. CTA dashboard "Mulai timer habit" + weekly-add violet → hijau */
+/* 1d. CTA dashboard langkah berikutnya + weekly-add → hijau botanical */
 .daily-intention-actions .next-step-action {
   border: 1px solid #356448;
   background: linear-gradient(135deg, #417a57, #2f5e40);
@@ -4534,8 +4534,6 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
 .completion-filters button { min-height: 40px; }
 .habit-search input { height: 100%; min-height: 40px; font-size: 16px; }
 
-/* ── E. Timer habit: label terbaca (8px→11px) + warna aktif AA ── */
-
 /* ── F. Chip aktif: putih di atas gradasi hijau (bukan aksen 3.1:1) ── */
 .main-shell .schedule-view-toggle button.active,
 .main-shell .completion-filters button.active,
@@ -4864,8 +4862,6 @@ button:disabled:active {
 .mobile-quick-actions {
   overscroll-behavior: contain;
 }
-
-/* Cross-fade both timer glyphs in place; the button width does not jump. */
 
 /* A first check-in is an invitation, not an overdue warning. */
 .daily-checkin-prompt {

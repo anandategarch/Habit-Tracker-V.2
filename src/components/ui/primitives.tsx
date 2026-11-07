@@ -2,14 +2,14 @@ import type { ReactNode } from "react";
 import { BotanicalIllustration, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import { WeeklyHistorySlot } from "@/components/ui/weekly-history";
 import {
-  ArrowDownLeft, ArrowUpRight, Check, Clock3, Flame, Sprout, Target,
+  Check, Clock3, Flame, Sprout, Target,
 } from "lucide-react";
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
 import { scheduleLabel } from "@/lib/habit-schedule";
 import { burstLeaves } from "@/components/ui/celebrate";
 import { RichText } from "@/components/ui/rich-text";
-import { HabitArtIcon } from "@/components/ui/category-icons";
+import { FinanceCategoryIcon, HabitArtIcon } from "@/components/ui/category-icons";
 
 function pageArtwork(eyebrow: string): BotanicalIllustrationVariant | null {
   const label = eyebrow.toLocaleUpperCase("id-ID");
@@ -164,8 +164,11 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
   const income = transaction.type === "income";
   return (
     <article className="transaction-row">
+      {/* v0.19.1 — ikon kategori flat-filled (gaya Flaticon) menggantikan panah
+          generik: kategori terlihat sekilas, arah kas tetap tersandi dari tanda
+          +/− dan warna nominal, plus tint hijau/amber pada tile ikon. */}
       <div className={`transaction-icon ${income ? "" : "expense"}`}>
-        {income ? <ArrowDownLeft size={17} /> : <ArrowUpRight size={17} />}
+        <FinanceCategoryIcon category={transaction.category} size={19} />
       </div>
       <div className="transaction-copy">
         <div className="transaction-title">{transaction.title}</div>

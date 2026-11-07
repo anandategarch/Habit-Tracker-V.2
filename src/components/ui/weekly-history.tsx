@@ -399,14 +399,17 @@ const kindLabels: Record<WeeklyActivityKind, string> = {
 const kindColors: Record<WeeklyActivityKind, string> = {
   habit: "#3f7958",
   finance: "#c28a42",
-  checkin: "#a46c98",
+  // v0.19.1 — audit ungu: checkin #a46c98 (mauve, hue 313°) digeser ke rose
+  // hangat dan photo #8d82b4 (violet, hue 252°) diganti rose botanical;
+  // keduanya kini sekeluarga dengan aksen rose aplikasi (#d58b9a spend-5).
+  checkin: "#b06e8f",
   goal: "#82975f",
   task: "#5b8990",
   note: "#bf896d",
   routine: "#8a9e6e",
   wellness: "#5c9b91",
   training: "#bc8754",
-  photo: "#8d82b4",
+  photo: "#c98a96",
 };
 
 function ActivityGlyph({ kind }: { kind: WeeklyActivityKind }) {

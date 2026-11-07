@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowDownLeft, ArrowUpRight, BookOpen, Search, WalletCards, X } from "lucide-react";
+import { BookOpen, Search, WalletCards, X } from "lucide-react";
+import { FinanceCategoryIcon, HabitArtIcon } from "@/components/ui/category-icons";
 import type { KeyboardEvent } from "react";
 import type { Habit, TabId, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
@@ -127,7 +128,7 @@ export function SearchDialog({
                 <span className="small-label">KEBIASAAN · {matchedHabits.length}</span>
                 {matchedHabits.map((habit) => (
                   <button type="button" className="search-result" key={habit.id} onClick={() => select("habits")}>
-                    <span className="search-result-icon"><BookOpen size={16} /></span>
+                    <span className="search-result-icon"><HabitArtIcon icon={habit.icon} size={18} /></span>
                     <span className="search-result-copy"><strong>{habit.title}</strong><small>{habit.category} · {habit.time}</small></span>
                     <span className="search-result-arrow">→</span>
                   </button>
@@ -140,7 +141,7 @@ export function SearchDialog({
                 {matchedTransactions.map((transaction) => (
                   <button type="button" className="search-result" key={transaction.id} onClick={() => select("finance")}>
                     <span className={`search-result-icon ${transaction.type}`}>
-                      {transaction.type === "income" ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
+                      <FinanceCategoryIcon category={transaction.category} size={18} />
                     </span>
                     <span className="search-result-copy"><strong>{transaction.title}</strong><small>{transaction.category} · {formatDate(transaction.date)}</small></span>
                     <span className="search-result-amount">{formatRupiah(transaction.amount)}</span>
