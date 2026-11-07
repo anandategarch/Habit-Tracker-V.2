@@ -61,21 +61,38 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  // A11y v0.20 (audit 2.4.3): tangkap pemicu saat RENDER PERTAMA — sebelum
+  // autoFocus React memindahkan fokus ke dalam modal (penjelasan lengkap di
+  // EntryModal). Menangkap di useEffect membuat restore mengenai node terlepas.
+  const previousFocusRef = useRef<HTMLElement | null>(
+    typeof document === "undefined" || !(document.activeElement instanceof HTMLElement)
+      ? null
+      : document.activeElement,
+  );
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
 
   useEffect(() => {
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    // Ref tidak pernah berubah setelah render pertama — salin agar cleanup
+    // membaca nilai yang sama (pola disarankan react-hooks/exhaustive-deps).
+    const restoreFocus = previousFocusRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>("[autofocus]") ?? dialogRef.current?.querySelector<HTMLElement>("input, select, button");
+    // React 19 tidak merender prop autoFocus sebagai atribut DOM — fallback:
+    // kontrol form pertama, bukan tombol tutup (audit a11y v0.20).
+    const firstFocusable =
+      dialogRef.current?.querySelector<HTMLElement>("[autofocus]") ??
+      dialogRef.current?.querySelector<HTMLElement>("input:not([type=hidden]), select, textarea, [role=combobox]") ??
+      dialogRef.current?.querySelector<HTMLElement>(".primary-button, .budget-add-row") ??
+      dialogRef.current?.querySelector<HTMLElement>('button:not([aria-label="Tutup dialog"])') ??
+      dialogRef.current?.querySelector<HTMLElement>("button");
     const focusTimeout = window.setTimeout(() => firstFocusable?.focus(), 0);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.clearTimeout(focusTimeout);
-      previousFocus?.focus();
+      restoreFocus?.focus();
     };
   }, []);
 
@@ -277,6 +294,8 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
                             enterKeyHint="done"
                             placeholder="500000"
                             value={row.limit}
+                            aria-invalid={Boolean(errors[row.key]) || undefined}
+                            aria-describedby={errors[row.key] ? `budget-error-${row.key}` : undefined}
                             onChange={(event) => updateRow(row.key, { limit: event.target.value })}
                           />
                         </div>
@@ -285,7 +304,7 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
                     <IconAction label={`Hapus anggaran ${categoryValue || "ini"}`} className="budget-editor-remove" onClick={() => removeRow(row.key)}>
                       <Trash2 size={15} />
                     </IconAction>
-                    {errors[row.key] && <span className="field-error budget-editor-error" role="alert">{errors[row.key]}</span>}
+                    {errors[row.key] && <span className="field-error budget-editor-error" role="alert" id={`budget-error-${row.key}`}>{errors[row.key]}</span>}
                   </div>
                 );
               })}

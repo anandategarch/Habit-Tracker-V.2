@@ -28,6 +28,16 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
   const isHabit = mode === "habit";
   const dialogRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
+  // A11y v0.20 (audit 2.4.3): tangkap pemicu saat RENDER PERTAMA — sebelum
+  // autoFocus React (fokus imperatif saat commit) memindahkan fokus ke dalam
+  // modal. Jika ditangkap di useEffect, activeElement sudah berupa input di
+  // dalam modal → saat dialog ditutup, .focus() mengenai node terlepas
+  // (no-op senyap) dan fokus jatuh ke body.
+  const previousFocusRef = useRef<HTMLElement | null>(
+    typeof document === "undefined" || !(document.activeElement instanceof HTMLElement)
+      ? null
+      : document.activeElement,
+  );
   const [fieldError, setFieldError] = useState<{ field: string; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -77,15 +87,25 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
   }, [onClose]);
 
   useEffect(() => {
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    // Ref tidak pernah berubah setelah render pertama — salin agar cleanup
+    // membaca nilai yang sama (pola disarankan react-hooks/exhaustive-deps).
+    const restoreFocus = previousFocusRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>("[autofocus]") ?? dialogRef.current?.querySelector<HTMLElement>("input, select, button");
+    // React 19 tidak merender prop autoFocus sebagai atribut DOM — pemilih
+    // [autofocus] selalu gagal. Fallback: kontrol form pertama (bukan tombol
+    // tutup) agar fokus awal jatuh ke bidang yang paling sering dipakai.
+    const firstFocusable =
+      dialogRef.current?.querySelector<HTMLElement>("[autofocus]") ??
+      dialogRef.current?.querySelector<HTMLElement>("input:not([type=hidden]), select, textarea") ??
+      dialogRef.current?.querySelector<HTMLElement>(".primary-button, .budget-add-row") ??
+      dialogRef.current?.querySelector<HTMLElement>('button:not([aria-label="Tutup dialog"])') ??
+      dialogRef.current?.querySelector<HTMLElement>("button");
     const focusTimeout = window.setTimeout(() => firstFocusable?.focus(), 0);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.clearTimeout(focusTimeout);
-      previousFocus?.focus();
+      restoreFocus?.focus();
     };
   }, []);
 
@@ -180,8 +200,8 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
             <>
               <label className="form-field">
                 <span className="form-label">Nama kebiasaan</span>
-                <input className="form-control" name="title" placeholder="Contoh: Membaca 10 halaman" required maxLength={60} autoFocus onChange={() => fieldError?.field === "title" && setFieldError(null)} />
-                {fieldError?.field === "title" && <span className="field-error" role="alert">{fieldError.message}</span>}
+                <input className="form-control" name="title" placeholder="Contoh: Membaca 10 halaman" required maxLength={60} autoFocus aria-invalid={fieldError?.field === "title" || undefined} aria-describedby={fieldError?.field === "title" ? "entry-field-error" : undefined} onChange={() => fieldError?.field === "title" && setFieldError(null)} />
+                {fieldError?.field === "title" && <span className="field-error" role="alert" id="entry-field-error">{fieldError.message}</span>}
               </label>
               <label className="form-field">
                 <span className="form-label">Kategori</span>
@@ -235,8 +255,8 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
               <div className="form-two-columns">
                 <label className="form-field">
                   <span className="form-label">Waktu</span>
-                  <input className="form-control" type="time" name="time" defaultValue="07:00" step={60} required onChange={() => fieldError?.field === "time" && setFieldError(null)} />
-                  {fieldError?.field === "time" && <span className="field-error" role="alert">{fieldError.message}</span>}
+                  <input className="form-control" type="time" name="time" defaultValue="07:00" step={60} required aria-invalid={fieldError?.field === "time" || undefined} aria-describedby={fieldError?.field === "time" ? "entry-field-error" : undefined} onChange={() => fieldError?.field === "time" && setFieldError(null)} />
+                  {fieldError?.field === "time" && <span className="field-error" role="alert" id="entry-field-error">{fieldError.message}</span>}
                 </label>
                 <label className="form-field">
                   <span className="form-label">Durasi (menit)</span>
@@ -255,13 +275,13 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
               </div>
               <label className="form-field">
                 <span className="form-label">Nama transaksi</span>
-                <input className="form-control" name="title" placeholder="Contoh: Belanja bulanan" maxLength={60} required autoFocus onChange={() => fieldError?.field === "title" && setFieldError(null)} />
-                {fieldError?.field === "title" && <span className="field-error" role="alert">{fieldError.message}</span>}
+                <input className="form-control" name="title" placeholder="Contoh: Belanja bulanan" maxLength={60} required autoFocus aria-invalid={fieldError?.field === "title" || undefined} aria-describedby={fieldError?.field === "title" ? "entry-field-error" : undefined} onChange={() => fieldError?.field === "title" && setFieldError(null)} />
+                {fieldError?.field === "title" && <span className="field-error" role="alert" id="entry-field-error">{fieldError.message}</span>}
               </label>
               <label className="form-field">
                 <span className="form-label">Nominal (Rupiah)</span>
-                <div className="amount-field"><span aria-hidden="true">Rp</span><input className="form-control" type="text" name="amount" inputMode="numeric" autoComplete="off" enterKeyHint="done" placeholder="150000" required onChange={() => fieldError?.field === "amount" && setFieldError(null)} /></div>
-                {fieldError?.field === "amount" && <span className="field-error" role="alert">{fieldError.message}</span>}
+                <div className="amount-field"><span aria-hidden="true">Rp</span><input className="form-control" type="text" name="amount" inputMode="numeric" autoComplete="off" enterKeyHint="done" placeholder="150000" required aria-invalid={fieldError?.field === "amount" || undefined} aria-describedby={fieldError?.field === "amount" ? "entry-field-error" : undefined} onChange={() => fieldError?.field === "amount" && setFieldError(null)} /></div>
+                {fieldError?.field === "amount" && <span className="field-error" role="alert" id="entry-field-error">{fieldError.message}</span>}
               </label>
               <div className="form-two-columns">
                 <label className="form-field">

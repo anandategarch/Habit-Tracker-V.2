@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { GripVertical, ListChecks, ListFilter, Plus, Search, Sparkles } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { HabitGroup } from "@/lib/module-types";
@@ -25,6 +25,11 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
   const [categoryFilter, setCategoryFilter] = useState<(typeof categoryOptions)[number]>("Semua");
   const [query, setQuery] = useState("");
   const [dragHint, setDragHint] = useState<{ id: string; from: number; to: number; height: number } | null>(null);
+  // ── Reorder keyboard (WCAG 2.5.7/2.1.1, audit a11y v0.20): pegangan seret kini
+  // bisa dioperasikan tanpa pointer — Enter mulai, panah geser, Enter lagi
+  // letakkan, Esc batal. Pengumuman pergerakan lewat live region sopan. ──
+  const [keyboardDragId, setKeyboardDragId] = useState<string | null>(null);
+  const [moveAnnouncement, setMoveAnnouncement] = useState("");
   const [showAllSchedules, setShowAllSchedules] = useState(false);
   const [groupFilter, setGroupFilter] = useState("all");
   const [groupNameInput, setGroupNameInput] = useState("");
@@ -80,6 +85,55 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
     }
   }
 
+  /** Terapkan urutan baru: dipakai bersama oleh drag pointer & keyboard. */
+  function commitReorder(id: string, from: number, to: number) {
+    if (!onReorder || to === from) return;
+    const order = [...visibleIds];
+    order.splice(from, 1);
+    order.splice(to, 0, id);
+    const byId = new Map(habits.map((habit) => [habit.id, habit]));
+    const visibleSlots = visibleIds
+      .map((rowId) => habits.findIndex((habit) => habit.id === rowId))
+      .sort((a, b) => a - b);
+    if (visibleSlots.some((slot) => slot < 0) || visibleSlots.length !== order.length) return;
+    const next = [...habits];
+    order.forEach((rowId, index) => { next[visibleSlots[index]] = byId.get(rowId)!; });
+    onReorder(next);
+  }
+
+  /** Interaksi keyboard pada pegangan seret — alternatif non-pointer (2.5.7). */
+  function handleDragHandleKeyDown(event: ReactKeyboardEvent<HTMLButtonElement>, habit: Habit) {
+    if (!onReorder) return;
+    const from = visibleIds.indexOf(habit.id);
+    if (from < 0) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      const starting = keyboardDragId !== habit.id;
+      setKeyboardDragId(starting ? habit.id : null);
+      setMoveAnnouncement(starting ? `Mulai memindahkan ${habit.title}. Gunakan panah atas atau bawah untuk menggeser.` : `${habit.title} diletakkan.`);
+      return;
+    }
+    if (keyboardDragId !== habit.id) return;
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+      event.preventDefault();
+      const to = event.key === "ArrowUp" ? from - 1 : from + 1;
+      if (to < 0 || to >= visibleIds.length) {
+        setMoveAnnouncement(event.key === "ArrowUp" ? "Sudah di posisi paling atas." : "Sudah di posisi paling bawah.");
+        return;
+      }
+      commitReorder(habit.id, from, to);
+      setMoveAnnouncement(`${habit.title} dipindah ke posisi ${to + 1} dari ${visibleIds.length}.`);
+      return;
+    }
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setKeyboardDragId(null);
+      // Pergeseran sudah diterapkan langsung (live commit) — Esc hanya
+      // menutup mode; kata "batal" akan menyesatkan pengguna SR.
+      setMoveAnnouncement("Mode pemindahan ditutup.");
+    }
+  }
+
   function beginHabitDrag(event: ReactPointerEvent<HTMLButtonElement>, id: string) {
     if (!onReorder || event.button !== 0) return;
     const from = visibleIds.indexOf(id);
@@ -129,21 +183,8 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
     const row = rowRefs.current.get(state.id);
     if (row) row.style.transform = "";
     setDragHint(null);
-    if (!commit || !onReorder || state.to === state.from) return;
-    // Susun ulang daftar-tampak, lalu petakan kembali ke array habit penuh:
-    // urutan baru menempati "slot" posisi item-tampak (ascending) — habit
-    // yang tersembunyi oleh filter tetap menempel di posisinya.
-    const order = [...visibleIds];
-    order.splice(state.from, 1);
-    order.splice(state.to, 0, state.id);
-    const byId = new Map(habits.map((habit) => [habit.id, habit]));
-    const visibleSlots = visibleIds
-      .map((rowId) => habits.findIndex((habit) => habit.id === rowId))
-      .sort((a, b) => a - b);
-    if (visibleSlots.some((slot) => slot < 0) || visibleSlots.length !== order.length) return;
-    const next = [...habits];
-    order.forEach((rowId, index) => { next[visibleSlots[index]] = byId.get(rowId)!; });
-    onReorder(next);
+    if (!commit) return;
+    commitReorder(state.id, state.from, state.to);
   }
 
   function siblingShiftStyle(id: string): CSSProperties | undefined {
@@ -231,12 +272,14 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
             </button>
           ))}
         </div>
+        <span id="habit-drag-guide" className="sr-only">Tekan Enter pada pegangan urutan untuk mulai memindahkan kebiasaan, panah atas atau bawah untuk menggeser, Enter lagi untuk meletakkan, Escape untuk membatalkan.</span>
+        <span className="sr-only" role="status" aria-live="polite">{moveAnnouncement}</span>
         <div className="habit-list">
           {filteredHabits.map((habit) => (
             <div
               key={habit.id}
               ref={(element) => { if (element) rowRefs.current.set(habit.id, element); else rowRefs.current.delete(habit.id); }}
-              className={`habit-draggable${dragHint?.id === habit.id ? " is-pointer-dragging" : ""}`}
+              className={`habit-draggable${dragHint?.id === habit.id ? " is-pointer-dragging" : ""}${keyboardDragId === habit.id ? " is-keyboard-dragging" : ""}`}
               style={siblingShiftStyle(habit.id)}
             >
               <HabitRow
@@ -250,6 +293,9 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
                     type="button"
                     className="habit-drag-handle"
                     aria-label={`Ubah urutan ${habit.title}`}
+                    aria-pressed={keyboardDragId === habit.id}
+                    aria-describedby="habit-drag-guide"
+                    onKeyDown={(event) => handleDragHandleKeyDown(event, habit)}
                     onPointerDown={(event) => beginHabitDrag(event, habit.id)}
                     onPointerMove={moveHabitDrag}
                     onPointerUp={(event) => endHabitDrag(event, true)}

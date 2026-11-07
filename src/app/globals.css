@@ -48,8 +48,9 @@ body {
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 button:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 3px solid rgba(89, 139, 104, .34);
+  outline: 3px solid #2f5e40;
   outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(255, 253, 249, .92);
 }
 ::selection { background: #d9e9dd; color: var(--primary-strong); }
 
@@ -682,7 +683,7 @@ body {
   border-radius: 999px; color: var(--primary); background: rgba(255,255,255,.62);
   font-size: 11px; font-weight: 700;
 }
-.tree-splash-skip:focus-visible { outline: 3px solid rgba(89,139,104,.34); outline-offset: 3px; }
+.tree-splash-skip:focus-visible { outline: 3px solid #2f5e40; outline-offset: 3px; }
 
 @keyframes tree-ground-draw { to { stroke-dashoffset: 0; } }
 @keyframes tree-seed-vanish {
@@ -758,8 +759,9 @@ button, input, select, textarea { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
 button:disabled { cursor: not-allowed; opacity: .55; transform: none !important; }
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 3px solid rgba(77, 132, 91, .30);
-  outline-offset: 3px;
+  outline: 3px solid #2f5e40;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(255, 253, 249, .92);
 }
 
 /* App frame and navigation */
@@ -1131,7 +1133,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .transaction-type-control input { position: absolute; opacity: 0; pointer-events: none; }
 .transaction-type-control label span { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 42px; border: 1px solid #e5ebe3; border-radius: 11px; color: #819084; background: #fbfcfa; font-size: 10px; font-weight: 720; transition: .18s ease; }
 .transaction-type-control input:checked + span { color: #2e6841; border-color: #bbd5ba; background: #eff6ed; }
-.transaction-type-control input:focus-visible + span { outline: 3px solid rgba(77,132,91,.3); outline-offset: 2px; }
+.transaction-type-control input:focus-visible + span { outline: 3px solid rgba(47,94,64,.8); outline-offset: 2px; }
 .amount-field { position: relative; }
 .amount-field > span { position: absolute; top: 50%; left: 12px; z-index: 1; color: #738277; font-size: 11px; transform: translateY(-50%); }
 .amount-field .form-control { padding-left: 35px; }

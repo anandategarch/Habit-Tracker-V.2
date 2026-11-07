@@ -2509,7 +2509,7 @@ body{background:radial-gradient(ellipse at 88% 2%,rgba(246,221,199,.32),transpar
 .home-habits-card .habit-list{gap:2px}
 .weekly-trend-card,.insight-trend-panel{background:linear-gradient(145deg,#fffefa,#f4f8ef)}
 .form-control,.module-status-select,.group-filter-select,input.form-control,select.form-control,textarea.form-control{min-height:40px;border:1px solid #e9e3d9;border-radius:12px;color:#45483f;background:#fffefa;font-size:11px}
-.form-control:focus,.module-status-select:focus,.group-filter-select:focus,input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#7fae8b;outline:3px solid rgba(65,122,87,.16);outline-offset:1px}
+.form-control:focus,.module-status-select:focus,.group-filter-select:focus,input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#7fae8b;outline:3px solid rgba(47,94,64,.8);outline-offset:1px}
 label,.field-label{color:#666b60}
 .completion-filters button,.module-tabs button,.insight-period-tabs button{border:1px solid #e9e3db;border-radius:999px;color:#797d72;background:#fffdf9;font-size:10px;font-weight:800}
 .completion-filters button.active,.module-tabs button.active,.insight-period-tabs button.active{border-color:transparent;color:#fff;background:linear-gradient(110deg,#417a57,#5d9271)}
@@ -2605,7 +2605,7 @@ body {
 ::selection { color: #355c40; background: #e4efd9; }
 button, input, select, textarea { font: inherit; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 3px solid rgba(143,122,229,.32);
+  outline: 3px solid rgba(47, 94, 64, .9);
   outline-offset: 3px;
 }
 .page-title { color: #30352d; font-weight: 850; letter-spacing: -.95px; }
@@ -3677,20 +3677,36 @@ html[data-theme="dark"] .transaction-type-control input:checked + span {
 .modal-card .primary-button:hover:not(:disabled) {
   background: linear-gradient(115deg, #4c8a63, #356b4a);
 }
-/* 1c. Focus ring global violet → hijau (keyboard nav) */
+/* 1c. Focus ring global (audit a11y v0.20 / WCAG 1.4.11): ring dua warna —
+   garis hijau gelap + halo terang — agar kontras ≥3:1 di atas latar terang
+   MAUPUN tombol hijau solid; dulu rgba(65,122,87,.35) ≈ 1.6:1 (terlalu pudar). */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgba(65, 122, 87, .35);
-  outline-offset: 3px;
+  outline: 3px solid #2f5e40;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(255, 253, 249, .92);
+}
+html[data-theme="dark"] button:focus-visible,
+html[data-theme="dark"] a:focus-visible,
+html[data-theme="dark"] input:focus-visible,
+html[data-theme="dark"] select:focus-visible,
+html[data-theme="dark"] textarea:focus-visible {
+  outline-color: #dcebd9;
+  box-shadow: 0 0 0 5px rgba(24, 34, 25, .92);
 }
 .form-control:focus,
 .module-status-select:focus,
 .group-filter-select:focus {
   border-color: #7fae8b;
-  outline: 3px solid rgba(65, 122, 87, .14);
+  outline: 3px solid rgba(47, 94, 64, .8);
+}
+html[data-theme="dark"] .form-control:focus,
+html[data-theme="dark"] .module-status-select:focus,
+html[data-theme="dark"] .group-filter-select:focus {
+  outline-color: rgba(220, 235, 217, .9);
 }
 /* 1d. CTA dashboard langkah berikutnya + weekly-add → hijau botanical */
 .daily-intention-actions .next-step-action {
@@ -5821,7 +5837,7 @@ button:disabled:active {
 
 /* 7. Formulir & tombol dalam scope finx */
 .finx .form-control { border-color: #EFEADD; border-radius: 14px; background: #FBF8F1; color: #1F2A1F; }
-.finx .form-control:focus { border-color: #7FAE8B; outline: 3px solid rgba(65, 122, 87, .14); }
+.finx .form-control:focus { border-color: #7FAE8B; outline: 3px solid rgba(47, 94, 64, .8); }
 .finx .form-label { color: #6D7466; }
 .finx .primary-button {
   border-color: transparent; border-radius: 999px; color: #fff;
@@ -5935,7 +5951,7 @@ html[data-theme="dark"] .text-button { color: #9fd4ae; }
 .settings-theme-options button.active { border-color: #BCD8C2; background: #EAF3E2; box-shadow: 0 4px 12px rgba(62, 124, 80, .12); }
 .form-control:focus, .module-status-select:focus, .group-filter-select:focus,
 input:focus-visible, select:focus-visible, textarea:focus-visible {
-  border-color: #7FAE8B; outline: 3px solid rgba(65, 122, 87, .16); outline-offset: 1px;
+  border-color: #7FAE8B; outline: 3px solid rgba(47, 94, 64, .8); outline-offset: 1px;
 }
 .calendar-day.selected { border-color: transparent; }
 
@@ -6249,7 +6265,7 @@ input[type="checkbox"]:checked {
   background-position: center;
   background-size: 12px;
 }
-input[type="checkbox"]:focus-visible { outline: 3px solid rgba(65, 122, 87, .2); outline-offset: 2px; }
+input[type="checkbox"]:focus-visible { outline: 3px solid rgba(47, 94, 64, .8); outline-offset: 2px; }
 /* Radio tetap memakai accent-color (bentuk native bulat sudah sesuai) */
 input[type="radio"] { accent-color: #417a57; }
 
@@ -6830,7 +6846,7 @@ html[data-theme="dark"] .finance-compare-insight { color: var(--ink-soft); }
   transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 .budget-add-row:hover { border-color: #a9c58f; background: #f4f8f1; color: #2f6245; }
-.budget-add-row:focus-visible { outline: none; border-color: #7fae8b; box-shadow: 0 0 0 3px rgba(65, 122, 87, .16); }
+.budget-add-row:focus-visible { outline: none; border-color: #7fae8b; box-shadow: 0 0 0 3px rgba(47, 94, 64, .8); }
 
 /* Dark mode */
 html[data-theme="dark"] .budget-editor-row {
@@ -7232,7 +7248,7 @@ body:has(.modal-backdrop) .toast {
 .themed-select-trigger:hover:not(:disabled) { border-color: #d3cabb; }
 .themed-select-trigger:focus-visible {
   border-color: #7fae8b;
-  outline: 3px solid rgba(65, 122, 87, .14);
+  outline: 3px solid rgba(47, 94, 64, .8);
   outline-offset: 1px;
 }
 .themed-select-trigger:disabled { opacity: .55; cursor: not-allowed; }
@@ -7635,13 +7651,12 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
   letter-spacing: .55px;
 }
 .habits-panel .habit-week-history-summary-title small {
-  overflow: hidden;
   color: var(--muted);
   font-size: 8px;
   font-weight: 650;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
+/* A11y v0.20 (1.4.12): tanpa nowrap+ellipsis — teks status "Riwayat belum
+   tersedia" boleh membungkus saat text-spacing pengguna diperbesar. */
 .habits-panel .habit-week-history-preview {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -8129,5 +8144,47 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
   .form-field > span {
     font-size: 11.5px;
     font-weight: 800;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AUDIT A11Y v0.20 — hasil inspeksi manual WCAG (tier semi-automatis)
+   1. .sr-only: teks panduan keyboard-reorder & pengumuman live region.
+   2. Reorder keyboard (2.5.7/2.1.1): status visual baris + pegangan aktif.
+   3. Reduce-motion (2.2.2/2.3.3): animasi dekoratif brand & daun ikut mati
+      saat pengguna memilih kurangi gerak (dulu hanya skeleton/hero).
+   ═══════════════════════════════════════════════════════════════════════ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Baris habit yang sedang dipindah via keyboard — bingkai putus-putus. */
+.habit-draggable.is-keyboard-dragging {
+  outline: 2px dashed #417a57;
+  outline-offset: 3px;
+  border-radius: 18px;
+}
+/* Pegangan dalam mode pindah — aksen hijau solid (status terlihat jelas). */
+.habit-drag-handle[aria-pressed="true"] {
+  color: #fff;
+  background: #417a57;
+  border-color: #356448;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark svg,
+  .botanical-illustration__leaf,
+  .botanical-illustration__leaf--second,
+  .botanical-illustration__leaf--third {
+    animation: none !important;
   }
 }
