@@ -475,3 +475,43 @@ Error: Command failed: prisma db push
 
 Node.js v24.22.2
 error: script "db:push" exited with code 1
+==========================================
+[2026-11-07 13:33:07] Starting: bun install
+==========================================
+[BUN] Installing dependencies...
+[0.02ms] ".env"
+bun install v1.3.14 (0d9b296a)
+
+Checked 501 installs across 574 packages (no changes) [13.00ms]
+==========================================
+[2026-11-07 13:33:07] Completed: bun install
+[LOG] Step: bun install | Duration: 0s
+==========================================
+
+==========================================
+[2026-11-07 13:33:07] Starting: bun run db:push
+==========================================
+[BUN] Setting up database...
+$ node scripts/db-push-guard.mjs
+[db:push] DATABASE_URL lokal (file:/home/z/my-project/db/custom.db…) — menjalankan prisma db push…
+/bin/sh: 1: prisma: not found
+node:internal/errors:986
+  const err = new Error(message);
+              ^
+
+Error: Command failed: prisma db push
+    at genericNodeError (node:internal/errors:986:15)
+    at wrappedFn (node:internal/errors:540:14)
+    at checkExecSyncError (node:child_process:943:11)
+    at execSync (node:child_process:1015:15)
+    at file:///home/z/my-project/scripts/db-push-guard.mjs:26:1 {
+  status: 127,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 1046,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v24.22.2
+error: script "db:push" exited with code 1
