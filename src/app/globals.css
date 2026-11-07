@@ -18,6 +18,13 @@
   --amber: #e8b765;
   --coral: #d98b73;
   --danger: #be6958;
+  /* Lavender (pedoman UI: navigasi aktif, primary CTA, kontrol terpilih).
+     Varian deep/strong menjamin kontras teks putih ≥4.5:1 (WCAG AA). */
+  --rutina-lavender: #8f7ae5;
+  --rutina-lavender-deep: #7c5ce0;
+  --rutina-lavender-strong: #6a48c9;
+  --rutina-lavender-ink: #5a3eb8;
+  --rutina-lavender-soft: #f0ebfb;
   --radius-sm: 12px;
   --radius-md: 18px;
   --radius-lg: 24px;
