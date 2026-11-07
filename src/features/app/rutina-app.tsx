@@ -74,8 +74,10 @@ export function RutinaApp() {
   const [quickActionOpen, setQuickActionOpen] = useState(false);
   // Perayaan Full Bloom (100% habit selesai) — sekali per hari.
   const [bloom, setBloom] = useState<{ seed: GardenSeed; streak: number } | null>(null);
-  // Indikator pill yang meluncur di bottom-nav (mobile).
-  const [navPill, setNavPill] = useState<{ left: number; width: number } | null>(null);
+  // Indikator pill yang meluncur di bottom-nav (mobile). `top` diukur dari
+  // offsetTop tombol aktif agar pill sejajar presisi di SEMUA pita lebar
+  // (ponsel & tablet — tinggi baris nav berbeda karena FAB, adapt v0.6).
+  const [navPill, setNavPill] = useState<{ left: number; top: number; width: number } | null>(null);
   const {
     habits,
     transactions,
@@ -219,7 +221,7 @@ export function RutinaApp() {
         setNavPill(null);
         return;
       }
-      setNavPill({ left: active.offsetLeft, width: active.offsetWidth });
+      setNavPill({ left: active.offsetLeft, top: active.offsetTop, width: active.offsetWidth });
     };
     timer = window.setTimeout(measure, 50);
     const onResize = () => { window.clearTimeout(timer); timer = window.setTimeout(measure, 60); };
@@ -591,7 +593,7 @@ export function RutinaApp() {
         </div>
       )}
       <nav className="bottom-nav" aria-label="Navigasi utama mobile">
-        {navPill && <span className="bottom-nav-pill" style={{ left: navPill.left, width: navPill.width }} aria-hidden="true" />}
+        {navPill && <span className="bottom-nav-pill" style={{ left: navPill.left, top: navPill.top, width: navPill.width }} aria-hidden="true" />}
         {mobilePrimary.slice(0, 2).map(({ id, label, icon }) => (
           <button
             key={id}

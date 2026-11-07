@@ -8188,3 +8188,69 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
     animation: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ADAPTASI KONTEKS v0.6 — tablet (761-960px) & desktop (≥961px)
+   Adaptasi = memikirkan ulang pengalaman untuk konteks baru, bukan sekadar
+   menskalakan piksel. Temuan terukur (Chromium, viewport diemulasi):
+
+   1. [BUG tablet 914-960px] Pill indikator bottom-nav hanya absolute di
+      media ≤900px (globals.css:265). Di 901-960px pill menjadi item grid
+      ke-6 Dalam grid 5 kolom → tab terakhir melipat ke baris kedua
+      (nav 129px tinggi, terukur; "Kalender" yendir di y=640 vs y=583).
+   2. [BUG desktop ≥1900px] Pil .hero-description (inline-flex ≥601px) dan
+      tautan "Lihat perjalanan pohonmu" sebaris tanpa celah → tumpang
+      tindih 4px (terukur 1920px: pil 497-810 vs tautan 806-972).
+   3. [Target sentuh] Pegangan seret habit 20px lebar < minimum 44px
+      (WCAG 2.5.5 / standar proyek) — perluas area sentuh via
+      pseudo-element tanpa mengubah visual.
+   4. [Adaptasi tablet] Pita 761-960px sebelumnya memperoleh tata letak
+      ponsel yang direntangkan: konten 1 kolom lebar 720px+. Ikuti preseden
+      .module-two-col & .habit-overview-grid (sudah 2 kolom di pita ini,
+      rutina-botanical.css:4297-4298) untuk grid konten utama lainnya.
+      Ponsel ≤760px dan desktop ≥961px tidak berubah.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* 1. Pill selalu keluar dari alur grid — di semua lebar tempat nav tampak.
+      Posisi left/top/width diukur JS dari tombol aktif (rutina-app.tsx),
+      sehingga pill sejajar presisi di semua pita; CSS hanya mengatur tinggi
+      mengikuti tinggi tombol tiap pita (49px ponsel / 52px tablet). */
+.bottom-nav .bottom-nav-pill { position: absolute; }
+
+/* 2. Celah tetap antara pil deskripsi hero dan tautan perjalanan saat
+      keduanya sebaris (≥601px); saat melipat, margin tidak berdampak visual. */
+.botanical-hero .hero-description { margin-right: 14px; }
+
+/* 2b. [BUG semua lebar, terukur] padding-bottom hero (88-100px, rule lama)
+      LEBIH KECIL daripada zona kartu progres absolut (99-118px dari dasar
+      hero) → baris terakhir hero-copy (pil 2-baris atau tautan yang melipat)
+      selalu masuk ~11-17px ke dalam kartu. Perbesar padding per pita agar
+      copy bersih dari kartu (+10-12px napas) di semua konten catatan
+      dinamis. Terukur: 390 −11px, 768/960 −17px, 1280 −17px, 1920 −17px. */
+@media (max-width: 600px) {
+  /* Selektor kedua menyamai spesifisitas rule lama .botanical-dashboard-page
+     (≤430px, padding 88px) agar override benar-benar menang di ponsel kecil. */
+  .botanical-hero,
+  .botanical-dashboard-page .botanical-hero { padding-bottom: 112px; }
+}
+@media (min-width: 601px) {
+  .botanical-hero { padding-bottom: 130px; }
+}
+
+/* 3. Area sentuh pegangan seret ≥44px (visual grip tetap 20px, klik pada
+      area pseudo tetap sampai ke tombol — tidak ada clipping karena
+      .habit-row / .habit-list tidak ber-overflow:hidden). */
+.habit-drag-handle { position: relative; }
+.habit-drag-handle::after { content: ""; position: absolute; inset: -12px -14px; }
+
+@media (min-width: 761px) and (max-width: 960px) {
+  /* 1b. Tinggi pill band tablet = tinggi tombol (52px); top via JS inline. */
+  .bottom-nav .bottom-nav-pill { height: 52px; }
+
+  /* 4. Dua kolom konten di pita tablet — dua kartu mandiri berdampingan,
+     panel insight + sorotan, kalender + rangkuman. (Keuangan sudah 2 kolom
+     di pita ini via .finance-analysis-grid — collapse-nya hanya ≤760px.) */
+  .dashboard-feature-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+  .calendar-layout { grid-template-columns: minmax(0, 1.15fr) minmax(270px, .85fr); gap: 14px; }
+  .insight-grid { grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr); gap: 14px; }
+}
