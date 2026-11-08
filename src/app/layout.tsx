@@ -1,19 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import { PwaRegister } from "@/components/pwa/pwa-register";
-import { TreeSplash } from "@/components/pwa/tree-splash";
-import "@fontsource-variable/nunito";
+import "@fontsource-variable/inter";
 import "./globals.css";
-import "./rutina-botanical.css";
 
 export const metadata: Metadata = {
-  title: "Rutina — hidup lebih terarah",
-  description: "Ruang pribadi untuk membangun kebiasaan dan mengelola keuangan dengan lebih sadar.",
-  applicationName: "Rutina",
+  title: "Rutina OS — konsol kebiasaan & keuangan",
+  description: "Konsol operasional pribadi: lacak kebiasaan, kelola arus kas, dan baca tren hidupmu dalam satu dasbor.",
+  applicationName: "Rutina OS",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "Rutina",
+    statusBarStyle: "black-translucent",
+    title: "Rutina OS",
   },
   icons: {
     icon: [
@@ -26,8 +24,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  // Mode terang permanen — Rutina tidak lagi punya mode gelap.
-  themeColor: "#fff7ef",
+  themeColor: "#090c0a",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -38,7 +35,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="id">
       <body>
         <PwaRegister />
-        <TreeSplash />
         {children}
       </body>
     </html>

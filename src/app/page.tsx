@@ -1,5 +1,5 @@
-import { RutinaApp } from "@/features/app/rutina-app";
+import { RutinaOS } from "@/features/os/app-shell";
 
 export default function HomePage() {
-  return <RutinaApp />;
+  return <RutinaOS />;
 }
