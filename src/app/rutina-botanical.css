@@ -4333,9 +4333,6 @@ html[data-theme="dark"] .search-empty span { color: var(--ink-soft); }
 .module-tabs button span { font-size: .625rem; min-width: 20px; }
 @media (max-width: 640px) {
   .module-status-select { font-size: 1rem; min-height: 40px; }
-  /* Input editable 16px di mobile — cegah iOS Safari auto-zoom (pedoman tipografi). */
-  .form-control { font-size: 1rem; }
-  .search-field input { font-size: 1rem; }
   .form-label { font-size: .6875rem; }
   .secondary-button, .module-small-button { font-size: .65625rem; }
 }
@@ -6049,7 +6046,7 @@ input.form-control, select.form-control, textarea.form-control {
   border-radius: 14px;
   background: #FBF8F1;
   color: #1F2A1F;
-  font-size: .75rem;
+  font-size: .875rem;
 }
 .form-control::placeholder, textarea::placeholder { color: #A3A396; }
 .form-label, .form-field > span { color: #6D7466; font-weight: 800; }
@@ -7245,7 +7242,7 @@ body:has(.modal-backdrop) .toast {
   background: #fffefa;
   color: #45483f;
   font: inherit;
-  font-size: .71875rem;
+  font-size: .875rem;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
@@ -7319,7 +7316,7 @@ body:has(.modal-backdrop) .toast {
   background: transparent;
   color: #45483f;
   font: inherit;
-  font-size: .71875rem;
+  font-size: .875rem;
   font-weight: 620;
   text-align: left;
   cursor: pointer;
@@ -7414,7 +7411,7 @@ html[data-theme="dark"] .themed-select-grip { background: #45503f; }
   border-radius: 11px;
   color: #385841;
   background: rgba(255, 255, 255, .78);
-  font-size: .75rem;
+  font-size: .875rem;
   font-weight: 750;
 }
 @media (max-width: 560px) {
@@ -8626,3 +8623,13 @@ html { scroll-padding-top: 70px; }
    nama 60 karakter hanya mendapat 87px dari 368px yang dibutuhkan. */
 .habit-row-heading .habit-name { flex: 1 1 100%; min-width: 0; }
 .habit-row-heading .habit-streak-chip { flex: none; }
+
+/* Input editable + menu dropdown tematik 16px di mobile — anti-zoom iOS,
+   target sentuh nyaman. Diletakkan di akhir file agar memenangkan cascade
+   atas .form-control (lapisan finx) dan .themed-select-trigger di atas. */
+@media (max-width: 640px) {
+  .themed-select-trigger,
+  .themed-select-option,
+  .form-control,
+  .search-field input { font-size: 1rem; }
+}
