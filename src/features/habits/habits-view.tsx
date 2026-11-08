@@ -10,6 +10,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { isScheduledOn } from "@/lib/habit-schedule";
 import { todayISO } from "@/lib/format";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import { HabitWeekHistory } from "@/components/ui/weekly-history";
 
@@ -208,6 +209,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
     <div className="habit-page">
       <PageIntro
         icon="habits"
+        art="habit"
         title="Kebiasaan"
         action={<div className="habits-intro-actions"><button type="button" className={`secondary-button vacation-toggle ${vacationMode ? "active" : ""}`} onClick={onToggleVacation}><Umbrella size={13} aria-hidden="true" /> {vacationMode ? "Akhiri mode libur" : "Mode libur"}</button><PrimaryButton onClick={onAdd}><Plus size={15} /> Habit baru</PrimaryButton></div>}
       />
@@ -224,6 +226,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
 
       <div className="habit-overview-grid">
         <section className="card habit-progress-card">
+          <BotanicalIllustrationBackdrop variant="habit" />
           <div className="habit-progress-copy">
             <div className="small-label">PROGRES HARI INI</div>
             <div className="habit-progress-value">{progress}<span>%</span></div>
@@ -235,6 +238,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
           </div>
         </section>
         <section className="card habit-streak-summary">
+          <BotanicalIllustrationBackdrop variant="sprout" />
           <span className="streak-summary-icon"><Sparkles size={18} /></span>
           <div className="small-label">REKOR KONSISTENSI</div>
           <div className="streak-number">{longestStreak}<span> hari</span></div>
@@ -320,6 +324,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
         {filteredHabits.length === 0 && (
           <EmptyState
             icon={query ? Search : ListChecks}
+            art={total === 0 ? "empty" : "search"}
             title={total === 0 ? "Belum ada kebiasaan" : "Tidak ada kebiasaan yang cocok"}
             description={total === 0 ? "Tambahkan kebiasaan pertama untuk mulai mencatat progres." : "Ubah kata kunci atau filter untuk melihat kebiasaan lainnya."}
             action={total === 0 ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Tambah kebiasaan</PrimaryButton> : undefined}

@@ -6,6 +6,7 @@ import { BackupView } from "@/features/settings/backup-view";
 import { DataManagerView } from "@/features/settings/data-manager-view";
 import { Activity, ArrowRight, ArrowRightLeft, Banknote, CalendarClock, Check, Circle, CircleCheck, CircleDollarSign, Clock3, Drumstick, Droplets, FileText, Flag, Gauge, ImagePlus, Inbox, Landmark, ListChecks, ListFilter, Milestone as MilestoneIcon, Pause, PiggyBank, Play, Plus, Repeat, RotateCcw, Scale, Split, Sprout, Target, TrendingDown, TrendingUp, Wallet as WalletGlyph, Zap } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
+import { BotanicalIllustration, BotanicalIllustrationBackdrop, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import type { AppIconName } from "@/components/ui/app-icon";
@@ -61,8 +62,8 @@ function Panel({ title, caption, children }: { title: string; caption?: string; 
     <div className="module-card-body">{children}</div>
   </section>;
 }
-function Intro({ icon, title, action }: { icon: AppIconName; title: string; action?: ReactNode }) {
-  return <PageIntro icon={icon} title={title} action={action} />;
+function Intro({ icon, title, action, art }: { icon: AppIconName; title: string; action?: ReactNode; art?: BotanicalIllustrationVariant }) {
+  return <PageIntro icon={icon} art={art} title={title} action={action} />;
 }
 // PEDOMAN UI: kartu statistik memakai tile ikon pastel 40px di kiri nilai
 // (pola "stat pill" pedoman) — bukan kartu teks polos.
@@ -73,8 +74,10 @@ function Metric({ label, value, icon: Icon, tone = "leaf" }: { label: string; va
     <div className="metric-value">{value}</div>
   </div>;
 }
-function NoData({ children }: { children: string }) {
-  return <div className="module-empty"><Inbox size={20} /><p>{children}</p></div>;
+// v0.27 — NoData kini membawa ilustrasi kontekstual (art) menggantikan ikon
+// kotak masuk polos; teks tetap satu kalimat faktual.
+function NoData({ children, art }: { children: string; art?: BotanicalIllustrationVariant }) {
+  return <div className="module-empty">{art ? <BotanicalIllustration variant={art} className="empty-state-art" /> : <Inbox size={20} />}<p>{children}</p></div>;
 }
 
 // v0.18: seluruh tombol hapus di tampilan modul dipindahkan ke Pengaturan
@@ -137,7 +140,7 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
   const steps = modules.goals.reduce((sum, goal) => sum + goal.milestones.length, 0);
   const doneSteps = modules.goals.reduce((sum, goal) => sum + goal.milestones.filter((step) => step.completed).length, 0);
   return <>
-    <PageIntro icon="goals" title="Tujuan" action={<PrimaryButton onClick={() => setCreateOpen((value) => !value)}><Plus size={15} /> {createOpen ? "Tutup form" : "Tujuan baru"}</PrimaryButton>} />
+    <PageIntro icon="goals" art="goals" title="Tujuan" action={<PrimaryButton onClick={() => setCreateOpen((value) => !value)}><Plus size={15} /> {createOpen ? "Tutup form" : "Tujuan baru"}</PrimaryButton>} />
     <div className="module-metrics"><Metric label="TUJUAN AKTIF" value={String(active)} icon={Target} tone="leaf" /><Metric label="TUJUAN SELESAI" value={String(completed)} icon={Flag} tone="leaf" /><Metric label="MILESTONES" value={doneSteps + "/" + steps} icon={MilestoneIcon} tone="amber" /></div>
     {createOpen && <section className="card card-pad goal-create-panel" id="goal-create-panel">
       <SectionHeading title="Tujuan baru" caption="Tuliskan hasil yang ingin dicapai dan milestone-nya." />
@@ -153,6 +156,7 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
       </form>
     </section>}
     <section className="card card-pad goal-list-panel">
+      <BotanicalIllustrationBackdrop variant="goals" />
       <SectionHeading title="Tujuanmu" caption={modules.goals.length + " tujuan tersimpan · " + doneSteps + " dari " + steps + " milestone selesai"} />
       {modules.goals.length ? <div className="module-list goal-list">{modules.goals.map((goal) => {
         const done = goal.milestones.filter((step) => step.completed).length;
@@ -168,7 +172,7 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
           <div className="module-inline-meta"><small>{done}/{goal.milestones.length} milestone</small><button type="button" className={secondary} onClick={() => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, completed: !item.completed } : item))}>{goal.completed ? <><RotateCcw size={13} /> Buka kembali</> : <><Check size={13} /> Tandai selesai</>}</button></div>
           {goal.milestones.length > 0 ? <div className="goal-milestones"><span className="goal-milestones-label">LANGKAH BERIKUTNYA</span>{goal.milestones.map((step) => <label className="module-check-row" key={step.id}><input type="checkbox" aria-label={step.title} checked={step.completed} onChange={(event) => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, milestones: item.milestones.map((part) => part.id === step.id ? { ...part, completed: event.target.checked } : part) } : item))} /><span className={step.completed ? "is-done" : ""}>{step.title}</span></label>)}</div> : <p className="goal-no-milestones">Belum ada milestone. Tujuan tetap bisa ditandai selesai.</p>}
         </article>;
-      })}</div> : <div className="goal-empty-state"><NoData>Belum ada tujuan tersimpan.</NoData><PrimaryButton onClick={() => setCreateOpen(true)}><Plus size={14} /> Buat tujuan pertama</PrimaryButton></div>}
+      })}</div> : <div className="goal-empty-state"><NoData art="empty">Belum ada tujuan tersimpan.</NoData><PrimaryButton onClick={() => setCreateOpen(true)}><Plus size={14} /> Buat tujuan pertama</PrimaryButton></div>}
     </section>
   </>;
 }
@@ -188,7 +192,7 @@ function CheckinView({ modules, updateModule }: { modules: WorkspaceModules; upd
     } catch { /* lingkungan non-DOM */ }
   }
   return <>
-    <Intro icon="checkin" title="Check-in" />
+    <Intro icon="checkin" art="checkin" title="Check-in" />
     <div className="module-two-col">
       <Panel title="Check-in hari ini" caption={current ? "Sudah terisi hari ini — perbarui bila perlu." : "Catat mood, energi, dan tidur hari ini."}>
         <form className="form-grid" noValidate onSubmit={submit}>
@@ -202,7 +206,7 @@ function CheckinView({ modules, updateModule }: { modules: WorkspaceModules; upd
         </form>
       </Panel>
       <Panel title="Riwayat check-in" caption={`${modules.checkins.length} hari tercatat`}>
-        {modules.checkins.length ? <div className="module-list">{modules.checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 45).map((item) => <article className="module-item" key={item.date}><div className="module-item-top"><strong>{formatDate(item.date)}</strong><span className="module-tag">Mood {item.mood}/5 · Energi {item.energy}/5</span></div><p className="module-muted">Tidur {item.sleepHours} jam</p>{item.notes && <p>{item.notes}</p>}</article>)}</div> : <NoData>Riwayat check-in muncul setelah catatan pertama disimpan.</NoData>}
+        {modules.checkins.length ? <div className="module-list">{modules.checkins.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 45).map((item) => <article className="module-item" key={item.date}><div className="module-item-top"><strong>{formatDate(item.date)}</strong><span className="module-tag">Mood {item.mood}/5 · Energi {item.energy}/5</span></div><p className="module-muted">Tidur {item.sleepHours} jam</p>{item.notes && <p>{item.notes}</p>}</article>)}</div> : <NoData art="journal">Riwayat check-in muncul setelah catatan pertama disimpan.</NoData>}
       </Panel>
     </div>
   </>;
@@ -228,14 +232,14 @@ function WorkView({ modules, updateModule }: { modules: WorkspaceModules; update
   }
   const taskList = modules.tasks.filter((item) => status === "all" || item.status === status);
   return <>
-    <Intro icon="work" title="Meja Kerja" />
+    <Intro icon="work" art="work" title="Meja Kerja" />
     <div className="module-tabs"><button className={section === "tasks" ? "active" : ""} onClick={() => setSection("tasks")}><ListChecks size={13} /> Task board <span>{modules.tasks.length}</span></button><button className={section === "notes" ? "active" : ""} onClick={() => setSection("notes")}><FileText size={13} /> Catatan <span>{modules.notes.length}</span></button><button className={section === "routines" ? "active" : ""} onClick={() => setSection("routines")}><Repeat size={13} /> Rutinitas <span>{modules.routines.length}</span></button></div>
     {section === "tasks" && <div className="module-two-col">
       <Panel title="Tugas baru" caption="Simpan tindakan yang jelas dan bisa diselesaikan"><form className="form-grid" noValidate onSubmit={addTask}><Field label="Nama tugas"><input className={field} name="title" required maxLength={120} placeholder="Apa yang perlu diselesaikan?" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={1000} /></Field><div className="form-two-columns"><Field label="Prioritas"><ThemedSelect className={field} name="priority"><option value="low">Rendah</option><option value="medium">Sedang</option><option value="high">Tinggi</option></ThemedSelect></Field><Field label="Tenggat"><input className={field} name="dueDate" type="date" min={today()} /></Field></div><PrimaryButton type="submit"><Plus size={15} /> Tambah tugas</PrimaryButton></form></Panel>
-      <Panel title="Task board" caption={`${modules.tasks.filter((task) => task.status === "done").length} dari ${modules.tasks.length} tugas selesai`}><div className="module-tabs compact">{(["all", "todo", "doing", "done"] as const).map((value) => { const FilterIcon = value === "all" ? ListFilter : value === "todo" ? Circle : value === "doing" ? Clock3 : CircleCheck; return <button key={value} className={status === value ? "active" : ""} onClick={() => setStatus(value)}><FilterIcon size={13} /> {value === "all" ? "Semua" : value === "todo" ? "To do" : value === "doing" ? "Berjalan" : "Selesai"}</button>; })}</div>{taskList.length ? <div className="module-list">{taskList.map((task) => <article className="module-item" key={task.id}><div className="module-item-top"><div><span className={`module-priority ${task.priority}`}>{task.priority === "high" ? "Tinggi" : task.priority === "medium" ? "Sedang" : "Rendah"}</span><h3>{task.title}</h3>{task.description && <p>{task.description}</p>}</div></div><div className="module-inline-meta"><small>{task.dueDate ? formatDate(task.dueDate) : "Tanpa tenggat"}</small><ThemedSelect className="module-status-select" value={task.status} onChange={(value) => updateModule("tasks", (items) => items.map((item) => item.id === task.id ? { ...item, status: value as TaskStatus } : item))}><option value="todo">To do</option><option value="doing">Berjalan</option><option value="done">Selesai</option></ThemedSelect></div></article>)}</div> : <NoData>Tidak ada tugas pada filter ini.</NoData>}</Panel>
+      <Panel title="Task board" caption={`${modules.tasks.filter((task) => task.status === "done").length} dari ${modules.tasks.length} tugas selesai`}><div className="module-tabs compact">{(["all", "todo", "doing", "done"] as const).map((value) => { const FilterIcon = value === "all" ? ListFilter : value === "todo" ? Circle : value === "doing" ? Clock3 : CircleCheck; return <button key={value} className={status === value ? "active" : ""} onClick={() => setStatus(value)}><FilterIcon size={13} /> {value === "all" ? "Semua" : value === "todo" ? "To do" : value === "doing" ? "Berjalan" : "Selesai"}</button>; })}</div>{taskList.length ? <div className="module-list">{taskList.map((task) => <article className="module-item" key={task.id}><div className="module-item-top"><div><span className={`module-priority ${task.priority}`}>{task.priority === "high" ? "Tinggi" : task.priority === "medium" ? "Sedang" : "Rendah"}</span><h3>{task.title}</h3>{task.description && <p>{task.description}</p>}</div></div><div className="module-inline-meta"><small>{task.dueDate ? formatDate(task.dueDate) : "Tanpa tenggat"}</small><ThemedSelect className="module-status-select" value={task.status} onChange={(value) => updateModule("tasks", (items) => items.map((item) => item.id === task.id ? { ...item, status: value as TaskStatus } : item))}><option value="todo">To do</option><option value="doing">Berjalan</option><option value="done">Selesai</option></ThemedSelect></div></article>)}</div> : <NoData art="search">Tidak ada tugas pada filter ini.</NoData>}</Panel>
     </div>}
-    {section === "notes" && <div className="module-two-col"><Panel title="Catatan baru" caption="Simpan ide, referensi, atau ringkasan"><form className="form-grid" noValidate onSubmit={addNote}><Field label="Judul"><input className={field} name="title" required maxLength={100} /></Field><Field label="Isi"><textarea className={field} name="body" rows={6} required maxLength={5000} /></Field><Field label="Tag (pisahkan dengan koma)"><input className={field} name="tags" maxLength={200} placeholder="kerja, ide, referensi" /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan catatan</PrimaryButton></form></Panel><Panel title="Catatan tersimpan" caption={`${modules.notes.length} catatan`}>{modules.notes.length ? <div className="module-list">{modules.notes.map((note) => <article className="module-item" key={note.id}><div className="module-item-top"><h3>{note.title}</h3></div><p>{note.body}</p><div className="module-chip-row">{note.tags.map((tag) => <span className="module-tag" key={tag}>{tag}</span>)}</div><small className="module-muted">Diperbarui {new Date(note.updatedAt).toLocaleDateString("id-ID")}</small></article>)}</div> : <NoData>Belum ada catatan.</NoData>}</Panel></div>}
-    {section === "routines" && <div className="module-two-col"><Panel title="Rutinitas baru" caption="Pekerjaan berulang yang ingin dijaga"><form className="form-grid" noValidate onSubmit={addRoutine}><Field label="Nama rutinitas"><input className={field} name="title" required maxLength={100} /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><Field label="Frekuensi"><ThemedSelect className={field} name="frequency"><option value="daily">Harian</option><option value="weekdays">Hari kerja</option><option value="weekly">Setiap minggu</option><option value="monthly">Setiap bulan</option></ThemedSelect></Field><PrimaryButton type="submit"><Plus size={15} /> Tambah rutinitas</PrimaryButton></form></Panel><Panel title="Rutinitas tersimpan">{modules.routines.length ? <div className="module-list">{modules.routines.map((item) => <article className="module-item" key={item.id}><div className="module-item-top"><div><h3>{item.title}</h3><p>{item.description}</p><small className="module-muted">{ROUTINE_FREQUENCY_LABELS[item.frequency] ?? item.frequency}</small></div></div><button className={secondary} onClick={() => updateModule("routines", (items) => items.map((routine) => routine.id === item.id ? { ...routine, lastDone: today() } : routine))}><Check size={13} /> Tandai dilakukan hari ini</button></article>)}</div> : <NoData>Belum ada rutinitas kerja.</NoData>}</Panel></div>}
+    {section === "notes" && <div className="module-two-col"><Panel title="Catatan baru" caption="Simpan ide, referensi, atau ringkasan"><form className="form-grid" noValidate onSubmit={addNote}><Field label="Judul"><input className={field} name="title" required maxLength={100} /></Field><Field label="Isi"><textarea className={field} name="body" rows={6} required maxLength={5000} /></Field><Field label="Tag (pisahkan dengan koma)"><input className={field} name="tags" maxLength={200} placeholder="kerja, ide, referensi" /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan catatan</PrimaryButton></form></Panel><Panel title="Catatan tersimpan" caption={`${modules.notes.length} catatan`}>{modules.notes.length ? <div className="module-list">{modules.notes.map((note) => <article className="module-item" key={note.id}><div className="module-item-top"><h3>{note.title}</h3></div><p>{note.body}</p><div className="module-chip-row">{note.tags.map((tag) => <span className="module-tag" key={tag}>{tag}</span>)}</div><small className="module-muted">Diperbarui {new Date(note.updatedAt).toLocaleDateString("id-ID")}</small></article>)}</div> : <NoData art="empty">Belum ada catatan.</NoData>}</Panel></div>}
+    {section === "routines" && <div className="module-two-col"><Panel title="Rutinitas baru" caption="Pekerjaan berulang yang ingin dijaga"><form className="form-grid" noValidate onSubmit={addRoutine}><Field label="Nama rutinitas"><input className={field} name="title" required maxLength={100} /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><Field label="Frekuensi"><ThemedSelect className={field} name="frequency"><option value="daily">Harian</option><option value="weekdays">Hari kerja</option><option value="weekly">Setiap minggu</option><option value="monthly">Setiap bulan</option></ThemedSelect></Field><PrimaryButton type="submit"><Plus size={15} /> Tambah rutinitas</PrimaryButton></form></Panel><Panel title="Rutinitas tersimpan">{modules.routines.length ? <div className="module-list">{modules.routines.map((item) => <article className="module-item" key={item.id}><div className="module-item-top"><div><h3>{item.title}</h3><p>{item.description}</p><small className="module-muted">{ROUTINE_FREQUENCY_LABELS[item.frequency] ?? item.frequency}</small></div></div><button className={secondary} onClick={() => updateModule("routines", (items) => items.map((routine) => routine.id === item.id ? { ...routine, lastDone: today() } : routine))}><Check size={13} /> Tandai dilakukan hari ini</button></article>)}</div> : <NoData art="empty">Belum ada rutinitas kerja.</NoData>}</Panel></div>}
   </>;
 }
 
@@ -250,7 +254,7 @@ function WellnessView({ modules, updateModule }: { modules: WorkspaceModules; up
   }
   const weights = modules.wellness.filter((item) => item.weightKg !== null).slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15);
   return <>
-    <Intro icon="wellness" title="Wellness" />
+    <Intro icon="wellness" art="wellness" title="Wellness" />
     <div className="module-metrics"><Metric label="AIR HARI INI" value={`${current.waterMl.toLocaleString("id-ID")} ml`} icon={Droplets} tone="leaf" /><Metric label="PROTEIN" value={`${current.proteinGrams} g`} icon={Drumstick} tone="amber" /><Metric label="BERAT TERAKHIR" value={current.weightKg ? `${current.weightKg} kg` : "—"} icon={Scale} tone="peach" /></div>
     <div className="module-two-col"><Panel title="Hidrasi" caption="Tambah setiap kali minum air"><div className="wellness-water-ring"><div><strong>{current.waterMl.toLocaleString("id-ID")}</strong><small>ml hari ini</small></div></div><div className="module-button-row">{[150, 250, 350, 500].map((amount) => <button className={secondary} key={amount} onClick={() => updateModule("wellness", (items) => { const base = items.find((item) => item.date === today()) ?? current; return [{ ...base, waterMl: base.waterMl + amount }, ...items.filter((item) => item.date !== today())]; })}>+{amount} ml</button>)}<button className={secondary} onClick={() => updateModule("wellness", (items) => items.map((item) => item.date === today() ? { ...item, waterMl: Math.max(0, item.waterMl - 250) } : item))}>−250 ml</button></div><div className="module-progress-track"><span style={{ width: `${Math.min(100, current.waterMl / 2000 * 100)}%` }} /></div></Panel><Panel title="Nutrisi & berat badan" caption="Masukkan catatan tubuh hari ini"><div className="form-grid"><Field label="Protein (gram)"><input className={field} type="number" min="0" max="1000" inputMode="numeric" value={protein} onChange={(event) => setProtein(event.target.value)} /></Field><Field label="Berat badan (kg)"><input className={field} type="number" min="1" max="500" step=".1" inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} placeholder="Contoh: 65.5" /></Field><Field label="Catatan"><textarea className={field} rows={2} maxLength={500} value={note} onChange={(event) => setNote(event.target.value)} /></Field><PrimaryButton onClick={save}><Check size={15} /> Simpan data wellness</PrimaryButton></div>{weights.length > 0 && <div className="module-list">{weights.map((item) => <div className="module-inline-meta" key={item.date}><small>{formatDate(item.date)}</small><strong>{item.weightKg} kg</strong></div>)}</div>}</Panel></div>
   </>;
@@ -301,10 +305,10 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
   const totalMinutes = modules.workouts.reduce((sum, item) => sum + item.durationMinutes + item.cardioMinutes, 0);
   const readiness = modules.checkins.find((item) => item.date === today());
   return <>
-    <Intro icon="training" title="Latihan" />
+    <Intro icon="training" art="training" title="Latihan" />
     <div className="module-metrics"><Metric label="SESI LATIHAN" value={String(modules.workouts.length)} icon={Activity} tone="leaf" /><Metric label="TOTAL DURASI" value={`${totalMinutes} mnt`} icon={Clock3} tone="amber" /><Metric label="KESIAPAN HARI INI" value={readiness ? `${Math.round((readiness.mood + readiness.energy) / 10 * 100)}%` : "—"} icon={Gauge} tone="peach" /></div>
     <div className="module-two-col"><Panel title="Catat sesi latihan" caption="Log gerakan, set, repetisi, beban, dan kardio"><form className="form-grid" noValidate onSubmit={addWorkout}><Field label="Nama sesi"><input className={field} name="title" defaultValue="Full body" maxLength={80} /></Field><div className="form-two-columns"><Field label="Tanggal"><input className={field} name="date" type="date" max={today()} defaultValue={today()} /></Field><Field label="Durasi latihan (menit)"><input className={field} name="duration" type="number" min="0" inputMode="numeric" defaultValue="45" /></Field></div><Field label="Nama gerakan"><input className={field} name="exercise" required maxLength={80} placeholder="Contoh: Push-up" /></Field><div className="form-three-columns"><Field label="Set"><input className={field} name="sets" type="number" min="1" inputMode="numeric" defaultValue="3" /></Field><Field label="Repetisi"><input className={field} name="reps" type="number" min="1" inputMode="numeric" defaultValue="10" /></Field><Field label="Beban (kg)"><input className={field} name="weight" type="number" min="0" step=".5" inputMode="decimal" defaultValue="0" /></Field></div><Field label="Kardio (menit)"><input className={field} name="cardio" type="number" min="0" inputMode="numeric" defaultValue="0" /></Field><Field label="Catatan"><textarea className={field} name="notes" rows={2} maxLength={1000} /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan latihan</PrimaryButton></form></Panel><Panel title="Program latihan" caption="Simpan split latihan mingguan"><form className="form-grid" noValidate onSubmit={addProgram}><Field label="Nama program"><input className={field} name="title" required maxLength={80} placeholder="Contoh: Strength 3 hari" /></Field><Field label="Hari latihan"><input className={field} name="days" maxLength={120} placeholder="Senin, Rabu, Jumat" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><PrimaryButton type="submit"><Plus size={15} /> Buat program</PrimaryButton></form>{modules.programs.map((program) => <article className="module-item" key={program.id}><div className="module-item-top"><div><h3>{program.title} {program.active && <span className="module-tag">Aktif</span>}</h3><p>{program.days} · {program.description}</p></div></div><button className={secondary} onClick={() => updateModule("programs", (items) => items.map((item) => ({ ...item, active: item.id === program.id })))}><Zap size={13} /> Jadikan aktif</button></article>)}</Panel></div>
-    <Panel title="Riwayat latihan" caption={`${modules.workouts.length} sesi tersimpan`}>{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData>Belum ada sesi latihan.</NoData>}</Panel>
+    <Panel title="Riwayat latihan" caption={`${modules.workouts.length} sesi tersimpan`}>{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData art="empty">Belum ada sesi latihan.</NoData>}</Panel>
     <Panel title="Foto progres" caption="Foto dikompresi sebelum disimpan; maksimal 5 foto aktif"><label className="module-upload"><ImagePlus size={20} /><span>{photoBusy ? "Mengompresi foto…" : "Tambah foto progres"}</span><input type="file" accept="image/*" disabled={photoBusy} onChange={addPhoto} /></label>{modules.progressPhotos.length > 0 && <div className="module-photo-grid">{/* eslint-disable @next/next/no-img-element -- data URL JPEG hasil kompresi klien; optimasi next/image tidak berlaku untuk data URL */}{modules.progressPhotos.map((photo) => <figure key={photo.id}><img src={photo.imageData} alt={`Foto progres ${photo.date}`} /><figcaption>{formatDate(photo.date)}</figcaption></figure>)}{/* eslint-enable @next/next/no-img-element */}</div>}</Panel>
   </>;
 }
@@ -361,9 +365,10 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
 
   return (
     <div className="tree-page">
-      <Intro icon="growth" title="Pohon Pertumbuhan" />
+      <Intro icon="growth" art="tree" title="Pohon Pertumbuhan" />
       {growth ? <>
         <section className="tree-journey-hero">
+          <BotanicalIllustrationBackdrop variant="tree" />
           <div className="tree-journey-copy">
             <span className="tree-journey-kicker">PROGRES SEUMUR HIDUP</span>
             <h2>Level {growth.level} · {lifetimeStage}</h2>
@@ -411,7 +416,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
           <Panel title="Fokus 30 hari" caption="Kebiasaan dengan tingkat penyelesaian terendah">
             {growth.worstHabit
               ? <div className="tree-care-note"><strong>{growth.worstHabit.name}</strong><p>Tingkat penyelesaian 30 hari terakhir: {Math.round(growth.worstHabit.rate)}%.</p></div>
-              : <NoData>Belum ada data kebiasaan.</NoData>}
+              : <NoData art="empty">Belum ada data kebiasaan.</NoData>}
           </Panel>
         </div>
 
@@ -434,7 +439,7 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
           </div>
         </Panel>
       </> : <section className="card card-pad tree-loading-state">
-        <div className="tree-loading-mark"><Sprout size={30} /></div>
+        <BotanicalIllustration variant={error ? "sync" : "sprout"} className="empty-state-art" />
         <strong>{error ? "Data pertumbuhan belum tersedia" : "Memuat data pohon…"}</strong>
         <p>{error ? "Periksa koneksi lalu muat ulang untuk melihat XP, level, dan riwayat pohon." : "Mengambil catatan habit dari server."}</p>
       </section>}
@@ -597,7 +602,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
             <div className="finx-row-side">
               <strong className={`finx-row-value ${balance < 0 ? "is-negative" : ""}`}>{formatCompactRupiah(balance)}</strong>
             </div>
-          </article>); })}</div> : <NoData>Tambahkan dompet untuk mencatat saldo dan transfer antar sumber dana.</NoData>}
+          </article>); })}</div> : <NoData art="budget">Tambahkan dompet untuk mencatat saldo dan transfer antar sumber dana.</NoData>}
       </div>
     </div>}
 
@@ -620,7 +625,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
             <div className="finx-row-side">
               <strong className="finx-row-value">{formatCompactRupiah(item.amount)}</strong>
             </div>
-          </article>))}</div> : <NoData>Belum ada transfer tersimpan.</NoData>}
+          </article>))}</div> : <NoData art="budget">Belum ada transfer tersimpan.</NoData>}
       </div>
     </div>}
 
@@ -655,7 +660,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
                 <button className={secondary} onClick={() => update((current) => ({ ...current, recurring: current.recurring.map((entry) => entry.id === item.id ? { ...entry, active: !entry.active } : entry) }))}>{item.active ? <><Pause size={13} /> Jeda</> : <><Play size={13} /> Aktifkan</>}</button>
               </div>
             </div>
-          </article>))}</div> : <NoData>Belum ada transaksi berulang tersimpan.</NoData>}
+          </article>))}</div> : <NoData art="receipt">Belum ada transaksi berulang tersimpan.</NoData>}
       </div>
     </div>}
 
@@ -683,7 +688,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
                 <button className={secondary} onClick={() => confirm({ tone: "leaf", title: "Tambah dana", subject: goal.title, message: `Sudah terkumpul ${formatCompactRupiah(goal.savedAmount)} dari ${formatCompactRupiah(goal.targetAmount)}. Masukkan nominal yang ingin ditambahkan.`, confirmLabel: "Simpan", prompt: { label: "Nominal tambahan", placeholder: "50000", inputMode: "numeric", prefix: "Rp" }, validate: (value) => { const amount = Number((value || "").replace(/[^\d]/g, "")); return Number.isFinite(amount) && amount > 0 ? undefined : "Nominal harus berupa angka lebih dari Rp0."; }, onConfirm: (value) => { const amount = Number((value || "").replace(/[^\d]/g, "")); if (amount > 0) update((current) => ({ ...current, savingsGoals: current.savingsGoals.map((item) => item.id === goal.id ? { ...item, savedAmount: item.savedAmount + Math.round(amount) } : item) })); } })}><Plus size={13} /> Tambah dana</button>
               </div>
             </div>
-          </article>); })}</div> : <NoData>Belum ada target tabungan tersimpan.</NoData>}
+          </article>); })}</div> : <NoData art="budget">Belum ada target tabungan tersimpan.</NoData>}
       </div>
     </div>}
 
@@ -700,7 +705,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
           <article className="finx-row" key={rule.id}>
             <span className="finx-row-icon is-cream" aria-hidden="true"><ListFilter size={19} /></span>
             <div className="finx-row-copy"><strong>{rule.keyword}</strong><small>Setiap transaksi berisi kata ini → <b>{rule.category}</b></small></div>
-          </article>))}</div> : <NoData>Belum ada aturan kategori tersimpan.</NoData>}
+          </article>))}</div> : <NoData art="receipt">Belum ada aturan kategori tersimpan.</NoData>}
       </div>
     </div>}
 
@@ -744,7 +749,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
             <div className="finx-row-side">
               <span className={`finx-badge ${percent > 100 ? "due" : "up"}`}>{percent > 100 ? `Lewat ${percent - 100}%` : `${percent}%`}</span>
             </div>
-          </article>); })}</div> : <NoData>Belum ada budget mingguan tersimpan.</NoData>}
+          </article>); })}</div> : <NoData art="budget">Belum ada budget mingguan tersimpan.</NoData>}
       </div>
     </div>}
 

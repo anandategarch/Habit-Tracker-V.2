@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Activity, ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, ListChecks, Plus, RefreshCw, Shield, TrendingDown, TrendingUp, Trophy, WalletCards } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, ListChecks, Plus, RefreshCw, Shield, TrendingDown, TrendingUp, Trophy, WalletCards } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
@@ -9,6 +9,7 @@ import { todayStory, weeklyStepsStory } from "@/lib/storytelling";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import { RichText } from "@/components/ui/rich-text";
 import { burstLeaves, useCountUp } from "@/components/ui/celebrate";
+import { BotanicalIllustration, BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
@@ -176,6 +177,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
     <div className="botanical-dashboard-page">
       <PageIntro
         icon="home"
+        art="home"
         title={`${greeting}, Ananda`}
         meta={dateLabel}
       />
@@ -211,6 +213,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
       )}
 
       <section className="hero-card botanical-hero" aria-label="Ringkasan hari ini">
+        <BotanicalIllustrationBackdrop variant="home" />
         <div className="hero-copy">
           <div className="hero-kicker">{vacationMode ? "MODE LIBUR" : "PROGRES HARI INI"}</div>
           <h2 className="hero-title" data-tone={heroStory.tone}>
@@ -257,6 +260,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         <div className="next-step-label"><span className="next-step-dot" /> FOKUS HARI INI</div>
         {vacationMode ? (
           <>
+            <BotanicalIllustration variant="vacation" className="next-step-art" />
             <h2>Mode libur aktif.</h2>
             <p>Tidak ada kebiasaan yang perlu dicatat hari ini.</p>
           </>
@@ -273,6 +277,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           </>
         ) : (
           <>
+            <BotanicalIllustration variant={totalHabits === 0 || habits.length === 0 ? "empty" : "celebrate"} className="next-step-art" />
             <h2>{totalHabits === 0 ? "Belum ada kebiasaan." : habits.length === 0 ? "Tidak ada habit terjadwal hari ini." : "Semua kebiasaan hari ini selesai."}</h2>
             <p>{totalHabits === 0 ? "Buat kebiasaan pertama untuk mulai mencatat progres." : undefined}</p>
             <button className="next-step-action" type="button" onClick={totalHabits === 0 ? onAddHabit : () => onNavigate("habits")}>
@@ -313,6 +318,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
             </>
           ) : (
             <EmptyState
+              art="sprout"
               title="Belum ada kebiasaan"
               description="Tambahkan kebiasaan pertama untuk mulai mencatat progres."
               action={<PrimaryButton onClick={onAddHabit}><Plus size={14} /> Buat kebiasaan pertama</PrimaryButton>}
@@ -338,7 +344,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               <span className="skeleton-shimmer weekly-skeleton-line" />
             </div>
           ) : weekly.error ? (
-            <div className="insight-trend-empty" role="status"><span><Activity size={22} /></span><strong>Riwayat mingguan belum tersedia</strong><p>Coba muat ulang saat koneksi tersedia.</p><button className="weekly-retry-action" type="button" onClick={weekly.retry}><RefreshCw size={13} /> Coba lagi</button></div>
+            <div className="insight-trend-empty" role="status"><BotanicalIllustration variant="sync" className="empty-state-art" /><strong>Riwayat mingguan belum tersedia</strong><p>Coba muat ulang saat koneksi tersedia.</p><button className="weekly-retry-action" type="button" onClick={weekly.retry}><RefreshCw size={13} /> Coba lagi</button></div>
           ) : weekly.total > 0 ? (
             <>
               <div className="weekly-trend-layout">
@@ -385,7 +391,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               </details>
             </>
           ) : (
-            <div className="insight-trend-empty"><span><Activity size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Penyelesaian akan muncul di grafik ini setelah tersimpan.</p><button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button></div>
+            <div className="insight-trend-empty"><BotanicalIllustration variant="empty" className="empty-state-art" /><strong>Belum ada progres minggu ini</strong><p>Penyelesaian akan muncul di grafik ini setelah tersimpan.</p><button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button></div>
           )}
         </section>
       </div>

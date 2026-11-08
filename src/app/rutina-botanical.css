@@ -5223,11 +5223,16 @@ button:disabled:active {
     bottom: -5px;
     opacity: .68;
   }
+  /* v0.27: pada layout kolom mobile, aksi berada di baris bawah lebar penuh —
+     ilustrasi yang menempel di bawah akan tertutup tombol. Angkat ke kanan-atas
+     sejajar judul agar tetap terlihat. */
   .page-intro--has-action .page-intro-art {
-    right: -4px;
-    width: 78px;
-    height: 60px;
-    opacity: .38;
+    top: -6px;
+    bottom: auto;
+    right: -2px;
+    width: 84px;
+    height: 64px;
+    opacity: .5;
   }
   .page-intro--has-action .page-intro-copy { padding-right: 70px; }
   .page-intro--has-action .page-intro-action { max-width: 100%; }
@@ -5237,7 +5242,7 @@ button:disabled:active {
   .page-intro-copy { padding-right: 68px; }
   .page-intro-art { width: 74px; height: 58px; opacity: .58; }
   .page-intro--has-action .page-intro-copy { padding-right: 58px; }
-  .page-intro--has-action .page-intro-art { width: 64px; height: 50px; opacity: .32; }
+  .page-intro--has-action .page-intro-art { width: 72px; height: 55px; opacity: .42; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -8790,3 +8795,72 @@ html[data-theme="dark"] .settings-profile-mark { background: linear-gradient(145
 .botanical-hero::after,
 .finance-mini::after,
 .botanical-next-step::after { content: none; display: none; background: none; }
+
+/* ==========================================================================
+   v0.27 · ILUSTRASI BOTANICAL DI SEMUA TAB
+   Set tab kini membawa ilustrasi kontekstual: header (page-intro-art),
+   watermark kartu utama (botanical-card-art), dan ilustrasi keadaan
+   (empty-state-art) yang menggantikan ikon lingkaran pada EmptyState.
+   Semua lapisan dekoratif — aria-hidden, tidak menambah tinggi scroll.
+   ========================================================================== */
+.empty-state-art {
+  width: 132px;
+  height: 98px;
+  margin: 0 auto;
+}
+.module-empty .empty-state-art { width: 108px; height: 80px; }
+.finance-panel-empty .empty-state-art { width: 96px; height: 72px; margin: 0; }
+.insight-trend-empty .empty-state-art { width: 116px; height: 86px; }
+.goal-empty-state .empty-state-art { width: 124px; height: 92px; }
+.calendar-history-note .empty-state-art { width: 104px; height: 78px; justify-self: start; }
+.tree-loading-state .empty-state-art { width: 112px; height: 84px; }
+
+/* Kartu Fokus hari ini — ilustrasi momen (perayaan selesai / mode libur)
+   sebagai lapisan kanan-bawah, konten tetap di atasnya. */
+.next-step-card { position: relative; overflow: hidden; }
+.next-step-card > :not(.next-step-art) { position: relative; z-index: 1; }
+.next-step-art {
+  position: absolute;
+  z-index: 0;
+  right: -4px;
+  bottom: -10px;
+  width: 128px;
+  height: 96px;
+  opacity: .55;
+  pointer-events: none;
+}
+
+/* Ringkasan streak kebiasaan — watermark tunas di pojok kartu. */
+.habit-streak-summary > :not(.botanical-card-art) { position: relative; z-index: 1; }
+.habit-streak-summary .botanical-card-art {
+  right: -10px;
+  bottom: -20px;
+  width: 150px;
+  opacity: .16;
+}
+
+/* Header ilustrasi tiap tab — sedikit lebih redup di mode gelap. */
+html[data-theme="dark"] .page-intro-art { opacity: .5; }
+html[data-theme="dark"] .next-step-art { opacity: .34; }
+html[data-theme="dark"] .habit-streak-summary .botanical-card-art { opacity: .1; }
+
+@media (max-width: 760px) {
+  .empty-state-art { width: 116px; height: 86px; }
+  .module-empty .empty-state-art { width: 96px; height: 72px; }
+  .finance-panel-empty .empty-state-art { width: 84px; height: 63px; }
+  .insight-trend-empty .empty-state-art { width: 102px; height: 76px; }
+  .goal-empty-state .empty-state-art { width: 108px; height: 80px; }
+  .calendar-history-note .empty-state-art { width: 92px; height: 69px; }
+  .next-step-art { width: 108px; height: 81px; opacity: .42; }
+  .habit-streak-summary .botanical-card-art { width: 126px; opacity: .13; }
+}
+@media (max-width: 390px) {
+  .next-step-art { width: 92px; height: 69px; opacity: .34; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .empty-state-art,
+  .next-step-art { animation: none !important; }
+}
+
+/* Dialog pencarian — ilustrasi hasil kosong (v0.27). */
+.search-empty .empty-state-art { width: 104px; height: 78px; }

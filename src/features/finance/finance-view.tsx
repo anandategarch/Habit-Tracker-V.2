@@ -26,6 +26,7 @@ import { RichText } from "@/components/ui/rich-text";
 import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
 import { FinanceCategoryIcon } from "@/components/ui/category-icons";
+import { BotanicalIllustration, BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 const categoryPaletteLength = 8;
 type TransactionFilter = "all" | "income" | "expense";
@@ -187,6 +188,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
     <>
       <PageIntro
         icon="finance"
+        art="finance"
         title="Keuangan"
         action={<PrimaryButton onClick={onAdd}><Plus size={15} /> Catat transaksi</PrimaryButton>}
       />
@@ -264,6 +266,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
 
       <section className="finance-overview" aria-label={`Ringkasan keuangan ${monthLabel}`}>
         <div className="card finance-balance">
+          <BotanicalIllustrationBackdrop variant="finance" />
           <span className="small-label">ARUS KAS BERSIH</span>
           <div className="metric-value">{formatRupiah(animatedNet)}</div>
           <span className="finance-balance-note">{cashflowMessage}</span>
@@ -376,7 +379,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
             </>
           ) : (
             <div className="finance-panel-empty">
-              <Receipt size={20} />
+              <BotanicalIllustration variant="receipt" className="empty-state-art" />
               <p>Belum ada pengeluaran tercatat bulan ini. Kategori akan muncul setelah transaksi ditambahkan.</p>
             </div>
           )}
@@ -442,7 +445,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
             </div>
           ) : (
             <div className="finance-panel-empty budget-empty-with-action">
-              <CircleDollarSign size={20} />
+              <BotanicalIllustration variant="budget" className="empty-state-art" />
               <p>Belum ada kategori anggaran yang tersedia.</p>
               <PrimaryButton onClick={onEditBudgets}>
                 <SlidersHorizontal size={14} /> Atur anggaran
@@ -486,6 +489,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
         {filteredTransactions.length === 0 && (
           <EmptyState
             icon={Receipt}
+            art={monthTransactions.length === 0 ? "receipt" : "search"}
             title={monthTransactions.length === 0 ? "Belum ada transaksi" : "Tidak ada transaksi pada filter ini"}
             description={monthTransactions.length === 0
               ? "Catat transaksi pertama untuk melihat ringkasan keuangan."

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { BookOpen, Search, WalletCards, X } from "lucide-react";
 import { FinanceCategoryIcon, HabitArtIcon } from "@/components/ui/category-icons";
+import { BotanicalIllustration } from "@/components/ui/botanical-illustration";
 import type { KeyboardEvent } from "react";
 import type { Habit, TabId, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
@@ -150,7 +151,7 @@ export function SearchDialog({
               </div>
             )}
             {matchedHabits.length === 0 && matchedTransactions.length === 0 && (
-              <div className="search-empty"><Search size={22} /><strong>Tidak ditemukan</strong><span>Coba kata kunci atau kategori lain.</span></div>
+              <div className="search-empty"><BotanicalIllustration variant="search" className="empty-state-art" /><strong>Tidak ditemukan</strong><span>Coba kata kunci atau kategori lain.</span></div>
             )}
           </div>
         )}

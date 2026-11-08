@@ -10,6 +10,7 @@ import { summarizeHabits } from "@/lib/habits";
 import { growthStory, shortRupiah } from "@/lib/storytelling";
 import { crossoverStory, type CrossoverDay } from "@/lib/insight-patterns";
 import { RichText } from "@/components/ui/rich-text";
+import { BotanicalIllustration, BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import { PageIntro, SectionHeading, StatCard } from "@/components/ui/primitives";
 
 const habitCategories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
@@ -252,7 +253,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
 
   return (
     <>
-      <PageIntro icon="insights" title="Insight" />
+      <PageIntro icon="insights" art="insights" title="Insight" />
       <div className="insight-period-tabs" role="group" aria-label="Rentang insight">
         <button type="button" className={period === "week" ? "active" : ""} aria-pressed={period === "week"} onClick={() => setPeriod("week")}><CalendarDays size={13} aria-hidden="true" /> Minggu</button>
         <button type="button" className={period === "month" ? "active" : ""} aria-pressed={period === "month"} onClick={() => setPeriod("month")}><CalendarRange size={13} aria-hidden="true" /> Bulan</button>
@@ -313,7 +314,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
               <div className="insight-trend-legend"><span><i className="activity" /> Habit selesai</span><small>{trendTotal} penyelesaian · {periodCaption}</small></div>
             </>
           ) : (
-            <div className="insight-trend-empty"><span><Activity size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Penyelesaian akan muncul di grafik ini setelah tersimpan.</p></div>
+            <div className="insight-trend-empty"><BotanicalIllustration variant="empty" className="empty-state-art" /><strong>Belum ada progres minggu ini</strong><p>Penyelesaian akan muncul di grafik ini setelah tersimpan.</p></div>
           )
         ) : period === "week" && trendCheckins.length > 0 ? (
           <>
@@ -331,7 +332,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
             <div className="insight-trend-legend"><span><i className="mood" /> Mood</span><span><i className="energy" /> Energi</span><small>Fallback dari check-in</small></div>
           </>
         ) : (
-          <div className="insight-trend-empty" role="status"><span><Activity size={22} /></span><strong>Riwayat belum dapat dimuat</strong><p>Periksa koneksi lalu coba ambil data kembali. Catatan lokal tetap aman.</p><button className="weekly-retry-action" type="button" onClick={() => setHistoryRetryVersion((current) => current + 1)}><RefreshCw size={13} /> Coba lagi</button></div>
+          <div className="insight-trend-empty" role="status"><BotanicalIllustration variant="sync" className="empty-state-art" /><strong>Riwayat belum dapat dimuat</strong><p>Periksa koneksi lalu coba ambil data kembali. Catatan lokal tetap aman.</p><button className="weekly-retry-action" type="button" onClick={() => setHistoryRetryVersion((current) => current + 1)}><RefreshCw size={13} /> Coba lagi</button></div>
         )}
       </section>
 
@@ -349,7 +350,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
                 </div>
               ))}
             </div>
-          ) : <div className="insight-empty"><Activity size={22} /><strong>Belum ada pola untuk dibaca</strong><p>Tambahkan kebiasaan untuk mulai membangun ringkasan perkembangan.</p></div>}
+          ) : <div className="insight-empty"><BotanicalIllustration variant="empty" className="empty-state-art" /><strong>Belum ada pola untuk dibaca</strong><p>Tambahkan kebiasaan untuk mulai membangun ringkasan perkembangan.</p></div>}
           <div className="insight-checkin-summary">
             <SectionHeading title="Mood, energi & tidur" caption="Rata-rata dari maksimal 14 check-in terbaru" />
             <div className="insight-checkin-grid">
@@ -370,6 +371,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
             <div className="insight-net-row"><span>Bersih</span><strong>{formatCompactRupiah(totalNet)}</strong></div>
           </section>
           <section className="insight-highlight">
+            <BotanicalIllustrationBackdrop variant="insights" />
             <div className="small-label">CATATAN HARI INI</div>
             <div className="insight-number">{completed}<span>/{total}</span></div>
             <p className="section-caption">{total === 0 ? "Belum ada kebiasaan tersimpan." : total === completed ? "Semua kebiasaan hari ini selesai." : `${total - completed} kebiasaan belum selesai.`}</p>

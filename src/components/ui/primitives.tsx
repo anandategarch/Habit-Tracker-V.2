@@ -4,6 +4,7 @@ import {
   CalendarDays, Check, Clock3, Flag, Flame, Folder, Gauge, Inbox, Target, Timer,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
+import { BotanicalIllustration, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
 import { scheduleLabel } from "@/lib/habit-schedule";
@@ -14,12 +15,16 @@ import { FinanceCategoryIcon, HabitArtIcon } from "@/components/ui/category-icon
 // (eyebrow/kalimat subjudul dan ilustrasi botanical tidak lagi dirender),
 // StatCard menjadi icon-first tanpa kalimat narasi, dan meta kebiasaan
 // disandikan sebagai chip berikon (teks pendek + tooltip untuk konteks penuh).
-function PageIntro({ icon, title, meta, action }: {
-  icon: AppIconName; title: string; meta?: string; action?: ReactNode;
+// v0.27 — ilustrasi kembali sebagai lapisan dekoratif: prop `art` merender satu
+// ilustrasi botanical per tab di header, dan EmptyState memakai ilustrasi
+// kontekstual menggantikan ikon lingkaran. Teks tetap faktual (bebas narasi).
+function PageIntro({ icon, title, meta, action, art }: {
+  icon: AppIconName; title: string; meta?: string; action?: ReactNode; art?: BotanicalIllustrationVariant;
 }) {
   return (
     <>
       <div className={`page-intro${action ? " page-intro--has-action" : ""}`}>
+        {art && <BotanicalIllustration variant={art} className="page-intro-art" />}
         <span className="page-intro-icon" aria-hidden="true"><AppIcon name={icon} size={22} /></span>
         <div className="page-intro-copy">
           <h1 className="page-title">{title}</h1>
@@ -188,12 +193,16 @@ function StatCard({ label, value, icon: Icon, tone = "default" }: {
   );
 }
 
-function EmptyState({ icon: Icon = Inbox, title, description, action }: {
-  icon?: typeof Target; title: string; description: string; action?: ReactNode;
+function EmptyState({ icon: Icon = Inbox, title, description, action, art }: {
+  icon?: typeof Target; title: string; description: string; action?: ReactNode; art?: BotanicalIllustrationVariant;
 }) {
   return (
     <div className="empty-state">
-      <span className="empty-state-icon"><Icon size={22} /></span>
+      {art ? (
+        <BotanicalIllustration variant={art} className="empty-state-art" />
+      ) : (
+        <span className="empty-state-icon"><Icon size={22} /></span>
+      )}
       <strong>{title}</strong>
       <p>{description}</p>
       {action && <div className="empty-state-action">{action}</div>}

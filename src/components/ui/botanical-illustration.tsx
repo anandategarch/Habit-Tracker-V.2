@@ -3,7 +3,10 @@ import type { CSSProperties } from "react";
 export type BotanicalIllustrationVariant =
   | "home" | "sprout" | "habit" | "calendar" | "insights" | "finance"
   | "focus" | "goals" | "checkin" | "work" | "wellness"
-  | "training" | "tree" | "settings";
+  | "training" | "tree" | "settings"
+  // v0.27 — set ilustrasi momen: keadaan kosong, selesai, filter, sinkron,
+  // anggaran, transaksi, mode libur, dan jurnal check-in.
+  | "empty" | "celebrate" | "search" | "sync" | "budget" | "receipt" | "vacation" | "journal";
 
 type Palette = {
   halo: string;
@@ -30,6 +33,14 @@ const palettes: Record<BotanicalIllustrationVariant, Palette> = {
   training: { halo: "#f2e8d9", leaf: "#87a976", deep: "#4c7250", blush: "#eab99a", soil: "#ca8964", aqua: "#a8c9c0", gold: "#edc77f" },
   tree:     { halo: "#dcebd2", leaf: "#75a56c", deep: "#3f704b", blush: "#f0c8a6", soil: "#c98a66", aqua: "#a8c9c0", gold: "#edc77f" },
   settings: { halo: "#e8e9df", leaf: "#8da87c", deep: "#587359", blush: "#edc4a5", soil: "#ca8964", aqua: "#a8c9c0", gold: "#edc77f" },
+  empty:    { halo: "#eee9d9", leaf: "#8cb07b", deep: "#4c7251", blush: "#eec3a2", soil: "#c98a67", aqua: "#a8c9c0", gold: "#edc77f" },
+  celebrate:{ halo: "#f7ead0", leaf: "#8fb476", deep: "#476f4f", blush: "#eaa98a", soil: "#c98a67", aqua: "#a8c9c0", gold: "#eec678" },
+  search:   { halo: "#e3eee6", leaf: "#86ad80", deep: "#3f7054", blush: "#eebd9c", soil: "#c98a67", aqua: "#a8c9c0", gold: "#edc77f" },
+  sync:     { halo: "#e2ebe4", leaf: "#84a97c", deep: "#43704f", blush: "#edc2a2", soil: "#c98a67", aqua: "#a8c9c0", gold: "#e9c377" },
+  budget:   { halo: "#f2ead6", leaf: "#86ab74", deep: "#477451", blush: "#e7bd7e", soil: "#c98a67", aqua: "#a8c9c0", gold: "#edc77f" },
+  receipt:  { halo: "#f4ecd9", leaf: "#8cae79", deep: "#4d7355", blush: "#eebd9c", soil: "#c98a67", aqua: "#a8c9c0", gold: "#edc77f" },
+  vacation: { halo: "#f6e7d3", leaf: "#8fb284", deep: "#52795a", blush: "#f0b490", soil: "#cd8d67", aqua: "#a9cac2", gold: "#f0cf87" },
+  journal:  { halo: "#ece9dd", leaf: "#8aac7e", deep: "#4a7153", blush: "#eec3a2", soil: "#c98a67", aqua: "#a8c9c0", gold: "#ecc87f" },
 };
 
 function Scene({ variant, palette }: {
@@ -199,6 +210,119 @@ function Scene({ variant, palette }: {
           <path d="M132 34v66m-8-49h16m-16 30h16" stroke={soil} strokeWidth="3.5" strokeLinecap="round" />
           <circle cx="132" cy="51" r="5" fill={blush} stroke={deep} strokeWidth="2" />
           <circle cx="132" cy="81" r="5" fill={gold} stroke={deep} strokeWidth="2" />
+        </g>
+      );
+    case "empty":
+      return (
+        <g>
+          <path className="botanical-illustration__leaf" d="M72 58c-9-10-8-21 1-25 8 6 9 16-1 25Z" fill={leaf} />
+          <path className="botanical-illustration__leaf botanical-illustration__leaf--second" d="M108 56c10-9 20-8 24 2-7 8-17 8-24-2Z" fill="#a8c98d" />
+          <path d="M88 58V40" stroke={deep} strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M88 46c-6-1-9-5-7-11 6 1 9 5 7 11Z" fill="#a8c98d" />
+          <path d="M46 60h84l-9 46H55l-9-46Z" fill="#ecd3ae" stroke={deep} strokeWidth="3.5" strokeLinejoin="round" />
+          <rect x="41" y="52" width="94" height="12" rx="6" fill={soil} stroke={deep} strokeWidth="3.5" />
+          <path d="M60 74h56M58 88h60M57 100h62" stroke="#d9b78d" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="132" cy="30" r="5" fill={gold} />
+          <circle cx="38" cy="34" r="3.5" fill={blush} opacity=".85" />
+          <path d="m146 78 5 5" stroke={gold} strokeWidth="3" strokeLinecap="round" />
+        </g>
+      );
+    case "celebrate":
+      return (
+        <g>
+          <path d="M60 40H48c-2 11 3 19 13 21m48-21h12c2 11-3 19-13 21" stroke={deep} strokeWidth="3.5" fill="none" strokeLinecap="round" />
+          <path d="M62 32h48v18c0 14-10 24-24 24S62 64 62 50V32Z" fill={gold} stroke={deep} strokeWidth="3.5" strokeLinejoin="round" />
+          <path d="M70 40h32" stroke="#a77a42" strokeWidth="3" strokeLinecap="round" opacity=".55" />
+          <path d="M86 74v12" stroke={deep} strokeWidth="4" strokeLinecap="round" />
+          <path d="M72 104h28l-5-14H77l-5 14Z" fill={blush} stroke={deep} strokeWidth="3" strokeLinejoin="round" />
+          <rect x="66" y="104" width="40" height="8" rx="3" fill={soil} stroke={deep} strokeWidth="3" />
+          <path d="m128 24 4 8m16-10-3 9m-28 1 7 6" stroke={blush} strokeWidth="3" strokeLinecap="round" />
+          <circle cx="150" cy="52" r="4" fill={leaf} />
+          <circle cx="44" cy="30" r="3.5" fill={aqua} />
+          <path d="m138 38 2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5" fill={gold} stroke="#a77a42" strokeWidth="1" />
+          <path className="botanical-illustration__leaf" d="M36 100c-2-11 5-19 15-20 4 11-3 19-15 20Z" fill={leaf} />
+        </g>
+      );
+    case "search":
+      return (
+        <g>
+          <path d="M62 100c-17-2-24-17-14-29 7-8 19-8 26-2 5 19-3 29-12 31Z" fill={leaf} stroke={deep} strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M62 100c2-12 8-20 17-25" stroke={deep} strokeWidth="2" fill="none" strokeLinecap="round" opacity=".6" />
+          <circle cx="98" cy="52" r="27" fill={aqua} fillOpacity=".4" stroke={deep} strokeWidth="6" />
+          <path d="m119 73 17 17" stroke={deep} strokeWidth="9" strokeLinecap="round" />
+          <path d="m88 42 6-7m2 19 8-5" stroke="#fff" strokeWidth="4" strokeLinecap="round" opacity=".85" />
+          <path d="m52 38 4 8m-14 22 9-2" stroke={gold} strokeWidth="3" strokeLinecap="round" />
+          <circle cx="146" cy="34" r="4" fill={blush} />
+        </g>
+      );
+    case "sync":
+      return (
+        <g>
+          <path d="M62 74a30 30 0 0 1 52-22" stroke={leaf} strokeWidth="6.5" fill="none" strokeLinecap="round" />
+          <path d="m114 41 12 8-13 6" stroke={leaf} strokeWidth="6.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M122 70a30 30 0 0 1-52 22" stroke={gold} strokeWidth="6.5" fill="none" strokeLinecap="round" />
+          <path d="m70 103-12-8 13-6" stroke={gold} strokeWidth="6.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <path className="botanical-illustration__leaf" d="M140 98c-2-11 6-19 16-20 3 11-5 19-16 20Z" fill={leaf} />
+          <circle cx="150" cy="30" r="4" fill={blush} />
+          <circle cx="34" cy="34" r="3.5" fill={aqua} />
+        </g>
+      );
+    case "budget":
+      return (
+        <g>
+          <path d="M60 50h52v44c0 8-6 14-14 14H74c-8 0-14-6-14-14V50Z" fill={aqua} fillOpacity=".38" stroke={deep} strokeWidth="3.5" strokeLinejoin="round" />
+          <path d="M64 50v-6a8 8 0 0 1 8-8h28a8 8 0 0 1 8 8v6" fill="none" stroke={deep} strokeWidth="3.5" />
+          <rect x="62" y="28" width="48" height="11" rx="5" fill={leaf} stroke={deep} strokeWidth="3" />
+          <circle cx="76" cy="94" r="9.5" fill={gold} stroke="#a77a42" strokeWidth="2.5" />
+          <circle cx="96" cy="96" r="9.5" fill={gold} stroke="#a77a42" strokeWidth="2.5" />
+          <circle cx="86" cy="82" r="9.5" fill="#f3d68f" stroke="#a77a42" strokeWidth="2.5" />
+          <path d="M86 78v8m-4-7h8" stroke="#815f32" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M60 60h52" stroke={deep} strokeWidth="2" opacity=".3" />
+          <path d="M86 28V18" stroke={deep} strokeWidth="3" strokeLinecap="round" />
+          <path className="botanical-illustration__leaf" d="M86 24c-8-1-12-6-10-12 7 0 12 5 10 12Z" fill={leaf} />
+          <circle cx="140" cy="52" r="4" fill={blush} />
+          <path d="m42 66 5-6" stroke={gold} strokeWidth="3" strokeLinecap="round" />
+          <path d="M136 88c-1-8 5-13 12-13 1 7-4 13-12 13Z" fill="#a8c98d" />
+        </g>
+      );
+    case "receipt":
+      return (
+        <g>
+          <path d="M58 22h56v76l-7-6-7 6-7-6-7 6-7-6-7 6-7-6-7 6V22Z" fill={paper} stroke={deep} strokeWidth="3.5" strokeLinejoin="round" />
+          <path d="M68 36h36M68 48h36M68 60h22" stroke="#b3b9a5" strokeWidth="4" strokeLinecap="round" />
+          <rect x="68" y="72" width="28" height="10" rx="3" fill={gold} stroke="#a77a42" strokeWidth="2" />
+          <circle cx="134" cy="88" r="12" fill={gold} stroke="#a77a42" strokeWidth="2.5" />
+          <circle cx="134" cy="88" r="5" fill="none" stroke="#815f32" strokeWidth="2" />
+          <circle cx="150" cy="66" r="5.5" fill="#f3d68f" stroke="#a77a42" strokeWidth="2" />
+          <path className="botanical-illustration__leaf" d="M44 32c-1-9 5-15 14-15 2 8-4 14-14 15Z" fill={leaf} />
+          <path d="m36 66 6-6" stroke={blush} strokeWidth="3" strokeLinecap="round" />
+        </g>
+      );
+    case "vacation":
+      return (
+        <g>
+          <circle cx="142" cy="28" r="11" fill={gold} />
+          <path d="M142 12V6m11 8 4-4m3 16h6m-9 14 4 4" stroke={gold} strokeWidth="3" strokeLinecap="round" />
+          <path d="M44 62C50 36 70 22 92 22s42 14 48 40c-8-6-16-6-24 0-8-6-16-6-24 0-8-6-16-6-24 0-8-6-16-6-24 0Z" fill={blush} stroke={deep} strokeWidth="3.5" strokeLinejoin="round" />
+          <path d="M92 24v56c0 10-7 16-15 16" stroke={deep} strokeWidth="4" fill="none" strokeLinecap="round" />
+          <path d="M30 104h124" stroke={leaf} strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M40 104c-2-8 3-14 11-15 3 8-2 14-11 15Z" fill={leaf} />
+          <path d="M140 104c2-8-3-14-11-15-3 8 2 14 11 15Z" fill="#a8c98d" />
+          <circle cx="36" cy="30" r="5" fill={aqua} opacity=".8" />
+          <circle cx="46" cy="26" r="7" fill={aqua} opacity=".8" />
+          <circle cx="55" cy="31" r="5" fill={aqua} opacity=".8" />
+        </g>
+      );
+    case "journal":
+      return (
+        <g>
+          <path d="M38 44c14-7 30-7 44 0v54c-14-7-30-7-44 0V44Z" fill={paper} stroke={deep} strokeWidth="3.5" strokeLinejoin="round" />
+          <path d="M94 44c14-7 30-7 44 0v54c-14-7-30-7-44 0V44Z" fill="#fdf7ea" stroke={deep} strokeWidth="3.5" strokeLinejoin="round" />
+          <path d="M88 42v58" stroke={deep} strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M50 56c8-4 16-4 22 0M50 68c8-4 16-4 22 0M50 80c8-4 16-4 22 0M104 56c8-4 14-4 20 0M104 68c8-4 14-4 20 0M104 80c8-4 14-4 20 0" stroke="#b3b9a5" strokeWidth="3" strokeLinecap="round" />
+          <path d="M144 18a13 13 0 1 0 10 23 10 10 0 0 1-10-23Z" fill={gold} stroke="#a77a42" strokeWidth="2" />
+          <path d="m124 14 1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5 1.5-4" fill={gold} />
+          <path className="botanical-illustration__leaf" d="M30 96c-2-10 5-17 14-18 3 10-4 17-14 18Z" fill={leaf} />
         </g>
       );
     case "sprout":

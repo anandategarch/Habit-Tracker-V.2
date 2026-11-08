@@ -5,6 +5,7 @@ import { CalendarCheck, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Cl
 import type { Habit } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { EmptyState, IconAction, PageIntro } from "@/components/ui/primitives";
+import { BotanicalIllustration, BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 type HistoryRecord = { habitId: string; title: string; date: string };
 type CheckinRecord = { date: string; mood: number; energy: number; sleepHours: number; notes: string };
@@ -112,7 +113,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
 
   return (
     <>
-      <PageIntro icon="calendar" title="Kalender" />
+      <PageIntro icon="calendar" art="calendar" title="Kalender" />
       <div className="calendar-layout">
         <section className="card card-pad calendar-panel">
           <div className="calendar-head">
@@ -147,9 +148,10 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
         </section>
 
         <aside className="calendar-summary">
+          <BotanicalIllustrationBackdrop variant="calendar" />
           <div className="calendar-summary-top"><span className="small-label">RINGKASAN TANGGAL</span><CalendarDays size={17} /></div>
           <div className="calendar-summary-date">{selectedLabel}</div>
-          {historyError ? <div className="calendar-history-note"><strong>Riwayat belum tersedia</strong><p>Catatan tanggal ini akan muncul kembali setelah koneksi pulih.</p></div> : (
+          {historyError ? <div className="calendar-history-note"><BotanicalIllustration variant="sync" className="empty-state-art" /><strong>Riwayat belum tersedia</strong><p>Catatan tanggal ini akan muncul kembali setelah koneksi pulih.</p></div> : (
             <>
               {selectedIsToday && <div className="calendar-summary-stats"><div><strong>{completedToday}</strong><span>Selesai</span></div><div><strong>{pendingToday}</strong><span>Tersisa</span></div></div>}
               {!selectedIsToday && <div className="calendar-summary-stats"><div><strong>{selectedRecords.length}</strong><span>Habit selesai</span></div><div><strong>{selectedCheckin ? "Ada" : "—"}</strong><span>Check-in</span></div></div>}
@@ -161,9 +163,9 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
                     <span><strong>{record.title}</strong><small><Clock3 size={11} /> {habit?.time ?? "Selesai"}</small></span>
                   </div>;
                 })}
-              </div> : (selectedIsToday || selectedCheckin ? <EmptyState title={selectedIsToday ? "Belum ada habit selesai" : "Belum ada catatan habit"} description={selectedIsToday ? "Habit yang selesai hari ini akan muncul di sini." : "Tidak ada penyelesaian habit yang tercatat pada tanggal ini."} /> : null)}
+              </div> : (selectedIsToday || selectedCheckin ? <EmptyState art="empty" title={selectedIsToday ? "Belum ada habit selesai" : "Belum ada catatan habit"} description={selectedIsToday ? "Habit yang selesai hari ini akan muncul di sini." : "Tidak ada penyelesaian habit yang tercatat pada tanggal ini."} /> : null)}
               {selectedCheckin && <div className="calendar-checkin-card"><div className="calendar-checkin-title"><Heart size={14} /> Daily check-in</div><div className="calendar-checkin-mood"><strong>{moodEmoji(selectedCheckin.mood)} {moodLabel(selectedCheckin.mood)}</strong><span>Energi {selectedCheckin.energy}/5 · Tidur {selectedCheckin.sleepHours} jam</span></div>{selectedCheckin.notes && <p>{selectedCheckin.notes}</p>}</div>}
-              {!selectedIsToday && !selectedRecords.length && !selectedCheckin && !loading && <div className="calendar-history-note"><span className="calendar-history-icon"><Clock3 size={18} /></span><strong>Belum ada aktivitas tercatat</strong><p>Tanggal ini belum memiliki penyelesaian habit atau daily check-in tersimpan.</p></div>}
+              {!selectedIsToday && !selectedRecords.length && !selectedCheckin && !loading && <div className="calendar-history-note"><BotanicalIllustration variant="empty" className="empty-state-art" /><strong>Belum ada aktivitas tercatat</strong><p>Tanggal ini belum memiliki penyelesaian habit atau daily check-in tersimpan.</p></div>}
             </>
           )}
         </aside>
