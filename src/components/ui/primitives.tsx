@@ -95,7 +95,7 @@ function HabitRow({ habit, onToggle, onAdjust, paused = false, dragHandle, varia
         {cardVariant ? (
           <>
             <div className="habit-row-heading">
-              <div className="habit-name">{habit.title}</div>
+              <div className="habit-name" title={habit.title}>{habit.title}</div>
               <span className="habit-streak-chip" title={`${habit.streak} hari berturut-turut`} aria-label={`Streak ${habit.streak} hari`}>
                 <Flame size={12} aria-hidden="true" />
                 <strong>{habit.streak}</strong>
@@ -117,7 +117,7 @@ function HabitRow({ habit, onToggle, onAdjust, paused = false, dragHandle, varia
           </>
         ) : (
           <>
-            <div className="habit-name">{habit.title}</div>
+            <div className="habit-name" title={habit.title}>{habit.title}</div>
             <div className="habit-meta">
               <span><Clock3 size={11} /> {habit.time}</span>
               <span>{habit.duration} menit target</span>

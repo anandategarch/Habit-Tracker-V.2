@@ -8506,3 +8506,118 @@ html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .garden-theme-l
   background: linear-gradient(135deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
   box-shadow: 0 5px 13px rgba(124, 92, 224, .28);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AUDIT PEDOMAN UI + LAYOUT v0.22 (2026-11-08)
+   Dua sumber temuan yang digabung:
+   A) PEDOMAN UI (docs/design-system.md + PEDOMAN UI.zip, diverifikasi VLM
+      terhadap 3 screenshot implementasi vs 3 gambar acuan).
+   B) Pedoman tata letak (grouping/adaptive/hidden-content): verifikasi
+      Chromium pada 320/360/403/430/768/960/1440px tanpa horizontal
+      overflow; simulasi konten pendek; uji fokus di bawah topbar lengket.
+
+   Perbaikan blok ini (append-only; rule sumber tidak diubah):
+   1. [PEDOMAN] --canvas final #f7f1e6 → token dokumen #fff7ef dan
+      --line → #efe4d9 (tabel "Fondasi visual"); sapuan dekoratif body
+      diredupkan agar kanvas terbaca ivory hangat seperti master
+      reference, bukan tan/tan-beige (temuan VLM: "noticeably darker
+      tan/beige — fix: lighten to ivory").
+   2. [PEDOMAN] Panel riwayat 7 hari (weekly-history) → material kartu
+      kertas: border hangat #efe4d9 (bukan hijau kaca), sapuan hijau
+      diredupkan, chip total putih solid — "kartu memakai paper dengan
+      border tipis dan shadow lembut" (temuan VLM: "translucent/greenish
+      glassy tint, not white").
+   3. [PEDOMAN] Nav aktif desktop → pil penuh sesuai master reference
+      (PEDOMAN UI.zip gambar 3: active nav = pill rounded-full lavender).
+   4. [LAYOUT] Footer tidak lagi terdorong ke bawah lipatan pada halaman
+      pendek: .main-shell meneruskan min-height 100svh (globals.css:93/
+      839/1697) sehingga shell = 100svh + tinggi footer; mekanisme
+      sticky-footer yang benar adalah flex column + margin-top:auto pada
+      .site-footer (rutina-botanical.css:2873). Override → min-height: 0.
+      Terukur (simulasi konten pendek 403px): footer bottom 1058px pada
+      viewport 881px; setelah perbaikan → tepat 881px.
+   5. [LAYOUT] scroll-padding-block-start untuk topbar lengket (70px
+      desktop / 64px ≤600px; terukur render 68px/62px + border) agar
+      target anchor dan elemen fokus tidak mendarat di balik krom lengket
+      (terukur: scroll-paddingTop 'auto').
+   6. [A11Y 1.4.11] Cincin fokus pencarian <3:1 (globals.css:586
+      rgba(89,139,104,.34) ≈1.6:1; border fokus-within #9bb59b ≈2:1) →
+      outline solid #2f5e40 (7.8:1) dan border #417a57 (4.8:1) + ring
+      lebih kuat.
+   7. [LAYOUT] Nama habit: single-line ellipsis tanpa jalan ke nilai
+      penuh (terukur: teks 60 karakter, terlihat 87px dari lebar asli
+      368px) → line-clamp 3 baris (60 karakter muat penuh; input
+      maxLength=60) + atribut title pada JSX (primitives.tsx) sebagai
+      tooltip hover. Kepala baris: nama kekal flex-shrink, chip streak
+      flex:none — konten identitas tidak lagi terdesak metadata.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* 1. Token kanvas & garis sesuai tabel dokumen pedoman. */
+:root {
+  --canvas: #fff7ef;
+  --line: #efe4d9;
+}
+body {
+  background:
+    radial-gradient(ellipse at 92% 0%, rgba(226, 205, 176, .16), transparent 34rem),
+    radial-gradient(ellipse at 3% 88%, rgba(196, 219, 180, .12), transparent 29rem),
+    var(--canvas);
+}
+
+/* 2. Panel riwayat 7 hari → kartu kertas pedoman. */
+.weekly-history-panel {
+  border: 1px solid #efe4d9;
+  background:
+    radial-gradient(circle at 97% 8%, rgba(222, 235, 211, .26), transparent 180px),
+    linear-gradient(120deg, #fffdf9 0%, #fffdf8 100%);
+  box-shadow: 0 7px 22px rgba(84, 68, 41, .05);
+}
+.weekly-history-total {
+  border: 1px solid #efe4d9;
+  color: var(--primary-strong);
+  background: #fffdf9;
+}
+
+/* 3. Nav aktif desktop → pil penuh (master reference gambar 3). */
+.desktop-nav-link { border-radius: 999px; }
+
+/* 4. Sticky footer: biarkan flex column + margin-top:auto yang bekerja. */
+.main-shell { min-height: 0; }
+
+/* 5. Fokus/anchor tidak mendarat di balik topbar lengket. */
+html { scroll-padding-top: 70px; }
+@media (max-width: 600px) {
+  html { scroll-padding-top: 64px; }
+}
+
+/* 6. Cincin fokus pencarian memenuhi 1.4.11 (≥3:1). */
+.search-result:focus-visible,
+.search-hints button:focus-visible {
+  outline: 3px solid #2f5e40;
+  outline-offset: 2px;
+}
+.search-field:focus-within {
+  border-color: #417a57;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(65, 122, 87, .2);
+}
+
+/* 7. Nama habit: nilai penuh dapat dicapai (clamp 3 baris + title di JSX).
+      Selektor kedua menyamai spesifisitas rule lama .habits-panel
+      .habit-row-heading .habit-name (0,3,0) agar override menang cascade. */
+.habit-name,
+.habits-panel .habit-row-heading .habit-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.habit-row-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px; min-width: 0; }
+/* Nama selalu mendapat lebar penuh barisnya (identitas memimpin);
+   chip streak (metadata) turun ke baris berikutnya — terukur: tanpa ini
+   nama 60 karakter hanya mendapat 87px dari 368px yang dibutuhkan. */
+.habit-row-heading .habit-name { flex: 1 1 100%; min-width: 0; }
+.habit-row-heading .habit-streak-chip { flex: none; }
