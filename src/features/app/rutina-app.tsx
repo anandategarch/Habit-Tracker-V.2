@@ -405,7 +405,7 @@ export function RutinaApp() {
         <div id="workspace-menu" className={`workspace-menu-panel ${moreOpen ? "is-open" : ""}`} aria-hidden={!moreOpen}>
           <div className="menu-panel-header">
             <div>
-              <span className="menu-panel-kicker">YOUR SPACE</span>
+              <span className="menu-panel-kicker">RUANG KERJA</span>
               <strong>Workspace</strong>
             </div>
             <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
@@ -456,7 +456,7 @@ export function RutinaApp() {
               <div className="avatar">
                 <span className="avatar-initial" aria-hidden="true">A</span>
               </div>
-              <div><div className="profile-name">Ruang pribadi</div><div className="profile-caption">Personal workspace</div></div>
+              <div><div className="profile-name">Ruang pribadi</div><div className="profile-caption">Workspace pribadi</div></div>
             </div>
           </div>
         </div>
@@ -478,7 +478,7 @@ export function RutinaApp() {
             <div className="avatar">
               <span className="avatar-initial" aria-hidden="true">A</span>
             </div>
-            <div><div className="profile-name">Ruang pribadi</div><div className="profile-caption">Personal workspace</div></div>
+            <div><div className="profile-name">Ruang pribadi</div><div className="profile-caption">Workspace pribadi</div></div>
           </div>
         </div>
       </aside>
@@ -611,7 +611,7 @@ export function RutinaApp() {
       </nav>
       {moreOpen && <div id="mobile-workspace-menu" className="mobile-more-menu workspace-menu-sheet" role="dialog" aria-modal="true" aria-label="Semua menu Rutina">
         <div className="menu-panel-header">
-          <div><span className="menu-panel-kicker">YOUR SPACE</span><strong>Jelajahi Rutina</strong></div>
+          <div><span className="menu-panel-kicker">RUANG KAMU</span><strong>Jelajahi Rutina</strong></div>
           <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
         </div>
         <div className="menu-panel-content">

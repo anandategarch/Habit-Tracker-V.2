@@ -27,6 +27,21 @@ import { Check, ChevronDown } from "lucide-react";
 
 interface SelectOption { value: string; label: string; }
 
+/**
+ * Ubah ReactNode menjadi teks tampilan tanpa koma penggabung array.
+ * String([3, " · ", "Biasa"]) menghasilkan "3, · ,Biasa" (join koma bawaan
+ * JavaScript) — flatten rekursif menjaga spasi & teks apa adanya.
+ */
+function nodeToText(node: ReactNode): string {
+  if (node === null || node === undefined || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(nodeToText).join("");
+  if (isValidElement(node)) {
+    return nodeToText((node.props as { children?: ReactNode }).children);
+  }
+  return "";
+}
+
 function readOptions(children: ReactNode): SelectOption[] {
   const list: SelectOption[] = [];
   Children.forEach(children, (child) => {
@@ -35,7 +50,8 @@ function readOptions(children: ReactNode): SelectOption[] {
     const rawValue = props.value === undefined ? props.children : props.value;
     if (rawValue === undefined || rawValue === null) return;
     const value = String(rawValue);
-    list.push({ value, label: String(props.children ?? value) });
+    const label = nodeToText(props.children ?? value).trim() || value;
+    list.push({ value, label });
   });
   return list;
 }

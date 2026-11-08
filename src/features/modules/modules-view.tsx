@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormE
 import Image from "next/image";
 import { BackupView } from "@/features/settings/backup-view";
 import { DataManagerView } from "@/features/settings/data-manager-view";
-import { Activity, ArrowRight, ArrowRightLeft, Banknote, CalendarClock, Check, Circle, CircleCheck, CircleDollarSign, Clock3, Drumstick, Droplets, FileText, Flag, Gauge, ImagePlus, Inbox, Landmark, ListChecks, ListFilter, Milestone as MilestoneIcon, Pause, PiggyBank, Play, Plus, Repeat, RotateCcw, Scale, Split, Sprout, Target, TrendingDown, TrendingUp, Wallet as WalletGlyph, Zap } from "lucide-react";
+import { Activity, ArrowRight, ArrowRightLeft, Banknote, CalendarClock, Check, Circle, CircleCheck, CircleDollarSign, Clock3, Drumstick, Droplets, FileText, Flag, Gauge, ImagePlus, Inbox, Landmark, ListChecks, ListFilter, Milestone as MilestoneIcon, Pause, PiggyBank, Play, Plus, RefreshCw, Repeat, RotateCcw, Scale, Split, Sprout, Target, TrendingDown, TrendingUp, Wallet as WalletGlyph, Zap } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { BotanicalIllustration, BotanicalIllustrationBackdrop, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import { useConfirm } from "@/components/ui/confirm-dialog";
@@ -201,7 +201,7 @@ function CheckinView({ modules, updateModule }: { modules: WorkspaceModules; upd
             <Field label="Energi (1–5)"><ThemedSelect className={field} name="energy" defaultValue={String(current?.energy ?? 3)}>{[1,2,3,4,5].map((n) => <option key={n} value={n}>{n} · {["","Sangat rendah","Rendah","Cukup","Tinggi","Sangat tinggi"][n]}</option>)}</ThemedSelect></Field>
           </div>
           <Field label="Durasi tidur (jam)"><input className={field} name="sleep" type="number" min="0" max="24" step=".5" inputMode="decimal" defaultValue={current?.sleepHours ?? 7} /></Field>
-          <Field label="Jurnal singkat"><textarea className={field} name="notes" rows={6} maxLength={2000} defaultValue={current?.notes ?? ""} placeholder="Apa yang berjalan baik? Apa yang terasa berat?" /></Field>
+          <Field label="Jurnal singkat"><textarea className={field} name="notes" rows={3} maxLength={2000} defaultValue={current?.notes ?? ""} placeholder="Apa yang berjalan baik? Apa yang terasa berat?" /></Field>
           <PrimaryButton type="submit"><Check size={15} /> Simpan check-in</PrimaryButton>
         </form>
       </Panel>
@@ -255,7 +255,7 @@ function WellnessView({ modules, updateModule }: { modules: WorkspaceModules; up
   const weights = modules.wellness.filter((item) => item.weightKg !== null).slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15);
   return <>
     <Intro icon="wellness" art="wellness" title="Wellness" />
-    <div className="module-metrics"><Metric label="AIR HARI INI" value={`${current.waterMl.toLocaleString("id-ID")} ml`} icon={Droplets} tone="leaf" /><Metric label="PROTEIN" value={`${current.proteinGrams} g`} icon={Drumstick} tone="amber" /><Metric label="BERAT TERAKHIR" value={current.weightKg ? `${current.weightKg} kg` : "—"} icon={Scale} tone="peach" /></div>
+    <div className="module-metrics"><Metric label="CATATAN TERSIMPAN" value={`${modules.wellness.length} hari`} icon={Droplets} tone="leaf" /><Metric label="PROTEIN" value={`${current.proteinGrams} g`} icon={Drumstick} tone="amber" /><Metric label="BERAT TERAKHIR" value={current.weightKg ? `${current.weightKg} kg` : "Belum ada"} icon={Scale} tone="peach" /></div>
     <div className="module-two-col"><Panel title="Hidrasi" caption="Tambah setiap kali minum air"><div className="wellness-water-ring"><div><strong>{current.waterMl.toLocaleString("id-ID")}</strong><small>ml hari ini</small></div></div><div className="module-button-row">{[150, 250, 350, 500].map((amount) => <button className={secondary} key={amount} onClick={() => updateModule("wellness", (items) => { const base = items.find((item) => item.date === today()) ?? current; return [{ ...base, waterMl: base.waterMl + amount }, ...items.filter((item) => item.date !== today())]; })}>+{amount} ml</button>)}<button className={secondary} onClick={() => updateModule("wellness", (items) => items.map((item) => item.date === today() ? { ...item, waterMl: Math.max(0, item.waterMl - 250) } : item))}>−250 ml</button></div><div className="module-progress-track"><span style={{ width: `${Math.min(100, current.waterMl / 2000 * 100)}%` }} /></div></Panel><Panel title="Nutrisi & berat badan" caption="Masukkan catatan tubuh hari ini"><div className="form-grid"><Field label="Protein (gram)"><input className={field} type="number" min="0" max="1000" inputMode="numeric" value={protein} onChange={(event) => setProtein(event.target.value)} /></Field><Field label="Berat badan (kg)"><input className={field} type="number" min="1" max="500" step=".1" inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} placeholder="Contoh: 65.5" /></Field><Field label="Catatan"><textarea className={field} rows={2} maxLength={500} value={note} onChange={(event) => setNote(event.target.value)} /></Field><PrimaryButton onClick={save}><Check size={15} /> Simpan data wellness</PrimaryButton></div>{weights.length > 0 && <div className="module-list">{weights.map((item) => <div className="module-inline-meta" key={item.date}><small>{formatDate(item.date)}</small><strong>{item.weightKg} kg</strong></div>)}</div>}</Panel></div>
   </>;
 }
@@ -306,7 +306,7 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
   const readiness = modules.checkins.find((item) => item.date === today());
   return <>
     <Intro icon="training" art="training" title="Latihan" />
-    <div className="module-metrics"><Metric label="SESI LATIHAN" value={String(modules.workouts.length)} icon={Activity} tone="leaf" /><Metric label="TOTAL DURASI" value={`${totalMinutes} mnt`} icon={Clock3} tone="amber" /><Metric label="KESIAPAN HARI INI" value={readiness ? `${Math.round((readiness.mood + readiness.energy) / 10 * 100)}%` : "—"} icon={Gauge} tone="peach" /></div>
+    <div className="module-metrics"><Metric label="SESI LATIHAN" value={String(modules.workouts.length)} icon={Activity} tone="leaf" /><Metric label="TOTAL DURASI" value={`${totalMinutes} mnt`} icon={Clock3} tone="amber" /><Metric label="KESIAPAN HARI INI" value={readiness ? `${Math.round((readiness.mood + readiness.energy) / 10 * 100)}%` : "Belum ada"} icon={Gauge} tone="peach" /></div>
     <div className="module-two-col"><Panel title="Catat sesi latihan" caption="Log gerakan, set, repetisi, beban, dan kardio"><form className="form-grid" noValidate onSubmit={addWorkout}><Field label="Nama sesi"><input className={field} name="title" defaultValue="Full body" maxLength={80} /></Field><div className="form-two-columns"><Field label="Tanggal"><input className={field} name="date" type="date" max={today()} defaultValue={today()} /></Field><Field label="Durasi latihan (menit)"><input className={field} name="duration" type="number" min="0" inputMode="numeric" defaultValue="45" /></Field></div><Field label="Nama gerakan"><input className={field} name="exercise" required maxLength={80} placeholder="Contoh: Push-up" /></Field><div className="form-three-columns"><Field label="Set"><input className={field} name="sets" type="number" min="1" inputMode="numeric" defaultValue="3" /></Field><Field label="Repetisi"><input className={field} name="reps" type="number" min="1" inputMode="numeric" defaultValue="10" /></Field><Field label="Beban (kg)"><input className={field} name="weight" type="number" min="0" step=".5" inputMode="decimal" defaultValue="0" /></Field></div><Field label="Kardio (menit)"><input className={field} name="cardio" type="number" min="0" inputMode="numeric" defaultValue="0" /></Field><Field label="Catatan"><textarea className={field} name="notes" rows={2} maxLength={1000} /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan latihan</PrimaryButton></form></Panel><Panel title="Program latihan" caption="Simpan split latihan mingguan"><form className="form-grid" noValidate onSubmit={addProgram}><Field label="Nama program"><input className={field} name="title" required maxLength={80} placeholder="Contoh: Strength 3 hari" /></Field><Field label="Hari latihan"><input className={field} name="days" maxLength={120} placeholder="Senin, Rabu, Jumat" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><PrimaryButton type="submit"><Plus size={15} /> Buat program</PrimaryButton></form>{modules.programs.map((program) => <article className="module-item" key={program.id}><div className="module-item-top"><div><h3>{program.title} {program.active && <span className="module-tag">Aktif</span>}</h3><p>{program.days} · {program.description}</p></div></div><button className={secondary} onClick={() => updateModule("programs", (items) => items.map((item) => ({ ...item, active: item.id === program.id })))}><Zap size={13} /> Jadikan aktif</button></article>)}</Panel></div>
     <Panel title="Riwayat latihan" caption={`${modules.workouts.length} sesi tersimpan`}>{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData art="empty">Belum ada sesi latihan.</NoData>}</Panel>
     <Panel title="Foto progres" caption="Foto dikompresi sebelum disimpan; maksimal 5 foto aktif"><label className="module-upload"><ImagePlus size={20} /><span>{photoBusy ? "Mengompresi foto…" : "Tambah foto progres"}</span><input type="file" accept="image/*" disabled={photoBusy} onChange={addPhoto} /></label>{modules.progressPhotos.length > 0 && <div className="module-photo-grid">{/* eslint-disable @next/next/no-img-element -- data URL JPEG hasil kompresi klien; optimasi next/image tidak berlaku untuk data URL */}{modules.progressPhotos.map((photo) => <figure key={photo.id}><img src={photo.imageData} alt={`Foto progres ${photo.date}`} /><figcaption>{formatDate(photo.date)}</figcaption></figure>)}{/* eslint-enable @next/next/no-img-element */}</div>}</Panel>
@@ -334,6 +334,7 @@ interface GrowthSummary {
 function TreeView({ modules }: { modules: WorkspaceModules }) {
   const [growth, setGrowth] = useState<GrowthSummary | null>(null);
   const [error, setError] = useState(false);
+  const [retryVersion, setRetryVersion] = useState(0);
   useEffect(() => {
     let cancelled = false;
     void fetch("/api/growth", { cache: "no-store" })
@@ -342,13 +343,13 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
         return response.json() as Promise<GrowthSummary>;
       })
       .then((data) => {
-        if (!cancelled) setGrowth(data);
+        if (!cancelled) { setGrowth(data); setError(false); }
       })
       .catch(() => {
         if (!cancelled) setError(true);
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [retryVersion]);
 
   const lifetimeStageConfig = growth
     ? growth.level >= 7
@@ -440,8 +441,9 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
         </Panel>
       </> : <section className="card card-pad tree-loading-state">
         <BotanicalIllustration variant={error ? "sync" : "sprout"} className="empty-state-art" />
-        <strong>{error ? "Data pertumbuhan belum tersedia" : "Memuat data pohon…"}</strong>
-        <p>{error ? "Periksa koneksi lalu muat ulang untuk melihat XP, level, dan riwayat pohon." : "Mengambil catatan habit dari server."}</p>
+        <strong>{error ? "Data pohon belum termuat" : "Memuat data pohon…"}</strong>
+        <p>{error ? "Periksa koneksi, lalu coba lagi. XP dan level akan muncul setelah riwayat termuat." : "Mengambil catatan habit dari server."}</p>
+        {error && <button type="button" className="weekly-retry-action" onClick={() => setRetryVersion((value) => value + 1)}><RefreshCw size={13} /> Coba lagi</button>}
       </section>}
     </div>
   );

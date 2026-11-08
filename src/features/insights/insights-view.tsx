@@ -269,7 +269,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
         <div className="growth-wrapped-metrics">
           <div className="growth-wrapped-metric">
             <span className="growth-wrapped-icon"><Target size={17} /></span>
-            <div><strong>{weeklyHistoryLoading ? "…" : weeklyHistoryError ? "—" : trendTotal.toLocaleString("id-ID")}</strong><small>Habit selesai · {periodCaption}</small></div>
+            <div><strong>{weeklyHistoryLoading ? "…" : weeklyHistoryError ? "0" : trendTotal.toLocaleString("id-ID")}</strong><small>Habit selesai · {periodCaption}</small></div>
           </div>
           <div className="growth-wrapped-metric">
             <span className="growth-wrapped-icon mood"><HeartPulse size={17} /></span>
@@ -282,9 +282,9 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
         </div>
       </section>
       <div className="insights-stat-grid botanical-insight-stats">
-        <StatCard label="Langkah periode ini" value={weeklyHistoryLoading ? "…" : weeklyHistoryError ? "—" : trendTotal.toLocaleString("id-ID")} icon={Target} tone="green" />
+        <StatCard label="Total selesai" value={weeklyHistoryLoading ? "…" : weeklyHistoryError ? "0" : trendTotal.toLocaleString("id-ID")} icon={Target} tone="green" />
         <StatCard label="Hari aktif" value={`${activeDays}/${spanDays} hari`} icon={Flame} tone="amber" />
-        <StatCard label="Mood rata-rata" value={moodAverage === null ? "—" : `${moodAverage.toFixed(1)}/5`} icon={HeartPulse} tone="orange" />
+        <StatCard label="Mood rata-rata" value={moodAverage === null ? "Belum ada" : `${moodAverage.toFixed(1)}/5`} icon={HeartPulse} tone="orange" />
       </div>
 
       <section className="card card-pad insight-trend-panel" aria-label="Ringkasan progres habit dan check-in selama tujuh hari terakhir">
@@ -354,9 +354,9 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
           <div className="insight-checkin-summary">
             <SectionHeading title="Mood, energi & tidur" caption="Rata-rata dari maksimal 14 check-in terbaru" />
             <div className="insight-checkin-grid">
-              <div><HeartPulse size={15} /><small>Mood</small><strong>{moodAverage === null ? "—" : `${moodAverage.toFixed(1)}/5`}</strong></div>
-              <div><Activity size={15} /><small>Energi</small><strong>{energyAverage === null ? "—" : `${energyAverage.toFixed(1)}/5`}</strong></div>
-              <div><Moon size={15} /><small>Tidur</small><strong>{sleepAverage === null ? "—" : `${sleepAverage.toFixed(1)} jam`}</strong></div>
+              <div><HeartPulse size={15} /><small>Mood</small><strong>{moodAverage === null ? "Belum ada" : `${moodAverage.toFixed(1)}/5`}</strong></div>
+              <div><Activity size={15} /><small>Energi</small><strong>{energyAverage === null ? "Belum ada" : `${energyAverage.toFixed(1)}/5`}</strong></div>
+              <div><Moon size={15} /><small>Tidur</small><strong>{sleepAverage === null ? "Belum ada" : `${sleepAverage.toFixed(1)} jam`}</strong></div>
             </div>
           </div>
         </section>
@@ -380,7 +380,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
       </div>
 
       <section className="card card-pad insight-ai-panel">
-        <div className="insight-ai-heading"><div><SectionHeading title="AI Insights" caption="Pola yang dibaca dari habit, check-in, dan transaksi." />{sourceNote && <p className="insight-source-note">{sourceNote}</p>}</div><div className="insight-ai-actions"><span className={`insight-source-badge ${source}`}>{loading ? "Memuat…" : source === "ai" ? "AI aktif" : source === "rule-based" ? "Analisis data" : "Mode lokal"}</span>{!loading && source === "local" && <button className="insight-retry-button" type="button" onClick={() => { setLoading(true); setAiRetryVersion((current) => current + 1); }}><RefreshCw size={12} /> Coba lagi</button>}</div></div>
+        <div className="insight-ai-heading"><div><SectionHeading title="Analisis AI" caption="Pola yang dibaca dari habit, check-in, dan transaksi." />{sourceNote && <p className="insight-source-note">{sourceNote}</p>}</div><div className="insight-ai-actions"><span className={`insight-source-badge ${source}`}>{loading ? "Memuat…" : source === "ai" ? "AI aktif" : source === "rule-based" ? "Analisis data" : "Mode lokal"}</span>{!loading && source === "local" && <button className="insight-retry-button" type="button" onClick={() => { setLoading(true); setAiRetryVersion((current) => current + 1); }}><RefreshCw size={12} /> Coba lagi</button>}</div></div>
         <div className="insight-ai-list">
           {loading ? (
             <div className="insight-ai-skeleton" role="status" aria-live="polite">

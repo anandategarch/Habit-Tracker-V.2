@@ -316,12 +316,20 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               </div>
               {habits.length > 5 && <button className="text-button list-more" type="button" onClick={() => onNavigate("habits")}>Lihat {habits.length - 5} kebiasaan lainnya <ArrowRight size={13} /></button>}
             </>
+          ) : totalHabits === 0 ? (
+            // v0.28 — konsolidasi empty state: kartu Fokus di atas sudah
+            // memegang CTA "Buat kebiasaan pertama"; di sini cukup baris
+            // ringkas agar tidak ada dua kartu kosong besar bertumpuk.
+            <div className="home-habits-compact-empty">
+              <p className="module-muted">Belum ada kebiasaan terjadwal.</p>
+              <button className="text-button" type="button" onClick={onAddHabit}>Buat sekarang <ArrowRight size={13} /></button>
+            </div>
           ) : (
             <EmptyState
               art="sprout"
-              title="Belum ada kebiasaan"
-              description="Tambahkan kebiasaan pertama untuk mulai mencatat progres."
-              action={<PrimaryButton onClick={onAddHabit}><Plus size={14} /> Buat kebiasaan pertama</PrimaryButton>}
+              title="Tidak ada habit terjadwal hari ini"
+              description="Kebiasaan dengan jadwal hari ini akan muncul di sini."
+              action={<PrimaryButton onClick={onAddHabit}><Plus size={14} /> Buat kebiasaan</PrimaryButton>}
             />
           )}
         </section>

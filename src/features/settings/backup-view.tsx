@@ -111,7 +111,7 @@ export function BackupView({ settings, onUpdateSettings }: {
       <span className="settings-profile-mark">
         <span aria-hidden="true">A</span>
       </span>
-      <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadi</strong><span>Rutina</span></div>
+      <div className="settings-profile-copy"><small>RUANG PRIBADI KAMU</small><strong>Ruang pribadi</strong><span>Rutina</span></div>
       <span className="settings-profile-status" aria-label={`Versi ${APP_VERSION_LABEL}`}><ShieldCheck size={14} /> {APP_VERSION_LABEL}</span>
     </section>
 

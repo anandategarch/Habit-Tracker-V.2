@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarCheck, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock3, Heart, RefreshCw } from "lucide-react";
+import { AlertTriangle, CalendarCheck, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock3, Frown, Heart, Laugh, Meh, RefreshCw, Smile } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 import { EmptyState, IconAction, PageIntro } from "@/components/ui/primitives";
@@ -16,8 +16,10 @@ function toISODate(year: number, monthIndex: number, day: number): string {
 function moodLabel(mood: number): string {
   return ["", "Sangat berat", "Kurang baik", "Biasa", "Baik", "Sangat baik"][Math.max(1, Math.min(5, mood))];
 }
-function moodEmoji(mood: number): string {
-  return ["", "😞", "🙁", "😐", "🙂", "😄"][Math.max(1, Math.min(5, mood))];
+function moodFace(mood: number) {
+  const faces = [Frown, Frown, Frown, Meh, Smile, Laugh];
+  const Face = faces[Math.max(1, Math.min(5, mood))];
+  return <Face size={16} aria-hidden="true" />;
 }
 
 export function CalendarView({ habits }: { habits: Habit[] }) {
@@ -68,7 +70,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
 
   const loading = loadedMonthKey !== monthKey && historyErrorMonth !== monthKey;
   const historyError = historyErrorMonth === monthKey
-    ? "Riwayat kalender tidak dapat dimuat. Periksa koneksi atau status sinkronisasi database."
+    ? "Riwayat belum termuat. Periksa koneksi, lalu coba lagi."
     : "";
   const historyByDate = useMemo(() => {
     // Abaikan data bulan lama saat bulan aktif berganti agar tidak ada riwayat yang salah tampil.
@@ -124,6 +126,10 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
               <IconAction label="Bulan berikutnya" onClick={() => moveMonth(1)}><ChevronRight size={16} /></IconAction>
             </div>
           </div>
+          {/* v0.28 — banner error naik ke atas grid: gagal muat riwayat memengaruhi
+              seluruh data bulan, jadi pesan + tombol coba lagi harus langsung terlihat
+              tanpa harus melewati grid (sebelumnya tertutup nav bawah). */}
+          {historyError && <div className="calendar-history-error" role="alert"><p><AlertTriangle size={13} aria-hidden="true" style={{ verticalAlign: "-2px", marginRight: 5 }} />{historyError}</p><button type="button" className="insight-retry-button" onClick={retryHistory}><RefreshCw size={13} /> Coba lagi</button></div>}
           <div className="calendar-grid" role="group" aria-label={`Kalender ${monthHeading}`}>
             {["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map((day) => <div className="calendar-weekday" key={day}>{day}</div>)}
             {cells.map((day, index) => {
@@ -144,7 +150,6 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
           </div>
           <div className="calendar-legend"><span className="calendar-legend-dot today-dot" /> Hari ini <span className="calendar-legend-outline" /> Tanggal dipilih <span className="calendar-history-dot" /> Ada riwayat</div>
           {loading && <div className="calendar-loading" role="status" aria-live="polite"><span className="skeleton-shimmer calendar-loading-skeleton" aria-hidden="true" /> Memuat riwayat bulan ini…</div>}
-          {historyError && <div className="calendar-history-error" role="alert"><p>{historyError}</p><button type="button" className="insight-retry-button" onClick={retryHistory}><RefreshCw size={13} /> Coba lagi</button></div>}
         </section>
 
         <aside className="calendar-summary">
@@ -164,7 +169,7 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
                   </div>;
                 })}
               </div> : (selectedIsToday || selectedCheckin ? <EmptyState art="empty" title={selectedIsToday ? "Belum ada habit selesai" : "Belum ada catatan habit"} description={selectedIsToday ? "Habit yang selesai hari ini akan muncul di sini." : "Tidak ada penyelesaian habit yang tercatat pada tanggal ini."} /> : null)}
-              {selectedCheckin && <div className="calendar-checkin-card"><div className="calendar-checkin-title"><Heart size={14} /> Daily check-in</div><div className="calendar-checkin-mood"><strong>{moodEmoji(selectedCheckin.mood)} {moodLabel(selectedCheckin.mood)}</strong><span>Energi {selectedCheckin.energy}/5 · Tidur {selectedCheckin.sleepHours} jam</span></div>{selectedCheckin.notes && <p>{selectedCheckin.notes}</p>}</div>}
+              {selectedCheckin && <div className="calendar-checkin-card"><div className="calendar-checkin-title"><Heart size={14} /> Daily check-in</div><div className="calendar-checkin-mood"><strong>{moodFace(selectedCheckin.mood)} {moodLabel(selectedCheckin.mood)}</strong><span>Energi {selectedCheckin.energy}/5 · Tidur {selectedCheckin.sleepHours} jam</span></div>{selectedCheckin.notes && <p>{selectedCheckin.notes}</p>}</div>}
               {!selectedIsToday && !selectedRecords.length && !selectedCheckin && !loading && <div className="calendar-history-note"><BotanicalIllustration variant="empty" className="empty-state-art" /><strong>Belum ada aktivitas tercatat</strong><p>Tanggal ini belum memiliki penyelesaian habit atau daily check-in tersimpan.</p></div>}
             </>
           )}

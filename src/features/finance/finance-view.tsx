@@ -142,9 +142,12 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
     timeZone: "Asia/Jakarta",
   }).format(new Date(monthKey + "-01T12:00:00+07:00"));
   // Tiga keadaan: net = 0 sebelumnya salah menyatakan "pemasukan lebih besar"
-  // padahal keduanya sama (audit v0.4.1).
-  const cashflowMessage = net > 0
-    ? "Pemasukan pada periode ini masih lebih besar dari pengeluaran."
+  // padahal keduanya sama (audit v0.4.1). v0.28: periode kosong (0/0) bukan
+  // "seimbang" — kata faktual "belum ada transaksi" (bebas narasi menyesatkan).
+  const cashflowMessage = monthTransactions.length === 0
+    ? "Belum ada transaksi pada periode ini."
+    : net > 0
+    ? "Pemasukan pada periode ini lebih besar dari pengeluaran."
     : net < 0
       ? "Pengeluaran pada periode ini lebih besar dari pemasukan."
       : "Pemasukan dan pengeluaran pada periode ini seimbang.";

@@ -37,17 +37,16 @@
   --rutina-sage: #a9c58e;
   --rutina-leaf: #568a5d;
   --rutina-leaf-dark: #356b4b;
-  /* Lavender — peran resmi pedoman UI (docs/design-system.md): “Navigasi
-     aktif, primary CTA, dan kontrol terpilih”. Audit v0.13 salah menafsirkan
-     pedoman sebagai larangan ungu total; v0.21 mengembalikan peran ini.
-     Catatan kontras (WCAG 1.4.3): #8f7ae5 + teks putih hanya 3.45:1, maka
-     permukaan berteks putih memakai varian deep/strong (≥4.5:1), sementara
-     token murni dipakai untuk pil terang, swatch, dan stroke dekoratif. */
-  --rutina-lavender: #8f7ae5;
-  --rutina-lavender-deep: #7c5ce0;
-  --rutina-lavender-strong: #6a48c9;
-  --rutina-lavender-ink: #5a3eb8;
-  --rutina-lavender-soft: #f0ebfb;
+  /* Forest accent — peran: navigasi aktif, primary CTA, kontrol terpilih.
+     v0.28: aksen lavender lama (#8f7ae5 dst.) diganti keluarga hijau hutan
+     brand #417a57 — audit visual menegaskan ungu melanggar brand. Varian
+     strong menjamin kontras teks putih ≥4.5:1 (WCAG AA); token murni untuk
+     pil terang, swatch, dan stroke dekoratif. */
+  --rutina-lavender: #5d9271;
+  --rutina-lavender-deep: #417a57;
+  --rutina-lavender-strong: #33634a;
+  --rutina-lavender-ink: #295241;
+  --rutina-lavender-soft: #e7f1ea;
   --rutina-line: #e5ece2;
 }
 
@@ -544,8 +543,8 @@ html[data-theme="dark"] {
   --primary-soft: #354b38;
   --sage: #8eae80;
   --mint: #3a5340;
-  --rutina-lavender-soft: #37324e;
-  --rutina-lavender-text: #cabcf5;
+  --rutina-lavender-soft: #243529;
+  --rutina-lavender-text: #a9c9b1;
 }
 html[data-theme="dark"] body { background: radial-gradient(ellipse at 92% 0%,rgba(99,123,89,.18),transparent 34rem),var(--canvas); }
 html[data-theme="dark"] .desktop-sidebar, html[data-theme="dark"] .topbar { color: var(--ink); border-color: var(--line); background: rgba(31,43,34,.96); }
@@ -782,7 +781,7 @@ html[data-theme="dark"] .text-button { color: #9fd4ae; }
   overflow: hidden;
   border: 1px solid #e9e7dc;
   border-radius: 22px;
-  background: linear-gradient(145deg,#f4efff,#fffaf4 78%);
+  background: linear-gradient(145deg,#eef5ea,#fffaf4 78%);
 }
 .calendar-summary::after {
   content: "";
@@ -1977,7 +1976,7 @@ html[data-theme="dark"] .weekly-progress-ring small { color: var(--muted); }
   padding: 0;
   border: 2px solid rgba(255,255,255,.9);
   border-radius: 50%;
-  background: #f2eaff;
+  background: #eaf3ec;
 }
 .settings-profile-mark img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .settings-menu-card {
@@ -2518,7 +2517,7 @@ body{background:radial-gradient(ellipse at 88% 2%,rgba(246,221,199,.32),transpar
 .dashboard-feature-grid>.card,.dashboard-support-grid>.card{min-width:0}
 .home-habits-card .habit-list{gap:2px}
 .weekly-trend-card,.insight-trend-panel{background:linear-gradient(145deg,#fffefa,#f4f8ef)}
-.form-control,.module-status-select,.group-filter-select,input.form-control,select.form-control,textarea.form-control{min-height:40px;border:1px solid #e9e3d9;border-radius:12px;color:#45483f;background:#fffefa;font-size:.875rem}
+.form-control,.module-status-select,.group-filter-select,input.form-control,select.form-control,textarea.form-control{min-height:40px;border:1px solid #ddd6c8;border-radius:12px;color:#45483f;background:#fffefa;font-size:.875rem}
 .form-control:focus,.module-status-select:focus,.group-filter-select:focus,input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#7fae8b;outline:3px solid rgba(47,94,64,.8);outline-offset:1px}
 label,.field-label{color:#666b60}
 .completion-filters button,.module-tabs button,.insight-period-tabs button{border:1px solid #e9e3db;border-radius:999px;color:#797d72;background:#fffdf9;font-size:.625rem;font-weight:800}
@@ -2718,9 +2717,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   border: 1px solid #e4eadb;
   border-radius: 23px;
   background:
-    radial-gradient(circle at 96% 0%, rgba(224,216,255,.48) 0 18%, transparent 18.4%),
-    linear-gradient(112deg,#f2edff 0%,#fffaf2 85%);
-  box-shadow: 0 8px 22px rgba(90,73,115,.045);
+    radial-gradient(circle at 96% 0%, rgba(212,232,216,.48) 0 18%, transparent 18.4%),
+    linear-gradient(112deg,#eef5ec 0%,#fffaf2 85%);
+  box-shadow: 0 8px 22px rgba(60,92,72,.045);
 }
 .growth-wrapped-kicker { color: #5f7057; font-size: .5625rem; font-weight: 900; letter-spacing: .13889em; }
 .growth-wrapped-copy h2 { margin: 8px 0 6px; color: #41443d; font-size: clamp(1.125rem,2vw,1.4375rem); font-weight: 850; letter-spacing: -.026em; }
@@ -8309,8 +8308,8 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
 .desktop-sidebar .desktop-nav-link.active {
   color: #fff;
   border-color: transparent;
-  background: linear-gradient(110deg, var(--rutina-lavender-deep), #7550d4);
-  box-shadow: 0 7px 18px rgba(124, 92, 224, .3);
+  background: linear-gradient(110deg, var(--rutina-lavender-deep), #4c8a66);
+  box-shadow: 0 7px 18px rgba(65, 122, 87, .3);
 }
 .desktop-sidebar .desktop-nav-link.active svg { color: #fff; }
 
@@ -8318,7 +8317,7 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
 .primary-button {
   border-color: var(--rutina-lavender-strong);
   background: linear-gradient(115deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 6px 15px rgba(124, 92, 224, .28);
+  box-shadow: 0 6px 15px rgba(65, 122, 87, .28);
 }
 .primary-button:hover:not(:disabled) {
   background: linear-gradient(115deg, var(--rutina-lavender-strong), var(--rutina-lavender-ink));
@@ -8327,7 +8326,7 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
 .modal-backdrop .primary-button {
   border-color: var(--rutina-lavender-strong);
   background: linear-gradient(115deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 7px 17px rgba(124, 92, 224, .3);
+  box-shadow: 0 7px 17px rgba(65, 122, 87, .3);
 }
 .modal-card .primary-button:hover:not(:disabled) {
   background: linear-gradient(115deg, var(--rutina-lavender-strong), var(--rutina-lavender-ink));
@@ -8335,7 +8334,7 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
 .finx .primary-button {
   border-color: transparent;
   background: linear-gradient(115deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 8px 20px rgba(124, 92, 224, .24);
+  box-shadow: 0 8px 20px rgba(65, 122, 87, .24);
 }
 .finx .primary-button:hover:not(:disabled) {
   background: linear-gradient(115deg, var(--rutina-lavender-strong), var(--rutina-lavender-ink));
@@ -8358,14 +8357,14 @@ html[data-theme="dark"] .primary-button {
 .main-shell .category-filters button.active {
   color: #fff;
   border-color: transparent;
-  background: linear-gradient(110deg, var(--rutina-lavender-deep), #7550d4);
-  box-shadow: 0 5px 13px rgba(124, 92, 224, .22);
+  background: linear-gradient(110deg, var(--rutina-lavender-deep), #4c8a66);
+  box-shadow: 0 5px 13px rgba(65, 122, 87, .22);
 }
 html[data-theme="dark"] .module-tabs button.active,
 html[data-theme="dark"] .insight-period-tabs button.active,
 html[data-theme="dark"] .finance-filters button.active {
   color: #fff;
-  background: linear-gradient(110deg, var(--rutina-lavender-deep), #7550d4);
+  background: linear-gradient(110deg, var(--rutina-lavender-deep), #4c8a66);
 }
 
 /* 4. Kalender — tanggal terpilih (master reference: lingkaran lavender). */
@@ -8373,7 +8372,7 @@ html[data-theme="dark"] .finance-filters button.active {
   color: #fff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 5px 13px rgba(124, 92, 224, .28);
+  box-shadow: 0 5px 13px rgba(65, 122, 87, .28);
 }
 
 /* 5. Navigasi bawah mobile — item aktif: pil lavender terang + teks
@@ -8381,13 +8380,13 @@ html[data-theme="dark"] .finance-filters button.active {
    tombol “+” (bottom-nav-action) gradasi lavender. */
 .bottom-nav > button.active {
   color: var(--rutina-lavender-strong);
-  background: #ece5fa;
+  background: #e2efe6;
 }
 .bottom-nav .bottom-nav-action,
 .bottom-nav .bottom-nav-action.active {
   color: #fff;
   background: linear-gradient(145deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 7px 17px rgba(124, 92, 224, .3);
+  box-shadow: 0 7px 17px rgba(65, 122, 87, .3);
 }
 .bottom-nav-action-label { color: var(--rutina-lavender-strong); }
 html[data-theme="dark"] .bottom-nav > button.active {
@@ -8397,9 +8396,9 @@ html[data-theme="dark"] .bottom-nav > button.active {
 
 /* 6. Pemilih mode (Pengaturan) & suasana taman (Dashboard) — state aktif. */
 .settings-theme-options button.active {
-  border-color: #c9b8f2;
+  border-color: #b9d4c0;
   background: var(--rutina-lavender-soft);
-  box-shadow: 0 4px 12px rgba(124, 92, 224, .14);
+  box-shadow: 0 4px 12px rgba(65, 122, 87, .14);
 }
 html[data-theme="dark"] .settings-theme-options button.active {
   border-color: #4a4270;
@@ -8412,15 +8411,15 @@ html[data-theme="dark"] .settings-theme-options button.active {
 .next-step-action {
   color: #fff;
   background: linear-gradient(135deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 6px 14px rgba(124, 92, 224, .24);
+  box-shadow: 0 6px 14px rgba(65, 122, 87, .24);
 }
 .daily-intention-actions .next-step-action {
   border-color: transparent;
   background: linear-gradient(135deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 6px 14px rgba(124, 92, 224, .24);
+  box-shadow: 0 6px 14px rgba(65, 122, 87, .24);
 }
 .daily-intention-actions .next-step-action:hover:not(:disabled) {
-  box-shadow: 0 9px 18px rgba(124, 92, 224, .3);
+  box-shadow: 0 9px 18px rgba(65, 122, 87, .3);
 }
 
 /* 8. Keuangan — kartu arus kas bersih kembali ke material kertas hangat
@@ -8472,7 +8471,7 @@ html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .hero-card .gar
 }
 .main-shell .primary-button:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--rutina-lavender-strong), var(--rutina-lavender-ink));
-  box-shadow: 0 9px 19px rgba(124, 92, 224, .32);
+  box-shadow: 0 9px 19px rgba(65, 122, 87, .32);
 }
 
 /* 3b. Varian berprefiks .main-shell — globals.css:1801-1805 menimpa
@@ -8482,14 +8481,14 @@ html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .hero-card .gar
 .main-shell .module-tabs button.active {
   color: #fff;
   border-color: transparent;
-  background: linear-gradient(110deg, var(--rutina-lavender-deep), #7550d4);
-  box-shadow: 0 5px 13px rgba(124, 92, 224, .22);
+  background: linear-gradient(110deg, var(--rutina-lavender-deep), #4c8a66);
+  box-shadow: 0 5px 13px rgba(65, 122, 87, .22);
 }
 .main-shell .calendar-day.selected {
   color: #fff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--rutina-lavender-deep), var(--rutina-lavender-strong));
-  box-shadow: 0 5px 13px rgba(124, 92, 224, .28);
+  box-shadow: 0 5px 13px rgba(65, 122, 87, .28);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -8832,6 +8831,10 @@ html[data-theme="dark"] .settings-profile-mark { background: linear-gradient(145
 
 /* Ringkasan streak kebiasaan — watermark tunas di pojok kartu. */
 .habit-streak-summary > :not(.botanical-card-art) { position: relative; z-index: 1; }
+/* v0.28 — ikon rekor tetap absolute di pojok kanan-atas: rule stacking di
+   atasnya memaksa semua child relative sehingga ikon mengalir inline dan
+   menabrak label "REKOR KONSISTENSI" (audit visual). */
+.habit-streak-summary > .streak-summary-icon { position: absolute; top: 17px; right: 18px; left: auto; }
 .habit-streak-summary .botanical-card-art {
   right: -10px;
   bottom: -20px;
@@ -8864,3 +8867,15 @@ html[data-theme="dark"] .habit-streak-summary .botanical-card-art { opacity: .1;
 
 /* Dialog pencarian — ilustrasi hasil kosong (v0.27). */
 .search-empty .empty-state-art { width: 104px; height: 78px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   v0.28 — POLISH PASS (audit visual 3 batch × 14 tangkapan layar)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Beranda: empty state ringkas di kartu "Kebiasaan hari ini" saat akun
+   masih kosong — kartu Fokus di atasnya sudah memegang CTA utama. */
+.home-habits-compact-empty {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px; padding: 14px 2px 4px;
+}
+.home-habits-compact-empty .module-muted { margin: 0; font-size: .6875rem; }
