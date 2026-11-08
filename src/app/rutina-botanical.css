@@ -8611,3 +8611,182 @@ html { scroll-padding-top: 70px; }
   .form-control,
   .search-field input { font-size: 1rem; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   v0.25 — UI DOMINAN IKON (icon-first chrome)
+   - PageIntro dipadatkan: tile ikon + judul (+ meta kecil); eyebrow,
+     subjudul, dan ilustrasi botanical tidak lagi dirender komponen.
+   - StatCard icon-first tanpa kalimat narasi.
+   - Meta kebiasaan menjadi chip berikon.
+   - Tab/pill strip memimpin dengan ikon; toast memakai ikon tone.
+   Semua warna memakai variabel tema agar dark mode ikut otomatis.
+   Blok ini ditempatkan paling akhir supaya memenangkan cascade.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 1) Header halaman ringkas: ikon + judul */
+.page-intro {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.page-intro-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  color: var(--primary);
+  background: var(--primary-soft);
+  box-shadow: var(--shadow-card);
+}
+.page-intro-copy { min-width: 0; flex: 1; }
+.page-intro .page-title { margin: 0; font-size: clamp(1.375rem, 2.6vw, 1.75rem); }
+.page-intro .page-title::after { display: none; }
+.page-intro-meta {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: .6875rem;
+  font-weight: 620;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.page-intro-action { flex: none; }
+html[data-theme="dark"] .page-intro-icon { background: rgba(65, 122, 87, .18); }
+@media (max-width: 760px) {
+  .page-intro { gap: 12px; margin-bottom: 18px; }
+  .page-intro-icon { width: 42px; height: 42px; border-radius: 13px; }
+  .page-intro .page-title { font-size: 1.375rem; }
+  .page-intro--has-action { flex-wrap: wrap; }
+  .page-intro--has-action .page-intro-action { width: 100%; }
+  .page-intro--has-action .page-intro-action .primary-button,
+  .page-intro--has-action .page-intro-action .secondary-button { width: 100%; }
+}
+
+/* 2) StatCard icon-first: tile ikon jangkar, angka besar, label kecil */
+.stat-card-icon-first { display: flex; align-items: center; gap: 13px; }
+.stat-card-icon-first .stat-icon-tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+.stat-card-icon-first .stat-copy { min-width: 0; display: grid; gap: 2px; }
+.stat-card-icon-first .metric-value { font-size: 1.25rem; }
+.stat-card-icon-first .small-label { font-size: .5625rem; }
+.stat-card.tone-green .stat-icon-tile { color: #2d7047; background: #e7f2e7; }
+.stat-card.tone-amber .stat-icon-tile { color: #a77a37; background: #faf2e3; }
+.stat-card.tone-orange .stat-icon-tile { color: #b06a44; background: #f9ece2; }
+html[data-theme="dark"] .stat-card.tone-green .stat-icon-tile { color: #9ec9ab; background: rgba(93, 146, 105, .16); }
+html[data-theme="dark"] .stat-card.tone-amber .stat-icon-tile { color: #dcb276; background: rgba(239, 183, 110, .14); }
+html[data-theme="dark"] .stat-card.tone-orange .stat-icon-tile { color: #d8a184; background: rgba(238, 160, 131, .14); }
+@media (max-width: 760px) {
+  .stat-card-icon-first { gap: 11px; }
+  .stat-card-icon-first .metric-value { font-size: 1.125rem; }
+}
+@media (max-width: 430px) {
+  .stat-card-icon-first { gap: 10px; }
+  .stat-card-icon-first .stat-icon-tile { width: 34px; height: 34px; border-radius: 11px; }
+  .stat-card-icon-first .metric-value { font-size: 1rem; }
+}
+
+/* 3) Meta chip berikon pada baris kebiasaan */
+.habit-meta .meta-chip,
+.habit-context-tags .meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 18px;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  background: var(--surface);
+  font-size: .5625rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.habit-meta .meta-chip svg,
+.habit-context-tags .meta-chip svg { flex: none; width: 11px; height: 11px; color: var(--muted); }
+.habit-meta .meta-chip-streak,
+.habit-context-tags .meta-chip-streak { color: #a76a2e; border-color: #f0e2c8; background: #faf4e6; }
+.habit-meta .meta-chip-streak svg,
+.habit-context-tags .meta-chip-streak svg { color: #d08a3e; }
+.habit-meta .meta-chip-flag.priority-high,
+.habit-context-tags .meta-chip-flag.priority-high { color: var(--danger); border-color: #ecd2c9; background: #f8ece6; }
+.habit-meta .meta-chip-flag.priority-high svg,
+.habit-context-tags .meta-chip-flag.priority-high svg { color: var(--danger); }
+.habit-meta .meta-chip-flag.priority-medium,
+.habit-context-tags .meta-chip-flag.priority-medium { color: #94672b; border-color: #eadfc2; background: #f8f1de; }
+.habit-meta .meta-chip-flag.priority-medium svg,
+.habit-context-tags .meta-chip-flag.priority-medium svg { color: #a77a37; }
+html[data-theme="dark"] .habit-meta .meta-chip,
+html[data-theme="dark"] .habit-context-tags .meta-chip { border-color: var(--line); background: var(--surface-soft); color: var(--ink-soft); }
+html[data-theme="dark"] .habit-meta .meta-chip svg,
+html[data-theme="dark"] .habit-context-tags .meta-chip svg { color: var(--muted); }
+
+/* 4) Tab & pill strip memimpin ikon */
+.completion-filters button,
+.category-filters button,
+.schedule-view-toggle button,
+.insight-period-tabs button,
+.calendar-today-button,
+.module-inline-meta button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.finx-tab { gap: 7px; }
+.completion-filters button svg,
+.category-filters button svg,
+.schedule-view-toggle button svg,
+.insight-period-tabs button svg,
+.calendar-today-button svg,
+.module-inline-meta button svg,
+.finx-tab svg { flex: none; width: 13px; height: 13px; }
+.module-tabs button svg { flex: none; width: 13px; height: 13px; }
+.group-manager-heading > span:last-child { display: inline-flex; align-items: center; gap: 5px; }
+
+/* 5) Toast berikon tone */
+.toast-icon { display: inline-flex; align-items: center; flex: none; color: #4c8760; }
+.toast-icon svg { width: 15px; height: 15px; }
+.toast.is-error .toast-icon { color: #c2543f; }
+html[data-theme="dark"] .toast-icon { color: #8fc49e; }
+html[data-theme="dark"] .toast.is-error .toast-icon { color: #e59a86; }
+
+/* 6) Avatar inisial netral (v0.25) — mengganti ilustrasi avatar botanical
+      (wanita memegang tanaman) dengan monogram: identitas workspace tetap
+      terlihat tanpa membawa suasana taman ke setiap layar. */
+.avatar,
+.topbar-avatar { display: grid; place-items: center; }
+.avatar-initial {
+  color: inherit;
+  font-size: .8125rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+.settings-profile-mark {
+  overflow: visible;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #6f9b6e, #477956);
+  color: #fff;
+}
+.settings-profile-mark span { color: #fff; }
+html[data-theme="dark"] .settings-profile-mark { background: linear-gradient(145deg, #476f52, #2f5240); }
+
+/* 7) Ilustrasi tukang kebun dihapus (v0.25) — ::after kartu hero beranda,
+      kartu keuangan mini, dan kartu langkah berikutnya tidak lagi melukis
+      botanical-gardener.svg (figur wanita memegang tanaman). Sisa suasana
+      taman pada lapisan dekoratif CSS kini bersih. */
+.botanical-hero::after,
+.finance-mini::after,
+.botanical-next-step::after { content: none; display: none; background: none; }

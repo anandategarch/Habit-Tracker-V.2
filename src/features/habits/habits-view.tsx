@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import { GripVertical, ListChecks, ListFilter, Plus, Search, Sparkles } from "lucide-react";
+import { BookOpen, CalendarCheck, CalendarDays, Circle, CircleCheck, GripVertical, HeartPulse, ListChecks, ListFilter, PersonStanding, Plus, Search, Settings2, Sparkles, Umbrella, User, X } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import type { HabitGroup } from "@/lib/module-types";
 import { summarizeHabits } from "@/lib/habits";
@@ -12,10 +12,16 @@ import { todayISO } from "@/lib/format";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import { HabitWeekHistory } from "@/components/ui/weekly-history";
-import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 type CompletionFilter = "all" | "pending" | "completed";
 const categoryOptions: Array<"Semua" | Habit["category"]> = ["Semua", "Health", "Learning", "Mindfulness", "Personal"];
+const categoryIcons: Record<(typeof categoryOptions)[number], typeof Sparkles> = {
+  Semua: Sparkles,
+  Health: HeartPulse,
+  Learning: BookOpen,
+  Mindfulness: PersonStanding,
+  Personal: User,
+};
 
 // v0.18: prop onDelete (kebiasaan) & onDeleteGroup (grup) dihapus — semua aksi
 // hapus dipindahkan ke Pengaturan → Kelola & hapus data (data-manager-view),
@@ -201,10 +207,9 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
   return (
     <div className="habit-page">
       <PageIntro
-        eyebrow="KEBIASAAN HARIAN"
-        title="Bangun ritmemu."
-        subtitle="Konsistensi kecil lebih berarti daripada target yang terlalu besar."
-        action={<div className="habits-intro-actions"><button type="button" className={`secondary-button vacation-toggle ${vacationMode ? "active" : ""}`} onClick={onToggleVacation}>{vacationMode ? "Akhiri mode libur" : "Mode libur"}</button><PrimaryButton onClick={onAdd}><Plus size={15} /> Habit baru</PrimaryButton></div>}
+        icon="habits"
+        title="Kebiasaan"
+        action={<div className="habits-intro-actions"><button type="button" className={`secondary-button vacation-toggle ${vacationMode ? "active" : ""}`} onClick={onToggleVacation}><Umbrella size={13} aria-hidden="true" /> {vacationMode ? "Akhiri mode libur" : "Mode libur"}</button><PrimaryButton onClick={onAdd}><Plus size={15} /> Habit baru</PrimaryButton></div>}
       />
 
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Pencatatan habit, progres amount, dan waktu sedang dijeda. Data sebelumnya tetap tersimpan.</div>}
@@ -219,7 +224,6 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
 
       <div className="habit-overview-grid">
         <section className="card habit-progress-card">
-          <BotanicalIllustrationBackdrop variant="habit" />
           <div className="habit-progress-copy">
             <div className="small-label">PROGRES HARI INI</div>
             <div className="habit-progress-value">{progress}<span>%</span></div>
@@ -239,38 +243,42 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
       </div>
 
       <section className="card card-pad habit-groups-manager">
-        <button type="button" className="group-manager-heading" aria-expanded={groupsOpen} onClick={() => setGroupsOpen((value) => !value)}><span><strong>Grup kebiasaan</strong><small>{groups.length} grup tersimpan · kelompokkan rutinitas berdasarkan konteks</small></span><span>{groupsOpen ? "Tutup" : "Kelola"}</span></button>
-        {groupsOpen && <div className="group-manager-body"><form className="group-create-form" onSubmit={(event) => { event.preventDefault(); const name = groupNameInput.trim(); if (!name || !onCreateGroup || groups.some((item) => item.name.toLocaleLowerCase("id-ID") === name.toLocaleLowerCase("id-ID"))) return; onCreateGroup(name, groupColor); setGroupNameInput(""); }}><input className="form-control" value={groupNameInput} onChange={(event) => setGroupNameInput(event.target.value)} placeholder="Nama grup baru, misalnya Rutinitas Pagi" maxLength={40} aria-label="Nama grup baru" /><input className="group-color-input" type="color" title="Pilih warna grup" value={groupColor} onChange={(event) => setGroupColor(event.target.value)} aria-label="Warna grup baru" /><button className="secondary-button module-small-button" type="submit" disabled={!groupNameInput.trim()}>Tambah grup</button></form>{groups.length > 0 && <div className="group-manager-list">{groups.map((group) => <div className="group-manager-item" key={group.id}><span className="group-color-dot" style={{ backgroundColor: group.color }} /><strong>{group.name}</strong><small>{habits.filter((habit) => habit.groupName === group.name).length} habit</small></div>)}</div>}</div>}
+        <button type="button" className="group-manager-heading" aria-expanded={groupsOpen} onClick={() => setGroupsOpen((value) => !value)}><span><strong>Grup kebiasaan</strong><small>{groups.length} grup tersimpan · kelompokkan rutinitas berdasarkan konteks</small></span><span>{groupsOpen ? <><X size={13} aria-hidden="true" /> Tutup</> : <><Settings2 size={13} aria-hidden="true" /> Kelola</>}</span></button>
+        {groupsOpen && <div className="group-manager-body"><form className="group-create-form" onSubmit={(event) => { event.preventDefault(); const name = groupNameInput.trim(); if (!name || !onCreateGroup || groups.some((item) => item.name.toLocaleLowerCase("id-ID") === name.toLocaleLowerCase("id-ID"))) return; onCreateGroup(name, groupColor); setGroupNameInput(""); }}><input className="form-control" value={groupNameInput} onChange={(event) => setGroupNameInput(event.target.value)} placeholder="Nama grup baru, misalnya Rutinitas Pagi" maxLength={40} aria-label="Nama grup baru" /><input className="group-color-input" type="color" title="Pilih warna grup" value={groupColor} onChange={(event) => setGroupColor(event.target.value)} aria-label="Warna grup baru" /><button className="secondary-button module-small-button" type="submit" disabled={!groupNameInput.trim()}><Plus size={13} aria-hidden="true" /> Tambah grup</button></form>{groups.length > 0 && <div className="group-manager-list">{groups.map((group) => <div className="group-manager-item" key={group.id}><span className="group-color-dot" style={{ backgroundColor: group.color }} /><strong>{group.name}</strong><small>{habits.filter((habit) => habit.groupName === group.name).length} habit</small></div>)}</div>}</div>}
       </section>
 
       <section className="card card-pad habits-panel">
         <SectionHeading title="Semua kebiasaan" caption={`${scheduledHabits.length} kebiasaan ${showAllSchedules ? "ditampilkan" : "terjadwal hari ini"} · ${completed} selesai`} />
         <div className="habit-toolbar">
-          <div className="schedule-view-toggle" role="group" aria-label="Tampilan jadwal"><button type="button" className={!showAllSchedules ? "active" : ""} aria-pressed={!showAllSchedules} onClick={() => setShowAllSchedules(false)}>Terjadwal hari ini</button><button type="button" className={showAllSchedules ? "active" : ""} aria-pressed={showAllSchedules} onClick={() => setShowAllSchedules(true)}>Semua jadwal</button></div>
+          <div className="schedule-view-toggle" role="group" aria-label="Tampilan jadwal"><button type="button" className={!showAllSchedules ? "active" : ""} aria-pressed={!showAllSchedules} onClick={() => setShowAllSchedules(false)}><CalendarCheck size={13} aria-hidden="true" /> Terjadwal hari ini</button><button type="button" className={showAllSchedules ? "active" : ""} aria-pressed={showAllSchedules} onClick={() => setShowAllSchedules(true)}><CalendarDays size={13} aria-hidden="true" /> Semua jadwal</button></div>
           <label className="habit-search">
             <Search size={16} aria-hidden="true" />
             <input type="search" enterKeyHint="search" autoComplete="off" spellCheck={false} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari kebiasaan…" aria-label="Cari kebiasaan" />
           </label>
           <ThemedSelect className="group-filter-select" ariaLabel="Filter grup habit" value={groupFilter} onChange={setGroupFilter}><option value="all">Semua grup</option>{groups.map((group) => <option value={group.name} key={group.id}>{group.name}</option>)}</ThemedSelect>
           <div className="completion-filters" role="group" aria-label="Filter status kebiasaan">
-            <button type="button" className={completionFilter === "all" ? "active" : ""} onClick={() => setCompletionFilter("all")}>Semua</button>
-            <button type="button" className={completionFilter === "pending" ? "active" : ""} onClick={() => setCompletionFilter("pending")}>Belum selesai</button>
-            <button type="button" className={completionFilter === "completed" ? "active" : ""} onClick={() => setCompletionFilter("completed")}>Selesai</button>
+            <button type="button" className={completionFilter === "all" ? "active" : ""} onClick={() => setCompletionFilter("all")}><ListChecks size={13} aria-hidden="true" /> Semua</button>
+            <button type="button" className={completionFilter === "pending" ? "active" : ""} onClick={() => setCompletionFilter("pending")}><Circle size={13} aria-hidden="true" /> Belum selesai</button>
+            <button type="button" className={completionFilter === "completed" ? "active" : ""} onClick={() => setCompletionFilter("completed")}><CircleCheck size={13} aria-hidden="true" /> Selesai</button>
           </div>
         </div>
         <div className="category-filters" role="group" aria-label="Filter kategori">
           <ListFilter size={14} />
-          {categoryOptions.map((category) => (
-            <button
-              key={category}
-              type="button"
-              className={categoryFilter === category ? "active" : ""}
-              aria-pressed={categoryFilter === category}
-              onClick={() => setCategoryFilter(category)}
-            >
-              {category}
-            </button>
-          ))}
+          {categoryOptions.map((category) => {
+            const CategoryIcon = categoryIcons[category];
+            return (
+              <button
+                key={category}
+                type="button"
+                className={categoryFilter === category ? "active" : ""}
+                aria-pressed={categoryFilter === category}
+                onClick={() => setCategoryFilter(category)}
+              >
+                <CategoryIcon size={13} aria-hidden="true" />
+                {category}
+              </button>
+            );
+          })}
         </div>
         <span id="habit-drag-guide" className="sr-only">Tekan Enter pada pegangan urutan untuk mulai memindahkan kebiasaan, panah atas atau bawah untuk menggeser, Enter lagi untuk meletakkan, Escape untuk membatalkan.</span>
         <span className="sr-only" role="status" aria-live="polite">{moveAnnouncement}</span>

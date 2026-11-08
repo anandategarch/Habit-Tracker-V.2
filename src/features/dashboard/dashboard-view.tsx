@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, Leaf, Plus, RefreshCw, Shield, Sprout, TrendingUp, WalletCards } from "lucide-react";
+import { Activity, ArrowRight, Check, ChevronDown, Droplets, Flame, HeartPulse, ListChecks, Plus, RefreshCw, Shield, Sparkles, TrendingDown, TrendingUp, Trophy, WalletCards } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
 import { computeGardenRhythm, consumeShield, shieldAvailableThisWeek, type GardenRhythm } from "@/lib/garden-rewards";
-import { progressSentence, streakStory, todayStory, weeklyStepsStory } from "@/lib/storytelling";
+import { todayStory, weeklyStepsStory } from "@/lib/storytelling";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import { RichText } from "@/components/ui/rich-text";
 import { burstLeaves, useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, HabitRow, PageIntro, PrimaryButton, SectionHeading, StatCard } from "@/components/ui/primitives";
-import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 
 const categories: Habit["category"][] = ["Health", "Learning", "Mindfulness", "Personal"];
 const RING_RADIUS = 31;
@@ -180,47 +179,32 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
     ready: weekly.ready,
   });
   const weeklyMilestones = [
-    { title: "Benih pertama", target: 1, hint: "1 langkah tercatat" },
-    { title: "Akar mulai kuat", target: 7, hint: "7 langkah tercatat" },
-    { title: "Taman berbunga", target: 15, hint: "15 langkah tercatat" },
+    { title: "Langkah pertama", target: 1, hint: "1 langkah tercatat" },
+    { title: "Ritme mulai terbentuk", target: 7, hint: "7 langkah tercatat" },
+    { title: "Pekan penuh langkah", target: 15, hint: "15 langkah tercatat" },
   ];
   const unlockedMilestones = weeklyMilestones.filter((item) => weekly.total >= item.target).length;
   const weeklyMax = Math.max(1, ...weekly.days.map((day) => day.completed));
-  // Subjudul PageIntro = sapaan emosional; hitungan mundur pindah ke hero
-  // cerita (v0.12) supaya satu pesan = satu tempat, tanpa duplikasi.
-  const dailyEncouragement = vacationMode
-    ? "Hari ini kamu boleh mengambil jeda. Rutinitasmu tetap ada saat kamu siap kembali."
-    : totalHabits === 0
-      ? "Mulai dari satu hal sederhana yang ingin kamu rawat hari ini."
-      : habits.length === 0
-        ? "Tidak ada kebiasaan terjadwal hari ini. Gunakan ruang ini untuk hal lain yang penting bagimu."
-        : completed === habits.length
-          ? "Semua langkah terjadwal sudah kamu rawat. Sisakan ruang untuk menikmati harimu."
-          : completed > 0
-            ? "Kamu sudah melangkah hari ini — kebunmu mulai merespons 🌿"
-            : "Tidak perlu menunggu sempurna. Satu langkah kecil sudah cukup untuk memulai.";
   // Hero = cerita hari ini yang berubah mengikuti data (bukan tagline statis).
   const heroStory = todayStory({ total: habits.length, completed, vacationMode });
 
   return (
     <div className="botanical-dashboard-page">
       <PageIntro
-        eyebrow={dateLabel}
-        title={`${greeting}, Ananda! 🌱`}
-        subtitle={dailyEncouragement}
-        artwork="home"
+        icon="home"
+        title={`${greeting}, Ananda!`}
+        meta={dateLabel}
       />
-      {returning && !welcomeDismissed && !vacationMode && <section className="welcome-back-card" aria-label="Selamat datang kembali"><span className="welcome-back-art"><Sprout size={25} /></span><div className="welcome-back-copy"><span className="small-label">TAMANMU MENUNGGU</span><strong>Senang kamu kembali.</strong><p>Kita tidak perlu mengejar hari yang terlewat. Mulai lagi dari satu hal kecil yang terasa mudah.</p></div><button type="button" className="welcome-back-close" onClick={() => { setWelcomeDismissed(true); try { window.localStorage.setItem("rutina.v2.welcome-dismissed", todayISO()); window.localStorage.removeItem("rutina.v2.welcome-pending"); } catch { /* abaikan */ } }} aria-label="Tutup pesan selamat datang">×</button></section>}
+      {returning && !welcomeDismissed && !vacationMode && <section className="welcome-back-card" aria-label="Selamat datang kembali"><span className="welcome-back-art"><Sparkles size={25} /></span><div className="welcome-back-copy"><span className="small-label">SELAMAT DATANG KEMBALI</span><strong>Senang kamu kembali.</strong><p>Kita tidak perlu mengejar hari yang terlewat. Mulai lagi dari satu hal kecil yang terasa mudah.</p></div><button type="button" className="welcome-back-close" onClick={() => { setWelcomeDismissed(true); try { window.localStorage.setItem("rutina.v2.welcome-dismissed", todayISO()); window.localStorage.removeItem("rutina.v2.welcome-pending"); } catch { /* abaikan */ } }} aria-label="Tutup pesan selamat datang">×</button></section>}
       {vacationMode && <div className="vacation-banner" role="status"><strong>Mode libur aktif.</strong> Habit tidak bisa dicatat sampai mode libur diakhiri dari halaman Kebiasaan.</div>}
 
       {rhythm?.level === "shield" && (
         <section className="garden-rhythm-card shield" role="status" aria-live="polite">
           <span className="garden-rhythm-icon"><Shield size={20} /></span>
           <div className="garden-rhythm-copy">
-            <span className="small-label">BUNGA PELINDUNG AKTIF</span>
-            <strong>Bloom streak-mu tetap aman 🛡️</strong>
-            <p>Kemarin sempat bolos, tapi ritme kebunmu kami jaga tetap hidup. Satu perisai tersedia setiap minggu — yang ini terpakai untuk pekan ini.</p>
-            {rhythm.bloomStreak > 1 && <small>Bloom streak: {rhythm.bloomStreak} hari berjalan</small>}
+            <span className="small-label">PERISAI STREAK AKTIF</span>
+            <strong>Streak-mu tetap aman</strong>
+            {rhythm.bloomStreak > 1 && <small>Streak aman: {rhythm.bloomStreak} hari berjalan</small>}
           </div>
         </section>
       )}
@@ -228,19 +212,17 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         <section className="garden-rhythm-card parched" role="status">
           <span className="garden-rhythm-icon"><Droplets size={20} /></span>
           <div className="garden-rhythm-copy">
-            <span className="small-label">TAMANMU MENUNGGU</span>
-            <strong>Daun-daunmu merindukan perhatian</strong>
-            <p>Kemarin berlalu tanpa satu langkah kecil. Tidak apa-apa — satu habit ringan hari ini cukup untuk menghidupkannya kembali.</p>
+            <span className="small-label">MULAI LAGI HARI INI</span>
+            <strong>Satu langkah kecil menunggu</strong>
           </div>
         </section>
       )}
       {rhythm?.level === "wilted" && (
         <section className="garden-rhythm-card wilted" role="status">
-          <span className="garden-rhythm-icon"><Leaf size={20} /></span>
+          <span className="garden-rhythm-icon"><TrendingDown size={20} /></span>
           <div className="garden-rhythm-copy">
-            <span className="small-label">KEBUN MENGUNING</span>
-            <strong>Kecambahmu menunggu disiram 🥀</strong>
-            <p>Sudah beberapa hari tanpa langkah kecil. Mulai lagi dari habit paling ringan — satu langkah saja sudah cukup untuk mengembalikan warna hijaunya.</p>
+            <span className="small-label">SAATNYA MULAI LAGI</span>
+            <strong>Ritmemu menunggu dihidupkan</strong>
           </div>
         </section>
       )}
@@ -248,14 +230,13 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
       {storySlot}
 
       <section className="hero-card botanical-hero" aria-label="Ringkasan perkembangan hari ini">
-        <BotanicalIllustrationBackdrop variant="home" />
         <div className="hero-copy">
-          <div className="hero-kicker">{vacationMode ? "SAATNYA BERISTIRAHAT" : "KEBUN KECILMU"}</div>
+          <div className="hero-kicker">{vacationMode ? "SAATNYA BERISTIRAHAT" : "PROGRES HARI INI"}</div>
           <h2 className="hero-title" data-tone={heroStory.tone}>
             <RichText text={heroStory.headline} />
           </h2>
           <p className="hero-description">{heroStory.note}</p>
-          <button className="garden-journey-link" type="button" onClick={() => onNavigate("tree")}>Lihat perjalanan pohonmu <ArrowRight size={13} /></button>
+          <button className="garden-journey-link" type="button" onClick={() => onNavigate("tree")}>Lihat pohon pertumbuhan <ArrowRight size={13} /></button>
         </div>
         <div className="hero-progress-card">
           <div className="hero-ring" role="img" aria-label={`Progres habit hari ini ${progress} persen, ${completed} dari ${habits.length} kebiasaan selesai`}>
@@ -288,9 +269,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           </div>
           <div className="hero-progress-copy">
             <div className="hero-progress-heading"><strong>Habit hari ini</strong></div>
-            <p className="hero-progress-sentence" data-tone={heroStory.tone}>
-              <RichText text={progressSentence(completed, habits.length)} />
-            </p>
+            <p className="hero-progress-sentence">{completed}/{habits.length} ritual selesai</p>
           </div>
         </div>
       </section>
@@ -315,7 +294,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           </>
         ) : (
           <>
-            <h2>{totalHabits === 0 ? "Mulai dari satu kebiasaan kecil." : habits.length === 0 ? "Hari ini tidak ada habit terjadwal." : "Semua ritual hari ini sudah kamu rawat."}</h2>
+            <h2>{totalHabits === 0 ? "Mulai dari satu kebiasaan kecil." : habits.length === 0 ? "Hari ini tidak ada habit terjadwal." : "Semua ritual hari ini selesai."}</h2>
             <p>{totalHabits === 0 ? "Pilih hal sederhana yang ingin kamu lakukan untuk dirimu sendiri." : habits.length === 0 ? "Kamu boleh menggunakan ruang ini untuk hal lain yang penting hari ini." : "Kamu sudah menyelesaikan semua kebiasaan terjadwal. Ambil jeda dan nikmati progresmu."}</p>
             <button className="next-step-action" type="button" onClick={totalHabits === 0 ? onAddHabit : () => onNavigate("habits")}>
               {totalHabits === 0 ? <Plus size={15} /> : <ArrowRight size={15} />}
@@ -326,16 +305,16 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
       </section>
 
       <div className="stats-grid botanical-stats botanical-stats-three">
-        <StatCard label="Rekor konsistensi" value={`${animatedStreak} hari`} foot={streakStory(longestStreak)} icon={Flame} tone="amber" />
-        <StatCard label="Kebiasaan aktif" value={String(totalHabits)} foot="Hal yang sedang kamu rawat" icon={Sprout} tone="green" />
-        <StatCard label="Arus kas bersih" value={formatCompactRupiah(animatedNet)} foot="Bulan berjalan" icon={WalletCards} tone="orange" />
+        <StatCard label="Rekor konsistensi" value={`${animatedStreak} hari`} icon={Flame} tone="amber" />
+        <StatCard label="Kebiasaan aktif" value={String(totalHabits)} icon={ListChecks} tone="green" />
+        <StatCard label="Arus kas bersih" value={formatCompactRupiah(animatedNet)} icon={WalletCards} tone="orange" />
       </div>
 
       <div className="dashboard-feature-grid">
         <section className="card card-pad home-habits-card">
           <SectionHeading
             title="Ritual hari ini"
-            caption="Pilih langkah yang ingin kamu rawat hari ini"
+            caption="Terjadwal hari ini"
             action={<button className="text-button" type="button" onClick={() => onNavigate("habits")}>Lihat semua <ArrowRight size={13} /></button>}
           />
           {habits.length > 0 ? (
@@ -364,8 +343,8 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
 
         <section className="card card-pad weekly-trend-card" aria-label="Progres habit tujuh hari terakhir">
           <SectionHeading
-            title="Cerita minggu ini"
-            caption="Setiap penyelesaian adalah bagian dari perjalananmu"
+            title="Progres minggu ini"
+            caption="Penyelesaian 7 hari terakhir"
             action={<span className="weekly-trend-badge"><TrendingUp size={12} /> {weekly.total} langkah</span>}
           />
           {weekly.loading ? (
@@ -380,7 +359,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               <span className="skeleton-shimmer weekly-skeleton-line" />
             </div>
           ) : weekly.error ? (
-            <div className="insight-trend-empty" role="status"><span><Sprout size={22} /></span><strong>Riwayat mingguan belum tersedia</strong><p>Progres hari ini tetap tersedia. Coba muat ulang ringkasan saat koneksi sudah siap.</p><button className="weekly-retry-action" type="button" onClick={weekly.retry}><RefreshCw size={13} /> Coba lagi</button></div>
+            <div className="insight-trend-empty" role="status"><span><Activity size={22} /></span><strong>Riwayat mingguan belum tersedia</strong><p>Progres hari ini tetap tersedia. Coba muat ulang ringkasan saat koneksi sudah siap.</p><button className="weekly-retry-action" type="button" onClick={weekly.retry}><RefreshCw size={13} /> Coba lagi</button></div>
           ) : weekly.total > 0 ? (
             <>
               <div className="weekly-trend-layout">
@@ -413,12 +392,12 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
                 <button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button>
               </div>
               <details className="weekly-milestones">
-                <summary><span><Sprout size={14} /> Koleksi langkah minggu ini</span><small>{unlockedMilestones}/3 tercapai</small><ChevronDown size={14} /></summary>
+                <summary><span><Trophy size={14} /> Pencapaian minggu ini</span><small>{unlockedMilestones}/3 tercapai</small><ChevronDown size={14} /></summary>
                 <div className="weekly-milestones-grid">
                   {weeklyMilestones.map((item) => {
                     const unlocked = weekly.total >= item.target;
                     return <div className={`weekly-milestone-item${unlocked ? " is-unlocked" : ""}`} key={item.title}>
-                      <span className="weekly-milestone-icon"><Sprout size={15} /></span>
+                      <span className="weekly-milestone-icon"><Trophy size={15} /></span>
                       <span className="weekly-milestone-copy"><strong>{item.title}</strong><small>{item.hint}</small></span>
                       <span className="weekly-milestone-status">{unlocked ? "Tercapai" : "Berproses"}</span>
                     </div>;
@@ -427,14 +406,14 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
               </details>
             </>
           ) : (
-            <div className="insight-trend-empty"><span><Sprout size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p><button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button></div>
+            <div className="insight-trend-empty"><span><Activity size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p><button className="weekly-add-action" type="button" onClick={onAddHabit}><Plus size={14} /> Tambah Kebiasaan</button></div>
           )}
         </section>
       </div>
 
       <div className="dashboard-support-grid">
         <section className="card card-pad category-card">
-          <SectionHeading title="Area yang kamu rawat" caption="Pembagian kebiasaan terjadwal hari ini" />
+          <SectionHeading title="Sebaran kategori" caption="Pembagian kebiasaan terjadwal hari ini" />
           <div className="category-breakdown botanical-category-breakdown">
             {categoryCounts.map(({ category, count }) => (
               <div className="category-breakdown-row" key={category}>

@@ -1,47 +1,31 @@
 import type { ReactNode } from "react";
-import { BotanicalIllustration, type BotanicalIllustrationVariant } from "@/components/ui/botanical-illustration";
 import { WeeklyHistorySlot } from "@/components/ui/weekly-history";
 import {
-  Check, Clock3, Flame, Sprout, Target,
+  CalendarDays, Check, Clock3, Flag, Flame, Folder, Gauge, Inbox, Target, Timer,
 } from "lucide-react";
+import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import type { Habit, Transaction } from "@/lib/types";
 import { formatDate, formatRupiah } from "@/lib/format";
 import { scheduleLabel } from "@/lib/habit-schedule";
 import { burstLeaves } from "@/components/ui/celebrate";
-import { RichText } from "@/components/ui/rich-text";
 import { FinanceCategoryIcon, HabitArtIcon } from "@/components/ui/category-icons";
 
-function pageArtwork(eyebrow: string): BotanicalIllustrationVariant | null {
-  const label = eyebrow.toLocaleUpperCase("id-ID");
-  if (label.includes("KEBIASAAN")) return "habit";
-  if (label.includes("RIWAYAT") || label.includes("KALENDER")) return "calendar";
-  if (label.includes("REFLEKSI") || label.includes("INSIGHT")) return "insights";
-  if (label.includes("KEUANGAN")) return "finance";
-  if (label.includes("GOALS") || label.includes("TUJUAN")) return "goals";
-  if (label.includes("CHECK-IN") || label.includes("JOURNAL")) return "checkin";
-  if (label.includes("WORKSPACE") || label.includes("MEJA KERJA")) return "work";
-  if (label.includes("WELLNESS")) return "wellness";
-  if (label.includes("TRAINING") || label.includes("LATIHAN")) return "training";
-  if (label.includes("GROWTH JOURNEY") || label.includes("POHON")) return "tree";
-  if (label.includes("PENGATURAN") || label.includes("PREFERENSI") || label.includes("BACKUP")) return "settings";
-  return null;
-}
-
-function PageIntro({ eyebrow, title, subtitle, action, artwork }: {
-  eyebrow: string; title: string; subtitle: string; action?: ReactNode;
-  artwork?: BotanicalIllustrationVariant | null;
+// v0.25 — UI dominan ikon: header halaman dipadatkan menjadi ikon + judul
+// (eyebrow/kalimat subjudul dan ilustrasi botanical tidak lagi dirender),
+// StatCard menjadi icon-first tanpa kalimat narasi, dan meta kebiasaan
+// disandikan sebagai chip berikon (teks pendek + tooltip untuk konteks penuh).
+function PageIntro({ icon, title, meta, action }: {
+  icon: AppIconName; title: string; meta?: string; action?: ReactNode;
 }) {
-  const illustration = artwork === undefined ? pageArtwork(eyebrow) : artwork;
   return (
     <>
-      <div className={`page-intro${illustration ? " page-intro--illustrated" : ""}${action ? " page-intro--has-action" : ""}`}>
+      <div className={`page-intro${action ? " page-intro--has-action" : ""}`}>
+        <span className="page-intro-icon" aria-hidden="true"><AppIcon name={icon} size={22} /></span>
         <div className="page-intro-copy">
-          <div className="eyebrow">{eyebrow}</div>
           <h1 className="page-title">{title}</h1>
-          <p className="page-subtitle">{subtitle}</p>
+          {meta && <p className="page-intro-meta">{meta}</p>}
         </div>
         {action && <div className="page-intro-action">{action}</div>}
-        {illustration && <BotanicalIllustration variant={illustration} className="page-intro-art" />}
       </div>
       <WeeklyHistorySlot />
     </>
@@ -87,6 +71,23 @@ function HabitRow({ habit, onToggle, onAdjust, paused = false, dragHandle, varia
   const toggleLabel = habit.completed
     ? (avoid ? `Catat pelanggaran ${habit.title}` : `Batalkan ${habit.title}`)
     : (avoid ? `Tandai hari bersih ${habit.title}` : `Tandai ${habit.title} selesai`);
+  // v0.25 — meta chip berikon: teks dipendekkan, konteks penuh dipindah ke
+  // title/aria-label supaya tetap ramah pembaca layar tanpa memenuhi layar.
+  const priorityWord = habit.priority === "high" ? "Tinggi" : habit.priority === "medium" ? "Sedang" : "Rendah";
+  const priorityFull = habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah";
+  const difficultyWord = habit.difficulty === "hard" ? "Berat" : habit.difficulty === "medium" ? "Sedang" : "Ringan";
+  const difficultyFull = habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah";
+  const metaChips = (
+    <>
+      <span className="meta-chip"><Clock3 size={11} aria-hidden="true" /> {habit.time}</span>
+      <span className="meta-chip"><Timer size={11} aria-hidden="true" /> {habit.duration} mnt</span>
+      <span className="meta-chip meta-chip-streak" title={`${habit.streak} hari beruntun`} aria-label={`Streak ${habit.streak} hari`}><Flame size={11} aria-hidden="true" /> {habit.streak}</span>
+      {habit.priority && <span className={`meta-chip meta-chip-flag priority-${habit.priority}`} title={`Prioritas ${priorityFull}`}><Flag size={11} aria-hidden="true" /> {priorityWord}</span>}
+      {habit.difficulty && <span className="meta-chip" title={`Kesulitan ${difficultyFull}`}><Gauge size={11} aria-hidden="true" /> {difficultyWord}</span>}
+      {habit.groupName && <span className="meta-chip"><Folder size={11} aria-hidden="true" /> {habit.groupName}</span>}
+      {habit.schedule && habit.schedule.kind !== "daily" && <span className="meta-chip" title={`Jadwal ${scheduleLabel(habit.schedule)}`}><CalendarDays size={11} aria-hidden="true" /> {scheduleLabel(habit.schedule)}</span>}
+    </>
+  );
   return (
     <article className={`habit-row ${cardVariant ? "habit-row-card" : ""} ${habit.completed ? "is-complete" : ""} ${amountHabit ? "is-amount-habit" : ""}`}>
       {dragHandle}
@@ -103,30 +104,22 @@ function HabitRow({ habit, onToggle, onAdjust, paused = false, dragHandle, varia
               </span>
             </div>
             <div className="habit-meta">
-              <span><Clock3 size={11} /> {habit.time}</span>
-              <span>{habit.duration} menit target</span>
+              <span className="meta-chip"><Clock3 size={11} aria-hidden="true" /> {habit.time}</span>
+              <span className="meta-chip"><Timer size={11} aria-hidden="true" /> {habit.duration} mnt</span>
             </div>
             {(habit.priority || habit.difficulty || habit.groupName || (habit.schedule && habit.schedule.kind !== "daily")) && (
               <div className="habit-context-tags">
-                {habit.priority && <span className={`habit-detail-tag priority-${habit.priority}`}>Prioritas {habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah"}</span>}
-                {habit.difficulty && <span className="habit-detail-tag">Kesulitan {habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah"}</span>}
-                {habit.groupName && <span className="habit-detail-tag">{habit.groupName}</span>}
-                {habit.schedule && habit.schedule.kind !== "daily" && <span className="habit-detail-tag">Jadwal {scheduleLabel(habit.schedule)}</span>}
+                {habit.priority && <span className={`meta-chip meta-chip-flag priority-${habit.priority}`} title={`Prioritas ${priorityFull}`}><Flag size={11} aria-hidden="true" /> {priorityWord}</span>}
+                {habit.difficulty && <span className="meta-chip" title={`Kesulitan ${difficultyFull}`}><Gauge size={11} aria-hidden="true" /> {difficultyWord}</span>}
+                {habit.groupName && <span className="meta-chip"><Folder size={11} aria-hidden="true" /> {habit.groupName}</span>}
+                {habit.schedule && habit.schedule.kind !== "daily" && <span className="meta-chip" title={`Jadwal ${scheduleLabel(habit.schedule)}`}><CalendarDays size={11} aria-hidden="true" /> {scheduleLabel(habit.schedule)}</span>}
               </div>
             )}
           </>
         ) : (
           <>
             <div className="habit-name" title={habit.title}>{habit.title}</div>
-            <div className="habit-meta">
-              <span><Clock3 size={11} /> {habit.time}</span>
-              <span>{habit.duration} menit target</span>
-              <span><Flame size={11} /> {habit.streak} hari</span>
-              {habit.priority && <span className={`habit-detail-tag priority-${habit.priority}`}>Prioritas {habit.priority === "high" ? "tinggi" : habit.priority === "medium" ? "sedang" : "rendah"}</span>}
-              {habit.difficulty && <span className="habit-detail-tag">Kesulitan {habit.difficulty === "hard" ? "tinggi" : habit.difficulty === "medium" ? "sedang" : "rendah"}</span>}
-              {habit.groupName && <span className="habit-detail-tag">{habit.groupName}</span>}
-              {habit.schedule && habit.schedule.kind !== "daily" && <span className="habit-detail-tag">Jadwal {scheduleLabel(habit.schedule)}</span>}
-            </div>
+            <div className="habit-meta">{metaChips}</div>
           </>
         )}
         {amountHabit && <div className="habit-amount-progress"><div className="habit-amount-caption"><strong>{current} / {target} {habit.unit || "unit"}</strong><span>{percentage}%</span></div><div className="module-progress-track"><span style={{ width: `${percentage}%` }} /></div></div>}
@@ -179,19 +172,23 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
   );
 }
 
-function StatCard({ label, value, foot, icon: Icon, tone = "default" }: {
-  label: string; value: string; foot: string; icon: typeof Target; tone?: "default" | "green" | "amber" | "orange";
+// v0.25 — StatCard icon-first: tile ikon menjadi jangkar visual, angka besar,
+// label kecil. Kalimat narasi (foot) dihapus agar angka berbicara sendiri.
+function StatCard({ label, value, icon: Icon, tone = "default" }: {
+  label: string; value: string; icon: typeof Target; tone?: "default" | "green" | "amber" | "orange";
 }) {
   return (
-    <div className={`stat-card tone-${tone}`}>
-      <div className="stat-top"><span className="small-label">{label}</span><span className="stat-icon"><Icon size={15} /></span></div>
-      <div className="metric-value">{value}</div>
-      <div className="stat-foot"><RichText text={foot} /></div>
+    <div className={`stat-card tone-${tone} stat-card-icon-first`}>
+      <span className="stat-icon-tile" aria-hidden="true"><Icon size={17} /></span>
+      <div className="stat-copy">
+        <div className="metric-value">{value}</div>
+        <span className="small-label">{label}</span>
+      </div>
     </div>
   );
 }
 
-function EmptyState({ icon: Icon = Sprout, title, description, action }: {
+function EmptyState({ icon: Icon = Inbox, title, description, action }: {
   icon?: typeof Target; title: string; description: string; action?: ReactNode;
 }) {
   return (

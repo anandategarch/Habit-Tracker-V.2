@@ -6,8 +6,8 @@
  * - financeAnomaly: pendeteksi kategori yang melonjak (naik ≥1,5×).
  * - noSpendDaysStory: hari tanpa catatan pengeluaran.
  *
- * Prinsip "Sahabat taman, bukan spreadsheet": setiap fungsi mengembalikan
- * teks narasi bergaya obrolan (conversational), dengan penanda **bold** pada
+ * Prinsip "pendamping yang ringkas, bukan spreadsheet": setiap fungsi mengembalikan
+ * teks narasi pendek bergaya obrolan (conversational), dengan penanda **bold** pada
  * kata kunci yang akan dirender komponen <RichText/>. Semua fungsi murni
  * (tanpa React/DOM) supaya mudah diuji dan dipakai lintas view.
  *
@@ -61,21 +61,21 @@ export function todayStory(input: {
   const { total, completed } = input;
   if (input.vacationMode) {
     return {
-      headline: "Hari ini, izinkan dirimu **beristirahat** 🌿",
-      note: "Tamanmu tetap ada saat kamu siap kembali.",
+      headline: "Hari ini, izinkan dirimu **beristirahat**",
+      note: "Rutinitasmu tetap ada saat kamu siap kembali.",
       tone: "neutral",
     };
   }
   if (total === 0) {
     return {
-      headline: "Setiap taman dimulai dari **satu benih** 🌱",
-      note: "Pilih satu hal sederhana yang ingin kamu rawat hari ini.",
+      headline: "Mulai dari **satu kebiasaan**",
+      note: "Pilih satu hal sederhana untuk dimulai hari ini.",
       tone: "neutral",
     };
   }
   if (completed === 0) {
     return {
-      headline: "Langkah pertama menunggumu 🌱",
+      headline: "Langkah pertama menunggumu",
       note: "Tidak perlu sempurna — satu habit saja sudah cukup untuk mulai.",
       tone: "neutral",
     };
@@ -83,27 +83,27 @@ export function todayStory(input: {
   const remaining = total - completed;
   if (remaining === 0) {
     return {
-      headline: "Tamanmu **mekar penuh** hari ini 🌸",
-      note: "Semua ritual selesai. Sisakan ruang untuk menikmati harimu.",
+      headline: "Semua ritual **selesai** hari ini",
+      note: "Sisakan ruang untuk menikmati harimu.",
       tone: "green",
     };
   }
   if (remaining === 1) {
     return {
-      headline: "Hampir mekar! **Satu langkah lagi** 🌸",
+      headline: "**Satu langkah lagi** — hampir selesai",
       note: "Tinggal satu ritual — kamu hampir sampai.",
       tone: "green",
     };
   }
   if (remaining <= 4) {
     return {
-      headline: `Hampir mekar! **${remaining} langkah lagi** ✨`,
+      headline: `**${remaining} langkah lagi** menuju selesai`,
       note: "Kamu sedang dalam ritme yang bagus hari ini.",
       tone: "green",
     };
   }
   return {
-    headline: `**${remaining} langkah lagi** menuju bloom 🌿`,
+    headline: `**${remaining} langkah lagi** menuju selesai`,
     note: "Pelan-pelan, sesuai ritmemu.",
     tone: "green",
   };
@@ -112,9 +112,9 @@ export function todayStory(input: {
 /** Kalimat progres pendek untuk kartu progres (mengganti "N dari M telah selesai"). */
 export function progressSentence(completed: number, total: number): string {
   if (total === 0) return "Belum ada ritual terjadwal hari ini.";
-  if (completed === total) return `**${completed} dari ${total}** ritual selesai — tamanmu mekar 🌸`;
+  if (completed === total) return `**${completed} dari ${total}** ritual selesai`;
   if (completed === 0) return `**${total} ritual** menunggu langkah pertamamu.`;
-  return `**${completed} dari ${total}** ritual selesai · ${total - completed} lagi menuju bloom.`;
+  return `**${completed} dari ${total}** ritual selesai · ${total - completed} lagi.`;
 }
 
 // ---------------------------------------------------------------------------
@@ -141,14 +141,14 @@ export function weeklyStepsStory(input: {
   const { total, previousTotal, ready } = input;
   if (total === 0) {
     return {
-      message: "Minggu ini masih terbuka. Pilih **satu langkah kecil** untuk memulainya 🌱",
+      message: "Minggu ini masih terbuka. Pilih **satu langkah kecil** untuk memulainya",
       tone: "neutral",
       trend: null,
     };
   }
   if (!ready) {
     return {
-      message: `**${total} langkah** sudah tertanam minggu ini — perbandingan pekan lalu menyusul begitu riwayat termuat 🌿`,
+      message: `**${total} langkah** tercatat minggu ini — perbandingan pekan lalu menyusul begitu riwayat termuat`,
       tone: "neutral",
       trend: null,
     };
@@ -157,21 +157,21 @@ export function weeklyStepsStory(input: {
   if (change > 0) {
     return {
       message: previousTotal === 0
-        ? `Pekan lalu tercatat kosong — pekan ini kamu sudah menanam **${total} langkah**. Awal yang segar 🌿`
-        : `Ada **${change} langkah lebih banyak** dibanding pekan sebelumnya — progres kecilmu mulai terlihat 🌿`,
+        ? `Pekan lalu kosong — pekan ini sudah **${total} langkah**. Awal yang bagus.`
+        : `**${change} langkah lebih banyak** dari pekan sebelumnya — progresmu terlihat`,
       tone: "green",
       trend: { direction: "up", label: `↑${change}` },
     };
   }
   if (change < 0) {
     return {
-      message: "Pekan ini berjalan **lebih ringan** — kamu tetap boleh bangga sudah meluangkan waktu untuk dirimu 🌿",
+      message: "Pekan ini berjalan **lebih ringan** — kamu tetap boleh bangga sudah meluangkan waktu untuk dirimu",
       tone: "neutral",
       trend: { direction: "down", label: `↓${-change}` },
     };
   }
   return {
-    message: "Kamu sedang **menjaga ritme** yang sudah dibangun. Lanjutkan dengan cara yang terasa nyaman 🌿",
+    message: "Kamu sedang **menjaga ritme** yang sudah dibangun. Lanjutkan dengan cara yang terasa nyaman",
     tone: "green",
     trend: { direction: "flat", label: "=" },
   };
@@ -232,11 +232,11 @@ export function financeStory(input: {
 
   if (!hasTransactions) {
     return {
-      headline: "Cerita uangmu dimulai dari **satu catatan** 🌱",
+      headline: "Mulai dari **satu catatan** transaksi",
       note: "Catat satu transaksi hari ini agar Rutina bisa mulai membaca polanya.",
       chips: [],
       tone: "neutral",
-      emoji: "🌱",
+      emoji: "🧾",
     };
   }
 
@@ -284,17 +284,17 @@ export function financeStory(input: {
       note: `Bukan untuk ditakuti — cukup cek apakah pos ini pola baru atau sekali saja.`,
       chips,
       tone: "amber",
-      emoji: "🍂",
+      emoji: "🔎",
     };
   }
   if (prevExpense > 0 && expense < prevExpense) {
     const drop = Math.round((1 - expense / prevExpense) * 100);
     return {
       headline: `Pengeluaranmu **turun ${drop}%** dibanding bulan lalu 🎉`,
-      note: "Kebiasaan hematmu mulai berakar. Terus rawat.",
+      note: "Kebiasaan hematmu mulai terbentuk. Terus jaga.",
       chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "green",
-      emoji: "🌿",
+      emoji: "📉",
     };
   }
   if (prevExpense > 0 && expense > prevExpense) {
@@ -304,7 +304,7 @@ export function financeStory(input: {
       note: "Coba cek pos terbesar di bawah — mungkin ada yang bisa dirapikan.",
       chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "amber",
-      emoji: "🍂",
+      emoji: "📈",
     };
   }
   if (net >= 0) {
@@ -313,7 +313,7 @@ export function financeStory(input: {
       note: `Pemasukan masih lebih besar dari pengeluaran — sisa ${shortRupiah(net)} milikmu.`,
       chips: anomalyChip ? [...chips, anomalyChip] : chips,
       tone: "green",
-      emoji: "🌿",
+      emoji: "💰",
     };
   }
   return {
@@ -321,7 +321,7 @@ export function financeStory(input: {
     note: "Tidak apa-apa — satu pos kecil dirapikan saja ceritanya berubah.",
     chips: anomalyChip ? [...chips, anomalyChip] : chips,
     tone: "rose",
-    emoji: "🍂",
+    emoji: "⚠️",
   };
 }
 
@@ -380,8 +380,8 @@ export function noSpendDaysStory(input: {
   if (input.totalExpense <= 0 || quietDays < 1 || quietDays > 5) return null;
   return {
     message: quietDays === 1
-      ? "Ada **1 hari** tanpa catatan pengeluaran — dompetmu berterima kasih 🌿"
-      : `Ada **${quietDays} hari** tanpa catatan pengeluaran — dompetmu berterima kasih 🌿`,
+      ? "Ada **1 hari** tanpa catatan pengeluaran — dompetmu berterima kasih"
+      : `Ada **${quietDays} hari** tanpa catatan pengeluaran — dompetmu berterima kasih`,
   };
 }
 
@@ -419,14 +419,14 @@ export function growthStory(input: {
   }
   if (total === 0) {
     return {
-      headline: "Ceritamu dimulai dari **satu langkah** 🌱",
+      headline: "Mulai dari **satu langkah**",
       summary: `Belum ada penyelesaian tercatat ${periodLabel.toLowerCase()}. Kamu bisa mulai lagi kapan pun siap.`,
     };
   }
   if (activeDays >= spanDays * 0.7) {
     return {
       headline: `**${total} langkah** dalam ${activeDays} hari aktif 🔥`,
-      summary: `Konsistensinya terjaga hampir setiap hari ${periodLabel.toLowerCase()} — akarmu makin kuat.`,
+      summary: `Ritme terjaga hampir setiap hari ${periodLabel.toLowerCase()} — konsistensimu makin kuat.`,
     };
   }
   return {

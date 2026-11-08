@@ -315,7 +315,6 @@ export function BudgetModal({ budgets, onClose, onSubmit }: {
           </button>
           <p className="form-hint">Anggaran berlaku untuk bulan berjalan dan bulan-bulan berikutnya. Kamu bisa mengubahnya kapan saja.</p>
           <div className="form-actions">
-            <button type="button" className="secondary-button" onClick={onClose} disabled={submitting}>Batal</button>
             <PrimaryButton type="submit" disabled={submitting}>
               {submitting ? <LoaderCircle size={15} className="spin-icon" /> : <Check size={15} />} {submitting ? "Menyimpan…" : "Simpan anggaran"}
             </PrimaryButton>

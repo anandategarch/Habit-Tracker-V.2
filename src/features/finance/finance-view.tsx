@@ -13,7 +13,7 @@ import {
   Plus,
   Receipt,
   SlidersHorizontal,
-  Sprout,
+  Wallet,
 } from "lucide-react";
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
@@ -22,7 +22,6 @@ import { budgetNarrative, categoryEmoji, financeAnomaly, financeStory } from "@/
 import { RichText } from "@/components/ui/rich-text";
 import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
-import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import { FinanceCategoryIcon } from "@/components/ui/category-icons";
 
 const categoryPaletteLength = 8;
@@ -184,9 +183,8 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
   return (
     <>
       <PageIntro
-        eyebrow={`KEUANGAN PRIBADI · ${monthLabel.toUpperCase()}`}
-        title="Keuanganmu."
-        subtitle="Lihat ke mana uang bergerak, lalu tentukan langkah berikutnya."
+        icon="finance"
+        title="Keuangan"
         action={<PrimaryButton onClick={onAdd}><Plus size={15} /> Catat transaksi</PrimaryButton>}
       />
 
@@ -238,7 +236,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
                 setShowAllTransactions(false);
               }}
             >
-              Bulan ini
+              <CalendarDays size={13} aria-hidden="true" /> Bulan ini
             </button>
           )}
         </div>
@@ -248,7 +246,6 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
         <span className="finance-story-emoji" aria-hidden="true">{moneyStory.emoji}</span>
         <div className="finance-story-copy">
           <h2 className="finance-story-headline"><RichText text={moneyStory.headline} /></h2>
-          <p className="finance-story-note"><RichText text={moneyStory.note} /></p>
           {moneyStory.chips.length > 0 && (
             <div className="finance-story-chips">
               {moneyStory.chips.map((chip) => (
@@ -261,7 +258,6 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
 
       <section className="finance-overview" aria-label={`Ringkasan keuangan ${monthLabel}`}>
         <div className="card finance-balance">
-          <BotanicalIllustrationBackdrop variant="finance" />
           <span className="small-label">ARUS KAS BERSIH</span>
           <div className="metric-value">{formatRupiah(animatedNet)}</div>
           <span className="finance-balance-note">{cashflowMessage}</span>
@@ -318,7 +314,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
         </div>
 
         <div className={`finance-compare-insight ${net > 0 ? "is-positive" : net < 0 ? "is-negative" : "is-neutral"}`} role="status" aria-live="polite">
-          <span className="finance-compare-insight-mark" aria-hidden="true"><Sprout size={16} /></span>
+          <span className="finance-compare-insight-mark" aria-hidden="true"><Wallet size={16} /></span>
           <p>{comparisonInsight}</p>
         </div>
       </section>
@@ -374,7 +370,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
             </>
           ) : (
             <div className="finance-panel-empty">
-              <Sprout size={20} />
+              <Receipt size={20} />
               <p>Belum ada pengeluaran tercatat bulan ini. Kategori akan muncul setelah transaksi ditambahkan.</p>
             </div>
           )}
@@ -472,9 +468,9 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
           }
         />
         <div className="completion-filters finance-filters" role="group" aria-label="Filter jenis transaksi">
-          <button type="button" className={filter === "all" ? "active" : ""} onClick={() => { setFilter("all"); setShowAllTransactions(false); }}>Semua</button>
-          <button type="button" className={filter === "income" ? "active" : ""} onClick={() => { setFilter("income"); setShowAllTransactions(false); }}>Pemasukan</button>
-          <button type="button" className={filter === "expense" ? "active" : ""} onClick={() => { setFilter("expense"); setShowAllTransactions(false); }}>Pengeluaran</button>
+          <button type="button" className={filter === "all" ? "active" : ""} onClick={() => { setFilter("all"); setShowAllTransactions(false); }}><CircleDollarSign size={13} aria-hidden="true" /> Semua</button>
+          <button type="button" className={filter === "income" ? "active" : ""} onClick={() => { setFilter("income"); setShowAllTransactions(false); }}><ArrowDownLeft size={13} aria-hidden="true" /> Pemasukan</button>
+          <button type="button" className={filter === "expense" ? "active" : ""} onClick={() => { setFilter("expense"); setShowAllTransactions(false); }}><ArrowUpRight size={13} aria-hidden="true" /> Pengeluaran</button>
         </div>
         <div className="transaction-list" id="finance-transaction-list">
           {visibleTransactions.map((transaction) => (

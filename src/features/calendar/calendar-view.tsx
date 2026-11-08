@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock3, Heart, RefreshCw } from "lucide-react";
+import { CalendarCheck, CalendarDays, ChevronLeft, ChevronRight, CircleCheck, Clock3, Heart, RefreshCw } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { todayISO } from "@/lib/format";
-import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import { EmptyState, IconAction, PageIntro } from "@/components/ui/primitives";
 
 type HistoryRecord = { habitId: string; title: string; date: string };
@@ -113,13 +112,13 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
 
   return (
     <>
-      <PageIntro eyebrow="RIWAYAT DAN RENCANA" title="Lihat perjalananmu." subtitle="Pilih tanggal untuk meninjau kebiasaan yang tercatat dan check-in harian." />
+      <PageIntro icon="calendar" title="Kalender" />
       <div className="calendar-layout">
         <section className="card card-pad calendar-panel">
           <div className="calendar-head">
             <div><div className="calendar-month">{monthHeading}</div><p className="section-caption">Tanggal bertanda titik memiliki riwayat habit atau check-in</p></div>
             <div className="calendar-actions">
-              <button type="button" className="calendar-today-button" onClick={goToToday}>Hari ini</button>
+              <button type="button" className="calendar-today-button" onClick={goToToday}><CalendarCheck size={13} aria-hidden="true" /> Hari ini</button>
               <IconAction label="Bulan sebelumnya" onClick={() => moveMonth(-1)}><ChevronLeft size={16} /></IconAction>
               <IconAction label="Bulan berikutnya" onClick={() => moveMonth(1)}><ChevronRight size={16} /></IconAction>
             </div>
@@ -148,7 +147,6 @@ export function CalendarView({ habits }: { habits: Habit[] }) {
         </section>
 
         <aside className="calendar-summary">
-          <BotanicalIllustrationBackdrop variant="calendar" />
           <div className="calendar-summary-top"><span className="small-label">RINGKASAN TANGGAL</span><CalendarDays size={17} /></div>
           <div className="calendar-summary-date">{selectedLabel}</div>
           {historyError ? <div className="calendar-history-note"><strong>Riwayat belum tersedia</strong><p>Catatan tanggal ini akan muncul kembali setelah koneksi pulih.</p></div> : (

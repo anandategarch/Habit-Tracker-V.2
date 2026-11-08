@@ -14,8 +14,8 @@
 import { useState, type ReactNode } from "react";
 import {
   Activity, ArrowRightLeft, CalendarCheck, CalendarClock, CheckSquare, ChevronRight,
-  Droplets, Dumbbell, FileText, Folder, HeartPulse, Image as ImageIcon, ListChecks,
-  ListFilter, PieChart, PiggyBank, Receipt, Repeat, Sprout, Target, Trash2, Wallet as WalletGlyph,
+  Droplets, Dumbbell, FileText, Folder, HeartPulse, Image as ImageIcon, Inbox, ListChecks,
+  ListFilter, PieChart, PiggyBank, Receipt, Repeat, Target, Trash2, Wallet as WalletGlyph,
 } from "lucide-react";
 import { useConfirm, useConfirmRemove } from "@/components/ui/confirm-dialog";
 import { formatCompactRupiah, formatDate } from "@/lib/format";
@@ -522,7 +522,7 @@ export function DataManagerView({
 
       {sections.length === 0 ? (
         <div className="card card-pad manage-empty">
-          <span className="manage-empty-icon"><Sprout size={22} /></span>
+          <span className="manage-empty-icon"><Inbox size={22} /></span>
           <strong>Belum ada data untuk dikelola</strong>
           <p>Semua daftarmu masih kosong. Mulai catat kebiasaan atau transaksi dulu, ya.</p>
         </div>

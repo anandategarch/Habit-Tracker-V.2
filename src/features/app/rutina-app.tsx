@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
-  Bell, Cloud, CloudOff, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus,
+  AlertTriangle, Bell, Cloud, CloudOff, Info, LoaderCircle, RefreshCw, Search, Grid2X2, ChevronRight, X, Plus,
 } from "lucide-react";
 import { AppIcon, type AppIconName } from "@/components/ui/app-icon";
 import { RutinaMark } from "@/components/ui/rutina-mark";
@@ -357,7 +357,7 @@ export function RutinaApp() {
       <aside className="desktop-sidebar" aria-label="Navigasi Rutina">
         <a className="brand" href="#beranda" onClick={(event) => { event.preventDefault(); setActiveTab("home"); setMoreOpen(false); }} aria-label="Rutina, kembali ke beranda">
           <span className="brand-mark"><RutinaMark size={27} /></span>
-          <span className="brand-copy"><span className="brand-name">Rutina</span><span className="brand-sub">grow at your pace</span></span>
+          <span className="brand-copy"><span className="brand-name">Rutina</span></span>
         </a>
 
         <nav className="desktop-expanded-nav" aria-label="Navigasi utama">
@@ -441,7 +441,7 @@ export function RutinaApp() {
                         onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}
                       >
                         <span className="menu-item-icon"><AppIcon name={item.icon} size={18} /></span>
-                        <span className="menu-item-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+                        <span className="menu-item-copy"><strong>{item.label}</strong></span>
                         {activeTab === item.id && <span className="menu-item-current" />}
                         <ChevronRight size={14} className="menu-item-arrow" />
                       </button>
@@ -452,11 +452,6 @@ export function RutinaApp() {
             ))}
           </div>
           <div className="menu-panel-footer">
-            <div className="sidebar-growth">
-              <span className="sidebar-growth-icon"><AppIcon name="growth" size={16} /></span>
-              <p>Hal besar tumbuh dari langkah kecil.</p>
-              <span>ONE DAY AT A TIME</span>
-            </div>
             <button
               type="button"
               className={`sync-card ${sync.className}`}
@@ -472,18 +467,13 @@ export function RutinaApp() {
             </button>
             <div className="profile-row">
               <div className="avatar">
-                {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px */}
-                <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+                <span className="avatar-initial" aria-hidden="true">A</span>
               </div>
               <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
             </div>
           </div>
         </div>
         <div className="desktop-sidebar-footer">
-          <div className="desktop-sidebar-note">
-            <span className="desktop-sidebar-note-icon"><AppIcon name="growth" size={17} /></span>
-            <p>Langkah kecil hari ini, membawa perubahan besar esok.</p>
-          </div>
           <button
             type="button"
             className={`sync-card ${sync.className}`}
@@ -499,8 +489,7 @@ export function RutinaApp() {
           </button>
           <div className="profile-row">
             <div className="avatar">
-              {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px */}
-              <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+              <span className="avatar-initial" aria-hidden="true">A</span>
             </div>
             <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
           </div>
@@ -535,8 +524,7 @@ export function RutinaApp() {
               {pendingHabitCount > 0 && <span className="topbar-bell-badge" aria-hidden="true">{pendingHabitCount > 9 ? "9+" : pendingHabitCount}</span>}
             </button>
             <div className="avatar topbar-avatar" aria-label="Workspace pribadi">
-              {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis 34px; next/image tidak memberi keuntungan untuk aset sekecil ini */}
-              <img src="/illustrations/avatar.png" alt="" width={34} height={34} />
+              <span className="avatar-initial" aria-hidden="true">A</span>
             </div>
           </div>
         </header>
@@ -569,7 +557,7 @@ export function RutinaApp() {
             onClick={() => { setQuickActionOpen(false); setModal("habit"); }}
           >
             <span className="mobile-quick-action-icon habit"><AppIcon name="habits" size={18} /></span>
-            <span className="mobile-quick-action-copy"><strong>Tambah kebiasaan</strong><small>Buat rutinitas baru</small></span>
+            <span className="mobile-quick-action-copy"><strong>Tambah kebiasaan</strong></span>
             <ChevronRight size={16} />
           </button>
           <button
@@ -578,7 +566,7 @@ export function RutinaApp() {
             onClick={() => { setQuickActionOpen(false); setModal("transaction"); }}
           >
             <span className="mobile-quick-action-icon finance"><AppIcon name="finance" size={18} /></span>
-            <span className="mobile-quick-action-copy"><strong>Catat transaksi</strong><small>Tambah pemasukan atau pengeluaran</small></span>
+            <span className="mobile-quick-action-copy"><strong>Catat transaksi</strong></span>
             <ChevronRight size={16} />
           </button>
           <button
@@ -587,7 +575,7 @@ export function RutinaApp() {
             onClick={() => { setQuickActionOpen(false); setMoreOpen(true); }}
           >
             <span className="mobile-quick-action-icon browse"><Grid2X2 size={18} /></span>
-            <span className="mobile-quick-action-copy"><strong>Semua fitur</strong><small>Jelajahi seluruh ruang Rutina</small></span>
+            <span className="mobile-quick-action-copy"><strong>Semua fitur</strong></span>
             <ChevronRight size={16} />
           </button>
         </div>
@@ -649,7 +637,7 @@ export function RutinaApp() {
                   if (!item) return null;
                   return <button key={item.id} type="button" role="menuitem" className={`menu-item ${activeTab === item.id ? "active" : ""}`} data-module={item.id} aria-current={activeTab === item.id ? "page" : undefined} onClick={() => { setActiveTab(item.id); setMoreOpen(false); }}>
                     <span className="menu-item-icon"><AppIcon name={item.icon} size={18} /></span>
-                    <span className="menu-item-copy"><strong>{item.label}</strong><small>{item.description}</small></span>
+                    <span className="menu-item-copy"><strong>{item.label}</strong></span>
                     {activeTab === item.id && <span className="menu-item-current" />}
                     <ChevronRight size={14} className="menu-item-arrow" />
                   </button>;
@@ -678,7 +666,7 @@ export function RutinaApp() {
           aria-live={toast.tone === "error" ? "assertive" : "polite"}
           className={`toast ${toast.tone === "error" ? "is-error" : ""}`}
         >
-          <span className="toast-dot" />{toast.message}
+          <span className="toast-icon" aria-hidden="true">{toast.tone === "error" ? <AlertTriangle size={15} /> : <Info size={15} />}</span>{toast.message}
           <button type="button" className="toast-dismiss" aria-label="Tutup notifikasi" onClick={() => setToast({ message: "", tone: "info" })}><X size={13} /></button>
         </div>
       )}
@@ -690,7 +678,6 @@ export function RutinaApp() {
         <div className="site-footer-meta">
           <a href="https://github.com/anandategarch/Habit-Tracker-V.2" target="_blank" rel="noreferrer noopener">Sumber</a>
           <span className="site-footer-version" aria-label="Versi aplikasi">{APP_VERSION_LABEL}</span>
-          <span aria-hidden="true">Tumbuh dalam langkah kecil.</span>
         </div>
       </footer>
     </div>

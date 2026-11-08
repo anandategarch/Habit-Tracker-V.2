@@ -300,7 +300,6 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
             </>
           )}
           <div className="form-actions">
-            <button type="button" className="secondary-button" onClick={onClose} disabled={submitting}>Batal</button>
             <PrimaryButton type="submit" disabled={submitting}>{submitting ? <LoaderCircle size={15} className="spin-icon" /> : <Check size={15} />} {submitting ? "Menyimpan…" : "Simpan"}</PrimaryButton>
           </div>
         </form>

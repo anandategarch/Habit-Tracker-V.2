@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
-import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sprout, Trash2 } from "lucide-react";
+import { Archive, Bell, ChevronRight, Database, Download, FileUp, Info, LoaderCircle, Settings2, ShieldCheck, Sparkles, Trash2, Umbrella } from "lucide-react";
 import { PageIntro, PrimaryButton, SectionHeading } from "@/components/ui/primitives";
 import { useConfirm } from "@/components/ui/confirm-dialog";
-import { BotanicalIllustrationBackdrop } from "@/components/ui/botanical-illustration";
 import type { WorkspaceSettings } from "@/lib/module-types";
 import { APP_VERSION_LABEL } from "@/lib/version";
 
@@ -105,14 +104,12 @@ export function BackupView({ settings, onUpdateSettings }: {
   }
 
   return <>
-    <PageIntro eyebrow="PREFERENSI & DATA" title="Ruang nyaman untuk bertumbuh." subtitle="Atur suasana Rutina dan jaga catatan kebiasaanmu tetap aman." />
+    <PageIntro icon="settings" title="Pengaturan" />
     <section className="settings-profile-card">
-      <BotanicalIllustrationBackdrop variant="settings" />
       <span className="settings-profile-mark">
-        {/* eslint-disable-next-line @next/next/no-img-element -- ilustrasi avatar statis untuk ukuran profil kecil */}
-        <img src="/illustrations/avatar.png" alt="Ilustrasi profil Rutina" width={52} height={52} />
+        <span aria-hidden="true">A</span>
       </span>
-      <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadimu</strong><span>Rutina · Grow at your pace</span></div>
+      <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadimu</strong><span>Rutina</span></div>
       <span className="settings-profile-status" aria-label={`Versi ${APP_VERSION_LABEL}`}><ShieldCheck size={14} /> {APP_VERSION_LABEL}</span>
     </section>
 
@@ -130,11 +127,11 @@ export function BackupView({ settings, onUpdateSettings }: {
       <section className="card card-pad settings-preference-card" id="settings-preferences">
         <SectionHeading title="Ritme pribadi" caption="Beri ruang untuk beristirahat saat diperlukan." />
         <label className="settings-vacation-toggle">
-          <span className="settings-vacation-icon"><Sprout size={18} /></span>
+          <span className="settings-vacation-icon"><Umbrella size={18} /></span>
           <span><strong>Mode libur</strong><small>Jeda pencatatan habit tanpa menghapus data.</small></span>
           <input type="checkbox" checked={settings.vacationMode} onChange={(event) => onUpdateSettings((current) => ({ ...current, vacationMode: event.target.checked }))} />
         </label>
-        <div className="settings-about-note"><span>“</span><p>Hal besar tumbuh dari langkah kecil. Kembali kapan pun kamu siap.</p></div>
+        <div className="settings-about-note"><span>“</span><p>Kembali kapan pun kamu siap.</p></div>
       </section>
     </div>
     <section className="card card-pad settings-info-card" id="settings-notifications">
@@ -143,8 +140,8 @@ export function BackupView({ settings, onUpdateSettings }: {
     </section>
 
     <section className="card card-pad settings-info-card" id="settings-about">
-      <div className="settings-info-icon"><Sprout size={18} /></div>
-      <div><SectionHeading title="Tentang Rutina" caption="Ruang pribadi untuk membangun kebiasaan baik, menjaga keseimbangan, dan bertumbuh lewat langkah kecil setiap hari." /><span className="settings-about-tagline">Grow at your pace · Small steps, meaningful growth.</span></div>
+      <div className="settings-info-icon"><Sparkles size={18} /></div>
+      <div><SectionHeading title="Tentang Rutina" caption="Ruang pribadi untuk membangun kebiasaan baik, menjaga keseimbangan, dan bertumbuh lewat langkah kecil setiap hari." /></div>
     </section>
 
     <div className="settings-section-heading" id="settings-backup"><span>DATA & PEMULIHAN</span><strong>Backup workspace</strong></div>
