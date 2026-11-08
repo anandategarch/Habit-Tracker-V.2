@@ -1,78 +1,3198 @@
 $ next dev
 ▲ Next.js 16.4.3 (Turbopack)
 - Local:         http://localhost:3000
-- Network:       http://21.0.6.146:3000
+- Network:       http://21.0.5.19:3000
 - Environments: .env
-✓ Ready in 264ms
-✓ Running next.config.ts took 31ms
+✓ Ready in 271ms
+✓ Running next.config.ts took 32ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
 
 ○ Compiling / ...
- GET / 200 in 271ms (next.js: 101ms, application-code: 170ms)
- GET / 200 in 29ms (next.js: 1.3ms, application-code: 28ms)
- GET / 200 in 40ms (next.js: 1.2ms, application-code: 39ms)
- GET /manifest.webmanifest 200 in 108ms (next.js: 84ms, application-code: 23ms)
- GET /api/history?month=2026-11 503 in 125ms (next.js: 24ms, application-code: 101ms)
- GET /api/modules 503 in 53ms (next.js: 47ms, application-code: 6ms)
- GET /api/modules 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/workspace?today=2026-11-08 503 in 59ms (next.js: 53ms, application-code: 6ms)
- GET /api/workspace?today=2026-11-08 503 in 6ms (next.js: 1.3ms, application-code: 4ms)
-⚠ The Edge Runtime is deprecated. You can use the "nodejs" runtime instead. Learn more: https://nextjs.org/docs/messages/edge-runtime-deprecated
- GET /icons/icon-192 200 in 212ms
- GET /api/workspace?today=2026-11-08 503 in 6ms (next.js: 1.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 6ms (next.js: 3ms, application-code: 3ms)
- GET /api/history?month=2026-09 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.8ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-09 503 in 21ms (next.js: 1.1ms, application-code: 20ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 1.0ms, application-code: 2ms)
-✓ Compiled in 544ms
-✓ Compiled in 900ms
-✓ Compiled in 397ms
-✓ Compiled in 453ms
- GET / 200 in 37ms (next.js: 1.2ms, application-code: 36ms)
- GET / 200 in 72ms (next.js: 1.0ms, application-code: 71ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET / 200 in 276ms (next.js: 102ms, application-code: 173ms)
+ GET / 200 in 130ms (next.js: 1.7ms, application-code: 129ms)
+ GET /manifest.webmanifest 200 in 114ms (next.js: 90ms, application-code: 24ms)
+ GET /api/history?month=2026-11 503 in 126ms (next.js: 29ms, application-code: 97ms)
+ GET /api/modules 503 in 41ms (next.js: 29ms, application-code: 12ms)
+ GET /api/modules 503 in 11ms (next.js: 1.2ms, application-code: 10ms)
+ GET /api/workspace?today=2026-11-08 503 in 60ms (next.js: 51ms, application-code: 9ms)
  GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
- GET /api/modules 503 in 7ms (next.js: 0.9ms, application-code: 6ms)
- GET /api/modules 503 in 42ms (next.js: 0.7ms, application-code: 41ms)
- GET /api/history?month=2026-11 503 in 3ms (next.js: 0.9ms, application-code: 2ms)
- GET /icons/icon-192 200 in 32ms
- GET /manifest.webmanifest 200 in 9ms (next.js: 0.7ms, application-code: 9ms)
- GET /icons/icon-192 200 in 44ms
- GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 13ms (next.js: 0.9ms, application-code: 12ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /api/history?month=2026-09 503 in 5ms (next.js: 1.0ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
+⚠ The Edge Runtime is deprecated. You can use the "nodejs" runtime instead. Learn more: https://nextjs.org/docs/messages/edge-runtime-deprecated
+ GET /icons/icon-192 200 in 260ms
+ GET /api/workspace?today=2026-11-08 503 in 7ms (next.js: 1.4ms, application-code: 5ms)
+ GET /api/history?month=2026-10 503 in 22ms (next.js: 0.9ms, application-code: 21ms)
+ GET /api/history?month=2026-11 503 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/history?month=2026-10 503 in 6ms (next.js: 3ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET / 200 in 103ms (next.js: 0.9ms, application-code: 102ms)
+ GET /api/modules 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/modules 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-08 503 in 3ms (next.js: 0.8ms, application-code: 2ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.4ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
  GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 6ms (next.js: 0.7ms, application-code: 5ms)
- GET /api/history?month=2026-09 503 in 11ms (next.js: 0.6ms, application-code: 10ms)
- GET /api/history?month=2026-10 503 in 10ms (next.js: 0.6ms, application-code: 9ms)
- GET /api/history?month=2026-11 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
- GET / 200 in 62ms (next.js: 0.9ms, application-code: 61ms)
- GET /manifest.webmanifest 200 in 10ms (next.js: 0.8ms, application-code: 9ms)
- GET /icons/icon-192 200 in 33ms
- GET /api/workspace?today=2026-11-08 503 in 13ms (next.js: 0.7ms, application-code: 12ms)
- GET /api/modules 503 in 9ms (next.js: 0.6ms, application-code: 8ms)
- GET /api/modules 503 in 20ms (next.js: 17ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
- GET /manifest.webmanifest 200 in 5ms (next.js: 0.6ms, application-code: 4ms)
- GET /icons/icon-192 200 in 16ms
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 14ms (next.js: 1.1ms, application-code: 13ms)
+ GET /api/history?month=2026-11 503 in 10ms (next.js: 0.8ms, application-code: 9ms)
+✓ Compiled in 383ms
+ GET /api/history?month=2026-11 503 in 9ms (next.js: 5ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 46ms (next.js: 0.7ms, application-code: 46ms)
+ GET /api/history?month=2026-10 503 in 18ms (next.js: 0.7ms, application-code: 17ms)
+ GET /api/history?month=2026-11 503 in 9ms (next.js: 0.6ms, application-code: 8ms)
+ GET /api/history?month=2026-10 503 in 17ms (next.js: 6ms, application-code: 10ms)
+ GET /api/history?month=2026-11 503 in 39ms (next.js: 23ms, application-code: 16ms)
+ GET /api/ai-insights 503 in 55ms (next.js: 44ms, application-code: 10ms)
+ GET /api/ai-insights 503 in 11ms (next.js: 2ms, application-code: 9ms)
+ GET /api/growth 503 in 28ms (next.js: 21ms, application-code: 7ms)
+ GET /api/growth 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
+ GET / 200 in 114ms (next.js: 2.0ms, application-code: 112ms)
+ GET /manifest.webmanifest 200 in 13ms (next.js: 0.9ms, application-code: 12ms)
+ GET /icons/icon-192 200 in 114ms
+ GET /api/workspace?today=2026-11-08 503 in 8ms (next.js: 1.0ms, application-code: 7ms)
+ GET /api/modules 503 in 7ms (next.js: 0.8ms, application-code: 6ms)
+ GET /api/history?month=2026-11 503 in 47ms (next.js: 2ms, application-code: 44ms)
+ GET /manifest.webmanifest 200 in 6ms (next.js: 1.6ms, application-code: 4ms)
+ GET /api/modules 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
+ GET /icons/icon-192 200 in 57ms
  GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
- GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 1.1ms, application-code: 3ms)
- GET /api/history?month=2026-10 503 in 15ms (next.js: 7ms, application-code: 8ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 11ms (next.js: 3ms, application-code: 8ms)
+ GET /api/history?month=2026-11 503 in 9ms (next.js: 1.1ms, application-code: 8ms)
+ GET /api/history?month=2026-10 503 in 7ms (next.js: 0.8ms, application-code: 6ms)
+ GET /api/history?month=2026-11 503 in 6ms (next.js: 1.5ms, application-code: 4ms)
+ GET / 200 in 117ms (next.js: 0.9ms, application-code: 116ms)
+ GET /manifest.webmanifest 200 in 5ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/workspace?today=2026-11-08 503 in 12ms (next.js: 0.8ms, application-code: 11ms)
+ GET /api/modules 503 in 35ms (next.js: 1.5ms, application-code: 34ms)
+ GET /api/modules 503 in 13ms (next.js: 0.8ms, application-code: 13ms)
+ GET /api/history?month=2026-11 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
+ GET /manifest.webmanifest 200 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /icons/icon-192 200 in 20ms
+ GET /icons/icon-192 200 in 29ms
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 7ms (next.js: 1.0ms, application-code: 6ms)
+ GET /api/history?month=2026-11 503 in 10ms (next.js: 6ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 21ms (next.js: 0.8ms, application-code: 20ms)
+ GET /api/history?month=2026-11 503 in 6ms (next.js: 1.0ms, application-code: 5ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 21ms (next.js: 9ms, application-code: 11ms)
+ GET /api/history?month=2026-11 503 in 11ms (next.js: 0.8ms, application-code: 10ms)
+ GET /api/history?month=2026-10 503 in 14ms (next.js: 0.7ms, application-code: 13ms)
+ GET /api/history?month=2026-11 503 in 36ms (next.js: 0.7ms, application-code: 35ms)
+ GET /api/history?month=2026-11 503 in 7ms (next.js: 1.1ms, application-code: 6ms)
+ GET /api/history?month=2026-11 503 in 7ms (next.js: 1.2ms, application-code: 6ms)
+✓ Compiled in 575ms
+ GET / 200 in 43ms (next.js: 1.6ms, application-code: 41ms)
+ GET /manifest.webmanifest 200 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /icons/icon-192 200 in 69ms
+ GET /api/modules 503 in 10ms (next.js: 0.9ms, application-code: 10ms)
+ GET /api/history?month=2026-11 503 in 67ms (next.js: 34ms, application-code: 34ms)
+ GET /api/modules 503 in 9ms (next.js: 1.3ms, application-code: 8ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 28ms (next.js: 0.9ms, application-code: 27ms)
+ GET /manifest.webmanifest 200 in 5ms (next.js: 0.7ms, application-code: 5ms)
+ GET /icons/icon-192 200 in 18ms
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 12ms (next.js: 1.2ms, application-code: 11ms)
+ GET /api/history?month=2026-10 503 in 6ms (next.js: 1.0ms, application-code: 5ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET / 200 in 36ms (next.js: 0.9ms, application-code: 35ms)
+ GET / 200 in 31ms (next.js: 0.8ms, application-code: 30ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.2ms, application-code: 4ms)
+ GET /api/modules 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
+ GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 7ms (next.js: 1.4ms, application-code: 6ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET / 200 in 37ms (next.js: 1.1ms, application-code: 36ms)
+ GET /api/history?month=2026-11 503 in 6ms (next.js: 1.0ms, application-code: 5ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/modules 503 in 6ms (next.js: 1.0ms, application-code: 5ms)
+ GET /api/modules 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 1.2ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 9ms (next.js: 6ms, application-code: 3ms)
+ GET / 200 in 30ms (next.js: 1.2ms, application-code: 29ms)
+ GET /manifest.webmanifest 200 in 6ms (next.js: 0.9ms, application-code: 5ms)
+ GET /icons/icon-192 200 in 27ms
+ GET /api/workspace?today=2026-11-08 503 in 11ms (next.js: 1.0ms, application-code: 10ms)
+ GET /api/modules 503 in 4ms (next.js: 1.1ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/modules 503 in 4ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 1.4ms, application-code: 4ms)
+ GET /manifest.webmanifest 200 in 4ms (next.js: 1.1ms, application-code: 3ms)
+ GET /icons/icon-192 200 in 19ms
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 7ms (next.js: 1.3ms, application-code: 6ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
+ GET /api/history?month=2026-11 503 in 24ms (next.js: 0.9ms, application-code: 23ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/ai-insights 503 in 15ms (next.js: 2ms, application-code: 13ms)
+ GET /api/history?month=2026-10 503 in 10ms (next.js: 5ms, application-code: 5ms)
+ GET /api/history?month=2026-11 503 in 14ms (next.js: 0.6ms, application-code: 14ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 9ms (next.js: 3ms, application-code: 7ms)
+ GET /api/ai-insights 503 in 3ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 11ms (next.js: 1.0ms, application-code: 11ms)
+ GET /api/growth 503 in 6ms (next.js: 0.9ms, application-code: 5ms)
+ GET /api/growth 503 in 7ms (next.js: 0.6ms, application-code: 6ms)
+✓ Compiled in 509ms
+✓ Compiled in 368ms
+ GET / 200 in 31ms (next.js: 0.8ms, application-code: 30ms)
+ GET /manifest.webmanifest 200 in 10ms (next.js: 0.9ms, application-code: 9ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 1.3ms, application-code: 3ms)
+ GET /api/modules 503 in 6ms (next.js: 1.1ms, application-code: 5ms)
+ GET /api/modules 503 in 15ms (next.js: 0.8ms, application-code: 14ms)
+ GET /api/history?month=2026-11 503 in 9ms (next.js: 3ms, application-code: 6ms)
+ GET /manifest.webmanifest 200 in 6ms (next.js: 0.7ms, application-code: 6ms)
+ GET /icons/icon-192 200 in 16ms
+ GET /icons/icon-192 200 in 15ms
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
  GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-09 503 in 4ms (next.js: 0.5ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 18ms (next.js: 0.6ms, application-code: 18ms)
- GET /api/history?month=2026-11 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
- GET /api/history?month=2026-11 503 in 14ms (next.js: 3ms, application-code: 12ms)
- GET /api/history?month=2026-10 503 in 34ms (next.js: 27ms, application-code: 7ms)
- GET /api/history?month=2026-09 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
- GET /api/history?month=2026-10 503 in 4ms (next.js: 1.5ms, application-code: 2ms)
- GET /api/history?month=2026-11 503 in 8ms (next.js: 0.5ms, application-code: 8ms)
+ GET /api/history?month=2026-11 503 in 26ms (next.js: 2ms, application-code: 23ms)
+ GET /api/history?month=2026-11 503 in 6ms (next.js: 0.7ms, application-code: 5ms)
+✓ Compiled in 9.4s
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 49ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 449ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 565ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 260ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 335ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 292ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 232ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 308ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 238ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 1231ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 558ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 787ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 372ms
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceFrown doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceFrown was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideFrown?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceLaugh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceLaugh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideLaugh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceMeh doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceMeh was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import LucideMeh?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-client] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+[browser] ./src/features/calendar/calendar-view.tsx:4:1
+Error: Export FaceSmile doesn't exist in target module
+  2 | ...
+  3 | ...eact";
+> 4 | ...Days, ChevronLeft, ChevronRight, CircleCheck, Clock3, FaceFrown, FaceLaugh, FaceMeh, Fac...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | ...
+  6 | ...
+  7 | ...om "@/components/ui/primitives";
+
+The export FaceSmile was not found in module [project]/node_modules/lucide-react/dist/esm/lucide-react.js [app-ssr] (ecmascript).
+Did you mean to import FileSearchIcon?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/features/calendar/calendar-view.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Client Component Browser]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/features/calendar/calendar-view.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Client Component SSR]
+    ./src/features/app/rutina-app.tsx [Server Component]
+    ./src/app/page.tsx [Server Component] 
+✓ Compiled in 818ms
+ GET /api/history?month=2026-11 503 in 32ms (next.js: 1.1ms, application-code: 31ms)
+ GET / 200 in 86ms (next.js: 16ms, application-code: 70ms)
+✓ Compiled in 442ms
+ GET /manifest.webmanifest 200 in 16ms (next.js: 1.0ms, application-code: 15ms)
+✓ Compiled in 2ms
+ GET /icons/icon-192 200 in 91ms
+ GET /api/history?month=2026-11 503 in 7ms (next.js: 1.3ms, application-code: 6ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 2ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 3ms (next.js: 0.8ms, application-code: 3ms)
+ GET / 200 in 24ms (next.js: 1.4ms, application-code: 22ms)
+✓ Compiled in 241ms
+✓ Compiled in 5ms
+ GET / 200 in 42ms (next.js: 0.9ms, application-code: 41ms)
+ GET /manifest.webmanifest 200 in 6ms (next.js: 0.8ms, application-code: 5ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/modules 503 in 39ms (next.js: 0.9ms, application-code: 38ms)
+ GET /api/history?month=2026-11 503 in 11ms (next.js: 3ms, application-code: 8ms)
+ GET /api/modules 503 in 12ms (next.js: 1.0ms, application-code: 11ms)
+ GET /api/history?month=2026-11 503 in 7ms (next.js: 0.7ms, application-code: 7ms)
+ GET /manifest.webmanifest 200 in 4ms (next.js: 0.7ms, application-code: 4ms)
+ GET /icons/icon-192 200 in 17ms
+ GET /icons/icon-192 200 in 17ms
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 1.0ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 7ms (next.js: 2ms, application-code: 5ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 11ms (next.js: 0.7ms, application-code: 10ms)
+ GET /api/growth 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /api/growth 503 in 8ms (next.js: 0.8ms, application-code: 7ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /api/ai-insights 503 in 15ms (next.js: 1.4ms, application-code: 13ms)
+ GET /api/history?month=2026-10 503 in 29ms (next.js: 2ms, application-code: 27ms)
+ GET /api/history?month=2026-10 503 in 12ms (next.js: 2ms, application-code: 10ms)
+ GET /api/history?month=2026-11 503 in 17ms (next.js: 0.6ms, application-code: 16ms)
+ GET /api/history?month=2026-11 503 in 5ms (next.js: 0.6ms, application-code: 5ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.8ms, application-code: 2ms)
+ GET /api/ai-insights 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+✓ Compiled in 830ms
+✓ Compiled in 240ms
+✓ Compiled in 447ms
+ GET / 200 in 49ms (next.js: 3ms, application-code: 45ms)
+ GET /manifest.webmanifest 200 in 9ms (next.js: 1.0ms, application-code: 8ms)
+ GET /icons/icon-192 200 in 47ms
+ GET /api/workspace?today=2026-11-08 503 in 15ms (next.js: 0.9ms, application-code: 14ms)
+ GET /api/modules 503 in 16ms (next.js: 1.9ms, application-code: 14ms)
+ GET /api/modules 503 in 6ms (next.js: 3ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /manifest.webmanifest 200 in 4ms (next.js: 0.7ms, application-code: 4ms)
+ GET /icons/icon-192 200 in 15ms
+ GET /api/workspace?today=2026-11-08 503 in 20ms (next.js: 0.9ms, application-code: 19ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 6ms (next.js: 3ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 4ms (next.js: 0.6ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/history?month=2026-11 503 in 12ms (next.js: 3ms, application-code: 9ms)
+ GET /api/history?month=2026-11 503 in 11ms (next.js: 1.5ms, application-code: 10ms)
+✓ Compiled in 346ms
+ GET / 200 in 49ms (next.js: 2ms, application-code: 47ms)
+ GET /manifest.webmanifest 200 in 5ms (next.js: 1.1ms, application-code: 4ms)
+ GET /icons/icon-192 200 in 29ms
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.8ms, application-code: 3ms)
+ GET /api/modules 503 in 4ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/modules 503 in 9ms (next.js: 0.6ms, application-code: 8ms)
+ GET /api/history?month=2026-11 503 in 7ms (next.js: 0.6ms, application-code: 6ms)
+ GET /manifest.webmanifest 200 in 5ms (next.js: 1.8ms, application-code: 4ms)
+ GET /icons/icon-192 200 in 37ms
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/workspace?today=2026-11-08 503 in 4ms (next.js: 0.9ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 5ms (next.js: 0.7ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.5ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 24ms (next.js: 0.6ms, application-code: 24ms)
+ GET /api/history?month=2026-11 503 in 7ms (next.js: 2.0ms, application-code: 5ms)
+ GET /api/history?month=2026-11 503 in 6ms (next.js: 0.7ms, application-code: 6ms)
+ GET /api/history?month=2026-11 503 in 14ms (next.js: 4ms, application-code: 9ms)
+ GET / 200 in 34ms (next.js: 1.0ms, application-code: 33ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 0.8ms, application-code: 4ms)
+ GET /api/modules 503 in 4ms (next.js: 1.1ms, application-code: 3ms)
+ GET /api/modules 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 0.9ms, application-code: 4ms)
+ GET /api/workspace?today=2026-11-08 503 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ GET /api/history?month=2026-10 503 in 6ms (next.js: 1.7ms, application-code: 4ms)
+ GET /api/history?month=2026-11 503 in 4ms (next.js: 0.7ms, application-code: 3ms)
+ GET /api/history?month=2026-10 503 in 3ms (next.js: 0.7ms, application-code: 2ms)
+ GET /api/history?month=2026-11 503 in 3ms (next.js: 0.6ms, application-code: 2ms)
+ GET /api/history?month=2026-10 503 in 37ms (next.js: 4ms, application-code: 32ms)
+ GET /api/history?month=2026-11 503 in 16ms (next.js: 0.6ms, application-code: 15ms)
+ GET /api/history?month=2026-10 503 in 15ms (next.js: 0.6ms, application-code: 15ms)
+ GET /api/history?month=2026-11 503 in 25ms (next.js: 23ms, application-code: 2ms)
