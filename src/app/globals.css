@@ -148,7 +148,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 .hero-ring::before { content:""; position:absolute; inset:7px; border-radius:50%; background:#2b5a42; }
 .hero-ring-inner { position:relative; z-index:1; text-align:center; }
-.hero-percent { display:block; font-size:1.5625rem; font-weight:780; letter-spacing: -.04em; }
+.hero-percent { display:block; font-size:1.5625rem; font-weight:780; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .hero-percent-caption { display:block; margin-top:1px; color:#c4d8c5; font-size:.5625rem; }
 .stats-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
 .stat-card { min-width:0; padding:17px; border:1px solid var(--line); border-radius:19px; background:#fff; }
@@ -183,7 +183,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .filter-chip.active { color:#fff; border-color:var(--primary); background:var(--primary); }
 .habit-page-grid { display:grid; grid-template-columns:minmax(0,1fr) 290px; gap:18px; }
 .habit-side-card { padding:21px; }
-.streak-number { color:var(--primary); font-size:2.375rem; font-weight:800; letter-spacing: -.05263em; }
+.streak-number { color:var(--primary); font-size:2.375rem; font-weight:800; letter-spacing: -.05263em; font-variant-numeric: tabular-nums; }
 .streak-caption { color:var(--muted); font-size:.6875rem; }
 .finance-overview { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:12px; margin-bottom:18px; }
 .finance-balance { padding:23px; color:#fff; background:linear-gradient(125deg,#204a37,#477455); border:0; }
@@ -234,7 +234,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .chart-bar.active { background:var(--primary); }
 .chart-label { color:var(--muted); font-size:.625rem; }
 .insight-highlight { padding:22px; background:#f0f4eb; border:1px solid #e5ece2; border-radius:22px; }
-.insight-number { margin:10px 0 4px; color:var(--primary); font-size:2.375rem; font-weight:800; letter-spacing: -.05263em; }
+.insight-number { margin:10px 0 4px; color:var(--primary); font-size:2.375rem; font-weight:800; letter-spacing: -.05263em; font-variant-numeric: tabular-nums; }
 .empty-state { padding:30px 18px; color:var(--muted); text-align:center; font-size:.75rem; }
 
 .modal-backdrop { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:18px; background:rgba(18,36,27,.42); backdrop-filter:blur(5px); }
@@ -983,13 +983,13 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .habit-overview-grid { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(250px,.8fr); gap: 14px; margin-bottom: 17px; }
 .habit-progress-card { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 23px; background: linear-gradient(130deg,#204c36,#39714a); color: #fff; border: 0; }
 .habit-progress-card .small-label { color: #c3d9c4; }
-.habit-progress-value { margin: 4px 0 0; color: #fff; font-size: 2.3125rem; font-weight: 800; letter-spacing: -.04865em; line-height: 1.15; }
+.habit-progress-value { margin: 4px 0 0; color: #fff; font-size: 2.3125rem; font-weight: 800; letter-spacing: -.04865em; line-height: 1.15; font-variant-numeric: tabular-nums; }
 .habit-progress-value span { margin-left: 2px; color: #c6ddc7; font-size: 1.25rem; }
 .habit-progress-copy p { margin: 6px 0 0; color: rgba(255,255,255,.72); font-size: .625rem; }
 .habit-progress-ring { position: relative; display: grid; place-items: center; width: 92px; height: 92px; flex: none; border-radius: 50%; background: conic-gradient(#dcebdd var(--progress),rgba(255,255,255,.18) 0); }
 .habit-progress-ring::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: #2c5b40; }
 .habit-progress-ring strong, .habit-progress-ring span { position: relative; z-index: 1; }
-.habit-progress-ring strong { color: #fff; font-size: 1.25rem; letter-spacing: -.035em; }
+.habit-progress-ring strong { color: #fff; font-size: 1.25rem; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
 .habit-progress-ring strong small { color: #c7ddc8; font-size: .625rem; font-weight: 600; }
 .habit-progress-ring span { margin-top: -20px; color: #c5dac5; font-size: .5625rem; letter-spacing: .11111em; }
 .habit-streak-summary { position: relative; padding: 18px 20px; }
@@ -1078,7 +1078,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .calendar-summary-date { margin: 10px 0 17px; color: #294534; font-size: 1.125rem; font-weight: 790; line-height: 1.35; letter-spacing: -.02778em; }
 .calendar-summary-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 13px; }
 .calendar-summary-stats > div { display: grid; gap: 2px; padding: 10px; border: 1px solid rgba(213,226,211,.8); border-radius: 12px; background: rgba(255,255,255,.55); }
-.calendar-summary-stats strong { color: #315c3d; font-size: 1.25rem; letter-spacing: -.03em; }
+.calendar-summary-stats strong { color: #315c3d; font-size: 1.25rem; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .calendar-summary-stats span { color: #839185; font-size: .5625rem; }
 .calendar-day-habits { display: grid; gap: 0; border-top: 1px solid rgba(202,220,200,.8); }
 .calendar-habit-line { display: flex; align-items: center; gap: 9px; padding: 10px 0; border-bottom: 1px solid rgba(202,220,200,.7); }
@@ -1370,7 +1370,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .module-photo-grid figcaption button { display: grid; place-items: center; border: 0; color: var(--danger); background: transparent; }
 .wellness-water-ring { display: grid; place-items: center; width: 154px; height: 154px; margin: 12px auto 18px; border: 10px solid var(--primary-soft); border-top-color: var(--sage); border-right-color: var(--primary); border-radius: 50%; }
 .wellness-water-ring div { display: grid; text-align: center; }
-.wellness-water-ring strong { color: var(--primary); font-size: 1.5625rem; letter-spacing: -.04em; }
+.wellness-water-ring strong { color: var(--primary); font-size: 1.5625rem; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .wellness-water-ring small { color: var(--muted); font-size: .625rem; }
 
 .tree-progress-card { display: flex; align-items: center; gap: 24px; padding: 25px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(120deg,#edf4eb,#fbfcf9); }
@@ -2938,7 +2938,7 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
 }
 .story-note { margin:0; max-width:310px; color:#5d6d59; font-size:.75rem; line-height:1.65; }
 .story-hero-number { display:grid; gap:2px; }
-.story-hero-number strong { color:#417a57; font-size:clamp(2.75rem,12vw,3.625rem); font-weight:900; letter-spacing:-.034em; line-height:1; }
+.story-hero-number strong { color:#417a57; font-size:clamp(2.75rem,12vw,3.625rem); font-weight:900; letter-spacing:-.034em; line-height:1; font-variant-numeric: tabular-nums; }
 .story-hero-number strong em { font-style:normal; font-size:.42em; color:#7d8a6f; font-weight:800; }
 .story-hero-number span { color:#7d8a6f; font-size:.65625rem; font-weight:750; letter-spacing: .0381em; }
 
@@ -2979,7 +2979,7 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
   border:1px solid rgba(65,122,87,.14); background:rgba(255,253,247,.62);
 }
 .story-finance-grid small { color:#7d8a6f; font-size:.5625rem; font-weight:800; letter-spacing: .08889em; text-transform:uppercase; }
-.story-finance-grid strong { color:#2f4a38; font-size:.84375rem; font-weight:900; letter-spacing: -.02222em; overflow-wrap:anywhere; }
+.story-finance-grid strong { color:#2f4a38; font-size:.84375rem; font-weight:900; letter-spacing: -.02222em; overflow-wrap:anywhere; font-variant-numeric: tabular-nums; }
 .story-finance-grid strong.is-income { color:#417a57; }
 .story-finance-grid strong.is-expense { color:#b0713f; }
 

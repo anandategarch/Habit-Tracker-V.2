@@ -336,7 +336,7 @@ button, input, select, textarea { font: inherit; }
 .hero-progress-heading strong { color: #373d34; font-size: .6875rem; }
 .hero-progress-heading > span { color: var(--primary); font-size: .6875rem; font-weight: 800; }
 .hero-progress-count { color: #4f5849; font-size: .6875rem; }
-.hero-progress-count b { color: #252d26; font-size: 1rem; font-weight: 820; }
+.hero-progress-count b { color: #252d26; font-size: 1rem; font-weight: 820; font-variant-numeric: tabular-nums; }
 .hero-progress-track { height: 7px; overflow: hidden; border-radius: 99px; background: #eee8df; }
 .hero-progress-track > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #5c9a69, #37b76b); transition: width .3s ease; }
 
@@ -606,7 +606,7 @@ html[data-theme="dark"] .text-button { color: #9fd4ae; }
 }
 .habit-progress-copy { position: relative; z-index: 1; }
 .habit-progress-copy .small-label { color: #9b876c; }
-.habit-progress-value { color: #3c7653; font-size: 2.4375rem; font-weight: 850; letter-spacing: -.05128em; }
+.habit-progress-value { color: #3c7653; font-size: 2.4375rem; font-weight: 850; letter-spacing: -.05128em; font-variant-numeric: tabular-nums; }
 .habit-progress-copy p { color: #858779; font-size: .625rem; }
 .habit-progress-ring {
   border-color: #d9e8d2;
@@ -818,7 +818,7 @@ html[data-theme="dark"] .text-button { color: #9fd4ae; }
 .insight-trend-bar.mood { background: linear-gradient(180deg,#d49a4f,#b87632); }
 .insight-trend-bar.energy { background: linear-gradient(180deg,#a6c98a,#6f9d67); }
 .insight-trend-bar.activity { background: linear-gradient(180deg,#a6c98a,#5f9567); }
-.insight-trend-value { color: #4f8056; font-size: .6875rem; font-weight: 800; }
+.insight-trend-value { color: #4f8056; font-size: .6875rem; font-weight: 800; font-variant-numeric: tabular-nums; }
 .insight-trend-day small { color: #72756a; font-size: .6875rem; text-transform: capitalize; }
 .insight-trend-legend { display: flex; align-items: center; gap: 14px; margin-top: 12px; color: #72756a; font-size: .6875rem; }
 .insight-trend-legend span { display: inline-flex; align-items: center; gap: 5px; }
@@ -1578,7 +1578,7 @@ html[data-theme="dark"] .settings-vacation-toggle small { color: var(--muted); }
   justify-items: center;
   gap: 1px;
 }
-.hero-ring-label strong { color: #2c362c; font-size: .9375rem; font-weight: 830; letter-spacing: -.03333em; }
+.hero-ring-label strong { color: #2c362c; font-size: .9375rem; font-weight: 830; letter-spacing: -.03333em; font-variant-numeric: tabular-nums; }
 .hero-ring-label small { color: #87907d; font-size: .5625rem; font-weight: 700; }
 html[data-theme="dark"] .hero-ring-track { stroke: #435345; }
 html[data-theme="dark"] .hero-ring-label strong { color: var(--ink); }
@@ -5357,6 +5357,7 @@ button:disabled:active {
   font-size: .5625rem;
   line-height: 1;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .weekly-history-detail {
   margin-top: 12px;
@@ -5792,6 +5793,7 @@ button:disabled:active {
 .finx-stat-copy strong {
   overflow: hidden; color: #1F2A1F; font-size: clamp(.9375rem, 1.8vw, 1.1875rem);
   font-weight: 850; letter-spacing: -.029em; text-overflow: ellipsis; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .finx-stat-copy span { display: -webkit-box; overflow: hidden; color: #8A8A80; font-size: .59375rem; line-height: 1.45; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
@@ -5838,7 +5840,7 @@ button:disabled:active {
 .finx-row-copy small { overflow: hidden; color: #8A8A80; font-size: .625rem; text-overflow: ellipsis; white-space: nowrap; }
 .finx-row-copy small b { font-weight: 800; color: #6D7466; }
 .finx-row-side { display: grid; justify-items: end; gap: 7px; }
-.finx-row-value { color: #1F2A1F; font-size: .8125rem; font-weight: 850; letter-spacing: -.02308em; }
+.finx-row-value { color: #1F2A1F; font-size: .8125rem; font-weight: 850; letter-spacing: -.02308em; font-variant-numeric: tabular-nums; }
 .finx-row-value.is-negative { color: #B04A2E; }
 .finx-row-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
 
