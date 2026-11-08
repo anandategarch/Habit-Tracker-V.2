@@ -383,8 +383,8 @@ button, input, select, textarea { font: inherit; }
 .habit-row:nth-child(4) .habit-icon { color: #4d8b8a; background: #e7f3f0; }
 .habit-name { color: #30372f; font-size: .75rem; font-weight: 760; }
 .habit-meta { color: #7a7d72; font-size: .6875rem; }
-.check-button { width: 31px; height: 31px; border-color: #d9e4d6; }
-.check-button.done { border-color: #3e9b5f; background: #3e9b5f; }
+.check-button::before { border-color: #d9e4d6; }
+.check-button.done::before { border-color: #3e9b5f; background: #3e9b5f; box-shadow:0 3px 8px rgba(62,155,95,.3); }
 
 .category-card { padding: 19px 21px; }
 .botanical-category-breakdown { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px 20px; }
@@ -3208,8 +3208,10 @@ html[data-theme="dark"] .menu-panel-footer .sidebar-growth { border-color: #3c4f
 .finance-day-detail-value strong { font-size: .71875rem; }
 .finance-category-name strong, .finance-category-amount { font-size: .6875rem; }
 
-/* --- 4. Target sentuh minimum 40px (WCAG 2.5.5) --- */
-.check-button { width: 40px; height: 40px; border-width: 1.5px; }
+/* --- 4. Target sentuh minimum 40px (WCAG 2.5.5) ---
+   v0.24 — hanya ukuran kotak sentuh; lingkaran tampak 26px digambar ::before
+   (globals.css) sehingga tombol tidak lagi tampil sebagai cakram raksasa. */
+.check-button { width: 40px; height: 40px; }
 
 .menu-panel-close { width: 40px; height: 40px; border-radius: 12px; }
 .finance-month-step { width: 40px; height: 40px; }
@@ -3990,18 +3992,23 @@ html[data-theme="dark"] .toast {
   background: #2c3f31;
   color: #e9f2e6;
 }
-html[data-theme="dark"] .check-button {
+html[data-theme="dark"] .check-button::before {
   background: var(--surface);
   border-color: var(--line);
+  box-shadow: none;
 }
-html[data-theme="dark"] .check-button:hover {
+html[data-theme="dark"] .check-button:not(.done):hover::before {
   background: var(--surface-soft);
   border-color: var(--sage);
 }
-html[data-theme="dark"] .check-button.done {
-  color: #fff;
+html[data-theme="dark"] .check-button.done { color: #fff; }
+html[data-theme="dark"] .check-button.done::before {
   background: var(--primary);
   border-color: var(--primary);
+  box-shadow: none;
+}
+html[data-theme="dark"] .check-button:focus-visible::before {
+  outline-color: #dcebd9;
 }
 html[data-theme="dark"] .habit-row.is-complete {
   background: var(--surface-soft);
@@ -4351,9 +4358,11 @@ html[data-theme="dark"] .search-empty span { color: var(--ink-soft); }
 
 /* --- 8. HOVER / ACTIVE FEEDBACK --- */
 @media (hover: hover) {
-  .check-button:not(.done):hover {
+  .check-button:not(.done):hover::before {
     border-color: #417a57;
     background: #eaf3e5;
+  }
+  .check-button:not(.done):hover {
     transform: scale(1.05);
   }
   .topbar-actions .theme-toggle:hover {
@@ -4816,6 +4825,16 @@ html[data-theme="dark"] .toast-dismiss:hover { background: rgba(255, 255, 255, .
     margin: 0;
   }
   .habit-row:has(.habit-drag-handle) .habit-row-actions { grid-column: 3 / -1; }
+  /* v0.24 — baris TANPA pegangan seret (dashboard "Ritual hari ini"):
+     kotak centang tetap di baris pertama, kolom kanan, tengah vertikal —
+     bukan jatuh ke bawah teks (warisan grid-column:2/-1 + flex-start
+     dari globals.css:2305-2307) yang membuatnya tampak seperti elemen lepas. */
+  .habit-row:not(:has(.habit-drag-handle)) .habit-row-actions {
+    grid-column: auto;
+    align-self: center;
+    justify-content: flex-end;
+    max-width: none;
+  }
 }
 
 /* ==========================================================================
@@ -5633,7 +5652,7 @@ button:disabled:active {
 }
 
 /* v0.8 — clean mobile rhythm, calm return, and optional detail panels. */
-.welcome-back-card,.weekly-reflection-card,.garden-personalize-row{display:flex;align-items:center;gap:13px;border:1px solid #e3ebdc;border-radius:19px;background:linear-gradient(115deg,#fffdf7,#f3f7ed)}
+.welcome-back-card,.weekly-reflection-card{display:flex;align-items:center;gap:13px;border:1px solid #e3ebdc;border-radius:19px;background:linear-gradient(115deg,#fffdf7,#f3f7ed)}
 .welcome-back-card{position:relative;margin:0 0 15px;padding:14px 42px 14px 14px}
 .welcome-back-art,.weekly-reflection-icon{display:grid;flex:none;place-items:center;width:43px;height:43px;border-radius:15px;color:#477653;background:#e5efdf}
 .welcome-back-copy,.weekly-reflection-copy{min-width:0;display:grid;gap:3px}
@@ -5659,17 +5678,9 @@ button:disabled:active {
   .story-card-copy{flex:1 1 calc(100% - 56px)}
   .story-card-open{margin-left:56px}
 }
-.garden-personalize-row{justify-content:space-between;margin:12px 0 16px;padding:10px 13px}
-.garden-personalize-row>div:first-child{display:grid;gap:3px}
-.garden-personalize-row strong{color:#4e694e;font-size:.6875rem;font-weight:800}
-.garden-theme-options{display:flex;flex-wrap:wrap;gap:5px}
-.garden-theme-options button{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:5px 8px;border:1px solid #e5e9df;border-radius:999px;color:#6f7d6b;background:#fffdf8;font:inherit;font-size:.625rem;cursor:pointer}
-.garden-theme-options button.active{border-color:#9db99b;color:#365d40;background:#edf4e9}
-.garden-theme-options i{width:9px;height:9px;border-radius:50%;background:#8eae86}
-.garden-theme-options i.peach{background:#d9a28a}.garden-theme-options i.moss{background:#6b8a5a}
-.garden-theme-peach .botanical-hero{background:linear-gradient(120deg,#fff0e7,#fffaf3 58%,#f7eee5)}
-.garden-theme-moss .botanical-hero{background:linear-gradient(120deg,#ebf2e2,#fbfdf7 58%,#e8f0e0)}
-.garden-theme-peach .hero-ring-progress{stroke:#c98568}.garden-theme-moss .hero-ring-progress{stroke:#5d8a4e}
+/* Baris "Suasana Tamanmu" + pemilih tema dihapus v0.24 (permintaan pengguna):
+   aturan .garden-personalize-row / .garden-theme-options / tint hero per tema
+   (Peach·Moss·Lavender) tidak lagi dipakai — Beranda memakai hero bawaan. */
 .weekly-reflection-card{position:relative;margin:0 0 15px;padding:12px 15px}
 .weekly-reflection-icon{width:38px;height:38px}.weekly-reflection-copy{flex:1}.weekly-reflection-mark{margin-left:auto;color:#b6c99f;font-size:1.4375rem}
 .daily-focus-picker{display:grid;gap:5px;max-width:100%;margin:0 0 9px;color:#8a947f;font-size:.5625rem;font-weight:850;letter-spacing:.08em}
@@ -5689,8 +5700,6 @@ button:disabled:active {
 @media(max-width:760px){
 .botanical-dashboard-page{gap:11px}.welcome-back-card{gap:10px;margin-bottom:10px;padding:11px 38px 11px 11px;border-radius:16px}
 .welcome-back-art{width:36px;height:36px;border-radius:12px}.welcome-back-copy strong{font-size:.8125rem}.welcome-back-copy p{font-size:.625rem}
-.garden-personalize-row{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 11px;margin:8px 0 12px}
-.garden-theme-options{width:100%}.garden-theme-options button{flex:1;justify-content:center;min-height:35px}
 .weekly-reflection-card{margin-bottom:11px;padding:10px 11px;gap:9px}.weekly-reflection-icon{width:34px;height:34px;border-radius:11px}
 .weekly-reflection-copy strong{font-size:.75rem}.weekly-reflection-copy p{font-size:.625rem}
 .daily-focus-picker select{min-height:42px;font-size:1rem}
@@ -6167,11 +6176,8 @@ html[data-theme="dark"] .primary-button { background: linear-gradient(115deg, #3
 .tree-level-progress { background: #EEE9DF; box-shadow: none; }
 .tree-level-progress > span { background: linear-gradient(90deg, #3E7C50, #8FCB8F); }
 
-/* ── P. Beranda: pil metrik + pilihan tema + gelembung kutipan peach ── */
+/* ── P. Beranda: pil metrik + gelembung kutipan peach ── */
 .hero-progress-card { border: 0; }
-.garden-theme-options { border: 0; background: #f2ecdf; }
-.garden-theme-options button { border: 0; color: #7d8276; }
-.garden-theme-options button.active { color: #fff; background: linear-gradient(110deg, #417a57, #5d9271); }
 .next-step-card { border: 0; border-radius: 22px; }
 .hero-quote-bubble {
   border: 1px solid #F5E3D2;
@@ -6292,9 +6298,10 @@ input[type="radio"] { accent-color: #417a57; }
 .desktop-sidebar-footer .avatar { color: #2F5E40; background: #EAF3E2; }   /* dulu #6958bd/#eee9ff */
 .desktop-sidebar-note p { font-size: .625rem; line-height: 1.55; overflow-wrap: anywhere; }
 
-/* ── X. v0.9.1 penutup: kartu "Suasana Tamanmu" hangat (bukan hijau dingin
-      yang terbaca lavender di beberapa layar) — audit VLM final. ── */
-.welcome-back-card, .weekly-reflection-card, .garden-personalize-row {
+/* ── X. v0.9.1 penutup: kartu sambutan & refleksi hangat (bukan hijau dingin
+      yang terbaca lavender di beberapa layar) — audit VLM final.
+      Baris "Suasana Tamanmu" dihapus v0.24. ── */
+.welcome-back-card, .weekly-reflection-card {
   border: 0;
   background: linear-gradient(115deg, #fffdf7, #f8f3e9);
   box-shadow: 0 8px 24px rgba(120, 100, 70, .08);
@@ -7992,16 +7999,12 @@ html[data-theme="dark"] .daily-focus-picker .themed-select-trigger {
     min-height: 44px;
   }
 
-  /* B.7 Dashboard — theme picker, next-step, garden journey link, plus
+  /* B.7 Dashboard — next-step, garden journey link, plus
      daily-intention-complete, weekly-add-action, story-card-open yang
      muncul ketika user punya data (sebelumnya 38-42px). Gunakan
      selector +element (specificity 0,1,1) untuk menang rule lama
      .daily-intention-actions button (line 5684) yang sebelumnya
-     min-height:42px. */
-  .garden-theme-options button {
-    min-height: 44px;
-    padding-block: 11px;
-  }
+     min-height:42px. (Pemilih tema taman dihapus v0.24.) */
   .next-step-action,
   .garden-journey-link,
   .daily-intention-complete,
@@ -8397,16 +8400,6 @@ html[data-theme="dark"] .settings-theme-options button.active {
   border-color: #4a4270;
   background: var(--rutina-lavender-soft);
 }
-.garden-theme-options button.active {
-  color: #fff;
-  background: linear-gradient(110deg, var(--rutina-lavender-deep), #7550d4);
-}
-.garden-theme-options i.lavender { background: var(--rutina-lavender); }
-
-/* 6b. Suasana taman “Lavender” — dipulihkan sesuai experience standard v0.8
-   (Sage/Peach/Lavender); tint hero ada di bagian 9, ring progres lavender
-   memakai token pedoman (≥3:1 pada kartu putih, WCAG 1.4.11). */
-.garden-theme-lavender .hero-ring-progress { stroke: var(--rutina-lavender); }
 
 /* 7. CTA “Satu langkah hari ini” — aksi utama → lavender; tombol “Tandai
    selesai” TETAP botanical green (aksi penyelesaian habit, pedoman
@@ -8449,9 +8442,6 @@ html:not([data-theme="dark"]) .app-shell[data-active-tab="finance"] .finance-bal
    ungu hanya 1.36:1); dengan teks gelap yang memenuhi AA (kicker ≥5.2:1,
    deskripsi ≥5.0:1, tautan ≥5.4:1 di atas pastel terang) kartu terang
    kembali sesuai pedoman.
-   Sekaligus memulihkan tint suasana taman: sejak v0.4.1, selector
-   .app-shell[data-active-tab="home"] .hero-card (0,3,0) menimpa semua
-   .garden-theme-* .botanical-hero (0,2,0) sehingga Peach/Moss juga mati.
    Scope html:not([data-theme="dark"]) menjaga mode gelap tetap memakai
    hero hijau tua + teks putih yang sudah terbaca. */
 html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .hero-card {
@@ -8466,18 +8456,6 @@ html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .hero-card .her
 html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .hero-card .hero-description { color: #5d6858; }
 html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .hero-card .garden-journey-link { color: #3c6a4c; }
 html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .hero-card .garden-journey-link:hover { color: #2f5e40; }
-/* 9b. Tint hero per suasana taman (light mode). */
-html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .garden-theme-peach .hero-card {
-  background: linear-gradient(120deg, #fff0e7, #fffaf3 58%, #f7eee5);
-}
-html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .garden-theme-moss .hero-card {
-  background: linear-gradient(120deg, #ebf2e2, #fbfdf7 58%, #e8f0e0);
-}
-html:not([data-theme="dark"]) .app-shell[data-active-tab="home"] .garden-theme-lavender .hero-card {
-  background:
-    radial-gradient(circle at 77% 18%, rgba(143, 122, 229, .16) 0 12%, transparent 12.3%),
-    linear-gradient(112deg, #f1ecfb 0%, #fffaf3 48%, #ece5fa 100%);
-}
 
 /* 2b. CTA utama lintas modul — globals.css:1798 membuat .primary-button
    mengikuti --module-accent tiap halaman (hijau/amber/teal); pedoman

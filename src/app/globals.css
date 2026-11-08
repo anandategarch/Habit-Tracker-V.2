@@ -162,8 +162,17 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .habit-main { flex:1; min-width:0; }
 .habit-name { overflow:hidden; color:var(--ink); font-size:.75rem; font-weight:720; text-overflow:ellipsis; white-space:nowrap; }
 .habit-meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:5px; color:var(--muted); font-size:.625rem; }
-.check-button { display:grid; place-items:center; width:31px; height:31px; flex:none; border:1.5px solid #d9e3d8; border-radius:50%; color:transparent; background:#fff; transition:.18s ease; }
-.check-button.done { color:#fff; background:var(--primary); border-color:var(--primary); }
+.check-button { display:grid; place-items:center; position:relative; width:31px; height:31px; flex:none; padding:0; border:0; border-radius:50%; color:transparent; background:transparent; transition:.18s ease; }
+/* v0.24 — lingkaran centang digambar oleh ::before (26px) sedangkan tombol
+   tetap 40/44px sebagai area sentuh (WCAG 2.5.8) — lingkaran tidak lagi terlihat
+   raksasa di baris "Ritual hari ini". Ukuran tombol ditetapkan lapis sentuh
+   (rutina-botanical.css: target 40px desktop, 44px ≤760px). */
+.check-button::before { content:""; position:absolute; left:50%; top:50%; width:26px; height:26px; transform:translate(-50%,-50%); border:1.5px solid #d9e3d8; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(47,94,64,.1); transition:.18s ease; }
+.check-button > svg { position:relative; }
+.check-button.done { color:#fff; }
+.check-button.done::before { background:var(--primary); border-color:var(--primary); box-shadow:0 3px 8px color-mix(in srgb, var(--primary) 32%, transparent); }
+.check-button:focus-visible { outline:0; box-shadow:none; }
+.check-button:focus-visible::before { outline:3px solid #2f5e40; outline-offset:3px; }
 .finance-mini { padding:20px; }
 .finance-mini-head { display:flex; justify-content:space-between; align-items:center; gap:10px; }
 .finance-mini-value { margin:13px 0 17px; font-size:1.625rem; font-weight:780; letter-spacing: -.03846em; font-variant-numeric:tabular-nums; }
@@ -948,9 +957,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .habit-row.is-complete .habit-name { color: #7d8e80; }
 .habit-meta { gap: 9px; margin-top: 4px; color: #8a968b; font-size: .5625rem; }
 .habit-meta span { display: inline-flex; align-items: center; gap: 4px; }
-.check-button { width: 30px; height: 30px; border-color: #dce6da; }
-.check-button:hover { border-color: #90b391; background: #f1f7ef; }
-.check-button.done { color: #fff; border-color: #2d7047; background: #2d7047; }
+.check-button::before { border-color:#dce6da; }
+.check-button:not(.done):hover::before { border-color:#90b391; background:#f1f7ef; }
+.check-button.done::before { border-color:#2d7047; background:#2d7047; box-shadow:0 3px 8px rgba(45,112,71,.28); }
 .list-more { margin-top: 13px; }
 .finance-mini { padding: 19px; border-radius: 19px; }
 .finance-mini-head { align-items: center; }
@@ -1797,7 +1806,8 @@ body { background: var(--canvas); color: var(--ink); }
 .topbar-context strong { color:var(--module-accent); }
 .main-shell .stat-icon { color:var(--module-accent); border-color:var(--module-line); background:var(--module-wash); }
 .main-shell .primary-button { background:linear-gradient(135deg,color-mix(in srgb,var(--module-accent) 82%,white),var(--module-accent)); }
-.main-shell .check-button.done { color:#fff; border-color:var(--module-accent); background:var(--module-accent); }
+.main-shell .check-button.done { color:#fff; }
+.main-shell .check-button.done::before { border-color:var(--module-accent); background:var(--module-accent); }
 .main-shell .completion-filters button.active,
 .main-shell .schedule-view-toggle button.active { color:var(--module-accent); background:var(--surface); box-shadow:0 2px 7px color-mix(in srgb,var(--module-accent) 12%,transparent); }
 .main-shell .category-filters button.active { color:var(--module-accent); border-color:var(--module-line); background:var(--module-wash); }
@@ -3123,14 +3133,8 @@ html[data-theme="dark"] .tree-season-card { border-color:var(--line); background
 .garden-rhythm-card.wilted .garden-rhythm-icon { background:#f1ece0; color:#8f8368; }
 .garden-rhythm-card.wilted .garden-rhythm-copy strong { color:#6e664e; }
 
-/* Chip koleksi benih di baris personalisasi taman. */
-.garden-seed-chip {
-  flex:none; display:inline-flex; align-items:center; gap:5px; align-self:center;
-  padding:6px 11px; border:1px solid #e3ebdc; border-radius:999px;
-  background:#fffdf8; color:#5f6f5c; font-size:.625rem; font-weight:750;
-  white-space:nowrap;
-}
-.garden-seed-chip strong { color:#2f6245; font-weight:900; }
+/* Dihapus v0.24 — baris "Suasana tamanmu" tidak lagi dirender (permintaan
+   pengguna); aturan .garden-seed-chip ikut dibersihkan. */
 
 @media (max-width:680px) {
   .garden-rhythm-card { gap:10px; padding:11px 12px; border-radius:16px; margin-bottom:10px; }

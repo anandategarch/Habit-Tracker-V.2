@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type { Habit, TabId } from "@/lib/types";
 import { formatCompactRupiah, todayISO } from "@/lib/format";
 import { summarizeHabits } from "@/lib/habits";
-import { computeGardenRhythm, consumeShield, shieldAvailableThisWeek, summarizeSeedBank, type GardenRhythm } from "@/lib/garden-rewards";
+import { computeGardenRhythm, consumeShield, shieldAvailableThisWeek, type GardenRhythm } from "@/lib/garden-rewards";
 import { progressSentence, streakStory, todayStory, weeklyStepsStory } from "@/lib/storytelling";
 import { ThemedSelect } from "@/components/ui/themed-select";
 import { RichText } from "@/components/ui/rich-text";
@@ -117,15 +117,12 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   const animatedStreak = useCountUp(longestStreak, 700, 180);
   const animatedNet = useCountUp(net, 950, 240);
 
-  // ===== Fase 2: ritme kebun (perisai / layu) + koleksi benih =====
+  // ===== Fase 2: ritme kebun (perisai / layu) =====
+  // v0.24 — baris "Suasana tamanmu" (pemilih tema + chip benih) dihapus
+  // dari Beranda sesuai permintaan; koleksi benih tetap hidup di Cerita
+  // Minggu (weekly-story) dan sistem reward tidak berubah.
   const [rhythm, setRhythm] = useState<GardenRhythm | null>(null);
   const rhythmDecided = useRef(false);
-  const [seedChip, setSeedChip] = useState(() => summarizeSeedBank());
-  useEffect(() => {
-    const onSeedAdded = () => setSeedChip(summarizeSeedBank());
-    window.addEventListener("rutina:seed-added", onSeedAdded);
-    return () => window.removeEventListener("rutina:seed-added", onSeedAdded);
-  }, []);
   useEffect(() => {
     if (rhythmDecided.current || !weekly.ready || weekly.byDate.size === 0) return;
     const plan = computeGardenRhythm(todayKey, weekly.byDate, completed, shieldAvailableThisWeek());
@@ -142,7 +139,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [focusHabitId, setFocusHabitId] = useState("");
-  const [gardenTheme, setGardenTheme] = useState<"sage" | "peach" | "moss" | "lavender">("sage");
   useEffect(() => {
     try {
       const today = todayISO();
@@ -163,14 +159,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
           setFocusHabitId(focusPreference.habitId);
         }
       }
-      const savedTheme = window.localStorage.getItem("rutina.v2.garden-theme");
-      // v0.21 — "lavender" kembali valid: pedoman UI justru menetapkan
-      // lavender sebagai aksen resmi (design-system.md + experience-standard
-      // v0.8: suasana taman Sage/Peach/Lavender). Nilai "moss" lawas tetap
-      // dihormati agar preferensi pengguna tidak berubah mendadak.
-      if (savedTheme === "peach" || savedTheme === "sage" || savedTheme === "moss" || savedTheme === "lavender") {
-        setGardenTheme(savedTheme);
-      }
     } catch { /* Preferensi lokal bersifat opsional. */ }
     setPreferencesReady(true);
   }, []);
@@ -183,10 +171,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
       }));
     } catch { /* Storage dinonaktifkan. */ }
   }, [focusHabitId, preferencesReady]);
-  useEffect(() => {
-    if (!preferencesReady) return;
-    try { window.localStorage.setItem("rutina.v2.garden-theme", gardenTheme); } catch { /* Storage dinonaktifkan. */ }
-  }, [gardenTheme, preferencesReady]);
   const focusedHabit = habits.find((habit) => habit.id === focusHabitId && !habit.completed) ?? upcomingHabit;
   // v0.13 — cerita langkah mingguan: chip tren (↑2) + kalimat insight ber-bold.
   // Menggantikan pesan perbandingan polos yang datar.
@@ -195,7 +179,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
     previousTotal: weekly.previousTotal,
     ready: weekly.ready,
   });
-  const gardenMilestone = longestStreak >= 30 ? "Akar yang kuat · 30 hari" : longestStreak >= 7 ? "Tunas konsisten · 7 hari" : completed > 0 ? "Tunas pertamamu mulai tumbuh" : "Setiap taman dimulai dari satu benih";
   const weeklyMilestones = [
     { title: "Benih pertama", target: 1, hint: "1 langkah tercatat" },
     { title: "Akar mulai kuat", target: 7, hint: "7 langkah tercatat" },
@@ -220,7 +203,7 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
   const heroStory = todayStory({ total: habits.length, completed, vacationMode });
 
   return (
-    <div className={`botanical-dashboard-page garden-theme-${gardenTheme}`}>
+    <div className="botanical-dashboard-page">
       <PageIntro
         eyebrow={dateLabel}
         title={`${greeting}, Ananda! 🌱`}
@@ -347,8 +330,6 @@ export function DashboardView({ habits, totalHabits, income, expense, onNavigate
         <StatCard label="Kebiasaan aktif" value={String(totalHabits)} foot="Hal yang sedang kamu rawat" icon={Sprout} tone="green" />
         <StatCard label="Arus kas bersih" value={formatCompactRupiah(animatedNet)} foot="Bulan berjalan" icon={WalletCards} tone="orange" />
       </div>
-
-      <section className="garden-personalize-row" aria-label="Personalisasi taman"><div><span className="small-label">SUASANA TAMANMU</span><strong>{gardenMilestone}</strong></div>{seedChip.total > 0 && <div className="garden-seed-chip" role="status" title="Koleksi benih dari perayaan bloom">🌱 <strong>{seedChip.total}</strong> benih{seedChip.langka > 0 ? ` · ${seedChip.langka} langka` : ""}{seedChip.legendaris > 0 ? ` · ${seedChip.legendaris} legendaris` : ""}</div>}<div className="garden-theme-options" role="group" aria-label="Pilih suasana taman"><button type="button" className={gardenTheme === "sage" ? "active" : ""} aria-pressed={gardenTheme === "sage"} onClick={() => setGardenTheme("sage")}><i className="sage" />Sage</button><button type="button" className={gardenTheme === "peach" ? "active" : ""} aria-pressed={gardenTheme === "peach"} onClick={() => setGardenTheme("peach")}><i className="peach" />Peach</button><button type="button" className={gardenTheme === "moss" ? "active" : ""} aria-pressed={gardenTheme === "moss"} onClick={() => setGardenTheme("moss")}><i className="moss" />Moss</button><button type="button" className={gardenTheme === "lavender" ? "active" : ""} aria-pressed={gardenTheme === "lavender"} onClick={() => setGardenTheme("lavender")}><i className="lavender" />Lavender</button></div></section>
 
       <div className="dashboard-feature-grid">
         <section className="card card-pad home-habits-card">
