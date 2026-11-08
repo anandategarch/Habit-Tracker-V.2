@@ -524,7 +524,7 @@ export function DataManagerView({
         <div className="card card-pad manage-empty">
           <span className="manage-empty-icon"><Inbox size={22} /></span>
           <strong>Belum ada data untuk dikelola</strong>
-          <p>Semua daftarmu masih kosong. Mulai catat kebiasaan atau transaksi dulu, ya.</p>
+          <p>Belum ada data tersimpan. Tambahkan kebiasaan atau transaksi terlebih dahulu.</p>
         </div>
       ) : (
         <>

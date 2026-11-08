@@ -13,20 +13,11 @@ const XP_BY_DIFFICULTY: Record<string, number> = {
   Mudah: 5, Sedang: 10, Sulit: 20,
 };
 const STAGES = [
-  { id: "benih", label: "Benih", threshold: 0, next: 50, artwork: "/tree/benih.svg", tagline: "Satu keputusan kecil bisa menjadi awal dari perubahan besar." },
-  { id: "tunas", label: "Tunas", threshold: 50, next: 150, artwork: "/tree/tunas.svg", tagline: "Konsistensi mulai terlihat. Kebiasaan mulai punya bentuk." },
-  { id: "pohon-muda", label: "Pohon Muda", threshold: 150, next: 300, artwork: "/tree/pohon-muda.svg", tagline: "Rutinitas mulai berakar dan memberi hasil yang lebih stabil." },
-  { id: "pohon-dewasa", label: "Pohon Dewasa", threshold: 300, next: null, artwork: "/tree/pohon-dewasa.svg", tagline: "Konsistensi berubah menjadi sistem yang bisa diandalkan." },
+  { id: "benih", label: "Benih", threshold: 0, next: 50, artwork: "/tree/benih.svg" },
+  { id: "tunas", label: "Tunas", threshold: 50, next: 150, artwork: "/tree/tunas.svg" },
+  { id: "pohon-muda", label: "Pohon Muda", threshold: 150, next: 300, artwork: "/tree/pohon-muda.svg" },
+  { id: "pohon-dewasa", label: "Pohon Dewasa", threshold: 300, next: null, artwork: "/tree/pohon-dewasa.svg" },
 ] as const;
-const WISDOM = [
-  "Tidak semua pertumbuhan terlihat setiap hari. Akar juga tumbuh dalam diam.",
-  "Konsistensi kecil lebih kuat daripada semangat besar yang hanya sesaat.",
-  "Beristirahat bukan berarti berhenti bertumbuh.",
-  "Rawat prosesnya; hasil akan mengikuti waktunya.",
-  "Satu langkah yang diulang adalah awal dari perubahan yang bertahan.",
-  "Jangan bandingkan musim tumbuhmu dengan musim panen orang lain.",
-  "Hari ini tidak harus sempurna. Cukup terus hadir.",
-];
 
 function shiftYmd(ymd: string, days: number): string {
   const value = new Date(`${ymd}T00:00:00Z`);
@@ -143,14 +134,12 @@ export async function GET() {
         : currentStreak >= 7
           ? "/tree/berbunga.svg"
           : stage.artwork;
-    const dayOfYear = Math.floor((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${today.slice(0, 4)}-01-01T00:00:00Z`)) / 86_400_000);
-    const wisdom = WISDOM[dayOfYear % WISDOM.length];
 
     return NextResponse.json({
       today, weekStart: monday, totalXp, weeklyXp, level, levelProgress,
       currentStreak, completedGoals, habitCount: habits.length,
       scheduledToday: scheduledToday.length, completedToday: todayScheduledDone,
-      vacationMode: Boolean(settings?.vacationMode), stage, artwork, wisdom,
+      vacationMode: Boolean(settings?.vacationMode), stage, artwork,
       worstHabit, totalLogs,
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

@@ -191,7 +191,7 @@ export function EntryModal({ mode, onClose, onSubmit, wallets = [], groups = [] 
           <div>
             <div className="eyebrow">{isHabit ? "BANGUN KEBIASAAN" : "CATAT ARUS UANG"}</div>
             <h2 className="modal-title" id="entry-modal-title">{isHabit ? "Tambah kebiasaan" : "Catat transaksi"}</h2>
-            <p className="modal-description">{isHabit ? "Tentukan satu hal kecil yang ingin kamu rawat." : "Simpan detail transaksi agar arus uangmu lebih mudah dipahami."}</p>
+            <p className="modal-description">{isHabit ? "Detail kebiasaan baru." : "Detail transaksi baru."}</p>
           </div>
           <IconAction label="Tutup dialog" onClick={onClose}><X size={17} /></IconAction>
         </div>

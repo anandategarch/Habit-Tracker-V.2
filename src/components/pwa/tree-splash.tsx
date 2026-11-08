@@ -26,7 +26,7 @@ export function TreeSplash() {
   return (
     <div className="tree-splash" role="status" aria-label="Rutina sedang dibuka">
       <div className="tree-splash-content">
-        <svg className="tree-splash-art" viewBox="0 0 360 360" role="img" aria-label="Pohon tumbuh dari sebuah biji">
+        <svg className="tree-splash-art" viewBox="0 0 360 360" role="img" aria-label="Ilustrasi pohon Rutina">
           <path className="tree-splash-ground" d="M54 310 C112 304 242 304 306 310" />
           <g className="tree-splash-seed">
             <ellipse cx="180" cy="302" rx="10" ry="13" fill="#b97942" />
@@ -52,9 +52,8 @@ export function TreeSplash() {
         </svg>
 
         <div className="tree-splash-copy">
-          <span className="tree-splash-kicker">SETIAP HAL BESAR PUNYA AWAL</span>
+          <span className="tree-splash-kicker">PELACAK KEBIASAAN &amp; KEUANGAN</span>
           <h1>Rutina<span>.</span></h1>
-          <p>Hal besar tumbuh dari kebiasaan kecil.</p>
         </div>
       </div>
 

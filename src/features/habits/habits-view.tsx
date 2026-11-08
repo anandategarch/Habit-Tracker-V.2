@@ -321,7 +321,7 @@ export function HabitsView({ habits, onToggle, onAdd, onAdjust, onReorder, vacat
           <EmptyState
             icon={query ? Search : ListChecks}
             title={total === 0 ? "Belum ada kebiasaan" : "Tidak ada kebiasaan yang cocok"}
-            description={total === 0 ? "Mulai dari hal sederhana yang bisa kamu ulangi setiap hari." : "Ubah kata kunci atau filter untuk melihat kebiasaan lainnya."}
+            description={total === 0 ? "Tambahkan kebiasaan pertama untuk mulai mencatat progres." : "Ubah kata kunci atau filter untuk melihat kebiasaan lainnya."}
             action={total === 0 ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Tambah kebiasaan</PrimaryButton> : undefined}
           />
         )}

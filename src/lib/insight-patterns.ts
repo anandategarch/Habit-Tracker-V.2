@@ -1,5 +1,4 @@
-// Pola menarak lintas-domain (v1) — insight crossover kebiasaan × keuangan.
-// "Tiap kamu skip olahraga, kopi naik. Kebetulan? Mungkin bukan."
+// Pola lintas-domain (v1) — insight crossover kebiasaan × keuangan.
 //
 // Aturan kejujuran (evidence-only):
 // - Hanya hari yang punya >= 1 transaksi tercatat ("tracked") yang dihitung —
@@ -56,24 +55,24 @@ export function crossoverStory(days: CrossoverDay[]): CrossoverStory | null {
     quietAvg: Math.round(quietAvg),
   };
 
-  const source = `Dari **${tracked.length} hari tercatat**: hari aktifmu rata-rata Rp${shortRupiah(activeAvg)}, hari tenangmu Rp${shortRupiah(quietAvg)}.`;
+  const source = `Dari **${tracked.length} hari tercatat**: rata-rata pengeluaran Rp${shortRupiah(activeAvg)} di hari aktif, Rp${shortRupiah(quietAvg)} di hari tanpa kebiasaan.`;
 
-  // Arah 1: hari tanpa habit justru lebih boros — momen "aha" motivasi.
+  // Arah 1: hari tanpa habit justru lebih boros.
   const quietDiff = quietAvg - activeAvg;
   if (quietDiff >= MIN_DIFF && quietAvg >= activeAvg * MIN_RATIO) {
     return {
-      headline: `Di hari **tanpa habit**, pengeluaranmu rata-rata Rp${shortRupiah(quietDiff)} lebih tinggi`,
-      note: `${source} Kebetulan? Mungkin bukan — coba tanam satu langkah kecil di hari kosongmu berikutnya.`,
+      headline: `Pengeluaran rata-rata Rp${shortRupiah(quietDiff)} lebih tinggi di hari **tanpa kebiasaan**`,
+      note: source,
       stats,
     };
   }
 
-  // Arah 2: hari aktif lebih boros (biasanya karena keluar rumah) — netral, tanpa menghakimi.
+  // Arah 2: hari aktif lebih boros (biasanya karena keluar rumah).
   const activeDiff = activeAvg - quietAvg;
   if (activeDiff >= MIN_DIFF && activeAvg >= quietAvg * MIN_RATIO) {
     return {
-      headline: `Di hari **banyak habit**, pengeluaranmu rata-rata Rp${shortRupiah(activeDiff)} lebih tinggi`,
-      note: `${source} Hari aktif sering berarti hari keluar rumah — bukan masalah, hanya pola yang layak kamu tahu.`,
+      headline: `Pengeluaran rata-rata Rp${shortRupiah(activeDiff)} lebih tinggi di hari **dengan kebiasaan**`,
+      note: source,
       stats,
     };
   }

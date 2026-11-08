@@ -166,9 +166,9 @@ function GoalsView({ modules, updateModule }: { modules: WorkspaceModules; updat
           <div className="goal-progress-heading"><span>PROGRES TUJUAN</span><strong>{progress}%</strong></div>
           <div className="module-progress-track" role="progressbar" aria-label={"Progres tujuan " + goal.title} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}><span style={{ width: progress + "%" }} /></div>
           <div className="module-inline-meta"><small>{done}/{goal.milestones.length} milestone</small><button type="button" className={secondary} onClick={() => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, completed: !item.completed } : item))}>{goal.completed ? <><RotateCcw size={13} /> Buka kembali</> : <><Check size={13} /> Tandai selesai</>}</button></div>
-          {goal.milestones.length > 0 ? <div className="goal-milestones"><span className="goal-milestones-label">LANGKAH BERIKUTNYA</span>{goal.milestones.map((step) => <label className="module-check-row" key={step.id}><input type="checkbox" aria-label={step.title} checked={step.completed} onChange={(event) => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, milestones: item.milestones.map((part) => part.id === step.id ? { ...part, completed: event.target.checked } : part) } : item))} /><span className={step.completed ? "is-done" : ""}>{step.title}</span></label>)}</div> : <p className="goal-no-milestones">Belum ada milestone. Kamu tetap bisa menandai tujuan ini selesai kapan pun.</p>}
+          {goal.milestones.length > 0 ? <div className="goal-milestones"><span className="goal-milestones-label">LANGKAH BERIKUTNYA</span>{goal.milestones.map((step) => <label className="module-check-row" key={step.id}><input type="checkbox" aria-label={step.title} checked={step.completed} onChange={(event) => updateModule("goals", (items) => items.map((item) => item.id === goal.id ? { ...item, milestones: item.milestones.map((part) => part.id === step.id ? { ...part, completed: event.target.checked } : part) } : item))} /><span className={step.completed ? "is-done" : ""}>{step.title}</span></label>)}</div> : <p className="goal-no-milestones">Belum ada milestone. Tujuan tetap bisa ditandai selesai.</p>}
         </article>;
-      })}</div> : <div className="goal-empty-state"><NoData>Belum ada tujuan. Mulai dengan satu hasil yang ingin kamu capai.</NoData><PrimaryButton onClick={() => setCreateOpen(true)}><Plus size={14} /> Buat tujuan pertama</PrimaryButton></div>}
+      })}</div> : <div className="goal-empty-state"><NoData>Belum ada tujuan tersimpan.</NoData><PrimaryButton onClick={() => setCreateOpen(true)}><Plus size={14} /> Buat tujuan pertama</PrimaryButton></div>}
     </section>
   </>;
 }
@@ -190,7 +190,7 @@ function CheckinView({ modules, updateModule }: { modules: WorkspaceModules; upd
   return <>
     <Intro icon="checkin" title="Check-in" />
     <div className="module-two-col">
-      <Panel title="Check-in hari ini" caption={current ? "Perbarui catatanmu bila diperlukan." : "Tidak perlu sempurna. Catat apa adanya."}>
+      <Panel title="Check-in hari ini" caption={current ? "Sudah terisi hari ini — perbarui bila perlu." : "Catat mood, energi, dan tidur hari ini."}>
         <form className="form-grid" noValidate onSubmit={submit}>
           <div className="form-two-columns">
             <Field label="Mood (1–5)"><ThemedSelect className={field} name="mood" defaultValue={String(current?.mood ?? 3)}>{[1,2,3,4,5].map((n) => <option key={n} value={n}>{n} · {["","Sangat berat","Kurang baik","Biasa","Baik","Sangat baik"][n]}</option>)}</ThemedSelect></Field>
@@ -304,7 +304,7 @@ function TrainingView({ modules, updateModule }: { modules: WorkspaceModules; up
     <Intro icon="training" title="Latihan" />
     <div className="module-metrics"><Metric label="SESI LATIHAN" value={String(modules.workouts.length)} icon={Activity} tone="leaf" /><Metric label="TOTAL DURASI" value={`${totalMinutes} mnt`} icon={Clock3} tone="amber" /><Metric label="KESIAPAN HARI INI" value={readiness ? `${Math.round((readiness.mood + readiness.energy) / 10 * 100)}%` : "—"} icon={Gauge} tone="peach" /></div>
     <div className="module-two-col"><Panel title="Catat sesi latihan" caption="Log gerakan, set, repetisi, beban, dan kardio"><form className="form-grid" noValidate onSubmit={addWorkout}><Field label="Nama sesi"><input className={field} name="title" defaultValue="Full body" maxLength={80} /></Field><div className="form-two-columns"><Field label="Tanggal"><input className={field} name="date" type="date" max={today()} defaultValue={today()} /></Field><Field label="Durasi latihan (menit)"><input className={field} name="duration" type="number" min="0" inputMode="numeric" defaultValue="45" /></Field></div><Field label="Nama gerakan"><input className={field} name="exercise" required maxLength={80} placeholder="Contoh: Push-up" /></Field><div className="form-three-columns"><Field label="Set"><input className={field} name="sets" type="number" min="1" inputMode="numeric" defaultValue="3" /></Field><Field label="Repetisi"><input className={field} name="reps" type="number" min="1" inputMode="numeric" defaultValue="10" /></Field><Field label="Beban (kg)"><input className={field} name="weight" type="number" min="0" step=".5" inputMode="decimal" defaultValue="0" /></Field></div><Field label="Kardio (menit)"><input className={field} name="cardio" type="number" min="0" inputMode="numeric" defaultValue="0" /></Field><Field label="Catatan"><textarea className={field} name="notes" rows={2} maxLength={1000} /></Field><PrimaryButton type="submit"><Plus size={15} /> Simpan latihan</PrimaryButton></form></Panel><Panel title="Program latihan" caption="Simpan split latihan mingguan"><form className="form-grid" noValidate onSubmit={addProgram}><Field label="Nama program"><input className={field} name="title" required maxLength={80} placeholder="Contoh: Strength 3 hari" /></Field><Field label="Hari latihan"><input className={field} name="days" maxLength={120} placeholder="Senin, Rabu, Jumat" /></Field><Field label="Deskripsi"><textarea className={field} name="description" rows={2} maxLength={500} /></Field><PrimaryButton type="submit"><Plus size={15} /> Buat program</PrimaryButton></form>{modules.programs.map((program) => <article className="module-item" key={program.id}><div className="module-item-top"><div><h3>{program.title} {program.active && <span className="module-tag">Aktif</span>}</h3><p>{program.days} · {program.description}</p></div></div><button className={secondary} onClick={() => updateModule("programs", (items) => items.map((item) => ({ ...item, active: item.id === program.id })))}><Zap size={13} /> Jadikan aktif</button></article>)}</Panel></div>
-    <Panel title="Riwayat latihan" caption="Setiap sesi yang kamu catat">{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData>Belum ada sesi latihan.</NoData>}</Panel>
+    <Panel title="Riwayat latihan" caption={`${modules.workouts.length} sesi tersimpan`}>{modules.workouts.length ? <div className="module-list">{modules.workouts.slice(0, 30).map((session) => <article className="module-item" key={session.id}><div className="module-item-top"><div><small className="module-muted">{formatDate(session.date)}</small><h3>{session.title}</h3><p>{session.durationMinutes} menit latihan · {session.cardioMinutes} menit kardio</p></div></div>{session.exercises.map((exercise) => <p className="module-muted" key={exercise.id}>{exercise.name} · {exercise.sets} × {exercise.reps} · {exercise.weightKg} kg</p>)}{session.notes && <p>{session.notes}</p>}</article>)}</div> : <NoData>Belum ada sesi latihan.</NoData>}</Panel>
     <Panel title="Foto progres" caption="Foto dikompresi sebelum disimpan; maksimal 5 foto aktif"><label className="module-upload"><ImagePlus size={20} /><span>{photoBusy ? "Mengompresi foto…" : "Tambah foto progres"}</span><input type="file" accept="image/*" disabled={photoBusy} onChange={addPhoto} /></label>{modules.progressPhotos.length > 0 && <div className="module-photo-grid">{/* eslint-disable @next/next/no-img-element -- data URL JPEG hasil kompresi klien; optimasi next/image tidak berlaku untuk data URL */}{modules.progressPhotos.map((photo) => <figure key={photo.id}><img src={photo.imageData} alt={`Foto progres ${photo.date}`} /><figcaption>{formatDate(photo.date)}</figcaption></figure>)}{/* eslint-enable @next/next/no-img-element */}</div>}</Panel>
   </>;
 }
@@ -321,9 +321,8 @@ interface GrowthSummary {
   scheduledToday: number;
   completedToday: number;
   vacationMode: boolean;
-  stage: { id: string; label: string; threshold: number; next: number | null; artwork: string; tagline: string; index: number; xpToNext: number | null; progress: number };
+  stage: { id: string; label: string; threshold: number; next: number | null; artwork: string; index: number; xpToNext: number | null; progress: number };
   artwork: string;
-  wisdom: string;
   worstHabit: { id: string; name: string; rate: number } | null;
   totalLogs: number;
 }
@@ -349,12 +348,12 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
 
   const lifetimeStageConfig = growth
     ? growth.level >= 7
-      ? { name: "Pohon Dewasa", artwork: "/tree/pohon-dewasa.svg", tagline: "Konsistensi telah berakar menjadi sistem yang bisa kamu andalkan." }
+      ? { name: "Pohon Dewasa", artwork: "/tree/pohon-dewasa.svg" }
       : growth.level >= 4
-        ? { name: "Pohon Muda", artwork: "/tree/pohon-muda.svg", tagline: "Rutinitasmu mulai berakar dan memberi bentuk pada hari-hari." }
+        ? { name: "Pohon Muda", artwork: "/tree/pohon-muda.svg" }
         : growth.level >= 2
-          ? { name: "Tunas", artwork: "/tree/tunas.svg", tagline: "Langkah kecilmu mulai terlihat sebagai pertumbuhan yang nyata." }
-          : { name: "Benih", artwork: "/tree/benih.svg", tagline: "Setiap perjalanan tumbuh dari satu keputusan sederhana." }
+          ? { name: "Tunas", artwork: "/tree/tunas.svg" }
+          : { name: "Benih", artwork: "/tree/benih.svg" }
     : null;
   const lifetimeStage = lifetimeStageConfig?.name ?? "—";
   const goalsCount = modules.goals.filter((goal) => goal.completed).length;
@@ -366,9 +365,8 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
       {growth ? <>
         <section className="tree-journey-hero">
           <div className="tree-journey-copy">
-            <span className="tree-journey-kicker">YOUR LITTLE GROWTH STORY</span>
-            <h2>Rawat pohonmu,<br />rayakan setiap<br />langkah kecil.</h2>
-            <p>{lifetimeStageConfig?.tagline ?? growth.stage.tagline}</p>
+            <span className="tree-journey-kicker">PROGRES SEUMUR HIDUP</span>
+            <h2>Level {growth.level} · {lifetimeStage}</h2>
             <div className="tree-level-lockup">
               <span className="tree-level-badge">LEVEL {growth.level}</span>
               <span className="tree-level-name">Pohon Produktivitas</span>
@@ -393,30 +391,31 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
           </div>
           <div className="tree-weekly-ribbon">
             <span className="tree-weekly-ribbon-icon"><Sprout size={16} /></span>
-            <span><small>MUSIM MINGGU INI</small><strong>{growth.stage.label} · {growth.weeklyXp.toLocaleString("id-ID")} XP</strong></span>
+            <span><small>MINGGU INI</small><strong>{growth.stage.label} · {growth.weeklyXp.toLocaleString("id-ID")} XP</strong></span>
             <span className="tree-weekly-ribbon-meta">{growth.stage.xpToNext === null ? "Tahap tertinggi" : growth.stage.xpToNext.toLocaleString("id-ID") + " XP lagi"}</span>
           </div>
         </section>
 
         <div className="tree-season-stats">
           <div><span className="small-label">LEVEL SEUMUR HIDUP</span><strong>{growth.level}</strong><small>{growth.totalXp.toLocaleString("id-ID")} total XP</small></div>
-          <div><span className="small-label">STREAK TERPANJANG</span><strong>{growth.currentStreak} hari</strong><small>{growth.currentStreak >= 7 ? "Pohon sedang berbunga" : "Konsistensi sedang dibangun"}</small></div>
-          <div><span className="small-label">BUAH EMAS</span><strong>{goalsCount}</strong><small>Tujuan yang telah selesai</small></div>
+          <div><span className="small-label">STREAK TERPANJANG</span><strong>{growth.currentStreak} hari</strong><small>{growth.currentStreak >= 7 ? "7 hari atau lebih" : "Kurang dari 7 hari"}</small></div>
+          <div><span className="small-label">TUJUAN SELESAI</span><strong>{goalsCount}</strong><small>Tujuan yang ditandai selesai</small></div>
         </div>
 
         <div className="module-two-col tree-detail-grid" id="tree-growth-details">
-          <Panel title="Penyiraman hari ini" caption="Setiap habit yang selesai membantu pertumbuhan hari ini">
+          <Panel title="Penyiraman hari ini" caption="Habit terjadwal vs selesai hari ini">
             <div className="tree-watering-count"><strong>{growth.completedToday}/{growth.scheduledToday}</strong><span>habit terjadwal selesai</span></div>
             <div className="module-progress-track"><span style={{ width: String(growth.scheduledToday ? growth.completedToday / growth.scheduledToday * 100 : 0) + "%" }} /></div>
-            <p className="module-muted">{growth.vacationMode ? "Mode libur aktif: pencatatan habit dijeda." : growth.scheduledToday === 0 ? "Tidak ada habit yang terjadwal hari ini." : growth.completedToday >= growth.scheduledToday ? "Semua habit hari ini telah selesai. Pohonmu mendapat siraman penuh." : (growth.scheduledToday - growth.completedToday) + " habit lagi untuk menyelesaikan penyiraman hari ini."}</p>
+            <p className="module-muted">{growth.vacationMode ? "Mode libur aktif: pencatatan habit dijeda." : growth.scheduledToday === 0 ? "Tidak ada habit yang terjadwal hari ini." : growth.completedToday >= growth.scheduledToday ? "Semua habit terjadwal selesai." : (growth.scheduledToday - growth.completedToday) + " habit belum selesai."}</p>
           </Panel>
-          <Panel title="Kebijaksanaan pohon" caption="Pengingat harian dari perjalanan yang terus bertumbuh">
-            <div className="tree-wisdom-quote"><span aria-hidden="true">“</span><p>{growth.wisdom}</p></div>
-            {growth.worstHabit && <div className="tree-care-note"><strong>Perlu dirawat: {growth.worstHabit.name}</strong><p>Catatan penyelesaian 30 hari terakhir: {Math.round(growth.worstHabit.rate)}%.</p></div>}
+          <Panel title="Fokus 30 hari" caption="Kebiasaan dengan tingkat penyelesaian terendah">
+            {growth.worstHabit
+              ? <div className="tree-care-note"><strong>{growth.worstHabit.name}</strong><p>Tingkat penyelesaian 30 hari terakhir: {Math.round(growth.worstHabit.rate)}%.</p></div>
+              : <NoData>Belum ada data kebiasaan.</NoData>}
           </Panel>
         </div>
 
-        <Panel title="Jalan pertumbuhan seumur hidup" caption="Setiap tahap menyimpan jejak konsistensi yang sudah kamu bangun">
+        <Panel title="Jalan pertumbuhan seumur hidup" caption="Empat tahap berdasarkan level seumur hidup">
           <div className="tree-lifetime-path">
             {[
               { name: "Benih", level: "Level 1", min: 1, art: "/tree/benih.svg" },
@@ -436,8 +435,8 @@ function TreeView({ modules }: { modules: WorkspaceModules }) {
         </Panel>
       </> : <section className="card card-pad tree-loading-state">
         <div className="tree-loading-mark"><Sprout size={30} /></div>
-        <strong>{error ? "Data pertumbuhan belum tersedia" : "Menghitung pertumbuhan pohon…"}</strong>
-        <p>{error ? "Data pertumbuhan belum tersedia. Periksa koneksi lalu muat ulang untuk melihat XP, level, serta riwayat pohon." : "Menghitung catatan habit yang tersimpan."}</p>
+        <strong>{error ? "Data pertumbuhan belum tersedia" : "Memuat data pohon…"}</strong>
+        <p>{error ? "Periksa koneksi lalu muat ulang untuk melihat XP, level, dan riwayat pohon." : "Mengambil catatan habit dari server."}</p>
       </section>}
     </div>
   );
@@ -590,7 +589,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
         <PrimaryButton type="submit"><Plus size={15} /> Tambah dompet</PrimaryButton>
       </form>
       <div className="finx-list-card finx-wallet-list-card">
-        <div className="finx-card-title"><strong>Dompet kamu</strong><small>{finance.wallets.length} dompet</small></div>
+        <div className="finx-card-title"><strong>Daftar dompet</strong><small>{finance.wallets.length} dompet</small></div>
         {finance.wallets.length ? <div className="finx-rows finx-wallet-rows">{finance.wallets.map((wallet) => { const balance = walletBalance(wallet); return (
           <article className="finx-row finx-wallet-row" key={wallet.id}>
             <span className={`finx-row-icon ${walletTile(wallet.type)}`} aria-hidden="true">{walletIcon(wallet.type)}</span>
@@ -662,7 +661,7 @@ export function FinanceExtrasPanel({ modules, updateModule, transactions, onAddT
 
     {tab === "savings" && <div className="finx-panel">
       <form className="finx-form-card" noValidate onSubmit={addSavings}>
-        <div className="finx-card-title"><strong>Buat target tabungan</strong><small>Menabung tumbuh sedikit demi sedikit</small></div>
+        <div className="finx-card-title"><strong>Buat target tabungan</strong><small>Target dan progres tabungan</small></div>
         <Field label="Nama tujuan tabungan"><input className={field} name="title" required maxLength={100} /></Field>
         <div className="form-two-columns"><Field label="Target (Rp)"><input className={field} name="target" type="number" min="1" step="1" inputMode="numeric" required /></Field><Field label="Sudah terkumpul (Rp)"><input className={field} name="saved" type="number" min="0" step="1" inputMode="numeric" defaultValue="0" /></Field></div>
         <Field label="Tenggat"><input className={field} name="dueDate" type="date" min={today()} /></Field>

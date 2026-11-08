@@ -2,9 +2,12 @@
 
 import { useMemo, useState } from "react";
 import {
+  AlertCircle,
+  AlertTriangle,
   ArrowDownLeft,
   ArrowUpRight,
   CalendarDays,
+  CheckCircle2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -18,7 +21,7 @@ import {
 import type { Budget, Transaction, TransactionCategory } from "@/lib/types";
 import { formatCompactRupiah, formatRupiah, todayISO } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
-import { budgetNarrative, categoryEmoji, financeAnomaly, financeStory } from "@/lib/storytelling";
+import { budgetNarrative, financeAnomaly, financeStory } from "@/lib/storytelling";
 import { RichText } from "@/components/ui/rich-text";
 import { useCountUp } from "@/components/ui/celebrate";
 import { EmptyState, PageIntro, PrimaryButton, SectionHeading, TransactionRow } from "@/components/ui/primitives";
@@ -242,10 +245,13 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
         </div>
       </div>
 
-      <section className="finance-story-banner" data-tone={moneyStory.tone} role="status" aria-live="polite" aria-label="Ringkasan cerita keuangan bulan ini">
-        <span className="finance-story-emoji" aria-hidden="true">{moneyStory.emoji}</span>
+      <section className="finance-story-banner" data-tone={moneyStory.tone} role="status" aria-live="polite" aria-label="Ringkasan keuangan bulan ini">
+        <span className="finance-story-emoji" aria-hidden="true">
+          {moneyStory.tone === "rose" ? <AlertTriangle size={18} /> : moneyStory.tone === "amber" ? <AlertCircle size={18} /> : moneyStory.tone === "green" ? <CheckCircle2 size={18} /> : <Wallet size={18} />}
+        </span>
         <div className="finance-story-copy">
           <h2 className="finance-story-headline"><RichText text={moneyStory.headline} /></h2>
+          <p className="finance-story-note">{moneyStory.note}</p>
           {moneyStory.chips.length > 0 && (
             <div className="finance-story-chips">
               {moneyStory.chips.map((chip) => (
@@ -334,7 +340,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
             <>
               {topCategoryShare && (
                 <p className="finance-category-takeaway">
-                  <RichText text={`${categoryEmoji(topCategoryShare.category)} **${topCategoryShare.category}** jadi pos terbesar — ${Math.round(topCategoryShare.share)}% dari pengeluaranmu`} />
+                  <RichText text={`Kategori terbesar: **${topCategoryShare.category}** · ${Math.round(topCategoryShare.share)}% dari pengeluaran`} />
                 </p>
               )}
               <div className="finance-category-list">
@@ -482,7 +488,7 @@ export function FinanceView({ transactions, budgets, income, expense, onAdd, onE
             icon={Receipt}
             title={monthTransactions.length === 0 ? "Belum ada transaksi" : "Tidak ada transaksi pada filter ini"}
             description={monthTransactions.length === 0
-              ? "Catat pemasukan atau pengeluaran pertama untuk mulai memahami arus uangmu."
+              ? "Catat transaksi pertama untuk melihat ringkasan keuangan."
               : "Coba pilih jenis transaksi yang lain."}
             action={monthTransactions.length === 0
               ? <PrimaryButton onClick={onAdd}><Plus size={14} /> Catat transaksi</PrimaryButton>

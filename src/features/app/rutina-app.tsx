@@ -24,25 +24,20 @@ import { APP_VERSION_LABEL } from "@/lib/version";
 import { ModulesView, FinanceExtrasPanel } from "@/features/modules/modules-view";
 import { WorkspaceHistoryProvider, useWorkspaceActivityHistory } from "@/components/ui/weekly-history";
 import { ConfirmProvider } from "@/components/ui/confirm-dialog";
-import { FullBloomOverlay } from "@/features/app/full-bloom";
-import { WeeklyStorySection } from "@/features/app/weekly-story";
-import {
-  addSeed, getBloomStreakToday, isBloomShownToday, markBloomShown, recordBloomDay, rollSeed, type GardenSeed,
-} from "@/lib/garden-rewards";
 
-const navigation: { id: TabId; label: string; icon: AppIconName; description: string }[] = [
-  { id: "home", label: "Beranda", icon: "home", description: "Ringkasan hari ini" },
-  { id: "habits", label: "Kebiasaan", icon: "habits", description: "Atur ritme harian" },
-  { id: "finance", label: "Keuangan", icon: "finance", description: "Kelola arus uang" },
-  { id: "calendar", label: "Kalender", icon: "calendar", description: "Lihat jadwal" },
-  { id: "insights", label: "Insight", icon: "insights", description: "Pahami progres" },
-  { id: "goals", label: "Tujuan", icon: "goals", description: "Goals dan milestones" },
-  { id: "checkin", label: "Check-in", icon: "checkin", description: "Mood, energi, dan jurnal" },
-  { id: "work", label: "Meja Kerja", icon: "work", description: "Task board, catatan, rutinitas" },
-  { id: "wellness", label: "Wellness", icon: "wellness", description: "Air, protein, dan berat badan" },
-  { id: "training", label: "Latihan", icon: "training", description: "Workout, program, dan kardio" },
-  { id: "tree", label: "Pohon", icon: "growth", description: "Level dan perjalanan progres" },
-  { id: "settings", label: "Pengaturan", icon: "settings", description: "Backup dan preferensi data" },
+const navigation: { id: TabId; label: string; icon: AppIconName }[] = [
+  { id: "home", label: "Beranda", icon: "home" },
+  { id: "habits", label: "Kebiasaan", icon: "habits" },
+  { id: "finance", label: "Keuangan", icon: "finance" },
+  { id: "calendar", label: "Kalender", icon: "calendar" },
+  { id: "insights", label: "Insight", icon: "insights" },
+  { id: "goals", label: "Tujuan", icon: "goals" },
+  { id: "checkin", label: "Check-in", icon: "checkin" },
+  { id: "work", label: "Meja Kerja", icon: "work" },
+  { id: "wellness", label: "Wellness", icon: "wellness" },
+  { id: "training", label: "Latihan", icon: "training" },
+  { id: "tree", label: "Pohon", icon: "growth" },
+  { id: "settings", label: "Pengaturan", icon: "settings" },
 ];
 const mobilePrimary = navigation.filter((item) => ["home", "habits", "finance", "calendar"].includes(item.id));
 const navigationGroups: { label: string; ids: TabId[] }[] = [
@@ -72,8 +67,6 @@ export function RutinaApp() {
   const [searchQuery, setSearchQuery] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
   const [quickActionOpen, setQuickActionOpen] = useState(false);
-  // Perayaan Full Bloom (100% habit selesai) — sekali per hari.
-  const [bloom, setBloom] = useState<{ seed: GardenSeed; streak: number } | null>(null);
   // Indikator pill yang meluncur di bottom-nav (mobile). `top` diukur dari
   // offsetTop tombol aktif agar pill sejajar presisi di SEMUA pita lebar
   // (ponsel & tablet — tinggi baris nav berbeda karena FAB, adapt v0.6).
@@ -117,7 +110,7 @@ export function RutinaApp() {
     const onSyncFailed = () => {
       if (Date.now() - lastSyncErrorAt < 8000) return;
       lastSyncErrorAt = Date.now();
-      setToast({ message: "Perubahanmu tersimpan di perangkat, tapi belum tersinkron ke server.", tone: "error" });
+      setToast({ message: "Perubahan tersimpan di perangkat, belum tersinkron ke server.", tone: "error" });
     };
     window.addEventListener("rutina:sync-failed", onSyncFailed);
     return () => window.removeEventListener("rutina:sync-failed", onSyncFailed);
@@ -139,8 +132,8 @@ export function RutinaApp() {
 
   // Deteksi online/offline — pengguna tidak perlu menebak dari badge kecil.
   useEffect(() => {
-    const onOffline = () => setToast({ message: "Kamu sedang offline — perubahan disimpan di perangkat.", tone: "error" });
-    const onOnline = () => setToast({ message: "Kembali online. Menyinkronkan perubahan…", tone: "info" });
+    const onOffline = () => setToast({ message: "Offline — perubahan disimpan di perangkat.", tone: "error" });
+    const onOnline = () => setToast({ message: "Kembali online — menyinkronkan perubahan…", tone: "info" });
     window.addEventListener("offline", onOffline);
     window.addEventListener("online", onOnline);
     return () => {
@@ -188,21 +181,16 @@ export function RutinaApp() {
   const sync = syncPresentation[syncStatus as SyncStatus];
   const pendingHabitCount = todayHabits.filter((habit) => !habit.completed).length;
 
-  // Full Bloom: saat semua habit terjadwal hari ini selesai (dan belum
-  // dirayakan hari ini) → roll benih kejutan + tampilkan overlay.
+  // Umpan balik singkat saat seluruh habit hari ini selesai (satu toast/hari).
   useEffect(() => {
     if (!workspaceReady || todayHabits.length === 0) return;
     if (!todayHabits.every((habit) => habit.completed)) return;
-    if (isBloomShownToday()) return;
-    markBloomShown();
-    recordBloomDay(todayKey);
-    const seed = rollSeed(todayKey);
-    addSeed(seed);
-    setBloom({ seed, streak: getBloomStreakToday() });
-    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-      try { navigator.vibrate?.([16, 54, 16, 54, 110]); } catch { /* diabaikan */ }
-    }
-  }, [workspaceReady, todayHabits, todayKey]);
+    let shown = false;
+    try { shown = window.localStorage.getItem("rutina.v2.alldone-shown") === todayKey; } catch { return; }
+    if (shown) return;
+    try { window.localStorage.setItem("rutina.v2.alldone-shown", todayKey); } catch { /* abaikan */ }
+    showToast("Semua kebiasaan hari ini selesai.");
+  }, [workspaceReady, todayHabits, todayKey, showToast]);
 
   // Pill navigasi: ukur tombol aktif (aria-current) lalu geser halus (spring).
   // Nav bisa masuk DOM setelah streaming selesai, jadi ukur dengan retry
@@ -342,8 +330,8 @@ export function RutinaApp() {
           </svg>
         </div>
         <div className="workspace-loading-copy">
-          <p>Menyiapkan ruang pribadimu…</p>
-          <small>Menghubungkan data dan merapikan aktivitas</small>
+          <p>Memuat Rutina…</p>
+          <small>Menyiapkan data workspace</small>
           <div className="workspace-loading-track" aria-hidden="true"><span /></div>
         </div>
       </main>
@@ -419,7 +407,6 @@ export function RutinaApp() {
             <div>
               <span className="menu-panel-kicker">YOUR SPACE</span>
               <strong>Workspace</strong>
-              <small>Semua area Rutina, satu tempat.</small>
             </div>
             <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
           </div>
@@ -469,7 +456,7 @@ export function RutinaApp() {
               <div className="avatar">
                 <span className="avatar-initial" aria-hidden="true">A</span>
               </div>
-              <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+              <div><div className="profile-name">Ruang pribadi</div><div className="profile-caption">Personal workspace</div></div>
             </div>
           </div>
         </div>
@@ -491,7 +478,7 @@ export function RutinaApp() {
             <div className="avatar">
               <span className="avatar-initial" aria-hidden="true">A</span>
             </div>
-            <div><div className="profile-name">Ruang pribadimu</div><div className="profile-caption">Personal workspace</div></div>
+            <div><div className="profile-name">Ruang pribadi</div><div className="profile-caption">Personal workspace</div></div>
           </div>
         </div>
       </aside>
@@ -531,7 +518,7 @@ export function RutinaApp() {
 
         <div className={`content-wrap${hasPageTransitioned ? " page-transition" : ""}`} key={activeTab}>
           <WorkspaceHistoryProvider value={workspaceHistory}>
-          {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} storySlot={<WeeklyStorySection transactions={transactions} checkins={modules.checkins} />} />}
+          {activeTab === "home" && <DashboardView habits={todayHabits} totalHabits={habits.length} income={income} expense={expense} onNavigate={setActiveTab} onToggle={toggleHabit} onAdjust={adjustHabit} onAddHabit={() => setModal("habit")} vacationMode={modules.settings.vacationMode} dailyCheckin={modules.checkins.find((item) => item.date === todayISO())} />}
           {activeTab === "habits" && <HabitsView habits={habits} onToggle={toggleHabit} onAdjust={adjustHabit} onReorder={updateHabits} onAdd={() => setModal("habit")} vacationMode={modules.settings.vacationMode} onToggleVacation={() => updateModule("settings", (current) => ({ ...current, vacationMode: !current.vacationMode }))} groups={modules.habitGroups} onCreateGroup={(name, color) => updateModule("habitGroups", (current) => [...current, { id: crypto.randomUUID(), name, color }])} />}
           {activeTab === "finance" && <><FinanceView transactions={transactions} budgets={budgets} income={income} expense={expense} onAdd={() => setModal("transaction")} onEditBudgets={() => setModal("budget")} /><FinanceExtrasPanel modules={modules} updateModule={updateModule} transactions={transactions} onAddTransactions={(items) => updateTransactions((current) => [...items, ...current])} /></>}
           {activeTab === "calendar" && <CalendarView habits={habits} />}
@@ -550,7 +537,7 @@ export function RutinaApp() {
           (menu mengambang di atas nav, keluar dari clipping context). */}
       {quickActionOpen && (
         <div id="mobile-quick-actions" className="mobile-quick-actions" role="group" aria-label="Aksi cepat">
-          <div className="mobile-quick-actions-heading">MULAI SESUATU</div>
+          <div className="mobile-quick-actions-heading">AKSI CEPAT</div>
           <button
             type="button"
             className="mobile-quick-action"
@@ -624,7 +611,7 @@ export function RutinaApp() {
       </nav>
       {moreOpen && <div id="mobile-workspace-menu" className="mobile-more-menu workspace-menu-sheet" role="dialog" aria-modal="true" aria-label="Semua menu Rutina">
         <div className="menu-panel-header">
-          <div><span className="menu-panel-kicker">YOUR SPACE</span><strong>Jelajahi Rutina</strong><small>Pilih area yang ingin kamu buka.</small></div>
+          <div><span className="menu-panel-kicker">YOUR SPACE</span><strong>Jelajahi Rutina</strong></div>
           <button type="button" className="menu-panel-close" onClick={() => setMoreOpen(false)} aria-label="Tutup menu"><X size={17} /></button>
         </div>
         <div className="menu-panel-content">
@@ -650,7 +637,6 @@ export function RutinaApp() {
 
       {modal && modal !== "budget" && <EntryModal mode={modal} onClose={() => setModal(null)} onSubmit={modal === "habit" ? submitHabit : submitTransaction} wallets={modules.finance.wallets} groups={modules.habitGroups} />}
       {modal === "budget" && <BudgetModal budgets={budgets} onClose={() => setModal(null)} onSubmit={submitBudget} />}
-      {bloom && <FullBloomOverlay seed={bloom.seed} bloomStreak={bloom.streak} onClose={() => setBloom(null)} />}
       <SearchDialog
         open={searchOpen}
         query={searchQuery}

@@ -259,9 +259,9 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
         <button type="button" className={period === "year" ? "active" : ""} aria-pressed={period === "year"} onClick={() => setPeriod("year")}><CalendarClock size={13} aria-hidden="true" /> Tahun</button>
       </div>
 
-      <section className="growth-wrapped-panel" aria-label="Ringkasan perjalananmu">
+      <section className="growth-wrapped-panel" aria-label="Ringkasan periode">
         <div className="growth-wrapped-copy">
-          <span className="growth-wrapped-kicker">CERITA PERTUMBUHANMU</span>
+          <span className="growth-wrapped-kicker">RINGKASAN PERIODE</span>
           <h2><RichText text={growth.headline} /></h2>
           <p>{growth.summary}</p>
         </div>
@@ -313,7 +313,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
               <div className="insight-trend-legend"><span><i className="activity" /> Habit selesai</span><small>{trendTotal} penyelesaian · {periodCaption}</small></div>
             </>
           ) : (
-            <div className="insight-trend-empty"><span><Activity size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Habit yang kamu selesaikan akan muncul di grafik ini setelah tersimpan.</p></div>
+            <div className="insight-trend-empty"><span><Activity size={22} /></span><strong>Belum ada progres minggu ini</strong><p>Penyelesaian akan muncul di grafik ini setelah tersimpan.</p></div>
           )
         ) : period === "week" && trendCheckins.length > 0 ? (
           <>
@@ -372,7 +372,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
           <section className="insight-highlight">
             <div className="small-label">CATATAN HARI INI</div>
             <div className="insight-number">{completed}<span>/{total}</span></div>
-            <p className="section-caption">{total === 0 ? "Belum ada kebiasaan tersimpan." : total === completed ? "Semua kebiasaan hari ini sudah kamu selesaikan. Luangkan waktu untuk menikmati progresmu." : "Masih ada ruang untuk melanjutkan, satu langkah kecil kapan pun kamu siap."}</p>
+            <p className="section-caption">{total === 0 ? "Belum ada kebiasaan tersimpan." : total === completed ? "Semua kebiasaan hari ini selesai." : `${total - completed} kebiasaan belum selesai.`}</p>
           </section>
         </div>
       </div>
@@ -404,7 +404,7 @@ export function InsightsView({ habits, income, expense, transactions, checkins =
               <span><i className="dot active" aria-hidden="true" /><small>Hari aktif</small><strong>{crossover.stats.activeDays} hari · rata-rata Rp{shortRupiah(crossover.stats.activeAvg)}</strong></span>
               <span><i className="dot quiet" aria-hidden="true" /><small>Hari tenang</small><strong>{crossover.stats.quietDays} hari · rata-rata Rp{shortRupiah(crossover.stats.quietAvg)}</strong></span>
             </div>
-            <small className="insight-pattern-footnote">Korelasi bukan sebab-akibat — pola ini hanya membaca {crossover.stats.trackedDays} hari yang kamu catat.</small>
+            <small className="insight-pattern-footnote">Korelasi bukan sebab-akibat · berdasarkan {crossover.stats.trackedDays} hari tercatat.</small>
           </div>
         </section>
       )}

@@ -109,7 +109,7 @@ export function BackupView({ settings, onUpdateSettings }: {
       <span className="settings-profile-mark">
         <span aria-hidden="true">A</span>
       </span>
-      <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadimu</strong><span>Rutina</span></div>
+      <div className="settings-profile-copy"><small>YOUR PERSONAL SPACE</small><strong>Ruang pribadi</strong><span>Rutina</span></div>
       <span className="settings-profile-status" aria-label={`Versi ${APP_VERSION_LABEL}`}><ShieldCheck size={14} /> {APP_VERSION_LABEL}</span>
     </section>
 
@@ -125,13 +125,12 @@ export function BackupView({ settings, onUpdateSettings }: {
 
     <div className="settings-preferences-grid">
       <section className="card card-pad settings-preference-card" id="settings-preferences">
-        <SectionHeading title="Ritme pribadi" caption="Beri ruang untuk beristirahat saat diperlukan." />
+        <SectionHeading title="Ritme pribadi" caption="Jeda pencatatan habit tanpa menghapus data." />
         <label className="settings-vacation-toggle">
           <span className="settings-vacation-icon"><Umbrella size={18} /></span>
-          <span><strong>Mode libur</strong><small>Jeda pencatatan habit tanpa menghapus data.</small></span>
+          <span><strong>Mode libur</strong><small>Habit tidak bisa dicatat saat mode libur aktif.</small></span>
           <input type="checkbox" checked={settings.vacationMode} onChange={(event) => onUpdateSettings((current) => ({ ...current, vacationMode: event.target.checked }))} />
         </label>
-        <div className="settings-about-note"><span>“</span><p>Kembali kapan pun kamu siap.</p></div>
       </section>
     </div>
     <section className="card card-pad settings-info-card" id="settings-notifications">
@@ -141,7 +140,7 @@ export function BackupView({ settings, onUpdateSettings }: {
 
     <section className="card card-pad settings-info-card" id="settings-about">
       <div className="settings-info-icon"><Sparkles size={18} /></div>
-      <div><SectionHeading title="Tentang Rutina" caption="Ruang pribadi untuk membangun kebiasaan baik, menjaga keseimbangan, dan bertumbuh lewat langkah kecil setiap hari." /></div>
+      <div><SectionHeading title="Tentang Rutina" caption="Aplikasi pelacak kebiasaan dan keuangan pribadi." /></div>
     </section>
 
     <div className="settings-section-heading" id="settings-backup"><span>DATA & PEMULIHAN</span><strong>Backup workspace</strong></div>

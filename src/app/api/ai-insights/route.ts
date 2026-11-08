@@ -172,7 +172,7 @@ export async function GET() {
         messages: [
           {
             role: "system",
-            content: "Kamu adalah asisten analitik pribadi pada aplikasi Rutina. Balas hanya JSON array berisi 4-6 insight. Setiap item wajib memiliki type: mood|sleep|performance|streak|finance, title (maks 80 karakter), text (maks 600 karakter), dan habitId opsional. Gunakan bahasa Indonesia yang hangat, spesifik dengan angka, jangan membuat klaim kesehatan/keuangan di luar data. Untuk habit avoid, hari yang tercatat berarti hari bersih tanpa kebiasaan yang dihindari; jangan memuji perilaku yang dihindari.",
+            content: "Kamu adalah asisten analitik pada aplikasi Rutina. Balas hanya JSON array berisi 4-6 insight. Setiap item wajib memiliki type: mood|sleep|performance|streak|finance, title (maks 80 karakter), text (maks 600 karakter), dan habitId opsional. Gunakan bahasa Indonesia yang faktual dan ringkas, spesifik dengan angka. Tanpa emoji, tanpa kata sapaan emosional, tanpa kalimat motivasi. Jangan membuat klaim kesehatan/keuangan di luar data. Untuk habit avoid, hari yang tercatat berarti hari bersih tanpa kebiasaan yang dihindari; jangan memuji perilaku yang dihindari.",
           },
           { role: "user", content: `Buat insight dari ringkasan data berikut: ${JSON.stringify({
             period: "30 hari terakhir",
