@@ -5,10 +5,11 @@ import type { OsActions, OsData } from "@/features/os/view-props";
 import { formatCompactRupiah, formatDate, formatRupiah } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
 import { completionForDate, computeStreak, lastDays, weekdayIndex } from "@/features/os/use-history";
-import { Bars, EmptyState, ProgressBar, Ring, SectionHead, Sparkline, StatTile } from "@/features/os/widgets";
+import { Bars, EmptyState, ProgressBar, Ring, SectionHead, Sparkline, StatTile, ViewHero } from "@/features/os/widgets";
+import { OsIllustration } from "@/features/os/os-illustrations";
 import {
-  BanknoteIcon, ChevronRightIcon, FlameIcon, FinanceCategoryIco, HabitIco, InboxIcon,
-  PlusIcon, TrendUpIcon, WalletIcon, ClockIcon,
+  BanknoteIcon, ChevronRightIcon, FlameIcon, FinanceCategoryIco, HabitIco,
+  PlusIcon, WalletIcon, ClockIcon,
 } from "@/features/os/os-icons";
 
 const WEEKDAY_SHORT = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
@@ -65,6 +66,9 @@ export function OverviewView({ data, actions }: { data: OsData; actions: OsActio
 
   const recentTx = useMemo(() => [...transactions].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)).slice(0, 6), [transactions]);
 
+  const allDone = todayPlan.length > 0 && doneCount === todayPlan.length;
+  const heroDate = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long" }).format(new Date(`${today}T12:00:00+07:00`));
+
   const budgetRows = useMemo(() => summarizeBudgets(monthTx, budgets).sort((a, b) => b.spent - a.spent).slice(0, 3), [monthTx, budgets]);
 
   const monthSpark = useMemo(() => {
@@ -86,6 +90,14 @@ export function OverviewView({ data, actions }: { data: OsData; actions: OsActio
 
   return (
     <div className="flex flex-col gap-5">
+      {/* hero + momen perayaan */}
+      <ViewHero
+        art={<OsIllustration variant={allDone ? "celebrate" : "overview"} size={76} />}
+        eyebrow={`Konsol hari ini · ${heroDate}`}
+        title={allDone ? `Semua ${todayPlan.length} kebiasaan selesai — hari sempurna` : `${doneCount}/${todayPlan.length} kebiasaan selesai`}
+        sub={`Streak terbaik ${topStreak?.streak ?? 0} hari · ${monthTx.length} transaksi bulan ini`}
+      />
+
       {/* KPI row */}
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatTile
@@ -136,7 +148,7 @@ export function OverviewView({ data, actions }: { data: OsData; actions: OsActio
           </div>
           {todayPlan.length === 0 ? (
             <EmptyState
-              icon={<InboxIcon size={22} />}
+              art={<OsIllustration variant="empty" size={104} />}
               title="Belum ada kebiasaan terjadwal"
               hint="Tambahkan kebiasaan pertama untuk mulai melacak rutinitas harian."
               action={
@@ -256,7 +268,7 @@ export function OverviewView({ data, actions }: { data: OsData; actions: OsActio
         </div>
         {recentTx.length === 0 ? (
           <EmptyState
-            icon={<TrendUpIcon size={22} />}
+            art={<OsIllustration variant="receipt" size={104} />}
             title="Belum ada transaksi"
             hint="Catat pemasukan dan pengeluaran untuk melihat arus kas."
             action={

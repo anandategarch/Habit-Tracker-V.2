@@ -282,24 +282,61 @@ export function StatTile({
 
 export function EmptyState({
   icon,
+  art,
   title,
   hint,
   action,
 }: {
-  icon: ReactNode;
+  /** ikon klasik (kotak 12x12) — fallback bila art tidak diberikan */
+  icon?: ReactNode;
+  /** ilustrasi penuh (OsIllustration) menggantikan ikon bila tersedia */
+  art?: ReactNode;
   title: string;
   hint?: string;
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-panel2 text-dim">{icon}</span>
+    <div className="flex flex-col items-center justify-center gap-3 px-6 py-10 text-center">
+      {art ?? (icon ? <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-panel2 text-dim">{icon}</span> : null)}
       <div>
         <p className="text-[14px] font-semibold text-ink">{title}</p>
         {hint && <p className="mt-1 max-w-[300px] text-[12.5px] leading-relaxed text-dim">{hint}</p>}
       </div>
       {action}
     </div>
+  );
+}
+
+/* ---------- view hero: ilustrasi + fakta per tab ---------- */
+
+export function ViewHero({
+  art,
+  eyebrow,
+  title,
+  sub,
+  action,
+}: {
+  art: ReactNode;
+  eyebrow: string;
+  title: ReactNode;
+  sub?: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <section className="os-card relative flex items-center gap-4 overflow-hidden px-4 py-3.5 sm:px-5" aria-label={typeof eyebrow === "string" ? eyebrow : undefined}>
+      <span
+        className="pointer-events-none absolute -right-10 -top-16 h-44 w-44 rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(55,217,154,.07), transparent 70%)" }}
+        aria-hidden="true"
+      />
+      <div className="relative shrink-0 pl-1">{art}</div>
+      <div className="relative min-w-0 flex-1">
+        <p className="os-micro truncate">{eyebrow}</p>
+        <h2 className="mt-1 truncate text-[15.5px] font-bold leading-tight text-ink">{title}</h2>
+        {sub && <p className="num mt-1 truncate text-[12px] text-dim">{sub}</p>}
+      </div>
+      {action && <div className="relative shrink-0">{action}</div>}
+    </section>
   );
 }
 

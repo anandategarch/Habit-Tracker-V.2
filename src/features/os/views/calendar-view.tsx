@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import type { OsActions, OsData } from "@/features/os/view-props";
 import { formatDate, formatRupiah } from "@/lib/format";
 import { completionForDate, isDoneOn, shiftDate, weekdayIndex } from "@/features/os/use-history";
-import { Ring, SectionHead } from "@/features/os/widgets";
+import { Ring, SectionHead, ViewHero } from "@/features/os/widgets";
+import { OsIllustration } from "@/features/os/os-illustrations";
 import { CheckButton } from "@/features/os/views/overview-view";
 import {
   CalendarIcon, ChevronLeftIcon, ChevronRightIcon, FinanceCategoryIco, HabitIco, InboxIcon,
@@ -105,6 +106,14 @@ export function CalendarView({ data, actions }: { data: OsData; actions: OsActio
 
   return (
     <div className="flex flex-col gap-5">
+      {/* hero: ilustrasi + fakta bulan */}
+      <ViewHero
+        art={<OsIllustration variant="calendar" size={76} />}
+        eyebrow={`Kalender · ${monthLabel}`}
+        title={`${monthCheckins} check-in bulan ini`}
+        sub={`${formatDate(selected, { weekday: "long", day: "numeric", month: "short" })} — ${selectedStats.done}/${selectedStats.total} selesai`}
+      />
+
       {/* month nav */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-1">

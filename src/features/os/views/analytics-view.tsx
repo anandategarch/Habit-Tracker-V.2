@@ -4,8 +4,9 @@ import { useMemo } from "react";
 import type { OsData } from "@/features/os/view-props";
 import { formatCompactRupiah, formatDate, formatRupiah } from "@/lib/format";
 import { completionForDate, computeStreak, isDoneOn, lastDays, weekdayIndex } from "@/features/os/use-history";
-import { Bars, EmptyState, ProgressBar, SectionHead, Sparkline, StatTile } from "@/features/os/widgets";
-import { ChartIcon, FlameIcon, HabitIco, SparkIcon, TargetIcon, TrendDownIcon, TrendUpIcon } from "@/features/os/os-icons";
+import { Bars, EmptyState, ProgressBar, SectionHead, Sparkline, StatTile, ViewHero } from "@/features/os/widgets";
+import { OsIllustration } from "@/features/os/os-illustrations";
+import { FlameIcon, HabitIco, SparkIcon, TargetIcon, TrendDownIcon } from "@/features/os/os-icons";
 
 const WEEKDAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 const WEEKDAY_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -127,6 +128,14 @@ export function AnalyticsView({ data }: { data: OsData }) {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* hero: ilustrasi + fakta 30 hari */}
+      <ViewHero
+        art={<OsIllustration variant="analytics" size={76} />}
+        eyebrow="Analitik · 30 hari"
+        title={`${avg30}% rata-rata penyelesaian`}
+        sub={`${perfectDays} hari sempurna · ${totalCheckins} check-in · ${formatCompactRupiah(expense30)} pengeluaran`}
+      />
+
       {/* headline stats */}
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatTile label="Rata-rata 30 hari" value={`${avg30}%`} sub={`${activeDays.length} hari berdata`} tone="accent" icon={<TargetIcon size={16} />} />
@@ -148,7 +157,7 @@ export function AnalyticsView({ data }: { data: OsData }) {
           right={<span className="num text-[12px] font-semibold text-accent">{avg30}% rata-rata</span>}
         />
         {!hasHabitData ? (
-          <EmptyState icon={<ChartIcon size={22} />} title="Belum ada data check-in" hint="Grafik terisi setelah kamu mencentang kebiasaan." />
+          <EmptyState art={<OsIllustration variant="analytics" size={104} />} title="Belum ada data check-in" hint="Grafik terisi setelah kamu mencentang kebiasaan." />
         ) : (
           <>
             <svg
@@ -186,7 +195,7 @@ export function AnalyticsView({ data }: { data: OsData }) {
         <section className="os-card p-4 sm:p-5 xl:col-span-5" aria-label="Performa per hari">
           <SectionHead title="Performa per hari" right={bestWeekday ? <span className="num text-[12px] text-dim">terbaik: {bestWeekday.label}</span> : undefined} />
           {weekdayBars.every((b) => b.value === 0) ? (
-            <EmptyState icon={<ChartIcon size={22} />} title="Belum ada data" hint="Rata-rata per hari muncul setelah ada check-in." />
+            <EmptyState art={<OsIllustration variant="empty" size={104} />} title="Belum ada data" hint="Rata-rata per hari muncul setelah ada check-in." />
           ) : (
             <Bars data={weekdayBars} label="Rata-rata persentase penyelesaian per hari dalam seminggu" />
           )}
@@ -196,7 +205,7 @@ export function AnalyticsView({ data }: { data: OsData }) {
         <section className="os-card p-4 sm:p-5 xl:col-span-7" aria-label="Peringkat konsistensi kebiasaan">
           <SectionHead title="Konsistensi kebiasaan" right={<span className="num text-[12px] text-dim">30 hari</span>} />
           {habitRank.length === 0 ? (
-            <EmptyState icon={<ChartIcon size={22} />} title="Belum ada kebiasaan" hint="Tambahkan kebiasaan untuk mulai dipantau." />
+            <EmptyState art={<OsIllustration variant="habits" size={104} />} title="Belum ada kebiasaan" hint="Tambahkan kebiasaan untuk mulai dipantau." />
           ) : (
             <ul className="flex flex-col divide-y divide-line">
               {habitRank.slice(0, 6).map((row, i) => (
@@ -232,7 +241,7 @@ export function AnalyticsView({ data }: { data: OsData }) {
           }
         />
         {!hasFinanceData ? (
-          <EmptyState icon={<TrendUpIcon size={22} />} title="Belum ada transaksi" hint="Catat transaksi untuk melihat tren arus kas." />
+          <EmptyState art={<OsIllustration variant="receipt" size={104} />} title="Belum ada transaksi" hint="Catat transaksi untuk melihat tren arus kas." />
         ) : (
           <>
             <Bars data={dailyExpense} tone="crimson" height={120} label="Grafik pengeluaran harian 30 hari terakhir" />

@@ -7,8 +7,9 @@ import { formatCompactRupiah, formatDate, formatRupiah } from "@/lib/format";
 import { summarizeBudgets } from "@/lib/finance";
 import { lastDays } from "@/features/os/use-history";
 import { FinanceCategoryIco } from "@/features/os/os-icons";
-import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon, WalletIcon } from "@/features/os/os-icons";
-import { Bars, ConfirmDialog, Donut, EmptyState, ProgressBar, SectionHead, StatTile } from "@/features/os/widgets";
+import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, PlusIcon, SearchIcon, TrashIcon } from "@/features/os/os-icons";
+import { Bars, ConfirmDialog, Donut, EmptyState, ProgressBar, SectionHead, StatTile, ViewHero } from "@/features/os/widgets";
+import { OsIllustration } from "@/features/os/os-illustrations";
 
 const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
@@ -101,6 +102,20 @@ export function FinanceView({ data, actions }: { data: OsData; actions: OsAction
 
   return (
     <div className="flex flex-col gap-5">
+      {/* hero: ilustrasi + fakta bulan */}
+      <ViewHero
+        art={<OsIllustration variant="finance" size={76} />}
+        eyebrow={`Keuangan · ${monthLabel}`}
+        title={income - expense >= 0 ? `Surplus ${formatRupiah(income - expense)}` : `Defisit ${formatRupiah(expense - income)}`}
+        sub={`Masuk ${formatCompactRupiah(income)} · Keluar ${formatCompactRupiah(expense)} · ${monthTx.length} transaksi`}
+        action={
+          <button type="button" className="os-btn os-btn-primary !h-9" onClick={actions.newTransaction}>
+            <PlusIcon size={15} />
+            Transaksi
+          </button>
+        }
+      />
+
       {/* month navigator */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-1">
@@ -123,10 +138,7 @@ export function FinanceView({ data, actions }: { data: OsData; actions: OsAction
             <ChevronRightIcon size={15} />
           </button>
         </div>
-        <button type="button" className="os-btn os-btn-primary !h-9" onClick={actions.newTransaction}>
-          <PlusIcon size={15} />
-          Transaksi
-        </button>
+        <span className="num hidden text-[12px] text-dim sm:block">{monthTx.length} transaksi bulan ini</span>
       </div>
 
       {/* summary tiles */}
@@ -146,7 +158,7 @@ export function FinanceView({ data, actions }: { data: OsData; actions: OsAction
         <section className="os-card p-4 sm:p-5 xl:col-span-7" aria-label="Pengeluaran harian">
           <SectionHead title="Pengeluaran harian" right={<span className="num text-[12px] text-dim">14 hari terakhir</span>} />
           {dailyBars.every((b) => b.value === 0) ? (
-            <EmptyState icon={<WalletIcon size={22} />} title="Belum ada pengeluaran" hint="Catat transaksi pertama untuk melihat grafik harian." />
+            <EmptyState art={<OsIllustration variant="finance" size={104} />} title="Belum ada pengeluaran" hint="Catat transaksi pertama untuk melihat grafik harian." />
           ) : (
             <Bars data={dailyBars} tone="crimson" label="Grafik pengeluaran harian 14 hari terakhir" />
           )}
@@ -155,7 +167,7 @@ export function FinanceView({ data, actions }: { data: OsData; actions: OsAction
         <section className="os-card p-4 sm:p-5 xl:col-span-5" aria-label="Pengeluaran per kategori">
           <SectionHead title="Per kategori" right={<span className="num text-[12px] text-dim">{monthLabel}</span>} />
           {categoryRows.length === 0 ? (
-            <EmptyState icon={<WalletIcon size={22} />} title="Belum ada data" hint="Kategori muncul setelah ada pengeluaran bulan ini." />
+            <EmptyState art={<OsIllustration variant="receipt" size={104} />} title="Belum ada data" hint="Kategori muncul setelah ada pengeluaran bulan ini." />
           ) : (
             <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
               <Donut slices={categoryRows.slice(0, 8).map((row) => ({ label: row.category, value: row.value }))} label="Porsi pengeluaran per kategori bulan ini" size={140} />
@@ -192,7 +204,7 @@ export function FinanceView({ data, actions }: { data: OsData; actions: OsAction
         </div>
         {budgetRows.length === 0 ? (
           <EmptyState
-            icon={<WalletIcon size={22} />}
+            art={<OsIllustration variant="budget" size={104} />}
             title="Belum ada anggaran"
             hint="Tetapkan batas belanja bulanan per kategori agar pengeluaran terkendali."
             action={
@@ -290,7 +302,7 @@ export function FinanceView({ data, actions }: { data: OsData; actions: OsAction
 
         {grouped.length === 0 ? (
           <EmptyState
-            icon={<WalletIcon size={22} />}
+            art={<OsIllustration variant={query || typeFilter !== "all" ? "search" : "receipt"} size={104} />}
             title={query || typeFilter !== "all" ? "Tidak ada yang cocok" : "Belum ada transaksi"}
             hint={query || typeFilter !== "all" ? "Coba ubah kata kunci atau filter." : "Catat pemasukan dan pengeluaran pertama."}
           />

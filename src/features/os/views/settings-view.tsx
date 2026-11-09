@@ -3,7 +3,8 @@
 import { useMemo, useRef, useState } from "react";
 import type { OsData } from "@/features/os/view-props";
 import { todayISO } from "@/lib/format";
-import { ConfirmDialog, SectionHead } from "@/features/os/widgets";
+import { ConfirmDialog, SectionHead, ViewHero } from "@/features/os/widgets";
+import { OsIllustration } from "@/features/os/os-illustrations";
 import {
   AlertIcon, CloudIcon, CloudOffIcon, DownloadIcon, InfoIcon, RefreshIcon, TrashIcon, UploadIcon,
 } from "@/features/os/os-icons";
@@ -75,6 +76,14 @@ export function SettingsView({ data, actions }: { data: OsData; actions: { updat
 
   return (
     <div className="flex flex-col gap-5">
+      {/* hero: ilustrasi + status */}
+      <ViewHero
+        art={<OsIllustration variant={syncStatus === "synced" ? "sync" : "settings"} size={76} />}
+        eyebrow="Pengaturan"
+        title={syncMeta.label}
+        sub={`${habits.length} kebiasaan · ${transactions.length} transaksi · ${budgets.length} anggaran · ${checkinDays} hari tercatat`}
+      />
+
       {/* data summary */}
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {[

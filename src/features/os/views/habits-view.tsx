@@ -5,9 +5,10 @@ import type { Habit, HabitCategory } from "@/lib/types";
 import type { OsActions, OsData } from "@/features/os/view-props";
 import { scheduleLabel } from "@/lib/habit-schedule";
 import { computeStreak, isDoneOn, lastDays, weekdayIndex } from "@/features/os/use-history";
-import { ConfirmDialog, EmptyState, HeatStrip } from "@/features/os/widgets";
+import { ConfirmDialog, EmptyState, HeatStrip, ViewHero } from "@/features/os/widgets";
+import { OsIllustration } from "@/features/os/os-illustrations";
 import { CheckButton } from "@/features/os/views/overview-view";
-import { FlameIcon, HabitCategoryIco, HabitIco, HabitsIcon, PencilIcon, PlusIcon, TrashIcon, ClockIcon } from "@/features/os/os-icons";
+import { FlameIcon, HabitCategoryIco, HabitIco, PencilIcon, PlusIcon, TrashIcon, ClockIcon } from "@/features/os/os-icons";
 
 const CATEGORY_FILTERS: Array<{ id: "all" | HabitCategory; label: string }> = [
   { id: "all", label: "Semua" },
@@ -41,24 +42,13 @@ export function HabitsView({ data, actions }: { data: OsData; actions: OsActions
 
   return (
     <div className="flex flex-col gap-4">
-      {/* summary strip */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="os-card flex flex-col gap-1 p-4">
-          <span className="os-micro">Total</span>
-          <span className="num text-[22px] font-semibold text-ink">{habits.length}</span>
-        </div>
-        <div className="os-card flex flex-col gap-1 p-4">
-          <span className="os-micro">Selesai hari ini</span>
-          <span className="num text-[22px] font-semibold text-accent">{doneToday}</span>
-        </div>
-        <div className="os-card flex flex-col gap-1 p-4">
-          <span className="os-micro">Streak terbaik</span>
-          <span className="num flex items-center gap-1.5 text-[22px] font-semibold text-amber">
-            <FlameIcon size={17} />
-            {bestStreak}
-          </span>
-        </div>
-      </div>
+      {/* hero: ringkasan + ilustrasi */}
+      <ViewHero
+        art={<OsIllustration variant="habits" size={76} />}
+        eyebrow="Kebiasaan"
+        title={`${habits.length} kebiasaan · ${doneToday} selesai hari ini`}
+        sub={`Streak terbaik ${bestStreak} hari · ${visible.length} tampil`}
+      />
 
       {/* toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -89,7 +79,7 @@ export function HabitsView({ data, actions }: { data: OsData; actions: OsActions
       {visible.length === 0 ? (
         <div className="os-card">
           <EmptyState
-            icon={<HabitsIcon size={22} />}
+            art={<OsIllustration variant={habits.length === 0 ? "empty" : "search"} size={104} />}
             title={habits.length === 0 ? "Belum ada kebiasaan" : "Tidak ada di kategori ini"}
             hint={habits.length === 0 ? "Buat kebiasaan pertama dan mulai bangun rutinitas." : "Pilih filter lain atau tambah kebiasaan baru."}
             action={
